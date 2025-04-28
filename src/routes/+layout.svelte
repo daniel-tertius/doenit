@@ -9,10 +9,10 @@
     try {
       safeAreaInsets = (await SafeArea.getSafeAreaInsets()).insets;
       // Apply CSS variables to :root
-      document.documentElement.style.setProperty('--safe-area-top', `${safeAreaInsets.top}px`);
-      document.documentElement.style.setProperty('--safe-area-bottom', `${safeAreaInsets.bottom}px`);
-      document.documentElement.style.setProperty('--safe-area-left', `${safeAreaInsets.left}px`);
-      document.documentElement.style.setProperty('--safe-area-right', `${safeAreaInsets.right}px`);
+      document.documentElement.style.setProperty("--safe-area-top", `${safeAreaInsets.top}px`);
+      document.documentElement.style.setProperty("--safe-area-bottom", `${safeAreaInsets.bottom}px`);
+      document.documentElement.style.setProperty("--safe-area-left", `${safeAreaInsets.left}px`);
+      document.documentElement.style.setProperty("--safe-area-right", `${safeAreaInsets.right}px`);
     } catch (error) {
       console.error("Error getting safe area insets:", error);
     }
@@ -20,7 +20,7 @@
 </script>
 
 <main
-  class="min-h-screen flex"
+  class="min-h-screen flex bg-[#223a51]"
   style="
   padding-top: var(--safe-area-top, 0px);
   padding-bottom: var(--safe-area-bottom, 0px);

@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "app.todo",
-  appName: "todo-app",
+  appId: "taskly.app",
+  appName: "Taskly",
   webDir: "build",
   server: {
     androidScheme: "https",

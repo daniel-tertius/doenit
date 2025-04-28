@@ -1,4 +1,4 @@
-package app.todo;
+package taskly.app;
 
 import com.getcapacitor.BridgeActivity;
 

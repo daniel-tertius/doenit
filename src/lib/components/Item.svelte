@@ -26,7 +26,7 @@
     <span class="text-gray-200 font-semibold">{item.name}</span>
   </div>
 
-  <div class="rounded-full bg-black/30 px-2 py-1 flex items-center h-fit">
+  <div class="rounded-full bg-[#223a51] px-2 py-1 flex items-center h-fit">
     <span class="text-gray-200">{item.due_date}</span>
   </div>
 </div>

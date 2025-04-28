@@ -53,11 +53,11 @@ cd android
 ./gradlew
 cd - >/dev/null
 
-echo -e "${echo_prefix} Copying 'debug.apk' to ./app-output"
+echo -e "${echo_prefix} Copying 'taskly-debug.apk' to ./app-output"
 
 mkdir -p app-output
-rm -f app-output/debug.apk
-cp android/app/build/outputs/apk/debug/app-debug.apk app-output/debug.apk
+rm -f app-output/taskly-debug.apk
+cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-output/taskly-debug.apk
 
 # ----------------------------------------------------------------
 # STEP 5: GENERATE SIGNED RELEASE APK FILE
@@ -78,16 +78,16 @@ cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/taskl
 # ----------------------------------------------------------------
 # STEP 6: GENERATE SIGNED RELEASE AAB FILE
 # ----------------------------------------------------------------
-echo -e "${echo_prefix} Building signed android AAB file"
-npx cap build android --androidreleasetype "AAB" --signing-type "jarsigner" || {
-    echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
-    exit 1
-}
+# echo -e "${echo_prefix} Building signed android AAB file"
+# npx cap build android --keystorepath "app.keystore" --keystorepass "123456" --keystorealias "Tertius" --androidreleasetype "AAB" --signing-type "jarsigner" || {
+#     echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
+#     exit 1
+# }
 
-echo -e "${echo_prefix} Copying 'taskly.aab' to ./app-output"
+# echo -e "${echo_prefix} Copying 'taskly.aab' to ./app-output"
 
-mkdir -p app-output
-rm -f app-output/taskly.aab
-cp android/app/build/outputs/bundle/release/app-release.aab app-output/taskly.aab
+# mkdir -p app-output
+# rm -f app-output/taskly.aab
+# cp android/app/build/outputs/bundle/release/app-release.aab app-output/taskly.aab
 
 echo -e "${green}Script successfully executed!${clear}"
