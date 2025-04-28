@@ -6,8 +6,8 @@ if ! command -v git &>/dev/null; then
     exit 1
 fi
 
-# repo_root=$(git rev-parse --show-toplevel)
-# cd $repo_root
+repo_root=$(git rev-parse --show-toplevel)
+cd $repo_root
 
 # Source the file containing the functions
 source ./scripts/functions.sh
@@ -15,39 +15,6 @@ echo_prefix="${yellow}[${magenta}SCRIPT${yellow}]${clear}"
 
 if [ ! -f android/app.keystore ]; then
     echo -e "${red}Keystore file not found in 'android' directory.${clear}"
-    exit 1
-fi
-
-# ----------------------------------------------------------------
-# STEP 1: DETERMINE WHICH ENVIRONMENT
-# ----------------------------------------------------------------
-env=''
-if [ "$1" = "dev" ] || [ "$1" = "staging" ] || [ "$1" = "prod" ]; then
-    env=$1
-else
-    echo -e "For which environment would you like to run? Select only ${cyan}one${clear} (<space> to select; <enter> to confirm)"
-    OPTIONS_STRING="dev;staging;prod"
-    IFS=';' read -r -a OPTIONS_VALUES <<<"$OPTIONS_STRING"
-    prompt_for_multiselect SELECTED "$OPTIONS_STRING"
-    for i in "${!SELECTED[@]}"; do
-        if [ "${SELECTED[$i]}" == "true" ]; then
-            env="${OPTIONS_VALUES[$i]}"
-            break
-        fi
-    done
-fi
-
-# ----------------------------------------------------------------
-# STEP 2: PRINT OUT WHICH ENV (OR EXIT IF INVALID).
-# ----------------------------------------------------------------
-if [ "${env}" = "dev" ]; then
-    echo -e "${echo_prefix} Generating signed ${yellow}release APK${clear} and ${yellow}debug APK${clear} for ${blue}Dev${clear}..."
-elif [ "${env}" = "staging" ]; then
-    echo -e "${echo_prefix} Generating signed ${yellow}release APK${clear} and ${yellow}AAB${clear} for ${blue}Staging${clear}..."
-elif [ "${env}" = "prod" ]; then
-    echo -e "${echo_prefix} Generating signed ${yellow}release APK${clear} and ${yellow}AAB${clear} for ${blue}Prod${clear}..."
-else
-    echo -e "${echo_prefix} Unknown environment. Exiting..."
     exit 1
 fi
 
@@ -81,18 +48,16 @@ npx cap sync || {
 # ----------------------------------------------------------------
 # STEP 4: GENERATE DEBUG APK FILE
 # ----------------------------------------------------------------
-# if [ "${env}" = "dev" ]; then
-#     echo -e "${echo_prefix} Building debug android APK file"
-#     cd android
-#     ./gradlew # assemble${env^}Debug # ${env^} capitalize first letter
-#     cd - >/dev/null
+echo -e "${echo_prefix} Building debug android APK file"
+cd android
+./gradlew
+cd - >/dev/null
 
-#     echo -e "${echo_prefix} Copying 'unaffi-${env}-debug.apk' to ./app-output"
+echo -e "${echo_prefix} Copying 'debug.apk' to ./app-output"
 
-#     mkdir -p app-output
-#     rm -f app-output/unaffi-${env}-debug.apk
-#     cp android/app/build/outputs/apk/${env}/debug/app-${env}-debug.apk app-output/unaffi-${env}-debug.apk
-# fi
+mkdir -p app-output
+rm -f app-output/debug.apk
+cp android/app/build/outputs/apk/debug/app-debug.apk app-output/debug.apk
 
 # ----------------------------------------------------------------
 # STEP 5: GENERATE SIGNED RELEASE APK FILE
@@ -104,27 +69,25 @@ npx cap build android --keystorepath "app.keystore" --keystorepass "123456" --ke
     exit 1
 }
 
-echo -e "${echo_prefix} Copying 'unaffi-${env}.apk' to ./app-output"
+echo -e "${echo_prefix} Copying 'taskly.apk' to ./app-output"
 
 mkdir -p app-output
-rm -f app-output/unaffi-${env}.apk
-cp android/app/build/outputs/apk/${env}/release/app-${env}-release-signed.apk app-output/unaffi-${env}.apk
+rm -f app-output/taskly.apk
+cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/taskly.apk
 
 # ----------------------------------------------------------------
 # STEP 6: GENERATE SIGNED RELEASE AAB FILE
 # ----------------------------------------------------------------
-if [ "$1" = "staging" ] || [ "$1" = "prod" ]; then
-    echo -e "${echo_prefix} Building signed android AAB file"
-    npx cap build android --androidreleasetype "AAB" --signing-type "jarsigner" --flavor $env || {
-        echo -e "${red}[ERROR] 'npx cap build android --flavor $env' failed${clear}"
-        exit 1
-    }
+echo -e "${echo_prefix} Building signed android AAB file"
+npx cap build android --androidreleasetype "AAB" --signing-type "jarsigner" || {
+    echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
+    exit 1
+}
 
-    echo -e "${echo_prefix} Copying 'unaffi-${env}.aab' to ./app-output"
+echo -e "${echo_prefix} Copying 'taskly.aab' to ./app-output"
 
-    mkdir -p app-output
-    rm -f app-output/unaffi-${env}.aab
-    cp android/app/build/outputs/bundle/${env}Release/app-${env}-release-signed.aab app-output/unaffi-${env}.aab
-fi
+mkdir -p app-output
+rm -f app-output/taskly.aab
+cp android/app/build/outputs/bundle/release/app-release.aab app-output/taskly.aab
 
 echo -e "${green}Script successfully executed!${clear}"
