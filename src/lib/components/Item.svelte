@@ -19,14 +19,24 @@
   }
 </script>
 
-<div transition:fly={{ x: "100%" }} class="border-white border rounded-sm flex justify-between items-center p-2 h-15">
+<div
+  transition:fly={{ x: "100%" }}
+  class="border-[#d6dde3] border rounded-lg flex justify-between items-center p-2 h-15"
+>
   <div class="flex gap-4 item-center">
-    <button type="button" aria-label="check" class="rounded-lg border border-white h-7 w-7" onclick={toggleComplete}>
+    <button
+      type="button"
+      aria-label="check"
+      class="rounded-sm border-2 border-[#d6dde3] h-5 w-5"
+      onclick={toggleComplete}
+    >
     </button>
     <span class="text-gray-200 font-semibold">{item.name}</span>
   </div>
 
-  <div class="rounded-full bg-[#223a51] px-2 py-1 flex items-center h-fit">
-    <span class="text-gray-200">{item.due_date}</span>
-  </div>
+  {#if item.due_date}
+    <div class="rounded-full bg-[#223a51] px-2 py-1 flex items-center h-fit">
+      <span class="text-gray-200">{item.due_date}</span>
+    </div>
+  {/if}
 </div>

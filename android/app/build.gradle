@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "taskly.app"
+    namespace "doenit.app"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "taskly.app"
+        applicationId "doenit.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

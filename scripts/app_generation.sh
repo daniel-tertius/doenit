@@ -53,11 +53,11 @@ cd android
 ./gradlew
 cd - >/dev/null
 
-echo -e "${echo_prefix} Copying 'taskly-debug.apk' to ./app-output"
+echo -e "${echo_prefix} Copying 'doenit-debug.apk' to ./app-output"
 
 mkdir -p app-output
-rm -f app-output/taskly-debug.apk
-cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-output/taskly-debug.apk
+rm -f app-output/doenit-debug.apk
+cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-output/doenit-debug.apk
 
 # ----------------------------------------------------------------
 # STEP 5: GENERATE SIGNED RELEASE APK FILE
@@ -69,11 +69,11 @@ npx cap build android --keystorepath "app.keystore" --keystorepass "123456" --ke
     exit 1
 }
 
-echo -e "${echo_prefix} Copying 'taskly.apk' to ./app-output"
+echo -e "${echo_prefix} Copying 'doenit.apk' to ./app-output"
 
 mkdir -p app-output
-rm -f app-output/taskly.apk
-cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/taskly.apk
+rm -f app-output/doenit.apk
+cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/doenit.apk
 
 # ----------------------------------------------------------------
 # STEP 6: GENERATE SIGNED RELEASE AAB FILE
@@ -84,10 +84,10 @@ cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/taskl
 #     exit 1
 # }
 
-# echo -e "${echo_prefix} Copying 'taskly.aab' to ./app-output"
+# echo -e "${echo_prefix} Copying 'doenit.aab' to ./app-output"
 
 # mkdir -p app-output
-# rm -f app-output/taskly.aab
-# cp android/app/build/outputs/bundle/release/app-release.aab app-output/taskly.aab
+# rm -f app-output/doenit.aab
+# cp android/app/build/outputs/bundle/release/app-release.aab app-output/doenit.aab
 
 echo -e "${green}Script successfully executed!${clear}"

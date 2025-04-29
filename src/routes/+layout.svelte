@@ -1,18 +1,18 @@
 <script>
   import "../app.css";
   import { SafeArea } from "capacitor-plugin-safe-area";
+  import { safeArea } from "$lib/SafeArea.svelte";
   import { onMount } from "svelte";
-
-  let safeAreaInsets = { top: 0, bottom: 0, left: 0, right: 0 };
 
   onMount(async () => {
     try {
-      safeAreaInsets = (await SafeArea.getSafeAreaInsets()).insets;
-      // Apply CSS variables to :root
-      document.documentElement.style.setProperty("--safe-area-top", `${safeAreaInsets.top}px`);
-      document.documentElement.style.setProperty("--safe-area-bottom", `${safeAreaInsets.bottom}px`);
-      document.documentElement.style.setProperty("--safe-area-left", `${safeAreaInsets.left}px`);
-      document.documentElement.style.setProperty("--safe-area-right", `${safeAreaInsets.right}px`);
+      const safeAreaInsets = (await SafeArea.getSafeAreaInsets()).insets;
+      safeArea.top = safeAreaInsets.top;
+      safeArea.bottom = safeAreaInsets.bottom;
+      safeArea.left = safeAreaInsets.left;
+      safeArea.right = safeAreaInsets.right;
+
+      console.log("Safe area insets:", safeAreaInsets);
     } catch (error) {
       console.error("Error getting safe area insets:", error);
     }
@@ -21,14 +21,9 @@
 
 <main
   class="min-h-screen flex bg-[#223a51]"
-  style="
-  padding-top: var(--safe-area-top, 0px);
-  padding-bottom: var(--safe-area-bottom, 0px);
-  padding-left: var(--safe-area-left, 0px);
-  padding-right: var(--safe-area-right, 0px);
-"
+  style="padding-top: {safeArea.top}px; padding-bottom: {safeArea.bottom}px; padding-left: {safeArea.left}px; padding-right: {safeArea.right}px;"
 >
-  <div class="bg-[#325372] grow relative">
+  <div class="bg-[#325372] grow relative max-w-[1000px] mx-auto pt-5 px-2">
     <slot />
   </div>
 </main>
