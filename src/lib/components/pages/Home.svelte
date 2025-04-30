@@ -10,14 +10,36 @@
   import { safeArea } from "$lib/SafeArea.svelte";
   import { displayDate, sortByField } from "$lib";
 
-  let { onclose, oncreate } = $props();
+  let { onclose, oncreate, onupdate } = $props();
 
   /** @type {import('$lib/DB/DB').Item[]}*/
   let items = $state([]);
 
   $effect(() => {
     const Db = DB.getInstance();
-    Db.Item.data.then((data) => (items = sortByField(data, "due_date", "desc")));
+    Db.Item.data.then((data) => {
+      let future = [];
+      let past = [];
+      let no_date = [];
+
+      data = sortByField(data, "name", "asc");
+      for (const item of data) {
+        if (item.due_date) {
+          if (new Date(item.due_date) < new Date()) {
+            past.push(item);
+          } else {
+            future.push(item);
+          }
+        } else {
+          no_date.push(item);
+        }
+      }
+
+      past = sortByField(past, "due_date", "desc");
+      future = sortByField(future, "due_date", "asc");
+
+      items = [...past, ...future, ...no_date];
+    });
   });
 
   onMount(() => {
@@ -58,21 +80,32 @@
     {/if}
 
     {#each items as item, i (item.id)}
-      {@const different_date = item.due_date !== items[i - 1]?.due_date}
-      {#if different_date}
-        <div class="text-gray-200 text-sm font-semibold">{displayDate(item.due_date)}</div>
-      {/if}
+      {@const is_same_date = item.due_date === items[i - 1]?.due_date}
+      {@const is_past_due = new Date(item.due_date) < new Date()}
 
-      {#key item.id}
-        <Item
-          {item}
-          oncomplete={() => {
-            const Db = DB.getInstance();
-            Db.Item.delete(item.id);
-            items = items.filter(({ id }) => id !== item.id);
-          }}
-        />
-      {/key}
+      <div>
+        {#if is_past_due}
+          <div class="text-gray-200 text-sm font-semibold pb-1">Verby</div>
+        {/if}
+
+        {#if !is_same_date && !is_past_due}
+          <div class="text-gray-200 text-sm font-semibold pb-1">
+            {displayDate(item.due_date) || "Geen datum"}
+          </div>
+        {/if}
+
+        {#key item.id}
+          <Item
+            {item}
+            oncomplete={() => {
+              const Db = DB.getInstance();
+              Db.Item.delete(item.id);
+              items = items.filter(({ id }) => id !== item.id);
+            }}
+            onclick={() => onupdate(item)}
+          />
+        {/key}
+      </div>
     {/each}
   </div>
 </div>

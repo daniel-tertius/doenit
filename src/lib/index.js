@@ -4,7 +4,11 @@
 export function displayDate(date) {
   if (!date) return "";
 
-  return new Date(date).toLocaleDateString("af-ZA");
+  return new Date(date).toLocaleDateString("af-ZA", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 /**

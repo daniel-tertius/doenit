@@ -9,13 +9,14 @@
   /**
    * @typedef {Object} Props
    * @property {import('svelte/elements').MouseEventHandler<HTMLButtonElement>} onclose
+   * @property {import('$lib/DB/DB').Item} [item]
    */
 
   /** @type {Props} */
-  let { onclose } = $props();
+  let { onclose, item } = $props();
 
-  let name = $state("");
-  let due_date = $state("");
+  let name = $state(item?.name || "");
+  let due_date = $state(item?.due_date || "");
   let error_message = $state("");
 
   async function createItem() {
