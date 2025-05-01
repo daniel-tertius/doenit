@@ -18,12 +18,16 @@
     item.completed = !item.completed;
     oncomplete(item);
   }
+
+  const is_past = $derived(new Date(item.due_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
 </script>
 
 <div class="relative">
   <button
     transition:fly={{ x: "100%" }}
-    class="border-[#d6dde3] border rounded-lg flex justify-between items-center p-2 h-15 w-full"
+    class=" border rounded-lg flex justify-between items-center p-2 h-15 w-full {is_past
+      ? 'border-red-600/40 border-2 bg-red-500/10'
+      : ''}"
     {onclick}
   >
     <div class="pl-10">
@@ -31,7 +35,7 @@
     </div>
 
     {#if item.due_date}
-      <div class="rounded-full bg-[#223a51] px-2 py-1 flex items-center h-fit">
+      <div class="rounded-full bg-[#223a51] {is_past ? 'bg-red-700/70' : ''} px-2 py-1 flex items-center h-fit">
         <span class="text-gray-200">{displayDate(item.due_date)}</span>
       </div>
     {/if}

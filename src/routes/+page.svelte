@@ -13,7 +13,6 @@
     oncreate={() => (state = "create")}
     onupdate={(data) => {
       item = data;
-      console.log(item);
       state = "update";
     }}
   />

@@ -25,6 +25,7 @@ export class DB {
 export interface Item {
   id: string;
   name: string;
+  completed: boolean;
   due_date: string;
   category_id: string;
 }

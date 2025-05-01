@@ -47,3 +47,5 @@ class SafeArea {
 }
 
 export const safeArea = new SafeArea();
+
+

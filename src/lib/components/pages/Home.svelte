@@ -8,7 +8,7 @@
   import { Capacitor } from "@capacitor/core";
   import Fab from "../FAB.svelte";
   import { safeArea } from "$lib/SafeArea.svelte";
-  import { displayDate, sortByField } from "$lib";
+  import { displayPrettyDate, sortByField } from "$lib";
 
   let { onclose, oncreate, onupdate } = $props();
 
@@ -25,7 +25,7 @@
       data = sortByField(data, "name", "asc");
       for (const item of data) {
         if (item.due_date) {
-          if (new Date(item.due_date) < new Date()) {
+          if (new Date(item.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
             past.push(item);
           } else {
             future.push(item);
@@ -48,23 +48,17 @@
         onclose(event);
       });
     }
+
+    return () => {
+      App.removeAllListeners();
+    };
   });
 </script>
 
 <div class="space-y-2 text-white">
   <PageHeading>Taak lys</PageHeading>
 
-  {#if !!items.length}
-    <Fab
-      onclick={oncreate}
-      class="mb-6 mr-6 bg-[#5b758e] hover:bg-[#476480]"
-      style="bottom: {safeArea.bottom}; right: {safeArea.right}"
-    >
-      {@render createIcon()}
-    </Fab>
-  {/if}
-
-  <div class="mt-6 space-y-4">
+  <div class="mt-6 space-y-1.5">
     {#if items.length === 0}
       <div class="flex flex-col items-center gap-4 py-12">
         <div class="text-lg text-gray-400">Jou lys is skoon!</div>
@@ -81,19 +75,23 @@
 
     {#each items as item, i (item.id)}
       {@const is_same_date = item.due_date === items[i - 1]?.due_date}
-      {@const is_past_due = new Date(item.due_date) < new Date()}
+      {@const is_past_due = new Date(item.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)}
+      {@const is_still_past =
+        i > 0 &&
+        new Date(items[i - 1]?.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0) &&
+        is_past_due}
+
+      {#if is_past_due && !is_still_past}
+        <div class="text-sm font-semibold pt-1 text-red-600">Verby</div>
+      {/if}
+
+      {#if !is_same_date && !is_past_due}
+        <div class="text-gray-200 text-sm font-semibold pt-1">
+          {displayPrettyDate(item.due_date) || "Geen datum"}
+        </div>
+      {/if}
 
       <div>
-        {#if is_past_due}
-          <div class="text-gray-200 text-sm font-semibold pb-1">Verby</div>
-        {/if}
-
-        {#if !is_same_date && !is_past_due}
-          <div class="text-gray-200 text-sm font-semibold pb-1">
-            {displayDate(item.due_date) || "Geen datum"}
-          </div>
-        {/if}
-
         {#key item.id}
           <Item
             {item}
@@ -109,6 +107,16 @@
     {/each}
   </div>
 </div>
+
+{#if !!items.length}
+  <Fab
+    onclick={oncreate}
+    class="mb-6 mr-6 bg-[#5b758e] hover:bg-[#476480]"
+    style="bottom: {safeArea.bottom}px; right: {safeArea.right}px"
+  >
+    {@render createIcon()}
+  </Fab>
+{/if}
 
 {#snippet createIcon()}
   <svg class="text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
