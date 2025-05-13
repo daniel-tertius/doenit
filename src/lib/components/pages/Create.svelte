@@ -142,7 +142,7 @@
   </div> -->
 
   <button
-    class="absolute bottom-2 p-2 w-full flex gap-1 justify-center border border-[#233a50]/50 hover: rounded-lg bg-[#476480]"
+    class="absolute bottom-2 p-4 w-full flex gap-1 justify-center border border-[#233a50]/50 hover: rounded-lg bg-[#476480]"
   >
     {#if item}
       <Save />

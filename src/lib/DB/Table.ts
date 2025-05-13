@@ -3,6 +3,7 @@ import { Preferences } from "@capacitor/preferences";
 import { tick } from "svelte";
 
 export class Table<T extends Item | Category> {
+  private lock = Promise.resolve(); // Mutex for synchronization
   private table_name: string;
 
   constructor(table_name: string) {
@@ -12,9 +13,6 @@ export class Table<T extends Item | Category> {
 
   get data(): Promise<T[]> {
     return new Promise(async (resolve) => {
-      // TODO: Need to fix this…
-      await tick();
-      await tick();
       const items = await this.readAll();
       resolve(Object.values(items));
     });
@@ -50,6 +48,7 @@ export class Table<T extends Item | Category> {
 
   private generateUUID(all_data: Record<string, T>): string {
     const new_id = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      // Correct UUID format
       const r = (Math.random() * 16) | 0;
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
@@ -60,19 +59,21 @@ export class Table<T extends Item | Category> {
   async create(item: Omit<T, "id" | "created_at">): Promise<T> {
     if (!item) throw new Error("Item is required");
 
-    const data = await this.readAll();
-    const newItem = { ...item, created_at: new Date().toString(), id: this.generateUUID(data) } as T;
-    data[newItem.id] = newItem;
+    return (this.lock = this.lock.then(async () => {
+      const data = await this.readAll();
+      const newItem = { ...item, created_at: new Date().toString(), id: this.generateUUID(data) } as T;
+      data[newItem.id] = newItem;
 
-    try {
-      await Preferences.set({
-        key: this.table_name,
-        value: JSON.stringify(data, null, 2),
-      });
-      return newItem;
-    } catch (error) {
-      throw new Error(`Failed to write to storage: ${error instanceof Error ? error.message : String(error)}`);
-    }
+      try {
+        await Preferences.set({
+          key: this.table_name,
+          value: JSON.stringify(data, null, 2),
+        });
+        return newItem;
+      } catch (error) {
+        throw new Error(`Failed to write to storage: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }));
   }
 
   async read(id: string): Promise<T | undefined> {
