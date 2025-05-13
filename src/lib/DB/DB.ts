@@ -24,14 +24,18 @@ export class DB {
 
 export interface Item {
   id: string;
+  archived: boolean;
+  created_at: string;
   name: string;
   completed: boolean;
   due_date: string;
-  category_id: string;
+  category_id?: string;
 }
 
 export interface Category {
   id: string;
+  archived: boolean;
+  created_at: string;
   name: string;
   description: string;
 }

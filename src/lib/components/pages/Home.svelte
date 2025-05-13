@@ -3,12 +3,12 @@
   import Item from "$lib/components/Item.svelte";
 
   import PageHeading from "../PageHeading.svelte";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { App } from "@capacitor/app";
   import { Capacitor } from "@capacitor/core";
   import Fab from "../FAB.svelte";
-  import { safeArea } from "$lib/SafeArea.svelte";
   import { displayPrettyDate, sortByField } from "$lib";
+  import { Plus } from "$lib/icon";
 
   let { onclose, oncreate, onupdate } = $props();
 
@@ -17,11 +17,13 @@
 
   $effect(() => {
     const Db = DB.getInstance();
+
     Db.Item.data.then((data) => {
       let future = [];
       let past = [];
       let no_date = [];
 
+      data = data.filter(({ archived }) => !archived);
       data = sortByField(data, "name", "asc");
       for (const item of data) {
         if (item.due_date) {
@@ -38,7 +40,7 @@
       past = sortByField(past, "due_date", "desc");
       future = sortByField(future, "due_date", "asc");
 
-      items = [...past, ...future, ...no_date];
+      items.push(...[...past, ...future, ...no_date]);
     });
   });
 
@@ -67,7 +69,7 @@
           class="rounded-md bg-[#5b758e] px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
           onclick={oncreate}
         >
-          <span class="h-5 w-5">{@render createIcon()}</span>
+          <Plus size={40} />
           <span class="text-[20px]">Skep 'n nuwe taak</span>
         </button>
       </div>
@@ -84,42 +86,28 @@
       {#if is_past_due && !is_still_past}
         <div class="text-sm font-semibold pt-1 text-red-600">Verby</div>
       {/if}
-
       {#if !is_same_date && !is_past_due}
         <div class="text-gray-200 text-sm font-semibold pt-1">
           {displayPrettyDate(item.due_date) || "Geen datum"}
         </div>
       {/if}
 
-      <div>
-        {#key item.id}
-          <Item
-            {item}
-            oncomplete={() => {
-              const Db = DB.getInstance();
-              Db.Item.delete(item.id);
-              items = items.filter(({ id }) => id !== item.id);
-            }}
-            onclick={() => onupdate(item)}
-          />
-        {/key}
-      </div>
+      <Item
+        {item}
+        oncomplete={() => {
+          const Db = DB.getInstance();
+          item.completed = true;
+          Db.Item.archive(item.id);
+          items = items.filter(({ id }) => id !== item.id);
+        }}
+        onclick={() => onupdate(item)}
+      />
     {/each}
   </div>
 </div>
 
 {#if !!items.length}
-  <Fab
-    onclick={oncreate}
-    class="mb-6 mr-6 bg-[#5b758e] hover:bg-[#476480]"
-    style="bottom: {safeArea.bottom}px; right: {safeArea.right}px"
-  >
-    {@render createIcon()}
+  <Fab onclick={oncreate} class="bottom-6 right-6 bg-[#5b758e] hover:bg-[#476480]" area_label="Skep 'n nuwe taak">
+    <Plus />
   </Fab>
 {/if}
-
-{#snippet createIcon()}
-  <svg class="text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
-  </svg>
-{/snippet}
