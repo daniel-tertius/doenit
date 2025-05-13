@@ -3,13 +3,14 @@
    * @typedef {Object} Props
    * @property {import('svelte/elements').MouseEventHandler<HTMLButtonElement>} onclick
    * @property {string} class
-   * @property {string} style
+   * @property {string} [style]
+   * @property {string} area_label
    * @property {'medium' | 'small'} [size='medium']
    * @property {*} children
    */
 
   /** @type {Props} */
-  let { onclick, children, size = "medium", ...rest } = $props();
+  let { onclick, children, size = "medium", area_label, ...rest } = $props();
 
   function getSize() {
     switch (size) {
@@ -28,7 +29,7 @@
 <button
   {onclick}
   type="button"
-  aria-label="Create new item"
+  aria-label={area_label || "FAB"}
   class="fixed rounded-full flex items-center justify-center shadow-lg {size_classes} {rest.class}"
   style={rest.style}
 >

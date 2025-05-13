@@ -4,14 +4,16 @@
   import PageHeading from "../PageHeading.svelte";
   import Fab from "../FAB.svelte";
   import { onDestroy, onMount } from "svelte";
-  import { safeArea } from "$lib/SafeArea.svelte";
   import { Capacitor } from "@capacitor/core";
   import { App } from "@capacitor/app";
+  import { Plus, Save, Times } from "$lib/icon";
+
+  /** @typedef {import('$lib/DB/DB').Item} Item */
 
   /**
    * @typedef {Object} Props
    * @property {import('svelte/elements').MouseEventHandler<HTMLButtonElement>} onclose
-   * @property {import('$lib/DB/DB').Item} [item]
+   * @property {Item} [item]
    */
 
   /** @type {Props} */
@@ -21,41 +23,49 @@
   let due_date = $state(item?.due_date || "");
   let completed = $state(!!item?.completed);
 
-  let priority = $state(item?.priority || 0);
+  // let priority = $state(item?.priority || 0);
   let error_message = $state("");
 
+  /**
+   * @param {Event} event
+   */
   function onsubmit(event) {
     event.preventDefault();
+
+    if (!name?.trim()) {
+      error_message = "Benoem jou taak";
+      return;
+    }
+
     if (item) {
       updateItem(item);
     } else {
       createItem();
     }
+
+    //@ts-ignore
+    onclose(event);
   }
 
   /**
    * @param {Item} item
    */
   async function updateItem(item) {
-    if (!name?.trim()) {
-      error_message = "Benoem jou taak";
-      return;
-    }
-
     const Db = DB.getInstance();
-    await Db.Item.update(item.id, { name, due_date });
-    onclose();
+    await Db.Item.update(item.id, { name, due_date, completed, archived: completed });
   }
 
   async function createItem() {
-    if (!name?.trim()) {
-      error_message = "Benoem jou taak";
-      return;
-    }
-
     const Db = DB.getInstance();
-    await Db.Item.create({ name, due_date, completed });
-    onclose();
+
+    /** @type {Omit<Item, "id" | "created_at">}*/
+    const new_item = {
+      name,
+      due_date,
+      completed,
+      archived: completed,
+    };
+    await Db.Item.create(new_item);
   }
 
   onDestroy(() => {
@@ -65,6 +75,7 @@
   onMount(() => {
     if (Capacitor.isNativePlatform()) {
       App.addListener("backButton", (event) => {
+        //@ts-ignore
         onclose(event);
       });
     }
@@ -117,7 +128,7 @@
     />
   </div>
 
-  <div>
+  <!-- <div>
     <label class="font-bold" for="priority">Prioriteit</label>
     <select
       id="priority"
@@ -128,30 +139,21 @@
       <option value="medium">Medium</option>
       <option value="high">Hoog</option>
     </select>
-  </div>
+  </div> -->
 
-  <button class="absolute bottom-2 p-2 w-full border border-[#233a50]/50 hover: rounded-lg bg-[#476480]">
-    <span class="font-bold">{item ? "Stoor" : "Skep"}</span>
+  <button
+    class="absolute bottom-2 p-2 w-full flex gap-1 justify-center border border-[#233a50]/50 hover: rounded-lg bg-[#476480]"
+  >
+    {#if item}
+      <Save />
+      <span class="font-bold text-gray-200">Stoor</span>
+    {:else}
+      <Plus size={20} />
+      <span class="font-bold text-gray-200">Skep</span>
+    {/if}
   </button>
 </form>
 
-<Fab
-  onclick={onclose}
-  class="mt-4 mr-4 bg-[#5b758e] hover:bg-[#476480]"
-  style="top: {safeArea.top}px; right: {safeArea.right}px"
-  size="small"
->
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#ffff"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  >
-    <line x1="18" y1="6" x2="6" y2="18"></line>
-    <line x1="6" y1="6" x2="18" y2="18"></line>
-  </svg>
+<Fab onclick={onclose} class="top-4 right-4 bg-[#5b758e] hover:bg-[#476480]" size="small" area_label="Sluit">
+  <Times size={20} />
 </Fab>
