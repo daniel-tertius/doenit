@@ -1,6 +1,5 @@
 import type { Item, Category } from "$lib/DB/DB";
 import { Preferences } from "@capacitor/preferences";
-import { tick } from "svelte";
 
 export class Table<T extends Item | Category> {
   private lock = Promise.resolve(); // Mutex for synchronization

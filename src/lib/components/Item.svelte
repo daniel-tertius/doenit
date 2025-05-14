@@ -1,6 +1,6 @@
 <script>
   import { displayDate } from "$lib";
-  import { fly } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
 
   /**
    * @typedef {Object} Props
@@ -17,7 +17,7 @@
   const is_past = $derived(new Date(item.due_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
 </script>
 
-<div transition:fly={{ x: "100%" }} class="relative min-h-9">
+<div class="relative min-h-9" out:fade in:slide>
   <button
     class="border rounded-lg flex flex-col items-start p-2 w-full h-full {is_past
       ? 'border-red-600/40 border-2 bg-red-500/10'
