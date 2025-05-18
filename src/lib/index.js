@@ -1,5 +1,5 @@
 /**
- * @param {string | Date} date
+ * @param {string | Date | number} date
  */
 export function displayDate(date) {
   if (!date) return "";
@@ -12,16 +12,17 @@ export function displayDate(date) {
 }
 
 /**
- * @param {string | Date} date
+ * @param {number | Date | string} date
  */
 export function formatDate(date) {
-  if (!date) return "";
+  if (!date) return 0;
 
   return new Date(date).toLocaleDateString("en-CA");
 }
 
 /**
- * @param {string | Date} date
+ * @param {number | Date | string | null} date
+ * @returns {string}
  */
 export function displayPrettyDate(date) {
   if (!date) return "";
@@ -32,11 +33,11 @@ export function displayPrettyDate(date) {
     return "Vandag";
   }
 
-  const tomorrow = formatDate(new Date(Date.now() + 86400000));
+  const tomorrow = formatDate(Date.now() + 86400000);
   if (date === tomorrow) {
     return "Môre";
   }
-  const dayAfterTomorrow = formatDate(new Date(Date.now() + 2 * 86400000));
+  const dayAfterTomorrow = formatDate(Date.now() + 2 * 86400000);
   if (date === dayAfterTomorrow) {
     return "Oormôre";
   }
@@ -47,13 +48,11 @@ export function displayPrettyDate(date) {
   thisWeekEnd.setDate(thisWeekEnd.getDate() + 6);
 
   const inputDate = new Date(date);
-  console.log("inputDate", date, inputDate);
   if (inputDate >= thisWeekStart && inputDate <= thisWeekEnd) {
     return "Hierdie week";
   }
 
   const nextMonthStart = new Date();
-  console.log("nextMonthStart", nextMonthStart);
   nextMonthStart.setMonth(nextMonthStart.getMonth() + 1, 1);
   nextMonthStart.setHours(0, 0, 0, 0);
   const nextMonthEnd = new Date(nextMonthStart);

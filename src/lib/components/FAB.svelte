@@ -17,7 +17,7 @@
       case "small":
         return "w-10 h-10 p-2";
       case "medium":
-        return "w-14 h-14 p-3";
+        return "w-12 h-12 p-2";
       default:
         return "w-14 h-14 p-3";
     }
@@ -30,7 +30,7 @@
   {onclick}
   type="button"
   aria-label={area_label || "FAB"}
-  class="fixed rounded-full flex items-center justify-center shadow-lg {size_classes} {rest.class}"
+  class="fixed transision-all duration-300 rounded-full flex items-center justify-center shadow-lg {size_classes} {rest.class}"
   style={rest.style}
 >
   {@render children()}

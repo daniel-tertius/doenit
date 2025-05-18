@@ -1,7 +1,7 @@
-import type { Item, Category } from "$lib/DB/DB";
+import type { Task, Category } from "$lib/DB/DB";
 import { Preferences } from "@capacitor/preferences";
 
-export class Table<T extends Item | Category> {
+export class Table<T extends Task | Category> {
   private lock = Promise.resolve(); // Mutex for synchronization
   private table_name: string;
 
@@ -58,21 +58,19 @@ export class Table<T extends Item | Category> {
   async create(item: Omit<T, "id" | "created_at">): Promise<T> {
     if (!item) throw new Error("Item is required");
 
-    return (this.lock = this.lock.then(async () => {
-      const data = await this.readAll();
-      const newItem = { ...item, created_at: new Date().toString(), id: this.generateUUID(data) } as T;
-      data[newItem.id] = newItem;
+    const data = await this.readAll();
+    const new_item = { ...item, created_at: new Date().toString(), id: this.generateUUID(data) } as T;
+    data[new_item.id] = new_item;
 
-      try {
-        await Preferences.set({
-          key: this.table_name,
-          value: JSON.stringify(data, null, 2),
-        });
-        return newItem;
-      } catch (error) {
-        throw new Error(`Failed to write to storage: ${error instanceof Error ? error.message : String(error)}`);
-      }
-    }));
+    try {
+      await Preferences.set({
+        key: this.table_name,
+        value: JSON.stringify(data, null, 2),
+      });
+      return new_item;
+    } catch (error) {
+      throw new Error(`Failed to write to storage: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 
   async read(id: string): Promise<T | undefined> {

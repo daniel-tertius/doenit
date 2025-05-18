@@ -1,0 +1,245 @@
+import { page } from "$app/state";
+import { sortByField } from "$lib";
+import { DB } from "$lib/DB/DB";
+import { SvelteSet } from "svelte/reactivity";
+
+/** @typedef {import('$lib/DB/DB').Task} Task */
+/** @typedef {import('$lib/DB/DB').Category} Category */
+
+class Data {
+  /**
+   * @type {Record<string, (date: Date, num?: number) => number>}
+   */
+  #REPEAT_INTERVALS = {
+    daily: (date, num = 1) => date.setDate(date.getDate() + 1 * num),
+    workdaily: (date) => {
+      const new_date = new Date(date);
+
+      const day_of_week = new_date.getDay();
+      if (day_of_week === 5) return date.setDate(date.getDate() + 3);
+      if (day_of_week === 6) return date.setDate(date.getDate() + 2);
+
+      return date.setDate(date.getDate() + 1);
+    },
+    weekly: (date, num = 1) => date.setDate(date.getDate() + 7 * num),
+    monthly: (date, num = 1) => date.setMonth(date.getMonth() + 1 * num),
+    yearly: (date, num = 1) => date.setFullYear(date.getFullYear() + 1 * num),
+  };
+
+  #DB = DB.getInstance();
+
+  /** @type {string[]} */
+  #selected_category_ids = $state([]);
+  /** @type {Task[]} */
+  #tasks = $state([]);
+  /** @type {Task[]} */
+  #all_tasks = $state([]);
+
+  /** @type {Category[]} */
+  #categories = $state([]);
+
+  /** @type {Set<string>} */
+  selected_tasks_hash = $state(new SvelteSet());
+
+  /** @type {Task | null} */
+  #just_completed_task = $state(null);
+
+  constructor() {
+    this.#DB.Task.data.then((data) => {
+      this.#all_tasks = data;
+
+      const is_home = page.url.pathname === "/";
+      this.#tasks = this.#all_tasks.filter(({ archived }) => (archived = !is_home));
+    });
+
+    this.#DB.Category.data.then((data) => {
+      this.#categories = data.filter(({ archived }) => !archived);
+    });
+  }
+
+  get tasks() {
+    return this.#sortByDueDate(this.#tasks);
+  }
+
+  /**
+   * @param {Task[]} value
+   */
+  set tasks(value) {
+    this.#tasks = value;
+  }
+
+  get selected_category_ids() {
+    return this.#selected_category_ids;
+  }
+  set selected_category_ids(value) {
+    this.#selected_category_ids = value;
+
+    this.#tasks = this.#all_tasks.filter((task) => {
+      if (task.archived) return false;
+      if (!this.#selected_category_ids.length) return true;
+
+      if (!task.category_id) return false;
+
+      return this.#selected_category_ids.includes(task.category_id);
+    });
+  }
+
+  get categories() {
+    return this.#categories;
+  }
+
+  set categories(value) {
+    value = this.#categories;
+  }
+
+  /**
+   * @param {Task | null} value
+   */
+  set just_completed_task(value) {
+    this.#just_completed_task = value;
+    setTimeout(() => {
+      if (!this.#just_completed_task || !value) return;
+      if (value.id !== this.#just_completed_task.id) return;
+      this.#just_completed_task = null;
+    }, 3000);
+  }
+
+  async refreshTasks() {
+    this.#all_tasks = await this.#DB.Task.data;
+
+    const is_home = page.url.pathname === "/";
+    this.#tasks = this.#all_tasks.filter(({ archived }) => (archived = !is_home));
+
+    return this.tasks;
+  }
+
+  /**
+   * @param {Task} task
+   */
+  async completeTask(task) {
+    if (!task) return;
+
+    const is_repeat_task = task.repeat_interval && task.due_date;
+    if (is_repeat_task) {
+      task.due_date = this.#getNextDueDate(task);
+      return this.#DB.Task.update(task.id, task);
+    }
+
+    this.#removeTask(task);
+
+    task.completed = true;
+    task.archived = true;
+
+    this.just_completed_task = task;
+    return this.#DB.Task.update(task.id, task);
+  }
+
+  /**
+   *
+   * @param {Task} task
+   */
+  async unCompleteTask(task) {
+    if (!task) return;
+
+    this.#removeTask(task);
+
+    task.completed = false;
+    task.archived = false;
+    await this.#DB.Task.update(task.id, task);
+  }
+
+  async undoCompleteTask() {
+    if (!this.#just_completed_task) return;
+
+    const id = this.#just_completed_task.id;
+    const item = await this.#DB.Task.read(this.#just_completed_task.id);
+    if (!item) return;
+
+    item.completed = false;
+    item.archived = false;
+    await this.#DB.Task.update(id, item);
+    this.#addTask(this.#just_completed_task);
+    this.just_completed_task = null;
+  }
+
+  /**
+   * @param {Omit<Task, "id" | "created_at">} task
+   */
+  async createTask(task) {
+    if (!task) return;
+
+    task.completed = false;
+    task.archived = false;
+
+    const new_task = await this.#DB.Task.create(task);
+    this.#addTask(new_task);
+
+    return task;
+  }
+
+  // HELPER FUNCTIONS
+
+  /**
+   * @param {Task} task
+   */
+  #removeTask(task) {
+    if (!task) return;
+
+    let index = this.#tasks.findIndex(({ id }) => id === task.id);
+    this.#tasks.splice(index, 1);
+    index = this.#all_tasks.findIndex(({ id }) => id === task.id);
+    this.#all_tasks.splice(index, 1);
+  }
+
+  /**
+   * @param {Task} task
+   */
+  #addTask(task) {
+    if (!task) return;
+
+    this.#tasks.push(task);
+    this.#all_tasks.push(task);
+
+    this.#tasks = this.#sortByDueDate(this.#tasks);
+  }
+
+  /**
+   * @param {Task[]} data
+   */
+  #sortByDueDate(data) {
+    let future = [];
+    let past = [];
+    let no_date = [];
+
+    data = sortByField(data, "name", "asc");
+    for (const task of data) {
+      if (task.due_date) {
+        if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
+          past.push(task);
+        } else {
+          future.push(task);
+        }
+      } else {
+        no_date.push(task);
+      }
+    }
+
+    past = sortByField(past, "due_date", "desc");
+    future = sortByField(future, "due_date", "asc");
+
+    return [...past, ...future, ...no_date];
+  }
+
+  /**
+   * @param {Task} task
+   */
+  #getNextDueDate(task) {
+    if (!task.repeat_interval || !task.due_date) return null;
+
+    const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
+
+    return calcNextDay(new Date(task.due_date), task.repeat_interval_number);
+  }
+}
+
+export const data = new Data();

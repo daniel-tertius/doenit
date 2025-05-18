@@ -1,19 +1,23 @@
 <script>
   import { fly } from "svelte/transition";
   import { DB } from "$lib/DB/DB";
-  import PageHeading from "$lib/components/PageHeading.svelte";
-  import Fab from "$lib/components/FAB.svelte";
-  import { onMount } from "svelte";
-  import { Capacitor } from "@capacitor/core";
-  import { App } from "@capacitor/app";
-  import { Plus, Save, Times } from "$lib/icon";
+  import { Plus } from "$lib/icon";
   import { goto } from "$app/navigation";
+  import { data } from "../Data.svelte";
 
-  /** @typedef {import('$lib/DB/DB').Item} Item */
+  /** @typedef {import('$lib/DB/DB').Task} Task */
 
-  let name = $state("");
-  let due_date = $state("");
-  let completed = $state(false);
+  /** @type {Omit<Task, "id" | "created_at">}*/
+  let task = {
+    name: "",
+    due_date: null,
+    completed: false,
+    repeat_interval: "",
+    repeat_interval_number: 1,
+    archived: false,
+    category_id: "",
+  };
+
   let error_message = $state("");
 
   /**
@@ -21,54 +25,25 @@
    */
   async function onsubmit(event) {
     event.preventDefault();
-
-    if (!name?.trim()) {
+    if (!task.name?.trim()) {
       error_message = "Benoem jou taak";
       return;
     }
 
-    const Db = DB.getInstance();
+    await data.createTask(task);
 
-    /** @type {Omit<Item, "id" | "created_at">}*/
-    const new_item = {
-      name,
-      due_date,
-      completed,
-      archived: completed,
-    };
-    await Db.Item.create(new_item);
-
-    //@ts-ignore
-    onclose(event);
-  }
-
-  onMount(() => {
-    if (Capacitor.isNativePlatform()) {
-      App.addListener("backButton", (event) => {
-        //@ts-ignore
-        onclose(event);
-      });
-    }
-
-    return () => {
-      App.removeAllListeners();
-    };
-  });
-
-  async function onclose() {
     await goto("/");
   }
 </script>
 
-<form {onsubmit} transition:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white h-full relative">
-  <PageHeading>Skep 'n taak</PageHeading>
+<form {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
       id="name"
       autofocus
       oninput={() => (error_message = "")}
-      bind:value={name}
+      bind:value={task.name}
       type="text"
       placeholder="Gee jou taak 'n naam"
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] invalid:border-red-500"
@@ -87,33 +62,23 @@
       id="date"
       type="date"
       placeholder="Kies 'n datum"
-      bind:value={due_date}
+      bind:value={task.due_date}
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
     />
   </div>
 
-  <div class="flex justify-between items-center h-11">
-    <label class="font-bold" for="completed">Voltooi</label>
-    <input
-      id="completed"
-      type="checkbox"
-      bind:checked={completed}
-      class="bg-[#233a50]/50 p-2 w-5 h-5 rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-    />
+  <div>
+    <label class="font-bold" for="category">Kategorie</label>
+    <select
+      id="category"
+      bind:value={task.category_id}
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
+    >
+      {#each data.categories as category (category.id)}
+        <option value={category.id}>{category.name}</option>
+      {/each}
+    </select>
   </div>
-
-  <!-- <div>
-      <label class="font-bold" for="priority">Prioriteit</label>
-      <select
-        id="priority"
-        bind:value={priority}
-        class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-      >
-        <option value="low">Laag</option>
-        <option value="medium">Medium</option>
-        <option value="high">Hoog</option>
-      </select>
-    </div> -->
 
   <button
     class="absolute bottom-2 p-4 w-full flex gap-1 justify-center border border-[#233a50]/50 hover: rounded-lg bg-[#476480]"
@@ -122,7 +87,3 @@
     <span class="font-bold text-gray-200">Skep</span>
   </button>
 </form>
-
-<Fab onclick={onclose} class="top-4 right-4 bg-[#5b758e] hover:bg-[#476480]" size="small" area_label="Sluit">
-  <Times size={20} />
-</Fab>

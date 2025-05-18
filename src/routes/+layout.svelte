@@ -1,9 +1,80 @@
 <script>
+  import { page } from "$app/state";
+  import CreateItemButton from "$lib/components/CreateItemButton.svelte";
+  import HomeButton from "$lib/components/HomeButton.svelte";
+  import NavbarButton from "$lib/components/NavbarButton.svelte";
+  import PageHeading from "$lib/components/PageHeading.svelte";
+
+  import { browser } from "$app/environment";
   import "../app.css";
+  import CategoryFilter from "$lib/components/CategoryFilter.svelte";
+  import { data } from "./Data.svelte";
+  import { onMount } from "svelte";
+  import { Capacitor } from "@capacitor/core";
+  import { App } from "@capacitor/app";
+  import { goto } from "$app/navigation";
+
+  let { children } = $props();
+
+  const is_home = $derived(page.url.pathname === "/");
+
+  let platform = $state("Unknown");
+  let androidVersion = $state(null);
+
+  $effect(() => {
+    if (browser) {
+      const userAgent = navigator.userAgent;
+      platform = userAgent;
+
+      // Extract Android version if present
+      const androidMatch = userAgent.match(/Android\s([0-9\.]+)/);
+      if (androidMatch) {
+        androidVersion = androidMatch[1];
+      }
+
+      // You could also use feature detection for specific capabilities
+      // instead of relying just on user agent strings
+    }
+  });
+
+  onMount(() => {
+    if (Capacitor.isNativePlatform()) {
+      App.addListener("backButton", (event) => {
+        if (is_home) {
+          App.exitApp();
+        } else {
+          goto("/");
+        }
+      });
+    }
+
+    return () => {
+      App.removeAllListeners();
+    };
+  });
 </script>
 
-<main class="min-h-screen flex bg-[#223a51]">
-  <div class="bg-[#325372] grow relative max-w-[1000px] mx-auto pt-5 px-2">
-    <slot />
+<PageHeading />
+<main class="h-[calc(100dvh-146px)] flex flex-col bg-[#325372] transition">
+  <div class="grow flex flex-col relative max-w-[1000px] md:mx-auto p-2 overflow-auto">
+    {@render children()}
   </div>
 </main>
+
+<div class="relative border-t-2 border-[#d6dde3] p-5 bg-[#325372]">
+  <div class="flex gap-1 text-[#d6dde3] w-[100dwv] h-10 justify-between">
+    <NavbarButton />
+
+    {#if is_home}
+      <CategoryFilter all_categories={data.categories} bind:categories={data.selected_category_ids} />
+    {/if}
+
+    <CreateItemButton />
+    <HomeButton />
+  </div>
+</div>
+
+<div class="text-wrap font-mono">
+  {platform}
+  {androidVersion}
+</div>
