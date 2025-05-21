@@ -1,14 +1,11 @@
 <script>
   import { fly } from "svelte/transition";
   import { DB } from "$lib/DB/DB";
-  import Fab from "$lib/components/FAB.svelte";
   import { onMount } from "svelte";
   import { Capacitor } from "@capacitor/core";
   import { App } from "@capacitor/app";
-  import { Plus, Save, Times } from "$lib/icon";
+  import { Plus, Save } from "$lib/icon";
   import { goto } from "$app/navigation";
-
-  /** @typedef {import('$lib/DB/DB').Item} Item */
 
   let { data } = $props();
   let item = data.item;
@@ -37,7 +34,7 @@
     }
 
     const Db = DB.getInstance();
-    await Db.Item.update(item.id, {
+    await Db.Task.update(item.id, {
       name,
       due_date,
       completed,
@@ -162,7 +159,3 @@
     {/if}
   </button>
 </form>
-
-<!-- <Fab onclick={onclose} class="top-2 right-2 bg-[#5b758e] hover:bg-[#476480]" size="small" area_label="Sluit">
-  <Times size={20} />
-</Fab> -->

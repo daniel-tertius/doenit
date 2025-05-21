@@ -19,21 +19,11 @@
   const is_home = $derived(page.url.pathname === "/");
 
   let platform = $state("Unknown");
-  let androidVersion = $state(null);
 
   $effect(() => {
     if (browser) {
       const userAgent = navigator.userAgent;
       platform = userAgent;
-
-      // Extract Android version if present
-      const androidMatch = userAgent.match(/Android\s([0-9\.]+)/);
-      if (androidMatch) {
-        androidVersion = androidMatch[1];
-      }
-
-      // You could also use feature detection for specific capabilities
-      // instead of relying just on user agent strings
     }
   });
 
@@ -76,5 +66,4 @@
 
 <div class="text-wrap font-mono">
   {platform}
-  {androidVersion}
 </div>

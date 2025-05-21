@@ -9,6 +9,7 @@ import Check from "./Check.svelte";
 import Restore from "./Restore.svelte";
 import Categories from "./Categories.svelte";
 import Trash from "./Trash.svelte";
+import Back from "./Back.svelte";
 import DownChevron from "./DownChevron.svelte";
 
-export { Plus, Save, Times, Loading, Undo, Burger, Home, Check, Restore, Categories, Trash, DownChevron };
+export { Plus, Save, Times, Loading, Undo, Burger, Home, Check, Restore, Categories, Trash, DownChevron, Back };

@@ -94,13 +94,20 @@ export class Table<T extends Task | Category> {
     return data[id];
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string | string[]): Promise<void> {
     if (typeof window === "undefined") return;
 
     const data = await this.readAll();
-    if (!data[id]) console.error(`Item with id ${id} not found`);
 
-    delete data[id];
+    let ids = Array.isArray(id) ? id : [id];
+    let ids_not_there = ids.filter((id) => !data[id]);
+    console.log("ids_not_there", ids_not_there);
+    if (!!ids_not_there.length) {
+      console.error(`Item(s) with id(s) ${ids_not_there.join(", ")} not found`);
+      return;
+    }
+
+    ids.forEach((id) => delete data[id]);
 
     await Preferences.set({
       key: this.table_name,

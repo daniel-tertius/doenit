@@ -31,20 +31,21 @@
 
     category = await Db.Category.read(item.category_id);
   });
-
 </script>
 
 <div class="relative min-h-10" out:fade in:slide={{ delay: 300 }}>
   <button
     class="border border-white rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !item.completed
       ? 'border-red-600/40! border-2 bg-red-500/10'
-      : ''} {is_selected ? 'bg-[#223a51]' : ''}"
+      : ''}"
+    class:bg-[#223a51]={is_selected}
     {onclick}
     use:longpress
-    onlong={onlongpress}
+    {onlongpress}
   >
     <span
-      class="h-full ml-7 text-left text-gray-200 font-semibold line-clamp-1 my-auto {item.name || 'opacity-50'}"
+      class="h-full ml-7 text-left text-gray-200 font-semibold line-clamp-1 my-auto {item.name ||
+        'opacity-50'} overflow-hidden"
       class:line-through={item.completed}
       class:opacity-50={item.completed}
     >
@@ -62,7 +63,9 @@
       {/if}
 
       {#if category}
-        <div class="text-left rounded-full bg-[#223a51] border border-[#28425b] px-1.5 w-fit flex items-center h-fit">
+        <div
+          class="text-left rounded-full bg-[#223a51] border border-[#28425b] px-3 w-fit flex items-center h-fit overflow-hidden"
+        >
           <span class="text-gray-200">{category.name}</span>
         </div>
       {/if}

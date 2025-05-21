@@ -1,6 +1,5 @@
 <script>
   import { fly } from "svelte/transition";
-  import { DB } from "$lib/DB/DB";
   import { Plus } from "$lib/icon";
   import { goto } from "$app/navigation";
   import { data } from "../Data.svelte";

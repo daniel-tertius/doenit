@@ -6,7 +6,7 @@ import { SvelteSet } from "svelte/reactivity";
 /** @typedef {import('$lib/DB/DB').Task} Task */
 /** @typedef {import('$lib/DB/DB').Category} Category */
 
-class Data {
+export class Data {
   /**
    * @type {Record<string, (date: Date, num?: number) => number>}
    */
@@ -45,16 +45,24 @@ class Data {
   #just_completed_task = $state(null);
 
   constructor() {
-    this.#DB.Task.data.then((data) => {
-      this.#all_tasks = data;
+    // this.init();
+  }
 
-      const is_home = page.url.pathname === "/";
-      this.#tasks = this.#all_tasks.filter(({ archived }) => (archived = !is_home));
-    });
+  async init() {
+    const is_home = page.url.pathname === "/";
 
-    this.#DB.Category.data.then((data) => {
-      this.#categories = data.filter(({ archived }) => !archived);
-    });
+    this.#all_tasks = await this.#DB.Task.data;
+    this.#tasks = this.#all_tasks.filter(({ archived }) => !!archived === !is_home);
+
+    const category_data = await this.#DB.Category.data;
+    this.#categories = category_data.filter(({ archived }) => !archived);
+  }
+
+  get all_tasks() {
+    return this.#all_tasks;
+  }
+  set all_tasks(value) {
+    this.#all_tasks = value;
   }
 
   get tasks() {
@@ -105,10 +113,10 @@ class Data {
   }
 
   async refreshTasks() {
-    this.#all_tasks = await this.#DB.Task.data;
+    this.all_tasks = await this.#DB.Task.data;
 
     const is_home = page.url.pathname === "/";
-    this.#tasks = this.#all_tasks.filter(({ archived }) => (archived = !is_home));
+    this.tasks = this.#all_tasks.filter(({ archived }) => archived == !is_home);
 
     return this.tasks;
   }
@@ -163,6 +171,19 @@ class Data {
   }
 
   /**
+   *
+   * @param {string[]} task_ids
+   */
+  async deleteTasks(task_ids) {
+    if (!task_ids?.length) return;
+
+    console.log("Deleting tasks", task_ids);
+    this.#removeTasks(task_ids);
+
+    await this.#DB.Task.delete(task_ids);
+  }
+
+  /**
    * @param {Omit<Task, "id" | "created_at">} task
    */
   async createTask(task) {
@@ -189,6 +210,17 @@ class Data {
     this.#tasks.splice(index, 1);
     index = this.#all_tasks.findIndex(({ id }) => id === task.id);
     this.#all_tasks.splice(index, 1);
+  }
+
+  /**
+   * @param {string[]} task_ids
+   */
+  #removeTasks(task_ids) {
+    if (!task_ids?.length) return;
+
+    this.#tasks = this.#tasks.filter((task) => {
+      return !task_ids.some((id) => id === task.id);
+    });
   }
 
   /**
@@ -241,5 +273,4 @@ class Data {
     return calcNextDay(new Date(task.due_date), task.repeat_interval_number);
   }
 }
-
 export const data = new Data();

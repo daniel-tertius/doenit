@@ -3,11 +3,30 @@
   import { data } from "../Data.svelte";
 
   data.refreshTasks();
-  // $inspect(data.selected_tasks_hash);
+
+  function deleteAll() {
+    data.deleteTasks([...data.selected_tasks_hash.values()]);
+    data.selected_tasks_hash.clear();
+  }
 </script>
 
 <div class="space-y-1.5">
-  {#each data.tasks as task, i (task.id)}
+  {#if data.selected_tasks_hash.size}
+    <div>
+      <div class="text-sm font-semibold pt-1 text-gray-200">{data.selected_tasks_hash.size} Gekies</div>
+      <button class="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors" onclick={deleteAll}>
+        Vee uit
+      </button>
+    </div>
+  {/if}
+
+  {#if data.tasks.length === 0}
+    <div class="flex flex-col items-center gap-4 py-12">
+      <div class="text-lg text-gray-400">Jou lys is skoon!</div>
+    </div>
+  {/if}
+
+  {#each data.tasks as task (task.id)}
     <Item
       item={task}
       onselect={async () => {
