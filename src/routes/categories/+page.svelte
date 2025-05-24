@@ -2,7 +2,7 @@
   import { Trash } from "$lib/icon";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
-  import { fade, slide } from "svelte/transition";
+  import { fly, slide } from "svelte/transition";
   import { sortByField } from "$lib";
   import Plus from "$lib/icon/Plus.svelte";
 
@@ -20,14 +20,14 @@
     categories = await Db.Category.data;
     categories = categories.filter(({ archived }) => !archived);
 
-    let default_category = categories.find((category) => category.name === DEFAULT_NAME);
+    let default_category = categories.find(({ name }) => name === DEFAULT_NAME);
     if (!default_category) {
       new_category_name = DEFAULT_NAME;
       await createCategory(new Event("submit"));
-      default_category = categories.find((category) => category.name === DEFAULT_NAME);
+      default_category = categories.find(({ name }) => name === DEFAULT_NAME);
     }
 
-    default_id = default_category?.id ?? null;
+    default_id = default_category?.id ?? "";
   });
 
   /**
@@ -42,6 +42,9 @@
     categories = categories.filter((category) => category.id !== id);
   }
 
+  /**
+   * @param {Event} e
+   */
   async function createCategory(e) {
     e.preventDefault();
 
@@ -86,7 +89,7 @@
 
   <div class="flex flex-col space-y-2">
     {#each categories as category (category.id)}
-      <div in:slide out:fade class="flex items-center justify-between p-2 bg-[#5b758e] rounded-md">
+      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-[#5b758e] rounded-md">
         <div class="text-lg font-semibold text-white">{category.name}</div>
 
         {#if category.name != DEFAULT_NAME}

@@ -25,22 +25,23 @@ export function formatDate(date) {
  * @returns {string}
  */
 export function displayPrettyDate(date) {
-  if (!date) return "";
+  if (!date) return "Geen datum";
+
+  // Check if the date is in the past
+  const date_obj = new Date(date);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  if (date_obj < now) return "Verby";
 
   date = formatDate(date);
   const today = formatDate(new Date());
-  if (date === today) {
-    return "Vandag";
-  }
+  if (date === today) return "Vandag";
 
   const tomorrow = formatDate(Date.now() + 86400000);
-  if (date === tomorrow) {
-    return "Môre";
-  }
-  const dayAfterTomorrow = formatDate(Date.now() + 2 * 86400000);
-  if (date === dayAfterTomorrow) {
-    return "Oormôre";
-  }
+  if (date === tomorrow) return "Môre";
+
+  const day_after_tomorrow = formatDate(Date.now() + 2 * 86400000);
+  if (date === day_after_tomorrow) return "Oormôre";
 
   const thisWeekStart = new Date();
   thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
@@ -61,11 +62,7 @@ export function displayPrettyDate(date) {
     return "Volgende Maand";
   }
 
-  return new Date(date).toLocaleDateString("af-ZA", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  return "Later";
 }
 
 /**

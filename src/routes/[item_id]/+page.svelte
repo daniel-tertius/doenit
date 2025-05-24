@@ -4,23 +4,25 @@
   import { onMount } from "svelte";
   import { Capacitor } from "@capacitor/core";
   import { App } from "@capacitor/app";
-  import { Plus, Save } from "$lib/icon";
   import { goto } from "$app/navigation";
+  import { data as Data } from "../Data.svelte.js";
+
+  /** @typedef {import('$lib/DB/DB').Category} Category */
 
   let { data } = $props();
-  let item = data.item;
-  if (!item) goto("/");
+  let task = data.task;
+  if (!task) goto("/");
 
-  let name = $state(item?.name || "");
-  let due_date = $state(item?.due_date);
-  let completed = $state(!!item?.completed);
+  let name = $state(task?.name || "");
+  let due_date = $state(task?.due_date ? new Date(task?.due_date).toLocaleDateString("en-CA") : null);
+  let completed = $state(!!task?.completed);
   let error_message = $state("");
-  let repeat_interval = $state(item?.repeat_interval || "");
-  let repeat_interval_number = $state(item?.repeat_interval_number || 1);
+  let repeat_interval = $state(task?.repeat_interval || "");
+  let repeat_interval_number = $state(task?.repeat_interval_number || 1);
 
-  /** @type {import('$lib/DB/DB').Category[]} */
+  /** @type {Category[]} */
   let categories = $state([]);
-  let category_id = $state(item?.category_id || "");
+  let category_id = $state(task?.category_id);
 
   /**
    * @param {Event} event
@@ -33,8 +35,8 @@
       return;
     }
 
-    const Db = DB.getInstance();
-    await Db.Task.update(item.id, {
+    await Data.updateTask({
+      ...task,
       name,
       due_date,
       completed,
@@ -50,8 +52,8 @@
 
   onMount(async () => {
     const Db = DB.getInstance();
-    categories = await Db.Category.data;
-    categories = categories.filter(({ archived }) => !archived);
+    const all_categories = await Db.Category.data;
+    categories = all_categories.filter(({ archived }) => !archived);
   });
 
   onMount(() => {
@@ -72,7 +74,7 @@
   }
 </script>
 
-<form {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
@@ -108,8 +110,10 @@
     <select
       id="category"
       bind:value={category_id}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
+      class:text-gray-400={!category_id}
     >
+      <option value="">Kies 'n kategorie (opsioneel)</option>
       {#each categories as category (category.id)}
         <option value={category.id}>{category.name}</option>
       {/each}
@@ -131,7 +135,7 @@
           <option value="weekly">Weekliks</option>
           <option value="monthly">Maandeliks</option>
           <option value="yearly">Jaarliks</option>
-          <option value="other">Ander</option>
+          <!-- <option value="other">Ander</option> -->
         </select>
       </div>
     </div>
@@ -146,16 +150,4 @@
       class="bg-[#233a50]/50 p-2 w-5 h-5 rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
     />
   </div>
-
-  <button
-    class="absolute bottom-0 p-4 w-full flex gap-1 justify-center border border-[#233a50]/50 hover: rounded-lg bg-[#476480]"
-  >
-    {#if item}
-      <Save />
-      <span class="font-bold text-gray-200">Stoor</span>
-    {:else}
-      <Plus size={20} />
-      <span class="font-bold text-gray-200">Skep</span>
-    {/if}
-  </button>
 </form>

@@ -3,6 +3,7 @@
   import { slide } from "svelte/transition";
 
   let { all_categories = [], categories = $bindable() } = $props();
+
   let showDropdown = $state(false);
 </script>
 

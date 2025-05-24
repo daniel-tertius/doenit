@@ -45,7 +45,7 @@
 </script>
 
 <PageHeading />
-<main class="h-[calc(100dvh-146px)] flex flex-col bg-[#325372] transition">
+<main class="h-[calc(100dvh-146px)] flex flex-col bg-[#325372]">
   <div class="grow flex flex-col relative max-w-[1000px] md:mx-auto p-2 overflow-auto">
     {@render children()}
   </div>
@@ -64,6 +64,6 @@
   </div>
 </div>
 
-<div class="text-wrap font-mono">
-  {platform}
-</div>
+<!-- <div class="text-wrap font-mono">
+  {platform} // Mozilla/5.0 (Linux; Android 15;
+</div> -->

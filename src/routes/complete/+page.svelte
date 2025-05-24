@@ -1,5 +1,6 @@
 <script>
-  import Item from "$lib/components/Item.svelte";
+  import { goto } from "$app/navigation";
+  import Item from "$lib/components/item/Item.svelte";
   import { data } from "../Data.svelte";
 
   data.refreshTasks();
@@ -28,7 +29,7 @@
 
   {#each data.tasks as task (task.id)}
     <Item
-      item={task}
+      {task}
       onselect={async () => {
         data.unCompleteTask(task);
       }}
@@ -37,8 +38,8 @@
 
         data.selected_tasks_hash.add(task.id);
       }}
-      onclick={() => {
-        if (!data.selected_tasks_hash.size) return;
+      onclick={async () => {
+        if (!data.selected_tasks_hash.size) return goto(`/${task.id}`);
 
         if (data.selected_tasks_hash.has(task.id)) {
           data.selected_tasks_hash.delete(task.id);

@@ -1,6 +1,7 @@
 import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { DB } from "$lib/DB/DB";
+import { tick } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 
 /** @typedef {import('$lib/DB/DB').Task} Task */
@@ -45,7 +46,7 @@ export class Data {
   #just_completed_task = $state(null);
 
   constructor() {
-    // this.init();
+    this.init();
   }
 
   async init() {
@@ -61,6 +62,7 @@ export class Data {
   get all_tasks() {
     return this.#all_tasks;
   }
+
   set all_tasks(value) {
     this.#all_tasks = value;
   }
@@ -79,6 +81,7 @@ export class Data {
   get selected_category_ids() {
     return this.#selected_category_ids;
   }
+
   set selected_category_ids(value) {
     this.#selected_category_ids = value;
 
@@ -127,19 +130,44 @@ export class Data {
   async completeTask(task) {
     if (!task) return;
 
+    // If a task is being completed, wait for the animation to finish
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    this.#removeTask(task);
+
     const is_repeat_task = task.repeat_interval && task.due_date;
     if (is_repeat_task) {
       task.due_date = this.#getNextDueDate(task);
-      return this.#DB.Task.update(task.id, task);
+      let new_task = await this.#DB.Task.update(task.id, task);
+      this.#addTask(new_task);
+      return;
     }
-
-    this.#removeTask(task);
 
     task.completed = true;
     task.archived = true;
 
     this.just_completed_task = task;
     return this.#DB.Task.update(task.id, task);
+  }
+
+  /**
+   * @param {Task} task
+   */
+  async updateTask(task) {
+    if (!task) return;
+
+    task = await this.#DB.Task.update(task.id, task);
+
+    let index = this.#tasks.findIndex(({ id }) => id === task.id);
+    if (index === -1) return;
+    this.#tasks[index] = task;
+
+    index = this.#all_tasks.findIndex(({ id }) => id === task.id);
+    if (index === -1) return;
+    this.#all_tasks[index] = task;
+
+    this.#tasks = this.#sortByDueDate(this.#tasks);
+
+    return;
   }
 
   /**
@@ -242,11 +270,14 @@ export class Data {
     let future = [];
     let past = [];
     let no_date = [];
+    let today = [];
 
     data = sortByField(data, "name", "asc");
     for (const task of data) {
       if (task.due_date) {
-        if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
+        if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) === new Date().setUTCHours(0, 0, 0, 0)) {
+          today.push(task);
+        } else if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
           past.push(task);
         } else {
           future.push(task);
@@ -259,7 +290,7 @@ export class Data {
     past = sortByField(past, "due_date", "desc");
     future = sortByField(future, "due_date", "asc");
 
-    return [...past, ...future, ...no_date];
+    return [...past, ...today, ...future, ...no_date];
   }
 
   /**

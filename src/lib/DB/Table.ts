@@ -55,7 +55,7 @@ export class Table<T extends Task | Category> {
     return all_data[new_id] ? this.generateUUID(all_data) : new_id;
   }
 
-  async create(item: Omit<T, "id" | "created_at">): Promise<T> {
+  async create(item: Omit<T, "id" | "created_at" | "archived">): Promise<T> {
     if (!item) throw new Error("Item is required");
 
     const data = await this.readAll();
