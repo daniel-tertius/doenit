@@ -177,6 +177,8 @@ export class Data {
   async unCompleteTask(task) {
     if (!task) return;
 
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
     this.#removeTask(task);
 
     task.completed = false;
