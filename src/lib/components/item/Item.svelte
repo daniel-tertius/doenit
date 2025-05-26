@@ -24,7 +24,9 @@
   const { task: original_task, onselect = () => {}, onclick = () => {}, onlongpress = () => {} } = $props();
 
   const task = $state({ ...original_task });
-  const is_past = $derived(!!task.due_date && new Date(task.due_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
+  const is_past = $derived(
+    !!task.due_date && new Date(task.due_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
+  );
   const is_selected = $derived(data.selected_tasks_hash.has(task.id));
 
   let checkoff_animation = $state(false);
@@ -38,13 +40,17 @@
   });
 </script>
 
+<!-- {task.repeat_interval_number}
+{task.repeat_interval} -->
 <div
-  class="relative min-h-10 transition-all duration-600 delay-350 {checkoff_animation ? 'translate-x-[80%] **:opacity-50' : ''}"
-  in:slide={{ delay: 700 }}
+  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm shadow-gray-700 bg-[#476480] {checkoff_animation
+    ? 'translate-x-[80%] **:opacity-50'
+    : ''}"
+  in:slide={{ delay: 200 }}
 >
   <button
     class="border border-white rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
-      ? 'border-red-600/40! border-2 bg-red-500/10'
+      ? 'border-red-600/40! border-2 bg-red-500/20!'
       : ''}"
     class:border={!task.completed || is_selected}
     class:bg-[#476480]!={is_selected}
@@ -68,7 +74,7 @@
 
       {#if category}
         <div
-          class="text-left rounded-full bg-[#725132] border border-[#28425b] px-3 w-fit flex items-center h-fit overflow-hidden"
+          class="text-left rounded-full bg-[#725132] border border-[#67492d] px-3 w-fit flex items-center h-fit overflow-hidden"
           class:opacity-50={task.completed}
         >
           <span class="text-gray-200">{category.name}</span>

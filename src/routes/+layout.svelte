@@ -56,7 +56,7 @@
     <NavbarButton />
 
     {#if is_home}
-      <CategoryFilter all_categories={data.categories} bind:categories={data.selected_category_ids} />
+      <CategoryFilter bind:categories={data.selected_category_ids} />
     {/if}
 
     <CreateItemButton />

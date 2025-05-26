@@ -14,7 +14,7 @@
 
   /** @type {Props} */
   let {
-    open = false,
+    open = $bindable(false),
     title = "",
     closeOnEscape = true,
     closeOnOutsideClick = true,
@@ -50,19 +50,20 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if open}
-  <div class="modal-backdrop" onclick={handleOutsideClick} transition:fade={{ duration: 200 }}>
-    <div class="modal-content" transition:scale={{ start: 0.95, duration: 200 }}>
-      <div class="modal-header">
-        <h2>{title}</h2>
-        <button class="close-button" onclick={close} aria-label="Close modal">✕</button>
-      </div>
-      <div class="modal-body">
-        {@render children?.()}
-      </div>
-      <div class="modal-footer">
-        <button class="cancel-button" onclick={close}>Cancel</button>
-        {@render footer?.()}
-      </div>
+  <button class="modal-backdrop" aria-label="backdrop" onclick={handleOutsideClick} transition:fade={{ duration: 200 }}>
+  </button>
+
+  <div class="modal-content" transition:scale={{ start: 0.95, duration: 200 }}>
+    <div class="modal-header">
+      <h2 class="font-bold">{title}</h2>
+      <button class="close-button" onclick={close} aria-label="Close modal">✕</button>
+    </div>
+    <div class="modal-body">
+      {@render children?.()}
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-button" onclick={close}>Cancel</button>
+      {@render footer?.()}
     </div>
   </div>
 {/if}
@@ -78,10 +79,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 100;
   }
 
   .modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 101;
     background: white;
     border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -115,7 +121,6 @@
   }
 
   .modal-body {
-    padding: 1rem;
     overflow-y: auto;
     flex: 1 1 auto;
   }
@@ -124,7 +129,7 @@
     padding: 1rem;
     border-top: 1px solid #e9ecef;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     gap: 0.5rem;
   }
 

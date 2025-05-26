@@ -1,10 +1,17 @@
 <script>
   import { DownChevron } from "$lib/icon";
+  import { onMount } from "svelte";
   import { slide } from "svelte/transition";
+  import { data } from "../../routes/Data.svelte";
 
-  let { all_categories = [], categories = $bindable() } = $props();
+  let { categories = $bindable() } = $props();
 
   let showDropdown = $state(false);
+
+  onMount(async () => {
+    await data.refreshCategories();
+    console.log("Categories refreshed");
+  });
 </script>
 
 <svelte:window onclick={() => (showDropdown = false)} />
@@ -15,7 +22,7 @@
       transition:slide
       class="absolute bottom-full left-0 right-0 mt-1 bg-[#325372] border-2 border-[#d6dde3] rounded max-h-[50dvh] overflow-y-auto z-10"
     >
-      {#each all_categories as { id, name } (id)}
+      {#each data.categories as { id, name } (id)}
         <button class="w-full flex items-center gap-1" onclick={(e) => e.stopPropagation()}>
           <label for={id} class="w-full flex p-2 hover:bg-[#3d648a] cursor-pointer text-left">
             <input {id} type="checkbox" bind:group={categories} value={id} class="mr-2" />

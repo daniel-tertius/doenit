@@ -5,10 +5,10 @@
   import { fly, slide } from "svelte/transition";
   import { sortByField } from "$lib";
   import Plus from "$lib/icon/Plus.svelte";
+  import { data } from "../Data.svelte";
 
   const DEFAULT_NAME = "Verstek";
-  /** @type {import('$lib/DB/DB').Category[]} */
-  let categories = $state([]);
+
   let new_category_name = $state("");
   /** @type {string?} */
   let default_id;
@@ -16,15 +16,13 @@
   let error_message = $state("");
 
   onMount(async () => {
-    const Db = DB.getInstance();
-    categories = await Db.Category.data;
-    categories = categories.filter(({ archived }) => !archived);
+    await data.refreshCategories();
 
-    let default_category = categories.find(({ name }) => name === DEFAULT_NAME);
+    let default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
     if (!default_category) {
       new_category_name = DEFAULT_NAME;
       await createCategory(new Event("submit"));
-      default_category = categories.find(({ name }) => name === DEFAULT_NAME);
+      default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
     }
 
     default_id = default_category?.id ?? "";
@@ -39,7 +37,10 @@
     const Db = DB.getInstance();
     await Db.Category.archive(id);
 
-    categories = categories.filter((category) => category.id !== id);
+    const index = data.categories.findIndex((category) => category.id === id);
+    if (index !== -1) {
+      data.categories.splice(index, 1);
+    }
   }
 
   /**
@@ -56,8 +57,8 @@
     const Db = DB.getInstance();
     const new_category = await Db.Category.create({ name: new_category_name.trim() });
 
-    categories.push(new_category);
-    sortByField(categories, "name");
+    data.categories.push(new_category);
+    data.categories = sortByField(data.categories, "name");
     new_category_name = "";
   }
 </script>
@@ -88,7 +89,7 @@
   </div>
 
   <div class="flex flex-col space-y-2">
-    {#each categories as category (category.id)}
+    {#each data.categories as category (category.id)}
       <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-[#5b758e] rounded-md">
         <div class="text-lg font-semibold text-white">{category.name}</div>
 

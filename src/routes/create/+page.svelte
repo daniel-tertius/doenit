@@ -2,7 +2,7 @@
   import { fly, slide } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data } from "../Data.svelte";
-  import Modal from "$lib/components/modal/Modal.svelte";
+  import Herhaling from "$lib/components/item/Herhaling.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -67,22 +67,6 @@
     />
   </div>
 
-  <div>
-    <label class="font-bold" for="category">Kategorie</label>
-    <select
-      id="category"
-      placeholder="Kies 'n kategorie (opsioneel)"
-      bind:value={task.category_id}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
-      class:text-gray-400={!task.category_id}
-    >
-      <option value="">Kies 'n kategorie (opsioneel)</option>
-      {#each data.categories as category (category.id)}
-        <option value={category.id ?? ""}>{category.name}</option>
-      {/each}
-    </select>
-  </div>
-
   {#if task.due_date}
     <div in:slide>
       <div>
@@ -98,57 +82,27 @@
           <option value="weekly">Weekliks</option>
           <option value="monthly">Maandeliks</option>
           <option value="yearly">Jaarliks</option>
-          <!-- <option value="other">Ander</option> -->
+          <option value="other">Ander</option>
         </select>
       </div>
     </div>
   {/if}
-</form>
-<!-- 
-<Modal
-  open={task.repeat_interval === "other"}
-  onclose={() => {
-    task.repeat_interval = "";
-  }}
->
-  <div class="p-4 space-y-4">
-    <h2 class="text-xl font-bold text-white">Aangepaste Herhaling</h2>
-    <div class="flex flex-col sm:flex-row gap-4">
-      <div class="flex-1">
-        <label for="repeat_interval_number" class="block text-sm font-medium text-white mb-1"> Elke </label>
-        <input
-          id="repeat_interval_number"
-          type="number"
-          min="1"
-          bind:value={task.repeat_interval_number}
-          class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
-        />
-      </div>
-      <div class="flex-1">
-        <label for="custom_interval" class="block text-sm font-medium text-white mb-1"> Periode </label>
-        <select
-          id="custom_interval"
-          bind:value={task.repeat_interval}
-          class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
-        >
-          <option value="daily">Dae</option>
-          <option value="weekly">Weke</option>
-          <option value="monthly">Maande</option>
-          <option value="yearly">Jare</option>
-        </select>
-      </div>
-    </div>
-    <div class="flex justify-end">
-      <button
-        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-        onclick={() => {
-          if (task.repeat_interval_number < 1) {
-            task.repeat_interval_number = 1;
-          }
-        }}
-      >
-        Bevestig
-      </button>
-    </div>
+
+  <div>
+    <label class="font-bold" for="category">Kategorie</label>
+    <select
+      id="category"
+      placeholder="Kies 'n kategorie (opsioneel)"
+      bind:value={task.category_id}
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
+      class:text-gray-400={!task.category_id}
+    >
+      <option value="">Kies 'n kategorie (opsioneel)</option>
+      {#each data.categories as category (category.id)}
+        <option value={category.id ?? ""}>{category.name}</option>
+      {/each}
+    </select>
   </div>
-</Modal> -->
+</form>
+
+<Herhaling />

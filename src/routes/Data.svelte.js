@@ -124,6 +124,13 @@ export class Data {
     return this.tasks;
   }
 
+  async refreshCategories() {
+    this.categories = (await this.#DB.Category.data).filter(({ archived }) => !archived);
+    this.categories = sortByField(this.categories, "name");
+
+    return this.categories;
+  }
+
   /**
    * @param {Task} task
    */
@@ -302,6 +309,13 @@ export class Data {
     if (!task.repeat_interval || !task.due_date) return null;
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
+    console.log(
+      "Calculating next due date for task",
+      task.name,
+      task.repeat_interval,
+      task.repeat_interval_number,
+      calcNextDay(new Date(task.due_date), task.repeat_interval_number)
+    );
 
     return calcNextDay(new Date(task.due_date), task.repeat_interval_number);
   }
