@@ -43,16 +43,15 @@
 <!-- {task.repeat_interval_number}
 {task.repeat_interval} -->
 <div
-  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm shadow-gray-700 bg-[#476480] {checkoff_animation
+  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm bg-[#476480] {checkoff_animation
     ? 'translate-x-[80%] **:opacity-50'
     : ''}"
   in:slide={{ delay: 200 }}
 >
   <button
-    class="border border-white rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
-      ? 'border-red-600/40! border-2 bg-red-500/20!'
+    class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
+      ? 'border-red-600/40! bg-red-500/20!'
       : ''}"
-    class:border={!task.completed || is_selected}
     class:bg-[#476480]!={is_selected}
     class:bg-[#233a50]={task.completed}
     {onclick}

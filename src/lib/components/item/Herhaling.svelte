@@ -64,6 +64,14 @@
   });
 
   $effect(() => {
+    if (temp_repeat_interval !== "other" || !!temp_other_interval) {
+      untrack(() => {
+        repeat_interval = temp_repeat_interval;
+      });
+    }
+  });
+
+  $effect(() => {
     if (!is_dialog_open) {
       untrack(() => {
         // Reset to previous value.

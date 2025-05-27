@@ -2,7 +2,7 @@
   let { name, completed, checkoff_animation } = $props();
 </script>
 
-<div class="relative pl-9 text-gray-200 font-semibold line-clamp-1" class:opacity-50={!name}>
+<div class="relative pl-9 text-gray-200  line-clamp-1" class:opacity-50={!name}>
   {#if checkoff_animation || completed}
     <div
       class="{completed

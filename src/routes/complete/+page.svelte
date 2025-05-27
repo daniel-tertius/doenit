@@ -1,7 +1,9 @@
 <script>
   import { goto } from "$app/navigation";
   import Item from "$lib/components/item/Item.svelte";
+  import { slide } from "svelte/transition";
   import { data } from "../Data.svelte";
+  import { Haptics } from "@capacitor/haptics";
 
   data.refreshTasks();
 
@@ -13,7 +15,7 @@
 
 <div class="space-y-1.5">
   {#if data.selected_tasks_hash.size}
-    <div>
+    <div transition:slide class="flex items-end justify-between px-2 pt-2">
       <div class="text-sm font-semibold pt-1 text-gray-200">{data.selected_tasks_hash.size} Gekies</div>
       <button class="px-4 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors" onclick={deleteAll}>
         Vee uit
@@ -32,6 +34,7 @@
       {task}
       onselect={async () => {
         data.unCompleteTask(task);
+        Haptics.vibrate({ duration: 50 });
       }}
       onlongpress={() => {
         if (data.selected_tasks_hash.size) return;
