@@ -214,7 +214,6 @@ export class Data {
   async deleteTasks(task_ids) {
     if (!task_ids?.length) return;
 
-    console.log("Deleting tasks", task_ids);
     this.#removeTasks(task_ids);
 
     await this.#DB.Task.delete(task_ids);
@@ -309,13 +308,6 @@ export class Data {
     if (!task.repeat_interval || !task.due_date) return null;
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
-    console.log(
-      "Calculating next due date for task",
-      task.name,
-      task.repeat_interval,
-      task.repeat_interval_number,
-      calcNextDay(new Date(task.due_date), task.repeat_interval_number)
-    );
 
     return calcNextDay(new Date(task.due_date), task.repeat_interval_number);
   }

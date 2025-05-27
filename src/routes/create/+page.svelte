@@ -1,8 +1,9 @@
 <script>
-  import { fly, slide } from "svelte/transition";
+  import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data } from "../Data.svelte";
   import Herhaling from "$lib/components/item/Herhaling.svelte";
+  import { onMount } from "svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -17,7 +18,14 @@
     category_id: undefined,
   });
 
+  /** @type {HTMLElement?}*/
+  let name_input = $state(null);
+  let other_interval = $state("");
   let error_message = $state("");
+
+  onMount(() => {
+    init(name_input);
+  });
 
   /**
    * @param {Event} event
@@ -27,12 +35,24 @@
 
     if (!task.name?.trim()) {
       error_message = "Benoem jou taak";
+      init(name_input);
       return;
+    }
+
+    if (task.repeat_interval_number > 1) {
+      task.repeat_interval = other_interval;
     }
 
     await data.createTask(task);
 
     await goto("/");
+  }
+
+  /**
+   * @param {HTMLElement?} el
+   */
+  function init(el) {
+    setTimeout(() => el?.focus());
   }
 </script>
 
@@ -41,7 +61,7 @@
     <label class="font-bold" for="name">Naam</label>
     <input
       id="name"
-      autofocus
+      bind:this={name_input}
       oninput={() => (error_message = "")}
       bind:value={task.name}
       type="text"
@@ -68,24 +88,11 @@
   </div>
 
   {#if task.due_date}
-    <div in:slide>
-      <div>
-        <label class="font-bold" for="repeat">Herhaling</label>
-        <select
-          id="repeat"
-          bind:value={task.repeat_interval}
-          class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-        >
-          <option value="">Geen herhaling</option>
-          <option value="daily">Daagliks</option>
-          <option value="workdaily">Daagliks (Ma-Vr)</option>
-          <option value="weekly">Weekliks</option>
-          <option value="monthly">Maandeliks</option>
-          <option value="yearly">Jaarliks</option>
-          <option value="other">Ander</option>
-        </select>
-      </div>
-    </div>
+    <Herhaling
+      bind:repeat_interval_number={task.repeat_interval_number}
+      bind:repeat_interval={task.repeat_interval}
+      bind:other_interval
+    />
   {/if}
 
   <div>
@@ -104,5 +111,3 @@
     </select>
   </div>
 </form>
-
-<Herhaling />

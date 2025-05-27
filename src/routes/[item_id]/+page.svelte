@@ -1,64 +1,38 @@
 <script>
-  import { fly } from "svelte/transition";
-  import { DB } from "$lib/DB/DB";
-  import { onMount } from "svelte";
-  import { Capacitor } from "@capacitor/core";
-  import { App } from "@capacitor/app";
+  import { fade, fly } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data as Data } from "../Data.svelte.js";
   import Herhaling from "$lib/components/item/Herhaling.svelte";
+  import Trash from "$lib/icon/Trash.svelte";
+  import Modal from "$lib/components/modal/Modal.svelte";
+  import { onMount } from "svelte";
 
-  /** @typedef {import('$lib/DB/DB').Category} Category */
+  /** @typedef {import('$lib/DB/DB').Task} Task */
 
   let { data } = $props();
-  let task = data.task;
-  if (!task) goto("/");
+  const origin_task = data.origin_task;
+  if (!origin_task) throw new Error("No origin_task provided");
 
-  /** @type {Record<string, string>}*/
-  const repeat_intervals = {
-    daily: "dae",
-    weekly: "weke",
-    monthly: "maande",
-    yearly: "jare",
-  };
-
-  let name = $state(task?.name || "");
-  let due_date = $state(task?.due_date ? new Date(task?.due_date).toLocaleDateString("en-CA") : null);
-  let completed = $state(!!task?.completed);
-  let error_message = $state("");
-  let repeat_interval = $state(task?.repeat_interval_number > 1 ? "other" : task?.repeat_interval || "");
-  let repeat_interval_number = $state(task?.repeat_interval_number || 1);
-  let other_period = $state(task?.repeat_interval_number > 1 ? task?.repeat_interval : "daily");
-
-  /** @type {Category[]} */
-  let categories = $state([]);
-  let category_id = $state(task?.category_id);
-  let is_dialog_open = $state(false);
-  let is_focused = $state(false);
-  let other_period_display = $derived(repeat_intervals[other_period]);
-  let other_period_description = $derived(
-    repeat_interval === "other" && repeat_interval_number > 1
-      ? ` (elke ${repeat_interval_number} ${other_period_display})`
-      : ""
-  );
-
-  onMount(async () => {
-    const Db = DB.getInstance();
-    const all_categories = await Db.Category.data;
-    categories = all_categories.filter(({ archived }) => !archived);
+  /** @type {Task}*/
+  let task = $state({
+    id: origin_task.id,
+    created_at: origin_task.created_at,
+    name: origin_task.name,
+    due_date: origin_task.due_date ? new Date(origin_task.due_date).toLocaleDateString("en-CA") : null,
+    completed: !!origin_task.completed,
+    repeat_interval: origin_task.repeat_interval_number > 1 ? "other" : origin_task.repeat_interval || "",
+    repeat_interval_number: origin_task.repeat_interval_number || 1,
+    archived: origin_task.archived || false,
+    category_id: origin_task.category_id || undefined,
   });
 
-  onMount(() => {
-    if (Capacitor.isNativePlatform()) {
-      App.addListener("backButton", (event) => {
-        //@ts-ignore
-        onclose(event);
-      });
-    }
+  let name_input = $state(null);
+  let is_deleting = $state(false);
+  let other_interval = $state(origin_task.repeat_interval_number > 1 ? origin_task.repeat_interval : "");
+  let error_message = $state("");
 
-    return () => {
-      App.removeAllListeners();
-    };
+  onMount(() => {
+    init(name_input);
   });
 
   /**
@@ -67,27 +41,17 @@
   async function onsubmit(event) {
     event.preventDefault();
 
-    if (!name?.trim()) {
+    if (!task.name?.trim()) {
       error_message = "Benoem jou taak";
+      init(name_input);
       return;
     }
 
-    if (repeat_interval === "other") {
-      repeat_interval = other_period;
+    if (task.repeat_interval_number > 1) {
+      task.repeat_interval = other_interval;
     }
 
-    console.log("Update", { repeat_interval_number, repeat_interval });
-
-    await Data.updateTask({
-      ...task,
-      name,
-      due_date,
-      completed,
-      archived: completed,
-      category_id,
-      repeat_interval,
-      repeat_interval_number,
-    });
+    await Data.updateTask(task);
 
     //@ts-ignore
     onclose(event);
@@ -96,16 +60,36 @@
   async function onclose() {
     await goto("/");
   }
+
+  async function deleteTask() {
+    await Data.deleteTasks([task.id]);
+    await goto("/");
+  }
+
+  function init(el) {
+    setTimeout(() => el.focus());
+  }
 </script>
 
+<!-- transition:fade={{ delay: 300, duration: 300 }} -->
+<button
+  type="button"
+  class="fixed top-5 right-6"
+  onclick={() => {
+    is_deleting = true;
+  }}
+  aria-label="Sluit"
+>
+  <Trash class="w-6 h-6" color="#E01D1D" />
+</button>
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
       id="name"
-      autofocus
+      bind:this={name_input}
       oninput={() => (error_message = "")}
-      bind:value={name}
+      bind:value={task.name}
       type="text"
       placeholder="Gee jou taak 'n naam"
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] invalid:border-red-500"
@@ -124,49 +108,29 @@
       id="date"
       type="date"
       placeholder="Kies 'n datum"
-      bind:value={due_date}
+      bind:value={task.due_date}
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
     />
   </div>
 
-  {#if due_date}
-    <div>
-      <label class="font-bold" for="repeat">Herhaling</label>
-      <select
-        id="repeat"
-        bind:value={repeat_interval}
-        class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-        onfocus={() => setTimeout(() => (is_focused = true), 100)}
-        onclick={() => {
-          if (is_focused && repeat_interval === "other") {
-            is_dialog_open = true;
-          }
-        }}
-        onblur={() => {
-          is_focused = false;
-        }}
-      >
-        <option value="">Geen herhaling</option>
-        <option value="daily">Daagliks</option>
-        <option value="workdaily">Daagliks (Ma-Vr)</option>
-        <option value="weekly">Weekliks</option>
-        <option value="monthly">Maandeliks</option>
-        <option value="yearly">Jaarliks</option>
-        <option value="other">Ander{other_period_description}</option>
-      </select>
-    </div>
+  {#if task.due_date}
+    <Herhaling
+      bind:repeat_interval_number={task.repeat_interval_number}
+      bind:repeat_interval={task.repeat_interval}
+      bind:other_interval
+    />
   {/if}
 
   <div>
     <label class="font-bold" for="category">Kategorie</label>
     <select
       id="category"
-      bind:value={category_id}
+      bind:value={task.category_id}
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
-      class:text-gray-400={!category_id}
+      class:text-gray-400={!task.category_id}
     >
       <option value="">Kies 'n kategorie (opsioneel)</option>
-      {#each categories as category (category.id)}
+      {#each Data.categories as category (category.id)}
         <option value={category.id}>{category.name}</option>
       {/each}
     </select>
@@ -177,10 +141,23 @@
     <input
       id="completed"
       type="checkbox"
-      bind:checked={completed}
+      bind:checked={task.completed}
       class="bg-[#233a50]/50 p-2 w-5 h-5 rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
     />
   </div>
 </form>
 
-<Herhaling bind:open={is_dialog_open} bind:other_period bind:repeat_interval_number />
+<Modal bind:open={is_deleting} {footer} title="Skrap Taak?">
+  <p class="p-4">Is u seker u wil hierdie taak skrap?</p>
+</Modal>
+
+{#snippet footer()}
+  <button
+    class="bg-[#E01D1D] flex gap-1 items-center text-white px-4 py-2 rounded-md"
+    type="button"
+    onclick={deleteTask}
+  >
+    <Trash class="h-full" size={18} />
+    <span>Skrap</span>
+  </button>
+{/snippet}

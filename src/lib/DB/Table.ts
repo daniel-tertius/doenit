@@ -101,7 +101,6 @@ export class Table<T extends Task | Category> {
 
     let ids = Array.isArray(id) ? id : [id];
     let ids_not_there = ids.filter((id) => !data[id]);
-    console.log("ids_not_there", ids_not_there);
     if (!!ids_not_there.length) {
       console.error(`Item(s) with id(s) ${ids_not_there.join(", ")} not found`);
       return;

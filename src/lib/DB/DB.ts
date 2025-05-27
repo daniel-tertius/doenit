@@ -28,7 +28,7 @@ export interface Task {
   created_at: string;
   name: string;
   completed: boolean;
-  due_date: number | null; // ms since 1970-01-01
+  due_date: string | null; // ms since 1970-01-01
   repeat_interval: string;
   repeat_interval_number: number;
   category_id?: string;

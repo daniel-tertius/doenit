@@ -1,27 +1,99 @@
 <script>
+  import { untrack } from "svelte";
   import Modal from "../modal/Modal.svelte";
 
   /**
    * @typedef {Object} Props
-   * @property {number} [repeat_interval_number=2] - The number of intervals for the repeat.
-   * @property {string} [other_period="daily"] - The type of repeat interval (daily, weekly, monthly, yearly).
-   * @property {boolean} [open=false] - Whether the modal is open.
-   * @property {() => *} [onclose] - Callback function to call when the modal is closed.
+   * @property {number} repeat_interval_number - The number of intervals for the repeat.
+   * @property {string} repeat_interval - The type of repeat interval (daily, weekly, monthly, yearly).
+   * @property {string} other_interval - The custom interval if the repeat interval is set to "other".
    */
 
   /** @type {Props} */
-  let {
-    repeat_interval_number = $bindable(2),
-    other_period = $bindable("daily"),
-    open = $bindable(),
-    onclose,
-  } = $props();
+  let { repeat_interval_number = $bindable(), repeat_interval = $bindable(), other_interval = $bindable() } = $props();
 
-  let temp_other_period = $state(other_period);
+  /** @type {Record<string, string>}*/
+  const OTHER_REPEAT_INTERVALS = {
+    daily: "dae",
+    weekly: "weke",
+    monthly: "maande",
+    yearly: "jare",
+  };
+
+  let is_mounting = $state(true);
+  let temp_other_interval = $state(other_interval);
+  let temp_repeat_interval = $state(repeat_interval);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
+  let is_dialog_open = $state(false);
+
+  const display_other = $derived.by(() => {
+    if (other_interval === "other") return "";
+    if (repeat_interval_number < 2) return "";
+
+    const repeat_interval_display = OTHER_REPEAT_INTERVALS[other_interval];
+    return ` (elke ${repeat_interval_number} ${repeat_interval_display})`;
+  });
+
+  const temp_display_other = $derived.by(() => {
+    if (temp_repeat_interval_number < 2) return "";
+    if (!temp_other_interval || temp_other_interval === "other") return "";
+
+    const repeat_interval_display = OTHER_REPEAT_INTERVALS[temp_other_interval];
+    return ` elke ${temp_repeat_interval_number} ${repeat_interval_display}`;
+  });
+
+  $effect(() => {
+    // If the user selects "other" while "other" is already selected, the dialog should still open.
+    temp_repeat_interval;
+    untrack(() => {
+      if (is_mounting) {
+        is_mounting = false;
+        return;
+      }
+
+      if (temp_repeat_interval === "other_temp") {
+        temp_repeat_interval = "other";
+      } else if (temp_repeat_interval === "other") {
+        is_dialog_open = true;
+        temp_repeat_interval_number = Math.max(2, temp_repeat_interval_number);
+      } else {
+        other_interval = temp_other_interval = "";
+        repeat_interval_number = temp_repeat_interval_number = 1;
+      }
+    });
+  });
+
+  $effect(() => {
+    if (!is_dialog_open) {
+      untrack(() => {
+        // Reset to previous value.
+        temp_repeat_interval = repeat_interval;
+        temp_repeat_interval_number = repeat_interval_number;
+      });
+    }
+  });
 </script>
 
-<Modal bind:open title="Aangepaste Herhaling" {footer} {onclose}>
+<div>
+  <label class="font-bold" for="repeat">Herhaling</label>
+
+  <select
+    id="repeat"
+    bind:value={temp_repeat_interval}
+    class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
+  >
+    <option value="">Geen herhaling</option>
+    <option value="daily">Daagliks</option>
+    <option value="workdaily">Daagliks (Ma-Vr)</option>
+    <option value="weekly">Weekliks</option>
+    <option value="monthly">Maandeliks</option>
+    <option value="yearly">Jaarliks</option>
+    <option hidden={temp_repeat_interval === "other"} value="other">Ander{display_other}</option>
+    <option hidden={temp_repeat_interval !== "other"} value="other_temp">Ander{display_other}</option>
+  </select>
+</div>
+
+<Modal bind:open={is_dialog_open} title="Herhaal{temp_display_other || ' elke…'}" {footer}>
   <div class="p-4 space-y-4">
     <div class="flex sm:flex-row gap-4">
       <div class="flex-1">
@@ -38,7 +110,7 @@
         <label for="custom_interval" class="block text-sm font-medium text-gray-900 mb-1">Periode</label>
         <select
           id="custom_interval"
-          bind:value={temp_other_period}
+          bind:value={temp_other_interval}
           class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
         >
           <option value="daily">Dae</option>
@@ -54,16 +126,13 @@
 {#snippet footer()}
   <button
     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+    type="button"
     onclick={() => {
-      if (temp_repeat_interval_number < 2) {
-        temp_repeat_interval_number = 2;
-      }
-
+      temp_repeat_interval_number = Math.max(2, temp_repeat_interval_number);
       repeat_interval_number = temp_repeat_interval_number;
-      other_period = temp_other_period;
-
-      if (onclose) onclose();
-      open = false;
+      repeat_interval = temp_repeat_interval;
+      other_interval = temp_other_interval;
+      is_dialog_open = false;
     }}
   >
     Bevestig

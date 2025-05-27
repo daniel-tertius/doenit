@@ -44,15 +44,17 @@
   });
 </script>
 
-<PageHeading />
-<main class="h-[calc(100dvh-146px)] flex flex-col bg-[#325372]">
-  <div class="grow flex flex-col relative max-w-[1000px] md:mx-auto p-2 overflow-auto">
-    {@render children()}
-  </div>
-</main>
+<div class="h-screen flex flex-col">
+  <PageHeading />
+  <main class="grow flex flex-col bg-[#325372]">
+    <div class="grow flex flex-col relative max-w-[1000px] md:mx-auto p-2 mb-20 overflow-auto">
+      {@render children()}
+    </div>
+  </main>
 
-<div class="relative border-t-2 border-[#d6dde3] p-5 bg-[#325372]">
-  <div class="flex gap-1 text-[#d6dde3] w-[100dwv] h-10 justify-between">
+  <div
+    class="flex fixed bottom-0 w-full gap-1 text-[#d6dde3] p-4 border-t border-[#d6dde3] bg-[#325372] h-20 justify-between"
+  >
     <NavbarButton />
 
     {#if is_home}

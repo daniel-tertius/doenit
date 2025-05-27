@@ -50,19 +50,25 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if open}
-  <button class="modal-backdrop" aria-label="backdrop" onclick={handleOutsideClick} transition:fade={{ duration: 200 }}>
+  <button
+    type="button"
+    class="modal-backdrop"
+    aria-label="backdrop"
+    onclick={handleOutsideClick}
+    transition:fade={{ duration: 200 }}
+  >
   </button>
 
   <div class="modal-content" transition:scale={{ start: 0.95, duration: 200 }}>
     <div class="modal-header">
-      <h2 class="font-bold">{title}</h2>
-      <button class="close-button" onclick={close} aria-label="Close modal">✕</button>
+      <h2 class="font-semibold text-gray-700">{title}</h2>
+      <button type="button" class="close-button" onclick={close} aria-label="Close modal">✕</button>
     </div>
     <div class="modal-body">
       {@render children?.()}
     </div>
     <div class="modal-footer">
-      <button class="cancel-button" onclick={close}>Cancel</button>
+      <button type="button" class="py-2 px-4 bg-[#6c757d] text-white rounded-md" onclick={close}>Kanselleer</button>
       {@render footer?.()}
     </div>
   </div>
@@ -131,14 +137,5 @@
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
-  }
-
-  .cancel-button {
-    padding: 0.375rem 0.75rem;
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
   }
 </style>
