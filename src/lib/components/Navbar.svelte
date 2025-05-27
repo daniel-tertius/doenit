@@ -17,7 +17,6 @@
 />
 
 <aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-[#476480] shadow-lg z-50">
-  {@render closeButton()}
   <div class="flex flex-col items-center justify-center h-full">
     <h2 class="text-2xl font-bold text-[#d6dde3]">Menu</h2>
     <ul class="mt-4 space-y-2 text-lg">
@@ -42,14 +41,3 @@
     </ul>
   </div>
 </aside>
-
-{#snippet closeButton()}
-  <button
-    onclick={() => onclose()}
-    type="button"
-    class="absolute bottom-4 right-4 text-[#d6dde3] hover:text-white"
-    aria-label="Close menu"
-  >
-    <Times />
-  </button>
-{/snippet}
