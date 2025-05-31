@@ -1,5 +1,5 @@
 /**
- * @param {string | Date | number} date
+ * @param {string | Date | number | null} date
  */
 export function displayDate(date) {
   if (!date) return "";

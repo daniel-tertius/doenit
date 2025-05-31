@@ -1,6 +1,8 @@
 <script>
   import { untrack } from "svelte";
   import Modal from "../modal/Modal.svelte";
+  import { slide } from "svelte/transition";
+  import { Times } from "$lib/icon";
 
   /**
    * @typedef {Object} Props
@@ -82,23 +84,32 @@
   });
 </script>
 
-<div>
+<div transition:slide>
   <label class="font-bold" for="repeat">Herhaling</label>
 
-  <select
-    id="repeat"
-    bind:value={temp_repeat_interval}
-    class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-  >
-    <option value="">Geen herhaling</option>
-    <option value="daily">Daagliks</option>
-    <option value="workdaily">Daagliks (Ma-Vr)</option>
-    <option value="weekly">Weekliks</option>
-    <option value="monthly">Maandeliks</option>
-    <option value="yearly">Jaarliks</option>
-    <option hidden={temp_repeat_interval === "other"} value="other">Ander{display_other}</option>
-    <option hidden={temp_repeat_interval !== "other"} value="other_temp">Ander{display_other}</option>
-  </select>
+  <div class="relative">
+    <select
+      id="repeat"
+      bind:value={temp_repeat_interval}
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100 appearance-none"
+      class:text-gray-400={!temp_repeat_interval}
+    >
+      <option value="">Geen herhaling</option>
+      <option value="daily">Daagliks</option>
+      <option value="workdaily">Daagliks (Ma-Vr)</option>
+      <option value="weekly">Weekliks</option>
+      <option value="monthly">Maandeliks</option>
+      <option value="yearly">Jaarliks</option>
+      <option hidden={temp_repeat_interval === "other"} value="other">Ander{display_other}</option>
+      <option hidden={temp_repeat_interval !== "other"} value="other_temp">Ander{display_other}</option>
+    </select>
+
+    {#if !!temp_repeat_interval}
+      <button onclick={() => (temp_repeat_interval = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
+        <Times class="text-slate-300" size={18} />
+      </button>
+    {/if}
+  </div>
 </div>
 
 <Modal bind:open={is_dialog_open} title="Herhaal{temp_display_other || ' elke…'}" {footer}>
@@ -136,6 +147,10 @@
     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
     type="button"
     onclick={() => {
+      if (!temp_repeat_interval_number || !temp_other_interval) {
+        return;
+      }
+
       temp_repeat_interval_number = Math.max(2, temp_repeat_interval_number);
       repeat_interval_number = temp_repeat_interval_number;
       repeat_interval = temp_repeat_interval;

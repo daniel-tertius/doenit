@@ -7,6 +7,8 @@
   import { data } from "../../../routes/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
+  import Resync from "$lib/icon/Sync.svelte";
+  import Sync from "$lib/icon/Sync.svelte";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
@@ -20,8 +22,8 @@
    * @property {() => *} [onlongpress]
    */
 
-  /** @type {Props} */
-  const { task: original_task, onselect = () => {}, onclick = () => {}, onlongpress = () => {} } = $props();
+  /** @type {Props & Record<string, any>} */
+  const { task: original_task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const task = $state({ ...original_task });
   const is_past = $derived(
@@ -49,6 +51,7 @@
   in:slide={{ delay: 200 }}
 >
   <button
+    {...rest}
     class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
       ? 'border-red-600/40! bg-red-500/20!'
       : ''}"
@@ -63,11 +66,17 @@
     <div class="pl-8 flex flex-wrap gap-1.5">
       {#if task.due_date}
         <div
-          class="text-left rounded-full bg-[#223a51] px-1.5 w-fit flex items-center h-fit"
+          class="text-left rounded-full bg-[#223a51] px-1.5 w-fit flex items-center h-fit gap-1"
           class:opacity-50={task.completed}
           class:bg-red-800={is_past && !task.completed}
         >
-          <span class="text-gray-200">{displayDate(task.due_date)}</span>
+          <span class="text-gray-300">
+            {displayDate(task.due_date)}
+          </span>
+
+          {#if !!task.repeat_interval}
+            <Sync class="text-gray-300" size={12} />
+          {/if}
         </div>
       {/if}
 
@@ -82,5 +91,5 @@
     </div>
   </button>
 
-  <ItemCheckbox bind:checkoff_animation {is_selected} onselect={async () => onselect(task)} />
+  <ItemCheckbox bind:checkoff_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
 </div>

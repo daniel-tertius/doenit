@@ -9,6 +9,7 @@
   import { navigating } from "$app/state";
   import { onMount } from "svelte";
 
+  data.selected_categories_hash.clear();
   data.refreshTasks();
 
   onMount(() => {

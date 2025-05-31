@@ -10,11 +10,8 @@
   const show = $derived(!["/"].includes(page.url.pathname));
 
   function onclick() {
-    if (is_home) {
-      goto("/create");
-    } else {
-      goto("/");
-    }
+    window.history.back();
+    
   }
 
   onMount(() => {

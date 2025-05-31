@@ -1,18 +1,16 @@
 <script>
-  import { page } from "$app/state";
   import CreateItemButton from "$lib/components/CreateItemButton.svelte";
-  import HomeButton from "$lib/components/HomeButton.svelte";
+  import CategoryFilter from "$lib/components/CategoryFilter.svelte";
   import NavbarButton from "$lib/components/NavbarButton.svelte";
   import PageHeading from "$lib/components/PageHeading.svelte";
-
-  import { browser } from "$app/environment";
-  import "../app.css";
-  import CategoryFilter from "$lib/components/CategoryFilter.svelte";
-  import { data } from "./Data.svelte";
-  import { onMount } from "svelte";
+  import HomeButton from "$lib/components/HomeButton.svelte";
   import { Capacitor } from "@capacitor/core";
-  import { App } from "@capacitor/app";
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
+  import { App } from "@capacitor/app";
+  import { page } from "$app/state";
+  import { onMount } from "svelte";
+  import "../app.css";
 
   let { children } = $props();
 
@@ -44,28 +42,18 @@
   });
 </script>
 
-<div class="h-screen flex flex-col">
-  <PageHeading />
-  <main class="grow flex flex-col bg-[#325372]">
-    <div class="grow flex flex-col relative max-w-[1000px] md:mx-auto p-2 mb-20 overflow-auto">
-      {@render children()}
-    </div>
-  </main>
+<PageHeading />
+<main class="grow flex flex-col overflow-y-auto max-w-[1000px] md:mx-auto p-2">
+  {@render children()}
+</main>
 
-  <div
-    class="flex fixed bottom-0 w-full gap-1 text-[#d6dde3] p-4 border-t border-[#d6dde3] bg-[#325372] h-20 justify-between"
-  >
-    <NavbarButton />
+<nav class="flex gap-2 shadow-sm text-[#d6dde3] p-4 border-t border-[#d6dde3] bg-[#325372] justify-between">
+  <NavbarButton />
 
-    {#if is_home}
-      <CategoryFilter bind:categories={data.selected_category_ids} />
-    {/if}
+  {#if is_home}
+    <CategoryFilter />
+  {/if}
 
-    <CreateItemButton />
-    <HomeButton />
-  </div>
-</div>
-
-<!-- <div class="text-wrap font-mono">
-  {platform} // Mozilla/5.0 (Linux; Android 15;
-</div> -->
+  <CreateItemButton />
+  <HomeButton />
+</nav>

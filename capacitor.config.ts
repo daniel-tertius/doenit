@@ -9,6 +9,13 @@ const config: CapacitorConfig = {
     iosScheme: "capacitor",
     allowNavigation: [],
   },
+  plugins: {
+    StatusBar: {
+      style: "Light",
+      backgroundColor: "#233a50",
+      overlay: false,
+    },
+  },
 };
 
 export default config;

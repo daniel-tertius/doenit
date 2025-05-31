@@ -14,7 +14,7 @@
 {#if show}
   <button
     type="button"
-    class="flex justify-center items-center rounded-full h-12 w-12 bg-[#5b758e] p-3 font-semibold text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+    class="flex justify-center items-center rounded-full h-15 w-15 bg-[#5b758e] p-3 font-semibold text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
     {onclick}
   >
     {#if navigating.to}

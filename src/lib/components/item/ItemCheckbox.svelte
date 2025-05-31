@@ -1,30 +1,45 @@
 <script>
   import { Check } from "$lib/icon";
   import { tick } from "svelte";
+  import { longpress } from "../long";
 
-  let { checkoff_animation = $bindable(), is_selected, onselect } = $props();
+  let {
+    checkoff_animation = $bindable(false),
+    is_selected = $bindable(false),
+    onselect = () => {},
+    onlongpress = () => {},
+  } = $props();
 
   const is_checked = $derived(is_selected || checkoff_animation);
-</script>
 
-<button
-  type="button"
-  aria-label="check"
-  class="absolute top-1/2 -translate-y-1/2 bg-white/10 left-3 rounded-md border shadow-inner shadow-gray-700 transition-all duration-300 {is_checked
-    ? 'bg-blue-600! border-blue-700!'
-    : 'bg-transparent border-gray-400'} h-6 w-6 flex items-center justify-center transition-colors duration-200"
-  onclick={async () => {
-    checkoff_animation = true;
+  async function onclick() {
+    checkoff_animation = !checkoff_animation;
     await tick();
+
     const start_time = performance.now();
     await onselect();
     const elapsed_time = performance.now() - start_time;
-    if (elapsed_time < 500) {
-      await new Promise((resolve) => setTimeout(resolve, 500 - elapsed_time));
-    }
-  }}
->
-  {#if is_checked}
-    <Check class="text-gray-200" />
-  {/if}
-</button>
+
+    if (elapsed_time < 500) await wait(500 - elapsed_time);
+  }
+
+  /** @param {number} ms */
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+</script>
+
+<div class="absolute top-1/2 -translate-y-1/2 left-4">
+  <button
+    use:longpress
+    {onlongpress}
+    type="button"
+    aria-label="check"
+    class="rounded-md border shadow-inner shadow-gray-800 transition-all duration-300 bg-white/10 border-gray-400 h-6 w-6 flex items-center justify-center"
+    class:bg-blue-600!={is_checked}
+    class:border-blue-700!={is_checked}
+    {onclick}
+  >
+    {#if is_checked}
+      <Check class="text-gray-200" />
+    {/if}
+  </button>
+</div>

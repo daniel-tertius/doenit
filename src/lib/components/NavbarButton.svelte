@@ -8,7 +8,7 @@
 <div class="">
   <button
     type="button"
-    class="flex justify-center items-center rounded-md h-12 w-12 bg-[#5b758e] p-2 font-semibold text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+    class="flex justify-center items-center rounded-md h-15 w-15 bg-[#5b758e] p-2 font-semibold text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
     onclick={() => (is_open = !is_open)}
   >
     <Burger color="#fff" size={28} />

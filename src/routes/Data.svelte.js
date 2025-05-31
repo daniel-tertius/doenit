@@ -29,8 +29,8 @@ export class Data {
 
   #DB = DB.getInstance();
 
-  /** @type {string[]} */
-  #selected_category_ids = $state([]);
+  /** @type {Set<string>} */
+  #selected_categories_hash = $state(new SvelteSet());
   /** @type {Task[]} */
   #tasks = $state([]);
   /** @type {Task[]} */
@@ -78,20 +78,18 @@ export class Data {
     this.#tasks = value;
   }
 
-  get selected_category_ids() {
-    return this.#selected_category_ids;
+  get selected_categories_hash() {
+    return this.#selected_categories_hash;
   }
 
-  set selected_category_ids(value) {
-    this.#selected_category_ids = value;
+  filterTasksByCategory() {
+    if (!this.#selected_categories_hash.size) {
+      this.#tasks = this.#all_tasks.filter(({ archived }) => archived == (page.url.pathname !== "/"));
+      return;
+    }
 
-    this.#tasks = this.#all_tasks.filter((task) => {
-      if (task.archived) return false;
-      if (!this.#selected_category_ids.length) return true;
-
-      if (!task.category_id) return false;
-
-      return this.#selected_category_ids.includes(task.category_id);
+    this.#tasks = this.#all_tasks.filter(({ category_id = "", archived }) => {
+      return this.#selected_categories_hash.has(category_id) && archived == (page.url.pathname !== "/");
     });
   }
 
@@ -172,8 +170,6 @@ export class Data {
     if (index === -1) return;
     this.#all_tasks[index] = task;
 
-    this.#tasks = this.#sortByDueDate(this.#tasks);
-
     return;
   }
 
@@ -234,6 +230,20 @@ export class Data {
     return task;
   }
 
+  /**
+   * @param {Omit<Category, "id" | "created_at" | "archived">} category
+   */
+  async createCategory(category) {
+    if (!category) return;
+
+    const new_category = await this.#DB.Category.create(category);
+    this.#categories.push(new_category);
+
+    this.#categories = sortByField(this.#categories, "name");
+
+    return new_category;
+  }
+
   // HELPER FUNCTIONS
 
   /**
@@ -267,8 +277,6 @@ export class Data {
 
     this.#tasks.push(task);
     this.#all_tasks.push(task);
-
-    this.#tasks = this.#sortByDueDate(this.#tasks);
   }
 
   /**
@@ -308,8 +316,9 @@ export class Data {
     if (!task.repeat_interval || !task.due_date) return null;
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
+    const new_day = new Date(calcNextDay(new Date(task.due_date), task.repeat_interval_number));
 
-    return calcNextDay(new Date(task.due_date), task.repeat_interval_number);
+    return new_day.toLocaleDateString("en-CA");
   }
 }
 export const data = new Data();

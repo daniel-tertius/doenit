@@ -1,9 +1,10 @@
 <script>
-  import { fly } from "svelte/transition";
+  import { fly, slide } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data } from "../Data.svelte";
   import Herhaling from "$lib/components/item/Herhaling.svelte";
   import { onMount } from "svelte";
+  import DueDatePicker from "$lib/components/DueDatePicker.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -11,6 +12,7 @@
   let task = $state({
     name: "",
     due_date: null,
+    start_date: null,
     completed: false,
     repeat_interval: "",
     repeat_interval_number: 1,
@@ -56,7 +58,7 @@
   }
 </script>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
@@ -78,16 +80,16 @@
   <div>
     <label class="font-bold" for="date">Sperdatum</label>
 
-    <input
-      id="date"
-      type="date"
-      placeholder="Kies 'n datum"
-      bind:value={task.due_date}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-    />
+    <DueDatePicker bind:date={task.due_date} shorthand={true} />
   </div>
 
   {#if task.due_date}
+    <div transition:slide>
+      <label class="font-bold" for="date">Begindatum</label>
+
+      <DueDatePicker bind:date={task.start_date} max={task.due_date} />
+    </div>
+
     <Herhaling
       bind:repeat_interval_number={task.repeat_interval_number}
       bind:repeat_interval={task.repeat_interval}
@@ -101,7 +103,7 @@
       id="category"
       placeholder="Kies 'n kategorie (opsioneel)"
       bind:value={task.category_id}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100 appearance-none"
       class:text-gray-400={!task.category_id}
     >
       <option value="">Kies 'n kategorie (opsioneel)</option>

@@ -1,11 +1,16 @@
 <script>
-  import { fade, fly } from "svelte/transition";
+  import { fade, fly, slide } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data as Data } from "../Data.svelte.js";
   import Herhaling from "$lib/components/item/Herhaling.svelte";
   import Trash from "$lib/icon/Trash.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { onMount } from "svelte";
+  import DueDatePicker from "$lib/components/DueDatePicker.svelte";
+  import ItemCheckbox from "$lib/components/item/ItemCheckbox.svelte";
+  import { Times } from "$lib/icon/index.js";
+  import Plus from "$lib/icon/Plus.svelte";
+  import CategoryPicker from "$lib/components/CategoryPicker.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -19,6 +24,7 @@
     created_at: origin_task.created_at,
     name: origin_task.name,
     due_date: origin_task.due_date ? new Date(origin_task.due_date).toLocaleDateString("en-CA") : null,
+    start_date: null,
     completed: !!origin_task.completed,
     repeat_interval: origin_task.repeat_interval_number > 1 ? "other" : origin_task.repeat_interval || "",
     repeat_interval_number: origin_task.repeat_interval_number || 1,
@@ -30,6 +36,14 @@
   let is_deleting = $state(false);
   let other_interval = $state(origin_task.repeat_interval_number > 1 ? origin_task.repeat_interval : "");
   let error_message = $state("");
+
+  $effect(() => {
+    if (!task.due_date) {
+      task.repeat_interval = "";
+      task.repeat_interval_number = 1;
+      task.start_date = null;
+    }
+  });
 
   onMount(() => {
     init(name_input);
@@ -45,6 +59,10 @@
       error_message = "Benoem jou taak";
       init(name_input);
       return;
+    }
+
+    if (task.completed) {
+      task.archived = true;
     }
 
     if (task.repeat_interval_number > 1) {
@@ -82,7 +100,7 @@
 >
   <Trash class="w-6 h-6" color="#E01D1D" />
 </button>
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-2 text-white grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
@@ -104,16 +122,16 @@
   <div>
     <label class="font-bold" for="date">Sperdatum</label>
 
-    <input
-      id="date"
-      type="date"
-      placeholder="Kies 'n datum"
-      bind:value={task.due_date}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-    />
+    <DueDatePicker bind:date={task.due_date} shorthand={true} />
   </div>
 
   {#if task.due_date}
+    <div transition:slide>
+      <label class="font-bold" for="date">Begindatum</label>
+
+      <DueDatePicker bind:date={task.start_date} max={task.due_date} />
+    </div>
+
     <Herhaling
       bind:repeat_interval_number={task.repeat_interval_number}
       bind:repeat_interval={task.repeat_interval}
@@ -123,28 +141,22 @@
 
   <div>
     <label class="font-bold" for="category">Kategorie</label>
-    <select
-      id="category"
-      bind:value={task.category_id}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100"
-      class:text-gray-400={!task.category_id}
-    >
-      <option value="">Kies 'n kategorie (opsioneel)</option>
-      {#each Data.categories as category (category.id)}
-        <option value={category.id}>{category.name}</option>
-      {/each}
-    </select>
+
+    <CategoryPicker bind:category_id={task.category_id} />
   </div>
 
-  <div class="flex justify-between items-center h-11">
-    <label class="font-bold" for="completed">Voltooi</label>
-    <input
-      id="completed"
-      type="checkbox"
-      bind:checked={task.completed}
-      class="bg-[#233a50]/50 p-2 w-5 h-5 rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
-    />
-  </div>
+  <button
+    class="grid gap-2 grid-cols-[auto_min-content] w-full h-11 items-center"
+    type="button"
+    onclick={() => {
+      task.completed = !task.completed;
+    }}
+  >
+    <span class="font-bold text-left">Voltooi</span>
+    <div class="relative w-9 h-9">
+      <ItemCheckbox is_selected={task.completed} checkoff_animation={task.completed} />
+    </div>
+  </button>
 </form>
 
 <Modal bind:open={is_deleting} {footer} title="Skrap Taak?">
