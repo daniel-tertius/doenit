@@ -55,8 +55,9 @@
     class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
       ? 'border-red-600/40! bg-red-500/20!'
       : ''}"
-    class:bg-[#476480]!={is_selected}
     class:bg-[#233a50]={task.completed}
+    class:bg-[#233a50]!={is_selected && !task.completed}
+    class:bg-[#476480]!={is_selected && task.completed}
     {onclick}
     use:longpress
     {onlongpress}
@@ -71,7 +72,7 @@
           class:bg-red-800={is_past && !task.completed}
         >
           <span class="text-gray-300">
-            {displayDate(task.due_date)}
+            {displayDate({ due_date: task.due_date, start_date: task.start_date })}
           </span>
 
           {#if !!task.repeat_interval}

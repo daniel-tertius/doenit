@@ -11,7 +11,6 @@
 
   function onclick() {
     window.history.back();
-    
   }
 
   onMount(() => {
@@ -31,13 +30,15 @@
 
 {#if show}
   <button
-    class="flex justify-center items-center rounded-full h-12 w-12 bg-[#5b758e] p-3 font-semibold text-white *:transition-all *:duration-300 hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+    class="rounded-full bg-[#5b758e] m-1 font-semibold text-white *:transition-all *:duration-300 hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
     {onclick}
   >
-    {#if navigating.to}
-      <Loading size={24} color="#d6dde3" />
-    {:else if !is_home}
-      <Back size={24} color="#d6dde3" />
-    {/if}
+    <div class="h-10 w-10 p-1 flex justify-center items-center">
+      {#if navigating.to}
+        <Loading size={24} color="#d6dde3" />
+      {:else if !is_home}
+        <Back size={24} color="#d6dde3" />
+      {/if}
+    </div>
   </button>
 {/if}

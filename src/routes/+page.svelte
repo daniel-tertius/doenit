@@ -8,8 +8,10 @@
   import { data } from "./Data.svelte";
   import { navigating } from "$app/state";
   import { onMount } from "svelte";
+  import { Haptics } from "@capacitor/haptics";
+  import DeleteAll from "$lib/components/DeleteAll.svelte";
 
-  data.selected_categories_hash.clear();
+  data.selected_tasks_hash.clear();
   data.refreshTasks();
 
   onMount(() => {
@@ -28,6 +30,8 @@
 </script>
 
 <div class="space-y-1.5">
+  <DeleteAll />
+
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       <div class="text-lg text-gray-400">Jou lys is skoon!</div>
@@ -57,7 +61,28 @@
     {/if}
 
     <div id={task.id}>
-      <Item {task} {onselect} onclick={() => goto(`/${task.id}`)} />
+      <Item
+        {task}
+        {onselect}
+        onclick={() => {
+          if (!data.selected_tasks_hash.size) return goto(`/${task.id}`);
+
+          if (data.selected_tasks_hash.has(task.id)) {
+            data.selected_tasks_hash.delete(task.id);
+          } else {
+            data.selected_tasks_hash.add(task.id);
+            Haptics.vibrate({ duration: 50 });
+          }
+        }}
+        onlongpress={() => {
+          Haptics.vibrate({ duration: 100 });
+          if (data.selected_tasks_hash.has(task.id)) {
+            data.selected_tasks_hash.delete(task.id);
+          } else {
+            data.selected_tasks_hash.add(task.id);
+          }
+        }}
+      />
     </div>
   {/each}
 </div>

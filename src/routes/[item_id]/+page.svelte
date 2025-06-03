@@ -24,7 +24,7 @@
     created_at: origin_task.created_at,
     name: origin_task.name,
     due_date: origin_task.due_date ? new Date(origin_task.due_date).toLocaleDateString("en-CA") : null,
-    start_date: null,
+    start_date: origin_task.start_date,
     completed: !!origin_task.completed,
     repeat_interval: origin_task.repeat_interval_number > 1 ? "other" : origin_task.repeat_interval || "",
     repeat_interval_number: origin_task.repeat_interval_number || 1,
@@ -92,7 +92,8 @@
 <!-- transition:fade={{ delay: 300, duration: 300 }} -->
 <button
   type="button"
-  class="fixed top-5 right-6"
+  class="fixed"
+  style="top: calc(12px + env(safe-area-inset-top, 0px)); right: calc(12px + env(safe-area-inset-right, 0px));"
   onclick={() => {
     is_deleting = true;
   }}
@@ -100,6 +101,7 @@
 >
   <Trash class="w-6 h-6" color="#E01D1D" />
 </button>
+
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-white grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
@@ -119,19 +121,22 @@
     {/if}
   </div>
 
-  <div>
-    <label class="font-bold" for="date">Sperdatum</label>
+  <div class="flex gap-2">
+    {#if task.due_date}
+      <div class="w-1/2" transition:slide={{ axis: "x" }}>
+        <label class="font-bold" for="date">Begindatum</label>
 
-    <DueDatePicker bind:date={task.due_date} shorthand={true} />
+        <DueDatePicker bind:date={task.start_date} max={task.due_date} />
+      </div>
+    {/if}
+    <div class={!!task.due_date ? "w-1/2" : "w-full"}>
+      <label class="font-bold" for="date">Sperdatum</label>
+
+      <DueDatePicker bind:date={task.due_date} shorthand={true} />
+    </div>
   </div>
 
   {#if task.due_date}
-    <div transition:slide>
-      <label class="font-bold" for="date">Begindatum</label>
-
-      <DueDatePicker bind:date={task.start_date} max={task.due_date} />
-    </div>
-
     <Herhaling
       bind:repeat_interval_number={task.repeat_interval_number}
       bind:repeat_interval={task.repeat_interval}
@@ -153,8 +158,8 @@
     }}
   >
     <span class="font-bold text-left">Voltooi</span>
-    <div class="relative w-9 h-9">
-      <ItemCheckbox is_selected={task.completed} checkoff_animation={task.completed} />
+    <div class="relative w-11 h-11">
+      <ItemCheckbox is_selected={task.completed} checkoff_animation={task.completed} class="left-auto right-2.5" />
     </div>
   </button>
 </form>

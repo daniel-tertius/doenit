@@ -1,11 +1,61 @@
 /**
- * @param {string | Date | number | null} date
+ * @param {Object} a0
+ * @param {string | Date | number | null} a0.due_date
+ * @param {string | Date | number | null} a0.start_date
  */
-export function displayDate(date) {
+export function displayDate({ due_date, start_date }) {
+  if (!due_date) return "";
+
+  if (!start_date) {
+    return new Date(due_date).toLocaleDateString("af-ZA", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  const startDate = new Date(start_date);
+  const dueDate = new Date(due_date);
+
+  const startYear = startDate.getFullYear();
+  const dueYear = dueDate.getFullYear();
+  const startMonth = startDate.getMonth();
+  const dueMonth = dueDate.getMonth();
+
+  // Same date
+  if (startDate.getTime() === dueDate.getTime()) {
+    return startDate.toLocaleDateString("af-ZA", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  // Same year and month
+  if (startYear === dueYear && startMonth === dueMonth) {
+    return `${startDate.getDate()}-${dueDate.getDate()} ${startDate.toLocaleDateString("af-ZA", {
+      month: "short",
+      year: "numeric",
+    })}`;
+  }
+
+  // Same year, different month
+  if (startYear === dueYear) {
+    const startStr = startDate.toLocaleDateString("af-ZA", { month: "short", day: "numeric" });
+    const dueStr = dueDate.toLocaleDateString("af-ZA", { month: "short", day: "numeric", year: "numeric" });
+    return `${startStr} - ${dueStr}`;
+  }
+
+  // Different years
+  const startStr = startDate.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
+  const dueStr = dueDate.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
+  return `${startStr} - ${dueStr}`;
+}
+
+export function displayDateShort(date) {
   if (!date) return "";
 
   return new Date(date).toLocaleDateString("af-ZA", {
-    year: "numeric",
     month: "short",
     day: "numeric",
   });
@@ -53,13 +103,20 @@ export function displayPrettyDate(date) {
     return "Hierdie week";
   }
 
-  const nextMonthStart = new Date();
-  nextMonthStart.setMonth(nextMonthStart.getMonth() + 1, 1);
-  nextMonthStart.setHours(0, 0, 0, 0);
-  const nextMonthEnd = new Date(nextMonthStart);
-  nextMonthEnd.setMonth(nextMonthEnd.getMonth() + 1, 0);
-  if (inputDate >= nextMonthStart && inputDate <= nextMonthEnd) {
-    return "Volgende Maand";
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const inputMonth = inputDate.getMonth();
+  const inputYear = inputDate.getFullYear();
+
+  if (inputMonth === currentMonth && inputYear === currentYear) {
+    return "Hierdie maand";
+  }
+
+  const nextMonth = (currentMonth + 1) % 12;
+  const nextMonthYear = nextMonth === 0 ? currentYear + 1 : currentYear;
+
+  if (inputMonth === nextMonth && inputYear === nextMonthYear) {
+    return "Volgende maand";
   }
 
   return "Later";

@@ -5,6 +5,7 @@
   import Herhaling from "$lib/components/item/Herhaling.svelte";
   import { onMount } from "svelte";
   import DueDatePicker from "$lib/components/DueDatePicker.svelte";
+  import CategoryPicker from "$lib/components/CategoryPicker.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -77,19 +78,22 @@
     {/if}
   </div>
 
-  <div>
-    <label class="font-bold" for="date">Sperdatum</label>
+  <div class="flex gap-2">
+    {#if task.due_date}
+      <div class="w-1/2" transition:slide={{ axis: "x" }}>
+        <label class="font-bold" for="date">Begindatum</label>
 
-    <DueDatePicker bind:date={task.due_date} shorthand={true} />
+        <DueDatePicker bind:date={task.start_date} max={task.due_date} />
+      </div>
+    {/if}
+    <div class={!!task.due_date ? "w-1/2" : "w-full"}>
+      <label class="font-bold" for="date">Sperdatum</label>
+
+      <DueDatePicker bind:date={task.due_date} shorthand={true} />
+    </div>
   </div>
 
   {#if task.due_date}
-    <div transition:slide>
-      <label class="font-bold" for="date">Begindatum</label>
-
-      <DueDatePicker bind:date={task.start_date} max={task.due_date} />
-    </div>
-
     <Herhaling
       bind:repeat_interval_number={task.repeat_interval_number}
       bind:repeat_interval={task.repeat_interval}
@@ -99,17 +103,7 @@
 
   <div>
     <label class="font-bold" for="category">Kategorie</label>
-    <select
-      id="category"
-      placeholder="Kies 'n kategorie (opsioneel)"
-      bind:value={task.category_id}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100 appearance-none"
-      class:text-gray-400={!task.category_id}
-    >
-      <option value="">Kies 'n kategorie (opsioneel)</option>
-      {#each data.categories as category (category.id)}
-        <option value={category.id ?? ""}>{category.name}</option>
-      {/each}
-    </select>
+
+    <CategoryPicker bind:category_id={task.category_id} />
   </div>
 </form>

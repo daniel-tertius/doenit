@@ -20,22 +20,22 @@
   <div class="flex flex-col items-center justify-center h-full">
     <h2 class="text-2xl font-bold text-[#d6dde3]">Kieslys</h2>
     <ul class="mt-4 space-y-2 text-lg">
-      <li>
+      <li class:underline={page.url.pathname === "/"} class:font-black={page.url.pathname === "/"}>
         <a href="/" class="flex gap-1 text-[#d6dde3] hover:text-white">
           <Home />
-          <p class:font-black={page.url.pathname === "/"}>Tuis</p>
+          <p>Tuis</p>
         </a>
       </li>
-      <li>
+      <li class:underline={page.url.pathname === "/complete"} class:font-black={page.url.pathname === "/complete"}>
         <a href="/complete" class="flex gap-1 text-[#d6dde3] hover:text-white">
           <Check />
-          <p class:font-black={page.url.pathname === "/complete"}>Voltooide Take</p>
+          <p>Voltooide Take</p>
         </a>
       </li>
-      <li>
+      <li class:underline={page.url.pathname === "/categories"} class:font-black={page.url.pathname === "/categories"}>
         <a href="/categories" class="flex gap-1 text-[#d6dde3] hover:text-white">
           <Categories />
-          <p class:font-black={page.url.pathname === "/categories"}>Kategorieë</p>
+          <p>Kategorieë</p>
         </a>
       </li>
     </ul>

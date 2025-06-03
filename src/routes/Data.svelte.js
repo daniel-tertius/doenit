@@ -117,7 +117,13 @@ export class Data {
     this.all_tasks = await this.#DB.Task.data;
 
     const is_home = page.url.pathname === "/";
-    this.tasks = this.#all_tasks.filter(({ archived }) => archived == !is_home);
+    this.tasks = this.#all_tasks.filter(({ archived, category_id = "" }) => {
+      if (!is_home) return archived;
+
+      if (!this.selected_categories_hash.size) return !archived;
+
+      return !archived && this.selected_categories_hash.has(category_id);
+    });
 
     return this.tasks;
   }
@@ -291,22 +297,23 @@ export class Data {
     data = sortByField(data, "name", "asc");
     for (const task of data) {
       if (task.due_date) {
-        if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) === new Date().setUTCHours(0, 0, 0, 0)) {
-          today.push(task);
-        } else if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
-          past.push(task);
-        } else {
-          future.push(task);
-        }
+        past.push(task);
+        // if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) === new Date().setUTCHours(0, 0, 0, 0)) {
+        //   today.push(task);
+        // } else if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
+        //   past.push(task);
+        // } else {
+        //   future.push(task);
+        // }
       } else {
         no_date.push(task);
       }
     }
 
-    past = sortByField(past, "due_date", "desc");
-    future = sortByField(future, "due_date", "asc");
+    past = sortByField(past, "due_date", "asc");
+    // future = sortByField(future, "due_date", "asc");
 
-    return [...past, ...today, ...future, ...no_date];
+    return [...past, /* ...today, ...future,  */ ...no_date];
   }
 
   /**

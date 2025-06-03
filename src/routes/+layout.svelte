@@ -43,7 +43,7 @@
 </script>
 
 <PageHeading />
-<main class="grow flex flex-col overflow-y-auto max-w-[1000px] md:mx-auto p-2">
+<main class="grow flex flex-col overflow-y-auto max-w-[1000px] w-full md:mx-auto p-2">
   {@render children()}
 </main>
 

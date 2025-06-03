@@ -8,6 +8,7 @@
     is_selected = $bindable(false),
     onselect = () => {},
     onlongpress = () => {},
+    ...rest
   } = $props();
 
   const is_checked = $derived(is_selected || checkoff_animation);
@@ -27,7 +28,7 @@
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 </script>
 
-<div class="absolute top-1/2 -translate-y-1/2 left-4">
+<div {...rest} class="absolute top-1/2 -translate-y-1/2 left-4 {rest.class}">
   <button
     use:longpress
     {onlongpress}

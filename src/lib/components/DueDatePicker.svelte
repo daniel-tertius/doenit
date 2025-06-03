@@ -1,5 +1,5 @@
 <script>
-  import { displayDate } from "$lib";
+  import { displayDate, displayDateShort } from "$lib";
   import { Times } from "$lib/icon";
   import { slide } from "svelte/transition";
 
@@ -16,15 +16,17 @@
   let is_focused = $state(false);
 
   /** @type {HTMLInputElement?} */
-  let dateInput = $state(null);
+  let date_input = $state(null);
 
-  const display_due_date = $derived(displayDate(date));
+  const is_past = $derived(!!date && new Date(date).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0));
+
+  const display_due_date = $derived(displayDate({ due_date: date }));
 
   $effect(() => {
-    if (!is_focused || !dateInput) return;
+    if (!is_focused || !date_input) return;
 
-    dateInput.focus();
-    dateInput.showPicker();
+    date_input.focus();
+    date_input.showPicker();
   });
 </script>
 
@@ -36,7 +38,9 @@
       value={display_due_date}
       onfocus={() => (is_focused = true)}
       placeholder="Kies 'n datum"
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto"
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
+      class:text-red-800={is_past}
+      class:border-0={is_past}
     />
   {:else}
     <input
@@ -44,9 +48,11 @@
       type="date"
       onblur={() => (is_focused = false)}
       {max}
-      bind:this={dateInput}
+      bind:this={date_input}
       bind:value={date}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto appearance-none"
+      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] appearance-none"
+      class:text-red-800={is_past}
+      class:border-0={is_past}
     />
   {/if}
 
@@ -58,49 +64,55 @@
 </div>
 
 {#if shorthand && !date}
+  {@const today = new Date()}
+  {@const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))}
+  {@const in_a_week = new Date(new Date().setDate(new Date().getDate() + 7))}
+  {@const in_a_month = new Date(new Date().setMonth(new Date().getMonth() + 1))}
+
+  <!-- {@const vandag = new Date().toLocaleDateString("en-CA")}
+  {@const vandag = new Date().toLocaleDateString("en-CA")}
+  {@const vandag = new Date().toLocaleDateString("en-CA")} -->
+
   <div class="flex gap-2 mt-2" transition:slide>
     <button
       type="button"
-      class="bg-[#233a50]/50 p-2 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
+      class="bg-[#233a50]/50 p-1 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
       onclick={() => {
-        const today = new Date();
-        date = today.toISOString().slice(0, 10);
+        date = today.toLocaleDateString("en-CA");
       }}
     >
-      Vandag
+      <span>Vandag</span>
+      <div class="text-slate-400 text-[12px]">{displayDateShort(today)}</div>
     </button>
     <button
       type="button"
-      class="bg-[#233a50]/50 p-2 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
+      class="bg-[#233a50]/50 p-1 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
       onclick={() => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        date = tomorrow.toISOString().slice(0, 10);
+        date = tomorrow.toLocaleDateString("en-CA");
       }}
     >
       Môre
+      <div class="text-slate-400 text-[12px]">{displayDateShort(tomorrow)}</div>
     </button>
     <button
       type="button"
-      class="bg-[#233a50]/50 p-2 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
+      class="bg-[#233a50]/50 p-1 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
       onclick={() => {
-        const in_a_week = new Date();
-        in_a_week.setDate(in_a_week.getDate() + 7);
-        date = in_a_week.toISOString().slice(0, 10);
+        date = in_a_week.toLocaleDateString("en-CA");
       }}
     >
       Oor 'n week
+      <div class="text-slate-400 text-[12px]">{displayDateShort(in_a_week)}</div>
     </button>
     <button
       type="button"
-      class="bg-[#233a50]/50 p-2 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
+      class="bg-[#233a50]/50 p-1 rounded-lg border border-[#223a51] w-full text-sm shadow-sm"
       onclick={() => {
-        const in_a_month = new Date();
-        in_a_month.setMonth(in_a_month.getMonth() + 1);
-        date = in_a_month.toISOString().slice(0, 10);
+        date = in_a_month.toLocaleDateString("en-CA");
       }}
     >
       Oor 'n maand
+      <div class="text-slate-400 text-[12px]">{displayDateShort(in_a_month)}</div>
     </button>
   </div>
 {/if}

@@ -18,7 +18,7 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] sm:w-1/2 sm:mx-auto open:text-gray-100 appearance-none pr-5 truncate"
+    class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] open:text-gray-100 appearance-none pr-5 truncate"
     class:text-gray-400={!category_id}
   >
     <option value="">Kies 'n kategorie (opsioneel)</option>

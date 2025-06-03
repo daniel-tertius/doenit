@@ -1,26 +1,26 @@
 <script>
   import { page } from "$app/state";
-  import { slide } from "svelte/transition";
+  import { fade, slide } from "svelte/transition";
   import BackButton from "./BackButton.svelte";
 
   const TITLES = {
-    "/": "Taak lys",
+    "/": "Taaklys",
     "/create": "Nuwe taak",
     "/[item_id]": "Wysig taak",
     "/complete": "Voltooide take",
     "/categories": "Kategorieë",
   };
-  const title = $derived(TITLES[page.route.id ?? "/"] || "Taak lys");
+  const title = $derived(TITLES[page.route.id ?? "/"] || "Taaklys");
 </script>
 
-<div class="relative p-3 bg-[#325372] shadow-md">
+<div class="relative h-12 bg-[#325372] shadow-md">
   {#key title}
-    <h1 in:slide={{ axis: "x" }} class="text-3xl font-bold text-[#d6dde3] w-full text-center h-10 mx-auto">
-      {title}
-    </h1>
+    <div class="absolute inset-0 w-fit mx-auto flex items-center justify-center">
+      <h1 transition:fade={{ duration: 100 }} class="text-3xl font-bold text-[#d6dde3] text-center h-10 mx-auto">
+        {title}
+      </h1>
+    </div>
   {/key}
 
-  <div class="absolute top-2 left-4">
-    <BackButton />
-  </div>
+  <BackButton />
 </div>

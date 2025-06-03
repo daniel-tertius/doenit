@@ -1,33 +1,16 @@
 <script>
   import { goto } from "$app/navigation";
   import Item from "$lib/components/item/Item.svelte";
-  import { slide } from "svelte/transition";
   import { data } from "../Data.svelte";
   import { Haptics } from "@capacitor/haptics";
-  import Trash from "$lib/icon/Trash.svelte";
+  import DeleteAll from "$lib/components/DeleteAll.svelte";
 
   data.selected_tasks_hash.clear();
   data.refreshTasks();
-
-  function deleteAll() {
-    data.deleteTasks([...data.selected_tasks_hash.values()]);
-    data.selected_tasks_hash.clear();
-  }
 </script>
 
 <div class="space-y-1.5">
-  {#if data.selected_tasks_hash.size}
-    <div transition:slide class="flex items-end justify-between pt-2">
-      <div class="text-sm font-semibold pt-1 text-gray-200">{data.selected_tasks_hash.size} Gekies</div>
-      <button
-        class="px-4 py-2 flex gap-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-        onclick={deleteAll}
-      >
-        <Trash />
-        <span>Vee permanent uit</span>
-      </button>
-    </div>
-  {/if}
+  <DeleteAll />
 
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
