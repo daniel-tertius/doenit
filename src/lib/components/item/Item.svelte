@@ -31,6 +31,13 @@
   );
   const is_selected = $derived(data.selected_tasks_hash.has(task.id));
 
+  const is_applicable = $derived(
+    !!task.due_date &&
+      !!task.start_date &&
+      new Date().setHours(0, 0, 0, 0) >= new Date(task.start_date).setHours(0, 0, 0, 0) &&
+      new Date().setHours(0, 0, 0, 0) <= new Date(task.due_date).setHours(0, 0, 0, 0)
+  );
+
   let checkoff_animation = $state(false);
   let category = $state();
 
@@ -54,10 +61,12 @@
     {...rest}
     class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
       ? 'border-red-600/40! bg-red-500/20!'
-      : ''}"
+      : ''} {is_applicable && !is_selected && !task.completed ? 'bg-amber-200/20' : ''}"
     class:bg-[#233a50]={task.completed}
     class:bg-[#233a50]!={is_selected && !task.completed}
     class:bg-[#476480]!={is_selected && task.completed}
+    class:border-amber-400!={is_applicable && !is_selected && !task.completed}
+    class:border!={is_applicable && !is_selected && !task.completed}
     {onclick}
     use:longpress
     {onlongpress}

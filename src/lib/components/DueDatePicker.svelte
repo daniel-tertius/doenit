@@ -39,7 +39,7 @@
       onfocus={() => (is_focused = true)}
       placeholder="Kies 'n datum"
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
-      class:text-red-800={is_past}
+      class:text-red-500={is_past}
       class:border-0={is_past}
     />
   {:else}
@@ -51,7 +51,7 @@
       bind:this={date_input}
       bind:value={date}
       class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] appearance-none"
-      class:text-red-800={is_past}
+      class:text-red-500={is_past}
       class:border-0={is_past}
     />
   {/if}

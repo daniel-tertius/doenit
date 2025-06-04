@@ -310,7 +310,7 @@ export class Data {
       }
     }
 
-    past = sortByField(past, "due_date", "asc");
+    past = sortByField(past, "start_date", "asc");
     // future = sortByField(future, "due_date", "asc");
 
     return [...past, /* ...today, ...future,  */ ...no_date];

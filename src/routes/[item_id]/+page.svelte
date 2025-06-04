@@ -69,6 +69,10 @@
       task.repeat_interval = other_interval;
     }
 
+    if (!task.start_date) {
+      task.start_date = task.due_date;
+    }
+
     await Data.updateTask(task);
 
     //@ts-ignore

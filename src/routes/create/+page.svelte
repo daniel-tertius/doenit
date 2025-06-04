@@ -46,6 +46,10 @@
       task.repeat_interval = other_interval;
     }
 
+    if (!task.start_date) {
+      task.start_date = task.due_date;
+    }
+
     await data.createTask(task);
 
     await goto("/");

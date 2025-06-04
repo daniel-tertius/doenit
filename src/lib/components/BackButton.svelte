@@ -29,16 +29,18 @@
 </script>
 
 {#if show}
-  <button
-    class="rounded-full bg-[#5b758e] m-1 font-semibold text-white *:transition-all *:duration-300 hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
-    {onclick}
-  >
-    <div class="h-10 w-10 p-1 flex justify-center items-center">
-      {#if navigating.to}
-        <Loading size={24} color="#d6dde3" />
-      {:else if !is_home}
-        <Back size={24} color="#d6dde3" />
-      {/if}
-    </div>
-  </button>
+  <div class="absolute top-0 left-0 z-50 flex items-center justify-center h-12">
+    <button
+      class="rounded-full bg-[#5b758e] m-1 font-semibold text-white *:transition-all *:duration-300 hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+      {onclick}
+    >
+      <div class="h-10 w-10 p-1 flex justify-center items-center">
+        {#if navigating.to}
+          <Loading size={24} color="#d6dde3" />
+        {:else if !is_home}
+          <Back size={24} color="#d6dde3" />
+        {/if}
+      </div>
+    </button>
+  </div>
 {/if}
