@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "doenit.app",
+      "sha256_cert_fingerprints": [
+        "58:D2:5A:CB:A3:D9:D1:99:30:6E:B5:0E:53:57:21:11:5F:8F:4D:39:7F:11:11:1F:46:24:61:48:4E:C5:61:3E"
+      ]
+    }
+  }
+]

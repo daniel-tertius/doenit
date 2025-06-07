@@ -61,14 +61,14 @@
 
   <div class="modal-content" transition:scale={{ start: 0.95, duration: 200 }}>
     <div class="modal-header">
-      <h2 class="font-semibold text-gray-700">{title}</h2>
+      <h2 class="font-semibold text-primary">{title}</h2>
       <button type="button" class="close-button" onclick={close} aria-label="Close modal">✕</button>
     </div>
     <div class="modal-body">
       {@render children?.()}
     </div>
     <div class="modal-footer">
-      <button type="button" class="py-2 px-4 bg-[#6c757d] text-white rounded-md" onclick={close}>Kanselleer</button>
+      <button type="button" class="py-2 px-4 bg-secondary text-tertiary rounded-md" onclick={close}>Kanselleer</button>
       {@render footer?.()}
     </div>
   </div>

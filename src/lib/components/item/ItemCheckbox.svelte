@@ -34,13 +34,13 @@
     {onlongpress}
     type="button"
     aria-label="check"
-    class="rounded-md border shadow-inner shadow-gray-800 transition-all duration-300 bg-white/10 border-gray-400 h-6 w-6 flex items-center justify-center"
+    class="rounded-md border shadow-inner shadow-primary transition-all duration-300 bg-tertiary border-tertiary-20d h-6 w-6 flex items-center justify-center"
     class:bg-blue-600!={is_checked}
     class:border-blue-700!={is_checked}
     {onclick}
   >
     {#if is_checked}
-      <Check class="text-gray-200" />
+      <Check class="text-tertiary" />
     {/if}
   </button>
 </div>

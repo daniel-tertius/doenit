@@ -91,8 +91,8 @@
     <select
       id="repeat"
       bind:value={temp_repeat_interval}
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] open:text-gray-100 appearance-none"
-      class:text-gray-400={!temp_repeat_interval}
+      class="bg-primary/50 p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none"
+      class:text-tertiary={!temp_repeat_interval}
     >
       <option value="">Geen herhaling</option>
       <option value="daily">Daagliks</option>
@@ -106,7 +106,7 @@
 
     {#if !!temp_repeat_interval}
       <button onclick={() => (temp_repeat_interval = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
-        <Times class="text-slate-300" size={18} />
+        <Times class="text-tertiary" size={18} />
       </button>
     {/if}
   </div>
@@ -116,21 +116,21 @@
   <div class="p-4 space-y-4">
     <div class="flex sm:flex-row gap-4">
       <div class="flex-1">
-        <label for="repeat_interval_number" class="block text-sm font-medium text-gray-900 mb-1">Elke</label>
+        <label for="repeat_interval_number" class="block text-sm font-medium text-primary mb-1">Elke</label>
         <input
           id="repeat_interval_number"
           type="number"
           min="2"
           bind:value={temp_repeat_interval_number}
-          class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
+          class="bg-primary/50 p-2 w-full rounded-lg border border-primary"
         />
       </div>
       <div class="flex-1">
-        <label for="custom_interval" class="block text-sm font-medium text-gray-900 mb-1">Periode</label>
+        <label for="custom_interval" class="block text-sm font-medium text-primary mb-1">Periode</label>
         <select
           id="custom_interval"
           bind:value={temp_other_interval}
-          class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51]"
+          class="bg-primary/50 p-2 w-full rounded-lg border border-primary"
         >
           <option value="daily">Dae</option>
           <option value="weekly">Weke</option>
@@ -144,7 +144,7 @@
 
 {#snippet footer()}
   <button
-    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+    class="bg-blue-600 hover:bg-blue-700 text-tertiary px-4 py-2 rounded-md"
     type="button"
     onclick={() => {
       if (!temp_repeat_interval_number || !temp_other_interval) {

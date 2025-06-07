@@ -63,7 +63,7 @@
   }
 </script>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-white grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
   <div>
     <label class="font-bold" for="name">Naam</label>
     <input
@@ -73,7 +73,7 @@
       bind:value={task.name}
       type="text"
       placeholder="Gee jou taak 'n naam"
-      class="bg-[#233a50]/50 p-2 w-full rounded-lg border border-[#223a51] invalid:border-red-500"
+      class="bg-primary/50 p-2 w-full rounded-lg border border-primary invalid:border-red-500"
     />
     {#if error_message}
       <div class="text-red-500 text-sm mt-1 flex justify-end">

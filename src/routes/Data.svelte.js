@@ -88,8 +88,22 @@ export class Data {
       return;
     }
 
+    const default_cat_id = this.categories.find(({ name }) => name === "Verstek")?.id ?? "";
+    const is_home = page.url.pathname === "/";
+
+    if (page.url.pathname === "/complete") {
+      this.#tasks = this.#all_tasks.filter(({ archived }) => {
+        return !!archived 
+      });
+      return;
+    }
+
     this.#tasks = this.#all_tasks.filter(({ category_id = "", archived }) => {
-      return this.#selected_categories_hash.has(category_id) && archived == (page.url.pathname !== "/");
+      if (!category_id && this.#selected_categories_hash.has(default_cat_id)) {
+        return !archived;
+      }
+
+      return this.#selected_categories_hash.has(category_id) && !archived;
     });
   }
 
@@ -148,6 +162,7 @@ export class Data {
     const is_repeat_task = task.repeat_interval && task.due_date;
     if (is_repeat_task) {
       task.due_date = this.#getNextDueDate(task);
+      task.start_date = this.#getNextStartDate(task);
       let new_task = await this.#DB.Task.update(task.id, task);
       this.#addTask(new_task);
       return;
@@ -324,6 +339,18 @@ export class Data {
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
     const new_day = new Date(calcNextDay(new Date(task.due_date), task.repeat_interval_number));
+
+    return new_day.toLocaleDateString("en-CA");
+  }
+
+  /**
+   * @param {Task} task
+   */
+  #getNextStartDate(task) {
+    if (!task.repeat_interval || !task.start_date) return null;
+
+    const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
+    const new_day = new Date(calcNextDay(new Date(task.start_date), task.repeat_interval_number));
 
     return new_day.toLocaleDateString("en-CA");
   }

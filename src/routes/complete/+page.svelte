@@ -14,7 +14,7 @@
 
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
-      <div class="text-lg text-gray-400">Jou lys is skoon!</div>
+      <div class="text-lg text-tertiary">Jou lys is skoon!</div>
     </div>
   {/if}
 

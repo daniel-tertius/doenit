@@ -6,22 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="description" content="A simple todo app" />
+    <meta name="description" content="'n Eenvoudige taaklys toepassing" />
     <title>Doenit</title>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
-    <div style="display: contents; background-color: #233a50">
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          background-color: #325372;
-          height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-        "
-      >
-        %sveltekit.body%
-      </div>
-    </div>
+    %sveltekit.body%
   </body>
 </html>

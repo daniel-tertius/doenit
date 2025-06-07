@@ -29,15 +29,15 @@
   <button
     type={is_form_page ? "submit" : "button"}
     form={is_form_page ? "form" : null}
-    class="flex justify-center items-center aspect-square rounded-full h-15 w-15 bg-[#5b758e] p-3 font-semibold text-white *:transition-all *:duration-300 hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+    class="flex justify-center items-center aspect-square rounded-full h-15 w-15 bg-primary-20l p-3 font-semibold text-tertiary *:transition-all *:duration-300 hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
     onclick={is_form_page ? null : onclick}
   >
     {#if navigating.to}
-      <Loading size={24} color="#d6dde3" />
+      <Loading size={24} class="text-tertiary" />
     {:else if is_home}
-      <Plus size={24} color="#d6dde3" />
+      <Plus size={24} class="text-tertiary" />
     {:else}
-      <Check size={24} color="#d6dde3" />
+      <Check size={24} class="text-tertiary" />
     {/if}
   </button>
 {/if}

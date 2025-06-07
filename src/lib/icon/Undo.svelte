@@ -1,8 +1,9 @@
 <script>
-  let { size = 26, color = "currentColor" } = $props();
+  let { size = 26, color = "currentColor", ...rest } = $props();
 </script>
 
 <svg
+  {...rest}
   xmlns="http://www.w3.org/2000/svg"
   width={size}
   height={size}

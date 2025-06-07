@@ -1,4 +1,6 @@
 import type { CapacitorConfig } from "@capacitor/cli";
+import dotenv from "dotenv";
+dotenv.config();
 
 const config: CapacitorConfig = {
   appId: "doenit.app",
@@ -11,9 +13,22 @@ const config: CapacitorConfig = {
   },
   plugins: {
     StatusBar: {
-      style: "Light",
-      backgroundColor: "#233a50",
+      style: "Dark",
+      backgroundColor: "#202325",
       overlay: false,
+    },
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
+  },
+  android: {
+    buildOptions: {
+      keystorePath: "./app.keystore",
+      keystorePassword: process.env.PUBLIC_KEYSTORE_PASSWORD,
+      keystoreAlias: process.env.PUBLIC_KEYSTORE_ALIAS,
+      keystoreAliasPassword: process.env.PUBLIC_KEYSTORE_PASSWORD,
+      releaseType: "AAB",
+      signingType: "jarsigner",
     },
   },
 };

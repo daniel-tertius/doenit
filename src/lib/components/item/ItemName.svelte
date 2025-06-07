@@ -2,12 +2,12 @@
   let { name, completed, checkoff_animation } = $props();
 </script>
 
-<div class="relative select-none text-gray-200 ml-9" class:opacity-50={!name}>
+<div class="relative select-none text-tertiary ml-9" class:opacity-50={!name}>
   {#if checkoff_animation || completed}
     <div
       class="{completed
         ? 'border-b opacity-50'
-        : 'border-b-2'} border-white absolute top-2.5 transition-all duration-300"
+        : 'border-b-2'} border-tertiary absolute top-2.5 transition-all duration-300"
       class:w-full={checkoff_animation || completed}
     ></div>
   {/if}

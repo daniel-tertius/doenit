@@ -71,13 +71,13 @@
         oninput={() => (error_message = "")}
         bind:value={new_category_name}
         placeholder="Voeg 'n nuwe kategorie by"
-        class="w-full h-full rounded-md bg-[#223a51] px-4 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+        class="w-full h-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-tertiary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
       />
 
       <button
-        class="h-full rounded-md bg-[#5b758e] px-4 py-2 font-medium transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+        class="h-full rounded-md bg-primary-20l px-4 py-2 font-medium transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
       >
-        <Plus color="#FFF" />
+        <Plus class="text-tertiary" />
       </button>
     </form>
 
@@ -90,8 +90,8 @@
 
   <div class="flex flex-col space-y-2">
     {#each data.categories as category (category.id)}
-      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-[#5b758e] rounded-md">
-        <div class="text-lg font-semibold text-white">{category.name}</div>
+      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
+        <div class="text-lg font-semibold text-tertiary">{category.name}</div>
 
         {#if category.name != DEFAULT_NAME}
           <button class="text-red-500 hover:text-red-700" onclick={() => deleteCategory(category.id)}>

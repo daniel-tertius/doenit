@@ -34,10 +34,10 @@
 
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
-      <div class="text-lg text-gray-400">Jou lys is skoon!</div>
+      <div class="text-lg text-tertiary">Jou lys is skoon!</div>
       <button
         type="button"
-        class="rounded-md bg-[#5b758e] px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-white transition-colors hover:bg-[#476480] focus:outline-none focus:ring-2 focus:ring-[#5b758e] focus:ring-offset-2"
+        class="rounded-md bg-primary-20l px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-tertiary transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
         onclick={() => goto("/create")}
       >
         <Plus size={40} />
@@ -54,7 +54,7 @@
 
     {#if !is_same_display_date}
       {#key display_date}
-        <div in:fade={{ delay: 700 }} class="text-sm font-semibold pt-1 text-gray-200">
+        <div in:fade={{ delay: 700 }} class="text-sm font-semibold pt-1 text-tertiary">
           {display_date}
         </div>
       {/key}

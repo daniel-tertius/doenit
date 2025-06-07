@@ -52,7 +52,7 @@
 <!-- {task.repeat_interval_number}
 {task.repeat_interval} -->
 <div
-  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm bg-[#476480] {checkoff_animation
+  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm bg-primary-20l {checkoff_animation
     ? 'translate-x-[80%] **:opacity-50'
     : ''}"
   in:slide={{ delay: 200 }}
@@ -61,11 +61,11 @@
     {...rest}
     class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
       ? 'border-red-600/40! bg-red-500/20!'
-      : ''} {is_applicable && !is_selected && !task.completed ? 'bg-amber-200/20' : ''}"
-    class:bg-[#233a50]={task.completed}
-    class:bg-[#233a50]!={is_selected && !task.completed}
-    class:bg-[#476480]!={is_selected && task.completed}
-    class:border-amber-400!={is_applicable && !is_selected && !task.completed}
+      : ''} {is_applicable && !is_selected && !task.completed ? 'bg-[#EC9313]/40' : ''}"
+    class:bg-primary={task.completed}
+    class:bg-primary!={is_selected && !task.completed}
+    class:bg-primary-20l!={is_selected && task.completed}
+    class:border-[#EC9313]!={is_applicable && !is_selected && !task.completed}
     class:border!={is_applicable && !is_selected && !task.completed}
     {onclick}
     use:longpress
@@ -76,26 +76,26 @@
     <div class="pl-8 flex flex-wrap gap-1.5">
       {#if task.due_date}
         <div
-          class="text-left rounded-full bg-[#223a51] px-1.5 w-fit flex items-center h-fit gap-1"
+          class="text-left rounded-full bg-primary px-1.5 w-fit flex items-center h-fit gap-1"
           class:opacity-50={task.completed}
           class:bg-red-800={is_past && !task.completed}
         >
-          <span class="text-gray-300">
+          <span class="text-tertiary">
             {displayDate({ due_date: task.due_date, start_date: task.start_date })}
           </span>
 
           {#if !!task.repeat_interval}
-            <Sync class="text-gray-300" size={12} />
+            <Sync class="text-tertiary" size={12} />
           {/if}
         </div>
       {/if}
 
       {#if category}
         <div
-          class="text-left rounded-full bg-[#725132] border border-[#67492d] px-3 w-fit flex items-center h-fit overflow-hidden"
+          class="text-left rounded-full bg-[#b2d9c9] px-3 w-fit flex items-center h-fit overflow-hidden"
           class:opacity-50={task.completed}
         >
-          <span class="text-gray-200">{category.name}</span>
+          <span class="text-primary">{category.name}</span>
         </div>
       {/if}
     </div>

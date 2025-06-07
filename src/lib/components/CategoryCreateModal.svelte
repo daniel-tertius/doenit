@@ -37,7 +37,7 @@
       type="text"
       use:init
       placeholder="Kies 'n naam vir jou kategorie"
-      class="p-2 w-full rounded-lg border border-[#223a51] mt-2"
+      class="p-2 w-full rounded-lg border border-primary mt-2"
       bind:value={new_category_name}
     />
 

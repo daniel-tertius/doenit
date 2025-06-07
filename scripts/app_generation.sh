@@ -48,23 +48,22 @@ npx cap sync || {
 # ----------------------------------------------------------------
 # STEP 4: GENERATE DEBUG APK FILE
 # ----------------------------------------------------------------
-echo -e "${echo_prefix} Building debug android APK file"
-cd android
-./gradlew
-cd - >/dev/null
+# echo -e "${echo_prefix} Building debug android APK file"
+# cd android
+# ./gradlew
+# cd - >/dev/null
 
-echo -e "${echo_prefix} Copying 'doenit-debug.apk' to ./app-output"
+# echo -e "${echo_prefix} Copying 'doenit-debug.apk' to ./app-output"
 
-mkdir -p app-output
-rm -f app-output/doenit-debug.apk
-cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-output/doenit-debug.apk
+# mkdir -p app-output
+# rm -f app-output/doenit-debug.apk
+# cp android/app/build/outputs/apk/release/app-release-unsigned.apk app-output/doenit-debug.apk
 
 # ----------------------------------------------------------------
 # STEP 5: GENERATE SIGNED RELEASE APK FILE
 # ----------------------------------------------------------------
 echo -e "${echo_prefix} Building signed android APK file"
-
-npx cap build android --keystorepath "app.keystore" --keystorepass "123456" --keystorealias "Tertius" --androidreleasetype "APK" --signing-type "apksigner" || {
+npx cap build android --androidreleasetype "APK" --signing-type "apksigner" || {
     echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
     exit 1
 }
@@ -78,16 +77,16 @@ cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/doeni
 # ----------------------------------------------------------------
 # STEP 6: GENERATE SIGNED RELEASE AAB FILE
 # ----------------------------------------------------------------
-# echo -e "${echo_prefix} Building signed android AAB file"
-# npx cap build android --keystorepath "app.keystore" --keystorepass "123456" --keystorealias "Tertius" --androidreleasetype "AAB" --signing-type "jarsigner" || {
-#     echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
-#     exit 1
-# }
+echo -e "${echo_prefix} Building signed android AAB file"
+npx cap build android || {
+    echo -e "${red}[ERROR] 'npx cap build android' failed${clear}"
+    exit 1
+}
 
-# echo -e "${echo_prefix} Copying 'doenit.aab' to ./app-output"
+echo -e "${echo_prefix} Copying 'doenit.aab' to ./app-output"
 
-# mkdir -p app-output
-# rm -f app-output/doenit.aab
-# cp android/app/build/outputs/bundle/release/app-release.aab app-output/doenit.aab
+mkdir -p app-output
+rm -f app-output/doenit.aab
+cp android/app/build/outputs/bundle/release/app-release-signed.aab app-output/doenit.aab
 
 echo -e "${green}Script successfully executed!${clear}"

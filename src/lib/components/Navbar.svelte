@@ -16,25 +16,29 @@
   }}
 />
 
-<aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-[#476480] shadow-lg z-50">
+<aside
+  transition:fly={{ x: -100 }}
+  class="fixed w-64 h-full bg-primary-10l shadow-lg z-50"
+  style="top: env(safe-area-inset-top, 0px); left: env(safe-area-inset-left, 0px)"
+>
   <div class="flex flex-col items-center justify-center h-full">
-    <h2 class="text-2xl font-bold text-[#d6dde3]">Kieslys</h2>
+    <h2 class="text-2xl font-bold text-tertiary">Kieslys</h2>
     <ul class="mt-4 space-y-2 text-lg">
       <li class:underline={page.url.pathname === "/"} class:font-black={page.url.pathname === "/"}>
-        <a href="/" class="flex gap-1 text-[#d6dde3] hover:text-white">
-          <Home />
+        <a href="/" class="flex gap-1 text-tertiary hover:text-tertiary">
+          <Home class="text-tertiary" />
           <p>Tuis</p>
         </a>
       </li>
       <li class:underline={page.url.pathname === "/complete"} class:font-black={page.url.pathname === "/complete"}>
-        <a href="/complete" class="flex gap-1 text-[#d6dde3] hover:text-white">
-          <Check />
+        <a href="/complete" class="flex gap-1 text-tertiary hover:text-tertiary">
+          <Check class="text-tertiary" />
           <p>Voltooide Take</p>
         </a>
       </li>
       <li class:underline={page.url.pathname === "/categories"} class:font-black={page.url.pathname === "/categories"}>
-        <a href="/categories" class="flex gap-1 text-[#d6dde3] hover:text-white">
-          <Categories />
+        <a href="/categories" class="flex gap-1 text-tertiary hover:text-tertiary">
+          <Categories class="text-tertiary" />
           <p>Kategorieë</p>
         </a>
       </li>

@@ -27,7 +27,7 @@
 
   <div
     transition:slide
-    class="absolute left-0 right-0 mt-1 bg-[#325372] border border-[#d6dde3] rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
+    class="absolute left-0 right-0 mt-1 bg-primary border border-tertiary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
   >
     {#each data.categories as { id, name } (id)}
@@ -45,7 +45,7 @@
 
 <div class="relative w-full my-auto">
   <button
-    class="bg-[#325372] w-full text-[#d6dde3] border-1 border-[#d6dde3] rounded h-12 px-2 flex items-center justify-between"
+    class="bg-primary-20l w-full text-tertiary border-1 border-tertiary rounded h-12 px-2 flex items-center justify-between"
     onclick={(e) => {
       e.stopPropagation();
       show_dropdown = !show_dropdown;
