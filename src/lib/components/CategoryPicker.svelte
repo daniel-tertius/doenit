@@ -5,6 +5,8 @@
 
   let { category_id = $bindable() } = $props();
 
+  const DEFAULT_NAME = "Standaard";
+
   let is_adding = $state(false);
 
   $effect(() => {
@@ -18,12 +20,14 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-primary-20l p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none pr-5 truncate"
-    class:text-tertiary={!category_id}
+    class="bg-primary-20l p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none pr-5 truncate {!category_id &&
+      'text-tertiary-20d'}"
   >
-    <option value="">Kies 'n kategorie (opsioneel)</option>
+    <option value="">Kies 'n kategorie</option>
     {#each data.categories as category (category.id)}
-      <option value={category.id}>{category.name}</option>
+      {#if category.name != DEFAULT_NAME}
+        <option value={category.id}>{category.name}</option>
+      {/if}
     {/each}
     <option class="font-semibold" value={null}>+ Skep kategorie</option>
   </select>

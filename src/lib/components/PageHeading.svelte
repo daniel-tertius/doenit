@@ -2,6 +2,7 @@
   import { page } from "$app/state";
   import { fade, slide } from "svelte/transition";
   import BackButton from "./BackButton.svelte";
+  import DeleteAll from "./DeleteAll.svelte";
 
   const TITLES = {
     "/": "Taaklys",
@@ -29,4 +30,5 @@
   </div>
 
   <BackButton />
+  <DeleteAll />
 </div>

@@ -18,7 +18,7 @@
   /** @type {HTMLInputElement?} */
   let date_input = $state(null);
 
-  const is_past = $derived(!!date && new Date(date).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0));
+  const is_past = $derived(!!date && new Date(date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
 
   const display_due_date = $derived(displayDate({ due_date: date }));
 
@@ -38,10 +38,10 @@
       value={display_due_date}
       onfocus={() => (is_focused = true)}
       placeholder="Kies 'n datum"
-      class="bg-primary/50 p-2 w-full rounded-lg border border-primary"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d"
       class:text-red-500={is_past}
       class:border-0={is_past}
-    />
+    /> 
   {:else}
     <input
       id="date"
@@ -50,7 +50,7 @@
       {max}
       bind:this={date_input}
       bind:value={date}
-      class="bg-primary/50 p-2 w-full rounded-lg border border-primary appearance-none"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
       class:text-red-500={is_past}
       class:border-0={is_past}
     />
@@ -76,43 +76,43 @@
   <div class="flex gap-2 mt-2" transition:slide>
     <button
       type="button"
-      class="bg-primary/50 p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
+      class="bg-primary-20l p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
       onclick={() => {
         date = today.toLocaleDateString("en-CA");
       }}
     >
       <span>Vandag</span>
-      <div class="text-tertiary text-[12px]">{displayDateShort(today)}</div>
+      <div class="text-tertiary-30d text-[12px]">{displayDateShort(today)}</div>
     </button>
     <button
       type="button"
-      class="bg-primary/50 p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
+      class="bg-primary-20l p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
       onclick={() => {
         date = tomorrow.toLocaleDateString("en-CA");
       }}
     >
       Môre
-      <div class="text-tertiary text-[12px]">{displayDateShort(tomorrow)}</div>
+      <div class="text-tertiary-30d text-[12px]">{displayDateShort(tomorrow)}</div>
     </button>
     <button
       type="button"
-      class="bg-primary/50 p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
+      class="bg-primary-20l p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_week.toLocaleDateString("en-CA");
       }}
     >
       Oor 'n week
-      <div class="text-tertiary text-[12px]">{displayDateShort(in_a_week)}</div>
+      <div class="text-tertiary-30d text-[12px]">{displayDateShort(in_a_week)}</div>
     </button>
     <button
       type="button"
-      class="bg-primary/50 p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
+      class="bg-primary-20l p-1 rounded-lg border border-primary w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_month.toLocaleDateString("en-CA");
       }}
     >
       Oor 'n maand
-      <div class="text-tertiary text-[12px]">{displayDateShort(in_a_month)}</div>
+      <div class="text-tertiary-30d text-[12px]">{displayDateShort(in_a_month)}</div>
     </button>
   </div>
 {/if}

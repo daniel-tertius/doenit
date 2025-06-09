@@ -91,8 +91,8 @@
     <select
       id="repeat"
       bind:value={temp_repeat_interval}
-      class="bg-primary/50 p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none"
-      class:text-tertiary={!temp_repeat_interval}
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none"
+      class:text-tertiary-30d={!temp_repeat_interval}
     >
       <option value="">Geen herhaling</option>
       <option value="daily">Daagliks</option>
@@ -122,7 +122,7 @@
           type="number"
           min="2"
           bind:value={temp_repeat_interval_number}
-          class="bg-primary/50 p-2 w-full rounded-lg border border-primary"
+          class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
         />
       </div>
       <div class="flex-1">
@@ -130,7 +130,7 @@
         <select
           id="custom_interval"
           bind:value={temp_other_interval}
-          class="bg-primary/50 p-2 w-full rounded-lg border border-primary"
+          class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
         >
           <option value="daily">Dae</option>
           <option value="weekly">Weke</option>

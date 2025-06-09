@@ -80,7 +80,7 @@
   <button type="button" onclick={toggleNotifications}>Enable Daily Reminders</button>
   <button type="button" onclick={cancelNotifications}>Disable Daily Reminders</button>
 </div> -->
-<main class="grow flex flex-col overflow-y-auto max-w-[1000px] w-full md:mx-auto p-2">
+<main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2">
   {@render children()}
 </main>
 

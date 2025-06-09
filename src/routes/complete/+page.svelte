@@ -3,22 +3,18 @@
   import Item from "$lib/components/item/Item.svelte";
   import { data } from "../Data.svelte";
   import { Haptics } from "@capacitor/haptics";
-  import DeleteAll from "$lib/components/DeleteAll.svelte";
 
   data.selected_tasks_hash.clear();
-  data.refreshTasks();
 </script>
 
 <div class="space-y-1.5">
-  <DeleteAll />
-
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       <div class="text-lg text-tertiary">Jou lys is skoon!</div>
     </div>
   {/if}
 
-  {#each data.tasks as task (task.id)}
+  {#each data.completed_tasks as task (task.id)}
     <Item
       {task}
       onselect={async () => {

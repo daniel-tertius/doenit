@@ -7,7 +7,6 @@
   import { data } from "../../../routes/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
-  import Resync from "$lib/icon/Sync.svelte";
   import Sync from "$lib/icon/Sync.svelte";
 
   /**
@@ -26,16 +25,15 @@
   const { task: original_task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const task = $state({ ...original_task });
-  const is_past = $derived(
-    !!task.due_date && new Date(task.due_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
-  );
+
+  const today = new Date().setHours(0, 0, 0, 0);
+  const due_date = new Date().setHours(0, 0, 0, 0);
+
+  const is_past = $derived(!!task.due_date && due_date < today);
   const is_selected = $derived(data.selected_tasks_hash.has(task.id));
 
   const is_applicable = $derived(
-    !!task.due_date &&
-      !!task.start_date &&
-      new Date().setHours(0, 0, 0, 0) >= new Date(task.start_date).setHours(0, 0, 0, 0) &&
-      new Date().setHours(0, 0, 0, 0) <= new Date(task.due_date).setHours(0, 0, 0, 0)
+    !!task.due_date && !!task.start_date && today >= new Date(task.start_date).setHours(0, 0, 0, 0) && today <= due_date
   );
 
   let checkoff_animation = $state(false);
@@ -49,8 +47,6 @@
   });
 </script>
 
-<!-- {task.repeat_interval_number}
-{task.repeat_interval} -->
 <div
   class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm bg-primary-20l {checkoff_animation
     ? 'translate-x-[80%] **:opacity-50'
@@ -59,7 +55,7 @@
 >
   <button
     {...rest}
-    class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed
+    class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed && !is_selected
       ? 'border-red-600/40! bg-red-500/20!'
       : ''} {is_applicable && !is_selected && !task.completed ? 'bg-[#EC9313]/40' : ''}"
     class:bg-primary={task.completed}

@@ -1,5 +1,5 @@
 <script>
-  import { fade, fly, slide } from "svelte/transition";
+  import { fly, slide } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data as Data } from "../Data.svelte.js";
   import Herhaling from "$lib/components/item/Herhaling.svelte";
@@ -8,9 +8,9 @@
   import { onMount } from "svelte";
   import DueDatePicker from "$lib/components/DueDatePicker.svelte";
   import ItemCheckbox from "$lib/components/item/ItemCheckbox.svelte";
-  import { Times } from "$lib/icon/index.js";
-  import Plus from "$lib/icon/Plus.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
+  import Important from "$lib/icon/Important.svelte";
+  import Urgent from "$lib/icon/Urgent.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 
@@ -25,6 +25,8 @@
     name: origin_task.name,
     due_date: origin_task.due_date ? new Date(origin_task.due_date).toLocaleDateString("en-CA") : null,
     start_date: origin_task.start_date,
+    important: !!origin_task.important,
+    urgent: !!origin_task.urgent,
     completed: !!origin_task.completed,
     repeat_interval: origin_task.repeat_interval_number > 1 ? "other" : origin_task.repeat_interval || "",
     repeat_interval_number: origin_task.repeat_interval_number || 1,
@@ -61,8 +63,9 @@
       return;
     }
 
+    task.archived = task.completed;
     if (task.completed) {
-      task.archived = true;
+      task.completed_at = new Date().toLocaleString("af-ZA");
     }
 
     if (task.repeat_interval_number > 1) {
@@ -116,7 +119,7 @@
       bind:value={task.name}
       type="text"
       placeholder="Gee jou taak 'n naam"
-      class="bg-primary/50 p-2 w-full rounded-lg border border-primary invalid:border-red-500"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary invalid:border-red-500 placeholder:text-tertiary-30d"
     />
     {#if error_message}
       <div class="text-red-500 text-sm mt-1 flex justify-end">
@@ -154,18 +157,49 @@
     <CategoryPicker bind:category_id={task.category_id} />
   </div>
 
-  <button
-    class="grid gap-2 grid-cols-[auto_min-content] w-full h-11 items-center"
-    type="button"
-    onclick={() => {
-      task.completed = !task.completed;
-    }}
-  >
-    <span class="font-bold text-left">Voltooi</span>
-    <div class="relative w-11 h-11">
-      <ItemCheckbox is_selected={task.completed} checkoff_animation={task.completed} class="left-auto right-2.5" />
+  <div>
+    <label class="font-bold" for="category">Die vier kwadrante</label>
+
+    <div class="flex gap-2">
+      <button
+        type="button"
+        class="{task.important
+          ? 'bg-primary border-primary-10d'
+          : 'bg-primary-20l border-primary '} text-tertiary p-3 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
+        onclick={() => {
+          task.important = !task.important;
+        }}
+      >
+        <Important />
+        <span>Belangrik</span>
+      </button>
+      <button
+        type="button"
+        class="{task.urgent
+          ? 'bg-red-100 border-red-400 text-red-700'
+          : 'bg-primary-20l border-primary text-tertiary'} p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
+        onclick={() => {
+          task.urgent = !task.urgent;
+        }}
+      >
+        <Urgent />
+        Dringend
+      </button>
     </div>
-  </button>
+  </div>
+
+  <div class="grid gap-2 grid-cols-[auto_min-content] w-full h-11 items-center">
+    <span class="font-bold text-left">Voltooi</span>
+    <button
+      class="relative w-11 h-11"
+      type="button"
+      onclick={() => {
+        task.completed = !task.completed;
+      }}
+    >
+      <ItemCheckbox is_selected={task.completed} checkoff_animation={task.completed} class="left-auto right-2.5" />
+    </button>
+  </div>
 </form>
 
 <Modal bind:open={is_deleting} {footer} title="Skrap Taak?">

@@ -7,7 +7,7 @@
   import Plus from "$lib/icon/Plus.svelte";
   import { data } from "../Data.svelte";
 
-  const DEFAULT_NAME = "Verstek";
+  const DEFAULT_NAME = "Standaard";
 
   let new_category_name = $state("");
   /** @type {string?} */
@@ -19,12 +19,6 @@
     await data.refreshCategories();
 
     let default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
-    if (!default_category) {
-      new_category_name = DEFAULT_NAME;
-      await createCategory(new Event("submit"));
-      default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
-    }
-
     default_id = default_category?.id ?? "";
   });
 
@@ -90,15 +84,15 @@
 
   <div class="flex flex-col space-y-2">
     {#each data.categories as category (category.id)}
-      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
-        <div class="text-lg font-semibold text-tertiary">{category.name}</div>
+      {#if category.name != DEFAULT_NAME}
+        <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
+          <div class="text-lg font-semibold text-tertiary">{category.name}</div>
 
-        {#if category.name != DEFAULT_NAME}
           <button class="text-red-500 hover:text-red-700" onclick={() => deleteCategory(category.id)}>
             <Trash />
           </button>
-        {/if}
-      </div>
+        </div>
+      {/if}
     {/each}
   </div>
 </div>

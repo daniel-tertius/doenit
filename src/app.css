@@ -14,8 +14,6 @@ body {
   background-color: #36393b;
   overflow: auto;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 #svelte {
@@ -30,7 +28,10 @@ body {
   --color-primary-10l: #36393b;
   --color-primary-20l: #4d4f51;
   --color-secondary: #9a9d92;
+  --color-tertiary-20l: #e1d4c1;
+  --color-tertiary-10l: #ddceba;
   --color-tertiary: #d9c9b2;
   --color-tertiary-10d: #c3b5a0;
   --color-tertiary-20d: #aea18e;
+  --color-tertiary-30d: #988d7d
 }

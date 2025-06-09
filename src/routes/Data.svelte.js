@@ -1,8 +1,9 @@
 import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { DB } from "$lib/DB/DB";
-import { tick } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
+
+const DEFAULT_NAME = "Standaard";
 
 /** @typedef {import('$lib/DB/DB').Task} Task */
 /** @typedef {import('$lib/DB/DB').Category} Category */
@@ -71,6 +72,13 @@ export class Data {
     return this.#sortByDueDate(this.#tasks);
   }
 
+  get completed_tasks() {
+    let tasks = this.#all_tasks.filter(({ completed }) => completed);
+    tasks = sortByField(tasks, "name", "asc");
+    tasks = sortByField(tasks, "completed_at", "desc");
+    return tasks;
+  }
+
   /**
    * @param {Task[]} value
    */
@@ -88,12 +96,11 @@ export class Data {
       return;
     }
 
-    const default_cat_id = this.categories.find(({ name }) => name === "Verstek")?.id ?? "";
-    const is_home = page.url.pathname === "/";
+    const default_cat_id = this.categories.find(({ name }) => name === DEFAULT_NAME)?.id ?? "";
 
     if (page.url.pathname === "/complete") {
       this.#tasks = this.#all_tasks.filter(({ archived }) => {
-        return !!archived 
+        return !!archived;
       });
       return;
     }
@@ -130,11 +137,16 @@ export class Data {
   async refreshTasks() {
     this.all_tasks = await this.#DB.Task.data;
 
+    const { id } = this.categories.find(({ name }) => name === DEFAULT_NAME) ?? { id: "" };
+
     const is_home = page.url.pathname === "/";
     this.tasks = this.#all_tasks.filter(({ archived, category_id = "" }) => {
       if (!is_home) return archived;
 
       if (!this.selected_categories_hash.size) return !archived;
+      if (!category_id && this.selected_categories_hash.has(id)) {
+        return !archived;
+      }
 
       return !archived && this.selected_categories_hash.has(category_id);
     });
@@ -145,6 +157,11 @@ export class Data {
   async refreshCategories() {
     this.categories = (await this.#DB.Category.data).filter(({ archived }) => !archived);
     this.categories = sortByField(this.categories, "name");
+
+    let default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
+    if (!default_category) {
+      await this.#DB.Category.create({ name: DEFAULT_NAME });
+    }
 
     return this.categories;
   }
@@ -170,6 +187,7 @@ export class Data {
 
     task.completed = true;
     task.archived = true;
+    task.completed_at = new Date().toLocaleString("af-ZA");
 
     this.just_completed_task = task;
     return this.#DB.Task.update(task.id, task);
@@ -238,6 +256,7 @@ export class Data {
 
   /**
    * @param {Omit<Task, "id" | "created_at">} task
+   * @returns {Promise<Task | undefined>}
    */
   async createTask(task) {
     if (!task) return;
@@ -248,7 +267,7 @@ export class Data {
     const new_task = await this.#DB.Task.create(task);
     this.#addTask(new_task);
 
-    return task;
+    return new_task;
   }
 
   /**
@@ -325,7 +344,7 @@ export class Data {
       }
     }
 
-    past = sortByField(past, "start_date", "asc");
+    past = sortByField(past, "due_date", "asc");
     // future = sortByField(future, "due_date", "asc");
 
     return [...past, /* ...today, ...future,  */ ...no_date];

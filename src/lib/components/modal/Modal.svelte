@@ -68,7 +68,7 @@
       {@render children?.()}
     </div>
     <div class="modal-footer">
-      <button type="button" class="py-2 px-4 bg-secondary text-tertiary rounded-md" onclick={close}>Kanselleer</button>
+      <button type="button" class="py-2 px-4 bg-secondary text-white rounded-md" onclick={close}>Kanselleer</button>
       {@render footer?.()}
     </div>
   </div>
