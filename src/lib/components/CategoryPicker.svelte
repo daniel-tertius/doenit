@@ -1,5 +1,6 @@
 <script>
   import { Times } from "$lib/icon";
+  import DownChevron from "$lib/icon/DownChevron.svelte";
   import { data } from "../../routes/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
 
@@ -36,6 +37,8 @@
     <button onclick={() => (category_id = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
       <Times class="text-tertiary" size={18} />
     </button>
+  {:else}
+    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-tertiary" size={18} />
   {/if}
 </div>
 
