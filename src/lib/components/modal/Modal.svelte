@@ -1,4 +1,5 @@
 <script>
+  import Times from "$lib/icon/Times.svelte";
   import { fade, scale } from "svelte/transition";
 
   /**
@@ -59,16 +60,19 @@
   >
   </button>
 
-  <div class="modal-content" transition:scale={{ start: 0.95, duration: 200 }}>
-    <div class="modal-header">
-      <h2 class="font-semibold text-primary">{title}</h2>
-      <button type="button" class="close-button" onclick={close} aria-label="Close modal">✕</button>
+  <div class="modal-content rounded-lg bg-primary-10l border border-primary-30l" transition:scale={{ start: 0.95, duration: 200 }}>
+    <div class="p-4 border-b border-primary-30l justify-between items-center gap-0.5 flex">
+      <h2 class="font-semibold text-tertiary">{title}</h2>
+      <button type="button" class="close-button" onclick={close} aria-label="Close modal">
+        <Times class="text-tertiary" size={18} />
+      </button>
     </div>
-    <div class="modal-body">
+    <div class="text-tertiary">
       {@render children?.()}
     </div>
-    <div class="modal-footer">
-      <button type="button" class="py-2 px-4 bg-secondary text-white rounded-md" onclick={close}>Kanselleer</button>
+    <div class="p-4 border-t border-primary-30l justify-between items-center gap-0.5 flex">
+      <button type="button" class="py-2 px-4 bg-primary-30l text-tertiary rounded-md" onclick={close}>Kanselleer</button
+      >
       {@render footer?.()}
     </div>
   </div>
@@ -94,8 +98,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 101;
-    background: white;
-    border-radius: 4px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
@@ -124,18 +126,5 @@
     cursor: pointer;
     padding: 0.25rem 0.5rem;
     color: #6c757d;
-  }
-
-  .modal-body {
-    overflow-y: auto;
-    flex: 1 1 auto;
-  }
-
-  .modal-footer {
-    padding: 1rem;
-    border-top: 1px solid #e9ecef;
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
   }
 </style>

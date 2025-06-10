@@ -32,12 +32,12 @@
 </script>
 
 <Modal bind:open {footer} title="Skep Kategorie" {onclose}>
-  <div class="p-4 text-black">
+  <div class="p-4">
     <input
       type="text"
       use:init
       placeholder="Kies 'n naam vir jou kategorie"
-      class="p-2 w-full rounded-lg border border-primary mt-2"
+      class="p-2 w-full rounded-lg border border-tertiary mt-2"
       bind:value={new_category_name}
     />
 
@@ -51,7 +51,7 @@
 
 {#snippet footer()}
   <button
-    class="bg-lime-500 flex gap-1 items-center text-black px-4 py-2 rounded-md"
+    class="bg-lime-600 flex gap-1 items-center text-black px-4 py-2 rounded-md"
     type="button"
     onclick={addCategory}
   >

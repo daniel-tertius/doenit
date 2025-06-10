@@ -3,6 +3,7 @@
   import Modal from "../modal/Modal.svelte";
   import { slide } from "svelte/transition";
   import { Times } from "$lib/icon";
+  import Check from "$lib/icon/Check.svelte";
 
   /**
    * @typedef {Object} Props
@@ -27,6 +28,7 @@
   let temp_repeat_interval = $state(repeat_interval);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
   let is_dialog_open = $state(false);
+  let error_message = $state("");
 
   const display_other = $derived.by(() => {
     if (other_interval === "other") return "";
@@ -116,20 +118,26 @@
   <div class="p-4 space-y-4">
     <div class="flex sm:flex-row gap-4">
       <div class="flex-1">
-        <label for="repeat_interval_number" class="block text-sm font-medium text-primary mb-1">Elke</label>
+        <label for="repeat_interval_number" class="block text-sm font-semibold text-tertiary mb-1">Elke</label>
         <input
           id="repeat_interval_number"
           type="number"
           min="2"
           bind:value={temp_repeat_interval_number}
+          oninput={() => {
+            error_message = "";
+          }}
           class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
         />
       </div>
       <div class="flex-1">
-        <label for="custom_interval" class="block text-sm font-medium text-primary mb-1">Periode</label>
+        <label for="custom_interval" class="block text-sm font-semibold text-teriary mb-1">Periode</label>
         <select
           id="custom_interval"
           bind:value={temp_other_interval}
+          onchange={() => {
+            error_message = "";
+          }}
           class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
         >
           <option value="daily">Dae</option>
@@ -139,15 +147,27 @@
         </select>
       </div>
     </div>
+
+    {#if error_message}
+      <div class="text-red-500 text-sm mt-1 flex justify-end" transition:slide>
+        {error_message}
+      </div>
+    {/if}
   </div>
 </Modal>
 
 {#snippet footer()}
   <button
-    class="bg-blue-600 hover:bg-blue-700 text-tertiary px-4 py-2 rounded-md"
+    class="bg-blue-600 hover:bg-blue-700 text-tertiary px-4 py-2 rounded-md flex gap-1 items-center"
     type="button"
     onclick={() => {
-      if (!temp_repeat_interval_number || !temp_other_interval) {
+      if (!temp_repeat_interval_number || temp_repeat_interval_number < 2) {
+        error_message = "Die nommer moet minstens 2 wees";
+        return;
+      }
+
+      if (!temp_other_interval) {
+        error_message = "Kies 'n herhalingsperiode";
         return;
       }
 
@@ -158,6 +178,7 @@
       is_dialog_open = false;
     }}
   >
-    Bevestig
+    <Check size={18} />
+    <span>Bevestig</span>
   </button>
 {/snippet}
