@@ -328,31 +328,98 @@ export class Data {
    * @param {Task[]} data
    */
   #sortByDueDate(data) {
-    let future = [];
-    let past = [];
+    if (!data?.length) return [];
+
+    let past_tasks = [];
+    let today_tasks = [];
+    let tomorrow_tasks = [];
+    let day_after_tomorrow_tasks = [];
+    let this_week_tasks = [];
+    let this_month_tasks = [];
+    let next_month_tasks = [];
+    let later_tasks = [];
     let no_date = [];
-    let today = [];
+
+    const today = new Date().setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today).setDate(new Date(today).getDate() + 1);
+    const day_after_tomorrow = new Date(today).setDate(new Date(today).getDate() + 2);
+    const this_week_start = new Date();
+    this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
+    const this_week_end = new Date(this_week_start);
+    this_week_end.setDate(this_week_end.getDate() + 6);
+
+    const current_month = new Date().getMonth();
+    const current_year = new Date().getFullYear();
+
+    const next_month = (current_month + 1) % 12;
+    const next_month_year = next_month === 0 ? current_year + 1 : current_year;
 
     data = sortByField(data, "name", "asc");
     for (const task of data) {
-      if (task.due_date) {
-        past.push(task);
-        // if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) === new Date().setUTCHours(0, 0, 0, 0)) {
-        //   today.push(task);
-        // } else if (new Date(task.due_date).setUTCHours(0, 0, 0, 0) < new Date().setUTCHours(0, 0, 0, 0)) {
-        //   past.push(task);
-        // } else {
-        //   future.push(task);
-        // }
-      } else {
+      if (!task.due_date) {
         no_date.push(task);
+        continue;
+      }
+
+      const due_date = new Date(new Date(task.due_date).setHours(0, 0, 0, 0));
+      if (+due_date < today) {
+        past_tasks.push(task);
+      } else if (+due_date === today) {
+        today_tasks.push(task);
+      } else if (+due_date === tomorrow) {
+        tomorrow_tasks.push(task);
+      } else if (+due_date === day_after_tomorrow) {
+        day_after_tomorrow_tasks.push(task);
+      } else if (due_date >= this_week_start && due_date <= this_week_end) {
+        this_week_tasks.push(task);
+      } else if (due_date.getMonth() === current_month && due_date.getFullYear() === current_year) {
+        this_month_tasks.push(task);
+      } else if (due_date.getMonth() === next_month && due_date.getFullYear() === next_month_year) {
+        next_month_tasks.push(task);
+      } else {
+        later_tasks.push(task);
       }
     }
 
-    past = sortByField(past, "due_date", "asc");
-    // future = sortByField(future, "due_date", "asc");
+    const with_date = [
+      ...this.#sortByPriority(sortByField(past_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(today_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(tomorrow_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(day_after_tomorrow_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(this_week_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(this_month_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(next_month_tasks, "due_date", "asc")),
+      ...this.#sortByPriority(sortByField(later_tasks, "due_date", "asc")),
+    ];
 
-    return [...past, /* ...today, ...future,  */ ...no_date];
+    return [...with_date, ...this.#sortByPriority(no_date)];
+  }
+
+  /**
+   *
+   * @param {Task[]} data
+   * @returns {Task[]}
+   */
+  #sortByPriority(data) {
+    // Sort by Urgent and Important first, then Important, then Urgent
+    const urgent_important = [];
+    const important_only = [];
+    const urgent_only = [];
+    const neither = [];
+
+    for (const task_no_date of data) {
+      if (task_no_date.urgent && task_no_date.important) {
+        urgent_important.push(task_no_date);
+      } else if (task_no_date.important) {
+        important_only.push(task_no_date);
+      } else if (task_no_date.urgent) {
+        urgent_only.push(task_no_date);
+      } else {
+        neither.push(task_no_date);
+      }
+    }
+
+    return [...urgent_important, ...important_only, ...urgent_only, ...neither];
   }
 
   /**

@@ -93,13 +93,13 @@ export function displayPrettyDate(date) {
   const day_after_tomorrow = formatDate(Date.now() + 2 * 86400000);
   if (date === day_after_tomorrow) return "Oormôre";
 
-  const thisWeekStart = new Date();
-  thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay());
-  const thisWeekEnd = new Date(thisWeekStart);
-  thisWeekEnd.setDate(thisWeekEnd.getDate() + 6);
+  const this_week_start = new Date();
+  this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
+  const this_week_end = new Date(this_week_start);
+  this_week_end.setDate(this_week_end.getDate() + 6);
 
   const inputDate = new Date(date);
-  if (inputDate >= thisWeekStart && inputDate <= thisWeekEnd) {
+  if (inputDate >= this_week_start && inputDate <= this_week_end) {
     return "Hierdie week";
   }
 
