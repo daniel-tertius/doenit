@@ -50,7 +50,7 @@
 </script>
 
 <div
-  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm bg-primary-20l {checkoff_animation
+  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm {checkoff_animation
     ? 'translate-x-[80%] **:opacity-50'
     : ''}"
   in:slide={{ delay: 200 }}
@@ -58,13 +58,10 @@
   <button
     {...rest}
     class="rounded-lg flex flex-col items-start p-3 w-full h-full"
-    class:border={is_ongoing && !is_selected && !task.completed}
     class:bg-error={is_past && !task.completed && !is_selected}
-    class:border-error-10d={is_past && !task.completed && !is_selected}
     class:bg-active={is_ongoing && !task.completed && !is_selected}
-    class:border-active-10d={is_ongoing && !task.completed && !is_selected}
     class:bg-primary={task.completed || (is_selected && !task.completed)}
-    class:bg-primary-20l={is_selected && task.completed}
+    class:bg-primary-20l={(!task.completed && !is_past && !is_ongoing) || (!is_selected && task.completed)}
     {onclick}
     use:longpress
     {onlongpress}
@@ -74,10 +71,10 @@
     <div class="pl-9 flex flex-wrap gap-1.5">
       {#if task.due_date}
         <div
-          class="text-left rounded-full px-1.5 w-fit flex items-center h-fit gap-1"
+          class="text-left rounded-full px-1.5 py-0.5 w-fit flex items-center h-fit gap-1"
           class:bg-primary={!task.completed && !is_past && !is_ongoing}
           class:opacity-50={task.completed}
-          class:bg-primary-20l={task.completed}
+          class:bg-primary-10l={task.completed}
           class:bg-red-800={is_past && !task.completed}
           class:bg-active-30d={is_ongoing && !task.completed}
         >
@@ -93,10 +90,13 @@
 
       {#if category}
         <div
-          class="text-left rounded-full bg-[#b2d9c9] px-3 w-fit flex items-center h-fit overflow-hidden"
+          class="text-left rounded-full px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden"
           class:opacity-50={task.completed}
+          class:bg-[#2c5890]={!task.completed && !is_past && !is_ongoing}
+          class:bg-[#965cd1]={!task.completed && is_past && !is_ongoing}
+          class:bg-[#642c90]={is_ongoing && !task.completed}
         >
-          <span class="text-primary">{category.name}</span>
+          <span class="text-tertiary">{category.name}</span>
         </div>
       {/if}
     </div>
