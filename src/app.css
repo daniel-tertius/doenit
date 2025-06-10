@@ -33,5 +33,17 @@ body {
   --color-tertiary: #d9c9b2;
   --color-tertiary-10d: #c3b5a0;
   --color-tertiary-20d: #aea18e;
-  --color-tertiary-30d: #988d7d
+  --color-tertiary-30d: #988d7d;
+
+  --color-warning: #e1b874;
+  --color-warning-10d: #cba668;
+  --color-warning-20d: #b4935d;
+  --color-error: #d15c5c;
+  --color-error-10d: #bc5353;
+  --color-error-20d: #a74a4a;
+
+  --color-active: #90642c;
+  --color-active-10d: #825a28;
+  --color-active-20d: #735023;
+  --color-active-30d: #65461f;
 }

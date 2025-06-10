@@ -119,7 +119,7 @@
   </div>
 
   <div>
-    <label class="font-bold" for="category">Die vier kwadrante</label>
+    <label class="font-bold" for="category">Prioriteit</label>
 
     <div class="flex gap-2">
       <button

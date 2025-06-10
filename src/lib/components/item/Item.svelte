@@ -29,12 +29,12 @@
   const task = $state({ ...original_task });
 
   const today = new Date().setHours(0, 0, 0, 0);
-  const due_date = new Date().setHours(0, 0, 0, 0);
+  const due_date = new Date(task.due_date).setHours(0, 0, 0, 0);
 
   const is_past = $derived(!!task.due_date && due_date < today);
   const is_selected = $derived(data.selected_tasks_hash.has(task.id));
 
-  const is_applicable = $derived(
+  const is_ongoing = $derived(
     !!task.due_date && !!task.start_date && today >= new Date(task.start_date).setHours(0, 0, 0, 0) && today <= due_date
   );
 
@@ -57,26 +57,29 @@
 >
   <button
     {...rest}
-    class="rounded-lg flex flex-col items-start p-3 w-full h-full {is_past && !task.completed && !is_selected
-      ? 'border-red-600/40! bg-red-500/20!'
-      : ''} {is_applicable && !is_selected && !task.completed ? 'bg-[#EC9313]/40' : ''}"
-    class:bg-primary={task.completed}
-    class:bg-primary!={is_selected && !task.completed}
-    class:bg-primary-20l!={is_selected && task.completed}
-    class:border-[#EC9313]!={is_applicable && !is_selected && !task.completed}
-    class:border!={is_applicable && !is_selected && !task.completed}
+    class="rounded-lg flex flex-col items-start p-3 w-full h-full"
+    class:border={is_ongoing && !is_selected && !task.completed}
+    class:bg-error={is_past && !task.completed && !is_selected}
+    class:border-error-10d={is_past && !task.completed && !is_selected}
+    class:bg-active={is_ongoing && !task.completed && !is_selected}
+    class:border-active-10d={is_ongoing && !task.completed && !is_selected}
+    class:bg-primary={task.completed || (is_selected && !task.completed)}
+    class:bg-primary-20l={is_selected && task.completed}
     {onclick}
     use:longpress
     {onlongpress}
   >
     <ItemName name={task.name} completed={task.completed} {checkoff_animation} />
 
-    <div class="pl-8 flex flex-wrap gap-1.5">
+    <div class="pl-9 flex flex-wrap gap-1.5">
       {#if task.due_date}
         <div
-          class="text-left rounded-full bg-primary px-1.5 w-fit flex items-center h-fit gap-1"
+          class="text-left rounded-full px-1.5 w-fit flex items-center h-fit gap-1"
+          class:bg-primary={!task.completed && !is_past && !is_ongoing}
           class:opacity-50={task.completed}
+          class:bg-primary-20l={task.completed}
           class:bg-red-800={is_past && !task.completed}
+          class:bg-active-30d={is_ongoing && !task.completed}
         >
           <span class="text-tertiary">
             {displayDate({ due_date: task.due_date, start_date: task.start_date })}
