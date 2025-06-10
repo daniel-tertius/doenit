@@ -154,15 +154,20 @@ export class Data {
     return this.tasks;
   }
 
+  /**
+   *
+   * @returns {Promise<Category[]>}
+   */
   async refreshCategories() {
     this.categories = (await this.#DB.Category.data).filter(({ archived }) => !archived);
-    this.categories = sortByField(this.categories, "name");
 
-    let default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
+    let default_category = this.categories.find(({ name }) => name === DEFAULT_NAME);
     if (!default_category) {
       await this.#DB.Category.create({ name: DEFAULT_NAME });
+      return this.refreshCategories();
     }
 
+    sortByField(this.categories, "name");
     return this.categories;
   }
 

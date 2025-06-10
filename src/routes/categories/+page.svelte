@@ -15,10 +15,12 @@
 
   let error_message = $state("");
 
+  /** @type {import('$lib/DB/DB').Category?} */
+  let default_category = $state(null);
   onMount(async () => {
     await data.refreshCategories();
 
-    let default_category = data.categories.find(({ name }) => name === DEFAULT_NAME);
+    default_category = data.categories.find(({ name }) => name === DEFAULT_NAME) ?? null;
     default_id = default_category?.id ?? "";
   });
 
@@ -83,6 +85,12 @@
   </div>
 
   <div class="flex flex-col space-y-2">
+    {#if default_category}
+      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
+        <div class="text-lg font-semibold text-tertiary">{default_category.name}</div>
+      </div>
+    {/if}
+
     {#each data.categories as category (category.id)}
       {#if category.name != DEFAULT_NAME}
         <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
