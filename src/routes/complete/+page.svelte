@@ -5,10 +5,11 @@
   import { Haptics } from "@capacitor/haptics";
 
   data.selected_tasks_hash.clear();
+  data.refreshTasks();
 </script>
 
 <div class="space-y-1.5">
-  {#if data.tasks.length === 0}
+  {#if data.completed_tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       <div class="text-lg text-tertiary">Jou lys is skoon!</div>
     </div>
