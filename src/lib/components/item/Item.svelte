@@ -8,6 +8,8 @@
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
   import Sync from "$lib/icon/Sync.svelte";
+  import Important from "$lib/icon/Important.svelte";
+  import Urgent from "$lib/icon/Urgent.svelte";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
@@ -96,6 +98,11 @@
       {/if}
     </div>
   </button>
+
+  <div class="absolute top-1 right-1 flex gap-1">
+    <Important size={16} class={!task.important && "hidden"} />
+    <Urgent size={16} class={!task.urgent && "hidden"} />
+  </div>
 
   <ItemCheckbox bind:checkoff_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
 </div>
