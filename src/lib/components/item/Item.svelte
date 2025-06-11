@@ -61,7 +61,8 @@
     class:bg-error={is_past && !task.completed && !is_selected}
     class:bg-active={is_ongoing && !task.completed && !is_selected}
     class:bg-primary={task.completed || (is_selected && !task.completed)}
-    class:bg-primary-20l={(!task.completed && !is_past && !is_ongoing) || (!is_selected && task.completed)}
+    class:bg-primary-20l={(!task.completed && !is_past && !is_ongoing && !is_selected) ||
+      (!is_selected && task.completed)}
     {onclick}
     use:longpress
     {onlongpress}
@@ -75,8 +76,9 @@
           class:bg-primary={!task.completed && !is_past && !is_ongoing}
           class:opacity-50={task.completed}
           class:bg-primary-10l={task.completed}
-          class:bg-red-800={is_past && !task.completed}
+          class:bg-red-800={is_past && !task.completed && !is_selected}
           class:bg-active-30d={is_ongoing && !task.completed}
+          class:bg-primary-20l={is_selected && !task.completed}
         >
           <span class="text-tertiary">
             {displayDate({ due_date: task.due_date, start_date: task.start_date })}
