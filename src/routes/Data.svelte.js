@@ -312,6 +312,9 @@ export class Data {
     this.#tasks = this.#tasks.filter((task) => {
       return !task_ids.some((id) => id === task.id);
     });
+    this.#all_tasks = this.#all_tasks.filter((task) => {
+      return !task_ids.some((id) => id === task.id);
+    });
   }
 
   /**
