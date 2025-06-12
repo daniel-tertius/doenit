@@ -4,7 +4,7 @@
   import Modal from "./modal/Modal.svelte";
   import { data } from "../../routes/Data.svelte";
 
-  let { open = $bindable(), oncreate, onclose = () => {} } = $props();
+  let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
 
   let new_category_name = $state("");
   let error_message = $state("");
@@ -15,8 +15,8 @@
 
   async function addCategory() {
     if (!new_category_name.trim()) {
-      error_message = "Voer 'n geldige kategorie naam in";
-      return; // Do not create an empty category
+      error_message = "Voer 'n kategorie naam in";
+      return;
     }
 
     open = false;
@@ -28,6 +28,11 @@
     new_category_name = "";
     open = false;
     oncreate(category?.id);
+  }
+
+  function onclose(e) {
+    new_category_name = "";
+    handleClose(e);
   }
 </script>
 
@@ -42,8 +47,8 @@
     />
 
     {#if !!error_message}
-      <div class="text-red-500 text-sm mt-1" transition:slide>
-        {error_message}
+      <div class="text-red-500 text-sm mt-1 text-right w-full" transition:slide>
+        <span>{error_message}</span>
       </div>
     {/if}
   </div>

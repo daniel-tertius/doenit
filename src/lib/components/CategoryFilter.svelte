@@ -43,6 +43,9 @@
     class="absolute left-0 right-0 mt-1 bg-primary border border-tertiary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
   >
+    <div class="text-center text-tertiary pt-1 -mb-2">
+      <span class="h-fit leading-tight">Filtreer op:</span>
+    </div>
     <PriorityFilter bind:important={data.filter.important} bind:urgent={data.filter.urgent} onclick={filterTasks} />
 
     {#if default_category}
@@ -86,8 +89,5 @@
   oncreate={async (new_category_id) => {
     await data.refreshCategories();
     data.selected_categories_hash.add(new_category_id);
-  }}
-  onclose={() => {
-    category_id = "";
   }}
 />

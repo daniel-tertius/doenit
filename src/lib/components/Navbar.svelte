@@ -24,7 +24,7 @@
 >
   <div class="flex flex-col items-center justify-center h-full">
     <h2 class="text-2xl font-bold text-tertiary">Kieslys</h2>
-    <ul class="mt-4 space-y-2 text-lg">
+    <ul class="mt-4 space-y-4 text-lg">
       <li class:underline={page.url.pathname === "/"} class:font-black={page.url.pathname === "/"}>
         <a href="/" class="flex gap-1 text-tertiary hover:text-tertiary">
           <Home class="text-tertiary" />
