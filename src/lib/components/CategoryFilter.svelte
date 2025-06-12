@@ -6,14 +6,27 @@
   import CategoryButton from "./CategoryButton.svelte";
   import Plus from "$lib/icon/Plus.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
+  import PriorityFilter from "./PriorityFilter.svelte";
+
+  const DEFAULT_NAME = "Standaard";
 
   let show_dropdown = $state(false);
   let is_adding = $state(false);
-  let category_id = $state("");
+
+  /** @type {import('$lib/DB/DB').Category?} */
+  let default_category = $state(null);
 
   onMount(async () => {
     await data.refreshCategories();
+    default_category = data.categories.find(({ name }) => name === DEFAULT_NAME) ?? null;
   });
+
+  function filterTasks() {
+    let tasks = data.all_tasks;
+    tasks = data.filterTasksByPriority(tasks);
+    tasks = data.filterTasksByCategory(tasks);
+    data.tasks = tasks;
+  }
 </script>
 
 <svelte:window onclick={() => (show_dropdown = false)} />
@@ -30,8 +43,16 @@
     class="absolute left-0 right-0 mt-1 bg-primary border border-tertiary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
   >
-    {#each data.categories as { id, name } (id)}
-      <CategoryButton {id} {name} />
+    <PriorityFilter bind:important={data.filter.important} bind:urgent={data.filter.urgent} onclick={filterTasks} />
+
+    {#if default_category}
+      <CategoryButton id={default_category.id} name={default_category.name} />
+    {/if}
+
+    {#each data.categories ?? [] as { id, name } (id)}
+      {#if name != DEFAULT_NAME}
+        <CategoryButton {id} {name} />
+      {/if}
     {/each}
 
     <button class="relative w-full flex items-center gap-1 px-4" onclick={() => (is_adding = true)}>

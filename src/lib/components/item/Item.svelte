@@ -105,8 +105,8 @@
   </button>
 
   <div class="absolute top-1 right-1 flex gap-1">
-    <Important size={16} class={!task.important && "hidden"} />
-    <Urgent size={16} class={!task.urgent && "hidden"} />
+    <Important size={16} class="text-tertiary {!task.important && 'hidden'}" />
+    <Urgent size={16} class="text-tertiary {!task.urgent && 'hidden'}" />
   </div>
 
   <ItemCheckbox bind:checkoff_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />

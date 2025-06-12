@@ -3,7 +3,6 @@
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { fly, slide } from "svelte/transition";
-  import { sortByField } from "$lib";
   import Plus from "$lib/icon/Plus.svelte";
   import { data } from "../Data.svelte";
 
@@ -50,11 +49,7 @@
       return;
     }
 
-    const Db = DB.getInstance();
-    const new_category = await Db.Category.create({ name: new_category_name.trim() });
-
-    data.categories.push(new_category);
-    data.categories = sortByField(data.categories, "name");
+    await data.createCategory({ name: new_category_name.trim() });
     new_category_name = "";
   }
 </script>

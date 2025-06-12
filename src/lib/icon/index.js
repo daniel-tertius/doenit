@@ -11,5 +11,23 @@ import Categories from "./Categories.svelte";
 import Trash from "./Trash.svelte";
 import Back from "./Back.svelte";
 import DownChevron from "./DownChevron.svelte";
+import New from "./New.svelte";
+import About from "./About.svelte";
 
-export { Plus, Save, Times, Loading, Undo, Burger, Home, Check, Restore, Categories, Trash, DownChevron, Back };
+export {
+  Plus,
+  Save,
+  Times,
+  Loading,
+  Undo,
+  Burger,
+  Home,
+  Check,
+  Restore,
+  Categories,
+  Trash,
+  DownChevron,
+  Back,
+  New,
+  About,
+};

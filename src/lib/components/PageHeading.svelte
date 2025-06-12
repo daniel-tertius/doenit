@@ -10,6 +10,7 @@
     "/[item_id]": "Wysig taak",
     "/complete": "Voltooide take",
     "/categories": "Kategorieë",
+    "/new": "Nog te Kom",
   };
   const title = $derived(TITLES[page.route.id ?? "/"] || "Taaklys");
 </script>

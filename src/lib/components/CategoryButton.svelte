@@ -18,10 +18,12 @@
     } else {
       data.selected_categories_hash.add(id);
     }
-    data.filterTasksByCategory();
-  }
 
-  $inspect("is_selected", is_selected);
+    let tasks = data.all_tasks;
+    tasks = data.filterTasksByPriority(tasks);
+    tasks = data.filterTasksByCategory(tasks);
+    data.tasks = tasks;
+  }
 </script>
 
 <button class="relative w-full flex items-center gap-1" onclick={onselect}>

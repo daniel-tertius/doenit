@@ -1,6 +1,7 @@
 <script>
   import { page } from "$app/state";
-  import { Categories, Home, Check, Times } from "$lib/icon";
+  import { Categories, Home, Check, Times, New } from "$lib/icon";
+  import About from "$lib/icon/About.svelte";
   import { fly } from "svelte/transition";
 
   let isReady = false;
@@ -40,6 +41,12 @@
         <a href="/categories" class="flex gap-1 text-tertiary hover:text-tertiary">
           <Categories class="text-tertiary" />
           <p>Kategorieë</p>
+        </a>
+      </li>
+      <li class:underline={page.url.pathname === "/about"} class:font-black={page.url.pathname === "/about"}>
+        <a href="/about" class="flex gap-1 text-tertiary hover:text-tertiary">
+          <About class="text-tertiary" />
+          <p>Oor Doenit</p>
         </a>
       </li>
     </ul>

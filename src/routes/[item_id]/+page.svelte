@@ -164,7 +164,7 @@
       <button
         type="button"
         class="{task.important
-          ? 'bg-primary border-primary-10d'
+          ? 'bg-yellow-100 border-yellow-700 text-yellow-700'
           : 'bg-primary-20l border-primary '} text-tertiary p-3 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
         onclick={() => {
           task.important = !task.important;

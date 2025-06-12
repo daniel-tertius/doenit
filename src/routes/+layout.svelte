@@ -1,6 +1,7 @@
 <script>
   import CreateItemButton from "$lib/components/CreateItemButton.svelte";
   import CategoryFilter from "$lib/components/CategoryFilter.svelte";
+  // import { NotificationService } from "$lib/NotificationService";
   import NavbarButton from "$lib/components/NavbarButton.svelte";
   import PageHeading from "$lib/components/PageHeading.svelte";
   import HomeButton from "$lib/components/HomeButton.svelte";
@@ -11,7 +12,6 @@
   import { page } from "$app/state";
   import { onMount } from "svelte";
   import "../app.css";
-  // import { NotificationService } from "$lib/NotificationService";
 
   let { children } = $props();
 

@@ -1,6 +1,7 @@
 import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { DB } from "$lib/DB/DB";
+import { tick } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 
 const DEFAULT_NAME = "Standaard";
@@ -27,6 +28,13 @@ export class Data {
     monthly: (date, num = 1) => date.setMonth(date.getMonth() + 1 * num),
     yearly: (date, num = 1) => date.setFullYear(date.getFullYear() + 1 * num),
   };
+
+  filter = $state({
+    important: false,
+    urgent: false,
+    completed: false,
+    categories: new SvelteSet(),
+  });
 
   #DB = DB.getInstance();
 
@@ -90,22 +98,37 @@ export class Data {
     return this.#selected_categories_hash;
   }
 
-  filterTasksByCategory() {
+  /**
+   * @param {Task[]} tasks
+   * @returns {Task[]}
+   */
+  filterTasksByPriority(tasks) {
+    if (this.filter.important && !this.filter.urgent) {
+      return tasks.filter(({ important }) => important);
+    } else if (!this.filter.important && this.filter.urgent) {
+      return tasks.filter(({ urgent }) => urgent);
+    } else if (this.filter.important && this.filter.urgent) {
+      return tasks.filter(({ important, urgent }) => important && urgent);
+    }
+    return tasks;
+  }
+
+  /**
+   * @param {Task[]} tasks
+   * @returns {Task[]}
+   */
+  filterTasksByCategory(tasks) {
     if (!this.#selected_categories_hash.size) {
-      this.#tasks = this.#all_tasks.filter(({ archived }) => archived == (page.url.pathname !== "/"));
-      return;
+      return tasks.filter(({ archived }) => archived == (page.url.pathname !== "/"));
     }
 
     const default_cat_id = this.categories.find(({ name }) => name === DEFAULT_NAME)?.id ?? "";
 
     if (page.url.pathname === "/complete") {
-      this.#tasks = this.#all_tasks.filter(({ archived }) => {
-        return !!archived;
-      });
-      return;
+      return tasks.filter(({ archived }) => !!archived);
     }
 
-    this.#tasks = this.#all_tasks.filter(({ category_id = "", archived }) => {
+    return tasks.filter(({ category_id = "", archived }) => {
       if (!category_id && this.#selected_categories_hash.has(default_cat_id)) {
         return !archived;
       }
@@ -159,12 +182,15 @@ export class Data {
    * @returns {Promise<Category[]>}
    */
   async refreshCategories() {
-    this.categories = (await this.#DB.Category.data).filter(({ archived }) => !archived);
+    const all_categories = await this.#DB.Category.readAll();
+    this.categories = Object.values(all_categories).filter(({ archived }) => !archived);
 
     let default_category = this.categories.find(({ name }) => name === DEFAULT_NAME);
     if (!default_category) {
-      await this.#DB.Category.create({ name: DEFAULT_NAME });
-      return this.refreshCategories();
+      const category = await this.#DB.Category.create({ name: DEFAULT_NAME });
+
+      this.categories = sortByField([category, ...this.categories], "name");
+      return this.categories;
     }
 
     sortByField(this.categories, "name");
