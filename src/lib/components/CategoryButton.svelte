@@ -1,4 +1,5 @@
 <script>
+  import { selectedCategories } from "$lib/cached";
   import { data } from "../../routes/Data.svelte";
   import ItemCheckbox from "./item/ItemCheckbox.svelte";
 
@@ -18,6 +19,7 @@
     } else {
       data.selected_categories_hash.add(id);
     }
+    selectedCategories.set([...data.selected_categories_hash]);
 
     let tasks = data.all_tasks;
     tasks = data.filterTasksByPriority(tasks);

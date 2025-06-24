@@ -4,7 +4,10 @@
   import { Loading, Back } from "$lib/icon";
   import { App } from "@capacitor/app";
   import { Capacitor } from "@capacitor/core";
+  import { StatusBar } from "@capacitor/status-bar";
   import { onMount } from "svelte";
+
+  let top = $state(0);
 
   const is_home = $derived(page.url.pathname === "/");
   const show = $derived(!["/"].includes(page.url.pathname));
@@ -12,6 +15,16 @@
   function onclick() {
     window.history.back();
   }
+
+  onMount(async () => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    StatusBar.setOverlaysWebView({ overlay: true });
+
+    // @ts-ignore
+    const { height = 0 } = await StatusBar.getInfo();
+    top = height;
+  });
 
   onMount(() => {
     if (Capacitor.isNativePlatform()) {
@@ -29,7 +42,7 @@
 </script>
 
 {#if show}
-  <div class="absolute top-0 left-0 z-50 flex items-center justify-center h-12">
+  <div class="absolute left-0 z-50 flex items-center justify-center h-12" style="top: {top}px">
     <button
       class="rounded-full bg-primary-20l m-1 font-semibold text-tertiary *:transition-all *:duration-300 hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
       {onclick}

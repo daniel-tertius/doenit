@@ -4,16 +4,26 @@
   import { slide } from "svelte/transition";
   import { Times } from "$lib/icon";
   import Check from "$lib/icon/Check.svelte";
+  import { SvelteSet } from "svelte/reactivity";
+  import Page from "../../../routes/+page.svelte";
 
   /**
+   * @typedef {"So" | "Ma" | "Di" | "Wo" | "Do" | "Vr" | "Sa"} WEEKDAY
+   *
    * @typedef {Object} Props
    * @property {number} repeat_interval_number - The number of intervals for the repeat.
+   * @property {(0|1|2|3|4|5|6)[]} specific_days - The specific days of the week for weekly repetition.
    * @property {string} repeat_interval - The type of repeat interval (daily, weekly, monthly, yearly).
    * @property {string} other_interval - The custom interval if the repeat interval is set to "other".
    */
 
   /** @type {Props} */
-  let { repeat_interval_number = $bindable(), repeat_interval = $bindable(), other_interval = $bindable() } = $props();
+  let {
+    repeat_interval_number = $bindable(),
+    repeat_interval = $bindable(),
+    other_interval = $bindable(),
+    specific_days = $bindable([]),
+  } = $props();
 
   /** @type {Record<string, string>}*/
   const OTHER_REPEAT_INTERVALS = {
@@ -23,10 +33,15 @@
     yearly: "jare",
   };
 
+  /** @type {WEEKDAY[]} */
+  const DAYS_OF_WEEK = ["So", "Ma", "Di", "Wo", "Do", "Vr", "Sa"];
+
   let is_mounting = $state(true);
   let temp_other_interval = $state(other_interval);
   let temp_repeat_interval = $state(repeat_interval);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
+  /** @type {Set<(0 | 1 | 2 | 3 | 4 | 5 | 6)>}*/
+  let temp_specific_days = $state(new SvelteSet(specific_days));
   let is_dialog_open = $state(false);
   let error_message = $state("");
 
@@ -84,10 +99,37 @@
       });
     }
   });
+
+  function save() {
+    if (!temp_repeat_interval_number || temp_repeat_interval_number < 2) {
+      error_message = "Die nommer moet minstens 2 wees";
+      return;
+    }
+
+    if (!temp_other_interval) {
+      error_message = "Kies 'n herhalingsperiode";
+      return;
+    }
+
+    temp_repeat_interval_number = Math.max(2, temp_repeat_interval_number);
+    repeat_interval_number = temp_repeat_interval_number;
+    repeat_interval = temp_repeat_interval;
+    other_interval = temp_other_interval;
+
+    is_dialog_open = false;
+  }
+
+  $effect(() => {
+    if (temp_repeat_interval === "weekly_custom_days") {
+      specific_days = [...temp_specific_days];
+    } else {
+      specific_days = [];
+    }
+  });
 </script>
 
 <div transition:slide>
-  <label class="font-bold" for="repeat">Herhaling</label>
+  <label class="font-bold" for="repeat">Herhaal</label>
 
   <div class="relative">
     <select
@@ -99,8 +141,9 @@
       <option value="">Geen herhaling</option>
       <option value="daily">Daagliks</option>
       <option value="workdaily">Daagliks (Ma-Vr)</option>
+      <option value="weekly_custom_days">Weekliks (Kies Dae)</option>
       <option value="weekly">Weekliks</option>
-      <option value="monthly">Maandeliks</option>
+      <option value="monthly">Maandliks</option>
       <option value="yearly">Jaarliks</option>
       <option hidden={temp_repeat_interval === "other"} value="other">Ander{display_other}</option>
       <option hidden={temp_repeat_interval !== "other"} value="other_temp">Ander{display_other}</option>
@@ -112,6 +155,29 @@
       </button>
     {/if}
   </div>
+  {#if temp_repeat_interval === "weekly_custom_days"}
+    <div transition:slide class="flex justify-between items-center mt-2 gap-1">
+      {#each DAYS_OF_WEEK as day, i}
+        <button
+          type="button"
+          class="w-full h-8 rounded-lg border border-primary transition-colors duration-300"
+          class:bg-tertiary={temp_specific_days.has(i)}
+          class:text-primary={temp_specific_days.has(i)}
+          class:bg-primary-20l={!temp_specific_days.has(i)}
+          class:text-tertuary={!temp_specific_days.has(i)}
+          onclick={() => {
+            if (temp_specific_days.has(i)) {
+              temp_specific_days.delete(i);
+            } else {
+              temp_specific_days.add(i);
+            }
+          }}
+        >
+          {day}
+        </button>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <Modal bind:open={is_dialog_open} title="Herhaal{temp_display_other || ' elke…'}" {footer}>
@@ -161,21 +227,7 @@
     class="bg-blue-600 hover:bg-blue-700 text-tertiary px-4 py-2 rounded-md flex gap-1 items-center"
     type="button"
     onclick={() => {
-      if (!temp_repeat_interval_number || temp_repeat_interval_number < 2) {
-        error_message = "Die nommer moet minstens 2 wees";
-        return;
-      }
-
-      if (!temp_other_interval) {
-        error_message = "Kies 'n herhalingsperiode";
-        return;
-      }
-
-      temp_repeat_interval_number = Math.max(2, temp_repeat_interval_number);
-      repeat_interval_number = temp_repeat_interval_number;
-      repeat_interval = temp_repeat_interval;
-      other_interval = temp_other_interval;
-      is_dialog_open = false;
+      save();
     }}
   >
     <Check size={18} />

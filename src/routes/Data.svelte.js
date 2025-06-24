@@ -1,7 +1,7 @@
 import { page } from "$app/state";
 import { sortByField } from "$lib";
+import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
-import { tick } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 
 const DEFAULT_NAME = "Standaard";
@@ -10,12 +10,10 @@ const DEFAULT_NAME = "Standaard";
 /** @typedef {import('$lib/DB/DB').Category} Category */
 
 export class Data {
-  /**
-   * @type {Record<string, (date: Date, num?: number) => number>}
-   */
+  /** @type {Record<string, (arg0: { date: Date, num?: number, specific_days?: number[]}) => number>} */
   #REPEAT_INTERVALS = {
-    daily: (date, num = 1) => date.setDate(date.getDate() + 1 * num),
-    workdaily: (date) => {
+    daily: ({ date, num = 1 }) => date.setDate(date.getDate() + 1 * num),
+    workdaily: ({ date }) => {
       const new_date = new Date(date);
 
       const day_of_week = new_date.getDay();
@@ -24,9 +22,27 @@ export class Data {
 
       return date.setDate(date.getDate() + 1);
     },
-    weekly: (date, num = 1) => date.setDate(date.getDate() + 7 * num),
-    monthly: (date, num = 1) => date.setMonth(date.getMonth() + 1 * num),
-    yearly: (date, num = 1) => date.setFullYear(date.getFullYear() + 1 * num),
+    weekly: ({ date, num = 1 }) => date.setDate(date.getDate() + 7 * num),
+    weekly_custom_days: ({ date, specific_days = [] }) => {
+      if (!specific_days.length) return date.setDate(date.getDate() + 7);
+
+      const currentDay = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      let daysToAdd = 7; // Default to next week if no day found this week
+
+      for (let i = 1; i <= 7; i++) {
+        const checkDay = (currentDay + i) % 7; // Stay between 0 and 6.
+
+        if (specific_days.includes(checkDay)) {
+          daysToAdd = i;
+          break;
+        }
+      }
+
+      return date.setDate(date.getDate() + daysToAdd);
+    },
+    monthly: ({ date, num = 1 }) => date.setMonth(date.getMonth() + 1 * num),
+    yearly: ({ date, num = 1 }) => date.setFullYear(date.getFullYear() + 1 * num),
   };
 
   filter = $state({
@@ -60,6 +76,11 @@ export class Data {
 
   async init() {
     const is_home = page.url.pathname === "/";
+
+    const selected_categories_hash = await selectedCategories.get();
+    if (selected_categories_hash) {
+      this.#selected_categories_hash = new SvelteSet(selected_categories_hash);
+    }
 
     this.#all_tasks = await this.#DB.Task.data;
     this.#tasks = this.#all_tasks.filter(({ archived }) => !!archived === !is_home);
@@ -162,17 +183,24 @@ export class Data {
 
     const { id } = this.categories.find(({ name }) => name === DEFAULT_NAME) ?? { id: "" };
 
-    const is_home = page.url.pathname === "/";
-    this.tasks = this.#all_tasks.filter(({ archived, category_id = "" }) => {
-      if (!is_home) return archived;
+    switch (page.url.pathname) {
+      case "/complete":
+        this.#tasks = this.#all_tasks.filter(({ completed }) => !!completed);
+        break;
+      case "/":
+        this.#tasks = this.#all_tasks.filter(({ archived, category_id = "" }) => {
+          if (!this.selected_categories_hash.size) return !archived;
+          if (!category_id && this.selected_categories_hash.has(id)) {
+            return !archived;
+          }
 
-      if (!this.selected_categories_hash.size) return !archived;
-      if (!category_id && this.selected_categories_hash.has(id)) {
-        return !archived;
-      }
-
-      return !archived && this.selected_categories_hash.has(category_id);
-    });
+          return !archived && this.selected_categories_hash.has(category_id);
+        });
+        break;
+      default:
+        this.#tasks = this.#all_tasks;
+        break;
+    }
 
     return this.tasks;
   }
@@ -209,6 +237,7 @@ export class Data {
 
     const is_repeat_task = task.repeat_interval && task.due_date;
     if (is_repeat_task) {
+      task.completed++;
       task.due_date = this.#getNextDueDate(task);
       task.start_date = this.#getNextStartDate(task);
       let new_task = await this.#DB.Task.update(task.id, task);
@@ -216,31 +245,12 @@ export class Data {
       return;
     }
 
-    task.completed = true;
+    task.completed = 1;
     task.archived = true;
     task.completed_at = new Date().toLocaleString("af-ZA");
 
     this.just_completed_task = task;
     return this.#DB.Task.update(task.id, task);
-  }
-
-  /**
-   * @param {Task} task
-   */
-  async updateTask(task) {
-    if (!task) return;
-
-    task = await this.#DB.Task.update(task.id, task);
-
-    let index = this.#tasks.findIndex(({ id }) => id === task.id);
-    if (index === -1) return;
-    this.#tasks[index] = task;
-
-    index = this.#all_tasks.findIndex(({ id }) => id === task.id);
-    if (index === -1) return;
-    this.#all_tasks[index] = task;
-
-    return;
   }
 
   /**
@@ -254,7 +264,7 @@ export class Data {
 
     this.#removeTask(task);
 
-    task.completed = false;
+    task.completed = 0;
     task.archived = false;
     await this.#DB.Task.update(task.id, task);
   }
@@ -266,7 +276,7 @@ export class Data {
     const item = await this.#DB.Task.read(this.#just_completed_task.id);
     if (!item) return;
 
-    item.completed = false;
+    item.completed = 0;
     item.archived = false;
     await this.#DB.Task.update(id, item);
     this.#addTask(this.#just_completed_task);
@@ -287,18 +297,41 @@ export class Data {
 
   /**
    * @param {Omit<Task, "id" | "created_at">} task
-   * @returns {Promise<Task | undefined>}
+   * @returns {Promise<{ success: true, task: Task} | { success: false, error_message: string}>}
    */
   async createTask(task) {
-    if (!task) return;
+    if (!task) return { success: false, error_message: "Geen Taak gevind" };
 
-    task.completed = false;
+    task.completed = 0;
     task.archived = false;
+
+    const validation = this.#validateTask(task);
+    if (!validation.success) {
+      return { success: false, error_message: validation.error_message };
+    }
 
     const new_task = await this.#DB.Task.create(task);
     this.#addTask(new_task);
 
-    return new_task;
+    return { success: true, task: new_task };
+  }
+
+  /**
+   * @param {Task} task
+   * @returns {Promise<{ success: true, task: Task} | { success: false, error_message: string}>}
+   */
+  async updateTask(task) {
+    if (!task) return { success: false, error_message: "Geen Taak gevind" };
+
+    const validation = this.#validateTask(task);
+    if (!validation.success) {
+      return { success: false, error_message: validation.error_message };
+    }
+
+    task = await this.#DB.Task.update(task.id, task);
+    this.#updateTask(task);
+
+    return { success: true, task };
   }
 
   /**
@@ -316,6 +349,32 @@ export class Data {
   }
 
   // HELPER FUNCTIONS
+
+  /**
+   *
+   * @param {Partial<Task>} task
+   * @returns {{ success: true, task: Task} | { success: false, error_message: string}}
+   */
+  #validateTask(task) {
+    if (!task) return { success: false, error_message: "Geen Taak gevind" };
+    if (!task.name?.trim()) return { success: false, error_message: "Benoem jou taak" };
+
+    if (!task.start_date || (!!task.due_date && task.start_date > task.due_date)) {
+      task.start_date = task.due_date;
+    }
+
+    if (task.archived && !task.completed) {
+      task.archived = false;
+    }
+
+    if (!!task.completed && !task.repeat_interval) {
+      if (!task.completed_at) task.completed_at = new Date().toLocaleString("af-ZA");
+      if (!task.archived) task.archived = true;
+    }
+
+    // @ts-ignore
+    return { success: true, task };
+  }
 
   /**
    * @param {Task} task
@@ -351,6 +410,19 @@ export class Data {
 
     this.#tasks.push(task);
     this.#all_tasks.push(task);
+  }
+
+  /**
+   * @param {Task} task
+   */
+  #updateTask(task) {
+    let index = this.#tasks.findIndex(({ id }) => id === task.id);
+    if (index === -1) return;
+    this.#tasks[index] = task;
+
+    index = this.#all_tasks.findIndex(({ id }) => id === task.id);
+    if (index === -1) return;
+    this.#all_tasks[index] = task;
   }
 
   /**
@@ -458,7 +530,13 @@ export class Data {
     if (!task.repeat_interval || !task.due_date) return null;
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
-    const new_day = new Date(calcNextDay(new Date(task.due_date), task.repeat_interval_number));
+    const new_day = new Date(
+      calcNextDay({
+        date: new Date(task.due_date),
+        num: task.repeat_interval_number,
+        specific_days: task.repeat_specific_days,
+      })
+    );
 
     return new_day.toLocaleDateString("en-CA");
   }
@@ -470,7 +548,13 @@ export class Data {
     if (!task.repeat_interval || !task.start_date) return null;
 
     const calcNextDay = this.#REPEAT_INTERVALS[task.repeat_interval];
-    const new_day = new Date(calcNextDay(new Date(task.start_date), task.repeat_interval_number));
+    const new_day = new Date(
+      calcNextDay({
+        date: new Date(task.start_date),
+        num: task.repeat_interval_number,
+        specific_days: task.repeat_specific_days,
+      })
+    );
 
     return new_day.toLocaleDateString("en-CA");
   }

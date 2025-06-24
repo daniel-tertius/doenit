@@ -1,6 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
-  import Item from "$lib/components/item/Item.svelte";
+  import TaskCompleted from "$lib/components/item/TaskCompleted.svelte";
   import { data } from "../Data.svelte";
   import { Haptics } from "@capacitor/haptics";
 
@@ -16,7 +16,7 @@
   {/if}
 
   {#each data.completed_tasks as task (task.id)}
-    <Item
+    <TaskCompleted
       {task}
       onselect={async () => {
         data.unCompleteTask(task);

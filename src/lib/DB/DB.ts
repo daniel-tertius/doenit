@@ -27,11 +27,14 @@ export interface Task {
   archived: boolean;
   created_at: string;
   name: string;
-  completed: boolean;
-  due_date: string | null; // ms since 1970-01-01
-  completed_at: string | null; // ms since 1970-01-01
-  start_date: string | null; // ms since 1970-01-01
+  description: string;
+  completed: number; // The number of times completed (repeatable tasks)
+  completed_at: string | null; // eg. "2023-10-01 12:00:00"
+  
+  due_date: string | null; // eg. "2023-10-01 12:00" or "2023-10-01"
+  start_date: string | null; // eg. "2023-10-01 12:00" or "2023-10-01"
   repeat_interval: string;
+  repeat_specific_days: (0 | 1 | 2 | 3 | 4 | 5 | 6)[]; // Array of days of the week (0-6, where 0 is Sunday)
   repeat_interval_number: number;
   important: boolean;
   urgent: boolean;
