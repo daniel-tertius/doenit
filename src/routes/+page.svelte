@@ -1,14 +1,13 @@
 <script>
-  import Item from "$lib/components/item/Item.svelte";
   import { displayPrettyDate } from "$lib";
   import { Plus } from "$lib/icon";
   import { goto, pushState } from "$app/navigation";
-  import Undo from "$lib/components/Undo.svelte";
   import { fade } from "svelte/transition";
   import { data } from "./Data.svelte";
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
+  import Task from "$lib/components/item/Task.svelte";
 
   data.selected_tasks_hash.clear();
   data.refreshTasks();
@@ -67,7 +66,7 @@
     {/if}
 
     <div id={task.id}>
-      <Item
+      <Task
         {task}
         {onselect}
         onclick={() => {

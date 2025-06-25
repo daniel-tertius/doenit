@@ -73,11 +73,11 @@ export class Table<T extends Task | Category> {
     }
   }
 
-  async read(id: string): Promise<T | undefined> {
-    if (typeof window === "undefined") return undefined;
+  async read(id: string): Promise<T | null> {
+    if (typeof window === "undefined") return null;
 
     const data = await this.readAll();
-    return data[id];
+    return data[id] ?? null;
   }
 
   async update(id: string, updates: Partial<T>): Promise<T> {

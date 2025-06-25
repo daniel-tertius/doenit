@@ -7,6 +7,7 @@
   import Plus from "$lib/icon/Plus.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
+  import { selectedCategories } from "$lib/cached";
 
   const DEFAULT_NAME = "Standaard";
 
@@ -40,7 +41,7 @@
 
   <div
     transition:slide
-    class="absolute left-0 right-0 mt-1 bg-primary border border-tertiary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
+    class="absolute left-0 right-0 mt-1 bg-primary border-0 border-tertiary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
   >
     <div class="text-center text-tertiary pt-1 -mb-2">
@@ -69,7 +70,7 @@
 
 <div class="relative w-full my-auto">
   <button
-    class="bg-primary-20l w-full text-tertiary border-1 border-tertiary rounded h-12 px-2 flex items-center justify-between"
+    class="bg-primary-20l w-full text-tertiary rounded-md h-15 px-4 flex items-center justify-between"
     onclick={(e) => {
       e.stopPropagation();
       show_dropdown = !show_dropdown;
@@ -89,5 +90,6 @@
   oncreate={async (new_category_id) => {
     await data.refreshCategories();
     data.selected_categories_hash.add(new_category_id);
+    selectedCategories.set([...data.selected_categories_hash]);
   }}
 />

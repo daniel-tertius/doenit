@@ -1,5 +1,5 @@
 <script>
-  let { name, completed, checkoff_animation } = $props();
+  let { name, completed = false, checkoff_animation } = $props();
 </script>
 
 <div class="relative select-none text-tertiary ml-9" class:opacity-50={!name}>

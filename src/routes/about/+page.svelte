@@ -3,7 +3,7 @@
     {
       title: "Rugsteun",
       description:
-        "Doenit werk tans 100% vanlyn, wat beteken jou data word op jou toestel gestoor. As jy die app verwyder, gaan jou data verlore. Ek werk aan 'n rugsteunfunksie om jou data veilig te hou, sodat jy nooit jou take verloor nie.",
+        "Doenit werk tans 100% vanlyn, wat beteken jou data word op jou toestel gestoor. As jy die toepassing verwyder, gaan jou data verlore. Ek werk aan 'n rugsteunfunksie om jou data veilig te hou, sodat jy nooit jou take verloor nie.",
     },
     {
       title: "Kennisgewings",
@@ -19,6 +19,11 @@
       title: "Vriende-sinkronisasie",
       description:
         "Deel take met vriende of wys spesifieke take aan iemand toe. Werk saam aan een taak of hou mekaar gemotiveerd met gedeelde verantwoordelikhede.",
+    },
+    {
+      title: "Widget",
+      description:
+        "Voeg 'n widget by jou tuisskerm om vinnig toegang te hê tot jou take sonder om die toepassing oop te maak. Hou jou take in sig en bestuur dit maklik.",
     },
   ];
 </script>

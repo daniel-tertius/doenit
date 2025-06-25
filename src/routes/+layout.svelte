@@ -6,7 +6,6 @@
   import PageHeading from "$lib/components/PageHeading.svelte";
   import HomeButton from "$lib/components/HomeButton.svelte";
   import { Capacitor } from "@capacitor/core";
-  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { App } from "@capacitor/app";
   import { page } from "$app/state";
@@ -16,15 +15,6 @@
   let { children } = $props();
 
   const is_home = $derived(page.url.pathname === "/");
-
-  let platform = $state("Unknown");
-
-  $effect(() => {
-    if (browser) {
-      const userAgent = navigator.userAgent;
-      platform = userAgent;
-    }
-  });
 
   onMount(() => {
     if (Capacitor.isNativePlatform()) {
@@ -84,7 +74,7 @@
   {@render children()}
 </main>
 
-<nav class="flex gap-2 shadow-sm text-tertiary p-4 border-t border-tertiary bg-primary justify-between">
+<nav class="flex gap-2 shadow-sm text-tertiary p-4 border-t border-tertiary-20d bg-primary justify-between">
   <NavbarButton />
 
   {#if is_home}

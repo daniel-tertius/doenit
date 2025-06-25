@@ -4,7 +4,7 @@
   import { Home } from "$lib/icon";
   import Loading from "$lib/icon/Loading.svelte";
 
-  const show = $derived(["/complete", "/categories"].includes(page.url.pathname));
+  const show = $derived(["/complete", "/categories", "/about"].includes(page.url.pathname));
 
   function onclick() {
     goto("/");

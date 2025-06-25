@@ -7,7 +7,7 @@
   let is_form_page = $state(false);
 
   const is_home = $derived(page.url.pathname === "/");
-  const show = $derived(!["/complete", "/categories"].includes(page.url.pathname));
+  const show = $derived(!["/complete", "/categories", "/about", "/new"].includes(page.url.pathname));
 
   function onclick() {
     if (is_home) {

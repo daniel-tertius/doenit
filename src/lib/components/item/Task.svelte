@@ -1,5 +1,5 @@
 <script>
-  import { displayDate } from "$lib";
+  import { displayDate, displayDateRange, displayDateTime } from "$lib";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { fly, slide } from "svelte/transition";
@@ -13,6 +13,7 @@
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
+   * @typedef {import('$lib/DB/DB').Category} Category
    */
 
   /**
@@ -28,18 +29,19 @@
 
   const task = $state({ ...original_task });
 
-  const today = new Date().setHours(0, 0, 0, 0);
-  const due_date = new Date(task.due_date).setHours(0, 0, 0, 0);
+  const today = new Date();
+  const due_date = getDate(task.due_date, "end");
+  const start_date = getDate(task.start_date, "start");
 
-  const is_past = $derived(!!task.due_date && due_date < today);
-  const is_selected = $derived(data.selected_tasks_hash.has(task.id));
+  $inspect({ today, due_date, start_date });
 
-  const is_ongoing = $derived(
-    !!task.due_date && !!task.start_date && today >= new Date(task.start_date).setHours(0, 0, 0, 0) && today <= due_date
-  );
-
+  /** @type {Category?} */
+  let category = $state(null);
   let checkoff_animation = $state(false);
-  let category = $state();
+
+  const is_past = $derived(!!due_date && due_date < today);
+  const is_selected = $derived(data.selected_tasks_hash.has(task.id));
+  const is_ongoing = $derived(!!due_date && !!start_date && today >= start_date && today <= due_date);
 
   onMount(async () => {
     if (!task.category_id) return;
@@ -47,6 +49,14 @@
 
     category = await Db.Category.read(task.category_id);
   });
+
+  function getDate(date, type) {
+    if (!date) return "";
+
+    const [day, time] = date.split(" ");
+
+    return new Date(`${day} ${time || type === "start" ? "00:00" : "23:59"}`);
+  }
 </script>
 
 <div
@@ -58,30 +68,27 @@
   <button
     {...rest}
     class="rounded-lg flex flex-col items-start p-3 w-full h-full"
-    class:bg-error={is_past && !task.completed && !is_selected}
-    class:bg-active={is_ongoing && !task.completed && !is_selected}
-    class:bg-primary={task.completed || (is_selected && !task.completed)}
-    class:bg-primary-20l={(!task.completed && !is_past && !is_ongoing && !is_selected) ||
-      (!is_selected && task.completed)}
+    class:bg-error={is_past && !is_selected}
+    class:bg-active={is_ongoing && !is_selected}
+    class:bg-primary={is_selected}
+    class:bg-primary-20l={!is_selected && !is_past && !is_ongoing}
     {onclick}
     use:longpress
     {onlongpress}
   >
-    <ItemName name={task.name} completed={task.completed} {checkoff_animation} />
+    <ItemName name={task.name} {checkoff_animation} />
 
     <div class="pl-9 flex flex-wrap gap-1.5">
       {#if task.due_date}
         <div
           class="text-left rounded-full px-1.5 py-0.5 w-fit flex items-center h-fit gap-1"
-          class:bg-primary={!task.completed && !is_past && !is_ongoing}
-          class:opacity-50={task.completed}
-          class:bg-primary-10l={task.completed}
-          class:bg-red-800={is_past && !task.completed && !is_selected}
-          class:bg-active-30d={is_ongoing && !task.completed}
-          class:bg-primary-20l={is_selected && !task.completed}
+          class:bg-primary={!is_past && !is_ongoing}
+          class:bg-red-800={is_past && !is_selected}
+          class:bg-active-30d={is_ongoing}
+          class:bg-primary-20l={is_selected}
         >
           <span class="text-tertiary">
-            {displayDate({ due_date: task.due_date, start_date: task.start_date })}
+            {displayDateRange({ start: start_date, end: due_date })}
           </span>
 
           {#if !!task.repeat_interval}
@@ -93,10 +100,9 @@
       {#if category}
         <div
           class="text-left rounded-full px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden"
-          class:opacity-50={task.completed}
-          class:bg-[#2c5890]={!task.completed && !is_past && !is_ongoing}
-          class:bg-[#965cd1]={!task.completed && is_past && !is_ongoing}
-          class:bg-[#642c90]={is_ongoing && !task.completed}
+          class:bg-[#2c5890]={!is_past && !is_ongoing}
+          class:bg-[#965cd1]={is_past && !is_ongoing}
+          class:bg-[#642c90]={is_ongoing}
         >
           <span class="text-tertiary">{category.name}</span>
         </div>

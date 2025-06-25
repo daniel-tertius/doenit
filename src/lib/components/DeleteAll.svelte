@@ -3,8 +3,22 @@
   import { data } from "../../routes/Data.svelte";
   import { Trash } from "$lib/icon";
   import Modal from "./modal/Modal.svelte";
+  import { onMount } from "svelte";
+  import { Capacitor } from "@capacitor/core";
+  import { StatusBar } from "@capacitor/status-bar";
 
   let is_deleting = $state(false);
+  let top = $state(0);
+
+  onMount(async () => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    StatusBar.setOverlaysWebView({ overlay: true });
+
+    // @ts-ignore
+    const { height = 0 } = await StatusBar.getInfo();
+    top = height;
+  });
 
   function deleteAll() {
     data.deleteTasks([...data.selected_tasks_hash.values()]);
@@ -14,7 +28,7 @@
 </script>
 
 {#if data.selected_tasks_hash.size}
-  <div transition:slide class="absolute top-1 z-1 right-1 flex items-end justify-between">
+  <div transition:slide class="absolute z-1 right-1 flex items-end justify-between" style="top: {top + 4}px">
     <button
       class="px-4 py-2 flex gap-1 bg-red-600 text-tertiary rounded-md hover:bg-red-700 transition-colors"
       onclick={() => (is_deleting = true)}
