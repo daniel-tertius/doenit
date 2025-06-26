@@ -52,7 +52,7 @@
       <li class:underline={page.url.pathname === "/settings"} class:font-black={page.url.pathname === "/settings"}>
         <a href="/settings" class="flex gap-1 text-tertiary hover:text-tertiary">
           <Settings class="text-tertiary" />
-          <p>Settings</p>
+          <p>Instellings</p>
         </a>
       </li>
       <li class:underline={page.url.pathname === "/about"} class:font-black={page.url.pathname === "/about"}>
