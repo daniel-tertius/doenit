@@ -1,6 +1,6 @@
 <script>
   import { page } from "$app/state";
-  import { Categories, Home, Check, Star } from "$lib/icon";
+  import { Categories, Home, Check, Star, Settings } from "$lib/icon";
   import About from "$lib/icon/About.svelte";
   import { fly } from "svelte/transition";
 
@@ -45,8 +45,14 @@
       </li>
       <li class:underline={page.url.pathname === "/new"} class:font-black={page.url.pathname === "/new"}>
         <a href="/new" class="flex gap-1 text-blue-400 hover:text-tertiary">
-          <Star class="text-tertiary" />
+          <Star />
           <p>Nuut!</p>
+        </a>
+      </li>
+      <li class:underline={page.url.pathname === "/settings"} class:font-black={page.url.pathname === "/settings"}>
+        <a href="/settings" class="flex gap-1 text-tertiary hover:text-tertiary">
+          <Settings class="text-tertiary" />
+          <p>Settings</p>
         </a>
       </li>
       <li class:underline={page.url.pathname === "/about"} class:font-black={page.url.pathname === "/about"}>
