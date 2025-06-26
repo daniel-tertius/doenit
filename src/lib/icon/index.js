@@ -13,6 +13,7 @@ import Back from "./Back.svelte";
 import DownChevron from "./DownChevron.svelte";
 import New from "./New.svelte";
 import About from "./About.svelte";
+import Settings from "./Settings.svelte";
 import Star from "./Star.svelte";
 
 export {
@@ -20,6 +21,7 @@ export {
   Save,
   Times,
   Loading,
+  Settings,
   Undo,
   Burger,
   Home,

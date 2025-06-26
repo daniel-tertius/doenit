@@ -1,49 +1,116 @@
 @import "tailwindcss";
 
-html {
-  background-color: #202325;
-  overflow: hidden;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  padding-left: env(safe-area-inset-left, 0);
-  padding-right: env(safe-area-inset-right, 0);
-  height: 100dvh;
-}
-
-body {
-  background-color: #36393b;
-  overflow: auto;
-  height: 100%;
-}
-
-#svelte {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
-
 @theme {
-  --color-primary: #202325;
-  --color-primary-10l: #36393b;
-  --color-primary-20l: #4d4f51;
-  --color-primary-30l: #636566;
-  --color-secondary: #9a9d92;
-  --color-tertiary-20l: #e1d4c1;
-  --color-tertiary-10l: #ddceba;
-  --color-tertiary: #d9c9b2;
-  --color-tertiary-10d: #c3b5a0;
-  --color-tertiary-20d: #aea18e;
-  --color-tertiary-30d: #988d7d;
-
-  --color-warning: #e1b874;
-  --color-warning-10d: #cba668;
-  --color-warning-20d: #b4935d;
-  --color-error: #d15c5c;
-  --color-error-10d: #bc5353;
-  --color-error-20d: #a74a4a;
-
-  --color-active: #90642c;
-  --color-active-10d: #825a28;
-  --color-active-20d: #735023;
-  --color-active-30d: #65461f;
+  /* Default (Dark) Theme */
+  --color-primary: #1a1a1a;
+  --color-primary-10l: #2a2a2a;
+  --color-primary-20l: #3a3a3a;
+  --color-primary-30l: #4a4a4a;
+  
+  --color-secondary: #0f0f0f;
+  --color-secondary-10l: #1f1f1f;
+  --color-secondary-20l: #2f2f2f;
+  
+  --color-tertiary: #ffffff;
+  --color-tertiary-10d: #e6e6e6;
+  --color-tertiary-20d: #cccccc;
+  --color-tertiary-30d: #b3b3b3;
+  
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  --color-border: #4a4a4a;
+  --color-input-bg: #3a3a3a;
 }
+
+/* Light Theme */
+.theme-light {
+  --color-primary: #ffffff;
+  --color-primary-10l: #f8f9fa;
+  --color-primary-20l: #e9ecef;
+  --color-primary-30l: #dee2e6;
+  
+  --color-secondary: #f8f9fa;
+  --color-secondary-10l: #e9ecef;
+  --color-secondary-20l: #dee2e6;
+  
+  --color-tertiary: #212529;
+  --color-tertiary-10d: #343a40;
+  --color-tertiary-20d: #495057;
+  --color-tertiary-30d: #6c757d;
+  
+  --color-accent: #0d6efd;
+  --color-accent-hover: #0b5ed7;
+  
+  --color-success: #198754;
+  --color-warning: #fd7e14;
+  --color-error: #dc3545;
+  
+  --color-border: #dee2e6;
+  --color-input-bg: #ffffff;
+}
+
+/* Dark Theme (explicit) */
+.theme-dark {
+  --color-primary: #1a1a1a;
+  --color-primary-10l: #2a2a2a;
+  --color-primary-20l: #3a3a3a;
+  --color-primary-30l: #4a4a4a;
+  
+  --color-secondary: #0f0f0f;
+  --color-secondary-10l: #1f1f1f;
+  --color-secondary-20l: #2f2f2f;
+  
+  --color-tertiary: #ffffff;
+  --color-tertiary-10d: #e6e6e6;
+  --color-tertiary-20d: #cccccc;
+  --color-tertiary-30d: #b3b3b3;
+  
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  --color-border: #4a4a4a;
+  --color-input-bg: #3a3a3a;
+}
+
+/* Update existing color classes to use CSS variables */
+.bg-primary { background-color: var(--color-primary); }
+.bg-primary-10l { background-color: var(--color-primary-10l); }
+.bg-primary-20l { background-color: var(--color-primary-20l); }
+.bg-primary-30l { background-color: var(--color-primary-30l); }
+
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-secondary-10l { background-color: var(--color-secondary-10l); }
+.bg-secondary-20l { background-color: var(--color-secondary-20l); }
+
+.text-tertiary { color: var(--color-tertiary); }
+.text-tertiary-10d { color: var(--color-tertiary-10d); }
+.text-tertiary-20d { color: var(--color-tertiary-20d); }
+.text-tertiary-30d { color: var(--color-tertiary-30d); }
+
+.border-primary { border-color: var(--color-border); }
+
+/* Update button styles */
+.btn-primary {
+  background-color: var(--color-accent);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--color-accent-hover);
+}
+
+/* Update input styles */
+input, select, textarea {
+  background-color: var(--color-input-bg);
+  color: var(--color-tertiary);
+  border-color: var(--color-border);
+}
+
