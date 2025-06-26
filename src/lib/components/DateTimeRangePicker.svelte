@@ -2,8 +2,9 @@
   import { slide } from "svelte/transition";
   import DateInput from "./DateInput.svelte";
   import { Check, Times } from "$lib/icon";
+  import { untrack } from "svelte";
 
-  let { start, end, onchange } = $props();
+  let { start, end, onchange, error_message = $bindable() } = $props();
 
   const [sd, st] = start ? start.split(" ") : ["", ""];
   const [ed, et] = end ? end.split(" ") : ["", ""];
@@ -14,21 +15,22 @@
   let end_date = $state(ed);
   let end_time = $state(et);
 
-  let error_message = $state("");
-
   $effect(() => {
     onchange({ start_date, start_time, end_date, end_time });
   });
 
   $effect(() => {
+    untrack(() => {
+      error_message = "";
+    });
+
     // Check that start date and time is before end date and time
     if (!start_date || !end_date) return;
-    error_message = "";
     const startDateTime = new Date(`${start_date}T${start_time || "00:00"}`);
     const endDateTime = new Date(`${end_date}T${end_time || "23:59"}`);
 
-    if (startDateTime > endDateTime) {
-      error_message = "Die begin datum en tyd moet voor die eind datum en tyd wees.";
+    if (!!startDateTime && !!endDateTime && startDateTime > endDateTime) {
+      error_message = "Begin datum moet voor eind datum wees.";
     }
   });
 
@@ -85,6 +87,9 @@
     type="button"
     onclick={toggle}
     class="px-3 py-2 w-full text-left bg-primary-20l rounded-lg border border-primary"
+    class:!border-red-500={!!error_message}
+    class:!text-red-500={!!error_message}
+    class:text-tertiary-20d={!start_date && !end_date}
   >
     {#if start_date || end_date}
       <div class="flex items-center">
@@ -102,7 +107,9 @@
   </button>
 
   {#if error_message && !show_picker}
-    <div class="text-red-600 mt-2">{error_message}</div>
+    <div class="text-red-500 text-sm mt-1 flex justify-end">
+      {error_message}
+    </div>
   {/if}
 
   {#if show_picker}
@@ -125,7 +132,9 @@
                 id="start-time"
                 type="time"
                 bind:value={start_time}
-                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d {!!start_time
+                placeholder="Kies 'n begin tyd"
+                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none {!!start_time &&
+                error_message
                   ? 'border border-red-500 text-red-500'
                   : ''}"
               />
@@ -141,8 +150,11 @@
             </div>
           {/if}
         </div>
+
         {#if error_message}
-          <div class="text-red-600 mt-2">{error_message}</div>
+          <div class="text-red-500 text-sm mt-1 flex justify-end">
+            {error_message}
+          </div>
         {/if}
 
         <div>
@@ -155,8 +167,9 @@
                 id="end-time"
                 transition:slide
                 type="time"
+                placeholder="Kies 'n eind tyd"
                 bind:value={end_time}
-                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d"
+                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
               />
               {#if end_time}
                 <button

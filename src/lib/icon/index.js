@@ -13,6 +13,7 @@ import Back from "./Back.svelte";
 import DownChevron from "./DownChevron.svelte";
 import New from "./New.svelte";
 import About from "./About.svelte";
+import Star from "./Star.svelte";
 
 export {
   Plus,
@@ -30,4 +31,5 @@ export {
   Back,
   New,
   About,
+  Star,
 };

@@ -62,7 +62,7 @@ export function isTimeAtMidnightUTC(date) {
 }
 
 /**
- * @param {{ start: string | Date, end: string | Date}} param0 - In format of YYYY-MM-DD or YYYY-MM-DD HH:mm
+ * @param {{ start: string | Date | null, end: string | Date | null}} param0 - In format of YYYY-MM-DD or YYYY-MM-DD HH:mm
  * @returns
  */
 export function displayDateRange({ start, end }) {
@@ -75,16 +75,16 @@ export function displayDateRange({ start, end }) {
   }
 
   if (start instanceof Date) {
-    start = start.toLocaleString('af-ZA').substring(0,16);
+    start = start.toLocaleString("af-ZA").substring(0, 16);
   }
 
   if (end instanceof Date) {
-    end = end.toLocaleString('af-ZA').substring(0,16);
+    end = end.toLocaleString("af-ZA").substring(0, 16);
   }
 
-  const [start_date, start_time] = start.split(" ");
+  const [start_date] = start.split(" ");
   const [start_year, start_month, start_day] = start_date.split("-");
-  const [end_date, end_time] = end.split(" ");
+  const [end_date] = end.split(" ");
   const [end_year, end_month, end_day] = end_date.split("-");
 
   if (start_year === end_year && start_month === end_month && start_day === end_day) {
@@ -94,13 +94,7 @@ export function displayDateRange({ start, end }) {
       day: "numeric",
     });
 
-    if (!start_time && !end_time) {
-      return dateStr;
-    } else if (!start_time || start_time === end_time) {
-      return `${dateStr} ${end_time || ""}`;
-    } else {
-      return `${dateStr} ${start_time} – ${end_time || ""}`;
-    }
+    return dateStr;
   }
 
   if (start_year === end_year && start_month === end_month) {
@@ -108,15 +102,13 @@ export function displayDateRange({ start, end }) {
       month: "short",
       year: "numeric",
     });
-    return `${start_day}${start_time ? " " + start_time : ""} – ${end_day}${
-      end_time ? " " + end_time : ""
-    } ${monthYear}`;
+    return `${start_day} – ${end_day} ${monthYear}`;
   }
 
   if (start_year === end_year) {
     const startStr = new Date(start_date).toLocaleDateString("af-ZA", { month: "short", day: "numeric" });
     const endStr = new Date(end_date).toLocaleDateString("af-ZA", { month: "short", day: "numeric", year: "numeric" });
-    return `${startStr}${start_time ? " " + start_time : ""} – ${endStr}${end_time ? " " + end_time : ""}`;
+    return `${startStr} – ${endStr}`;
   }
 }
 

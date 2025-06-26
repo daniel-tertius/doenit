@@ -14,7 +14,7 @@
 
   let task = $state(data.task);
   let is_deleting = $state(false);
-  let error_message = $state("");
+  let error = $state({});
   let other_interval = $state(data.task.repeat_interval_number > 1 ? data.task.repeat_interval : "");
   let top = $state(0);
 
@@ -52,7 +52,11 @@
       task.repeat_interval = other_interval;
     }
 
-    await Data.updateTask(task);
+    const result = await Data.updateTask(task);
+    if (!result.success) {
+      error = result.error;
+      return;
+    }
 
     //@ts-ignore
     onclose(event);
@@ -82,7 +86,7 @@
 </button>
 
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
-  <EditTask bind:error_message bind:task bind:other_interval />
+  <EditTask bind:error bind:task bind:other_interval />
 
   <div class="grid gap-2 grid-cols-[auto_min-content] w-full h-11 items-center">
     <span class="font-bold text-left">Voltooi</span>

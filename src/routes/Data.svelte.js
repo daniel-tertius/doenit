@@ -297,17 +297,17 @@ export class Data {
 
   /**
    * @param {Omit<Task, "id" | "created_at">} task
-   * @returns {Promise<{ success: true, task: Task} | { success: false, error_message: string}>}
+   * @returns {Promise<{ success: true, task: Task} | { success: false, error: { [x: string]: string } }>}
    */
   async createTask(task) {
-    if (!task) return { success: false, error_message: "Geen Taak gevind" };
+    if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
 
     task.completed = 0;
     task.archived = false;
 
     const validation = this.#validateTask(task);
     if (!validation.success) {
-      return { success: false, error_message: validation.error_message };
+      return { success: false, error: validation.error };
     }
 
     const new_task = await this.#DB.Task.create(task);
@@ -318,14 +318,14 @@ export class Data {
 
   /**
    * @param {Task} task
-   * @returns {Promise<{ success: true, task: Task} | { success: false, error_message: string}>}
+   * @returns {Promise<{ success: true, task: Task} | { success: false, error: { [x: string]: string } }>}
    */
   async updateTask(task) {
-    if (!task) return { success: false, error_message: "Geen Taak gevind" };
+    if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
 
     const validation = this.#validateTask(task);
     if (!validation.success) {
-      return { success: false, error_message: validation.error_message };
+      return { success: false, error: validation.error };
     }
 
     task = await this.#DB.Task.update(task.id, task);
@@ -353,14 +353,14 @@ export class Data {
   /**
    *
    * @param {Partial<Task>} task
-   * @returns {{ success: true, task: Task} | { success: false, error_message: string}}
+   * @returns {{ success: true, task: Task} | { success: false, error: { [x: string]: string } }}
    */
   #validateTask(task) {
-    if (!task) return { success: false, error_message: "Geen Taak gevind" };
-    if (!task.name?.trim()) return { success: false, error_message: "Benoem jou taak" };
+    if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
+    if (!task.name?.trim()) return { success: false, error: { name: "Benoem jou taak" } };
 
-    if (!task.start_date || (!!task.due_date && task.start_date > task.due_date)) {
-      task.start_date = task.due_date;
+    if (!!task.start_date && !!task.due_date && !!task.due_date && task.start_date > task.due_date) {
+      return { success: false, error: { date: "Begin datum moet voor die einde datum wees" } };
     }
 
     if (task.archived && !task.completed) {

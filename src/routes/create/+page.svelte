@@ -11,7 +11,7 @@
   let task = $state(data.task);
 
   let other_interval = $state("");
-  let error_message = $state("");
+  let error = $state({});
 
   /**
    * @param {Event} event
@@ -24,8 +24,9 @@
     }
 
     const result = await Data.createTask(task);
+    console.log("Create task result:", result);
     if (!result.success) {
-      error_message = result.error_message;
+      error = result.error;
       return;
     }
 
@@ -34,5 +35,5 @@
 </script>
 
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
-  <EditTask bind:error_message bind:task bind:other_interval />
+  <EditTask bind:error bind:task bind:other_interval />
 </form>

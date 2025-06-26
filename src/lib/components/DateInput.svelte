@@ -75,7 +75,7 @@
           is_focused = false;
         }}
       >
-        <Times size={18}/>
+        <Times size={18} />
       </button>
     {/if}
   </div>
@@ -85,6 +85,10 @@
     type="date"
     bind:this={date_input}
     bind:value
+    onclick={(e) => {
+      e.stopPropagation();
+      is_focused = false;
+    }}
     onblur={() => (is_focused = false)}
     class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none {classes}"
   />

@@ -76,9 +76,14 @@
       show_dropdown = !show_dropdown;
     }}
   >
-    {!!data.selected_categories_hash.size
-      ? `${data.selected_categories_hash.size} Kategorieë geselekteer`
-      : "Alle Kategorieë"}
+    {#if data.selected_categories_hash.size === 0}
+      Alle Kategorieë
+    {:else if data.selected_categories_hash.size === 1}
+      1 Kategorie geselekteer
+    {:else if data.selected_categories_hash.size > 1}
+      {data.selected_categories_hash.size} Kategorieë geselekteer
+    {/if}
+
     <DownChevron class={show_dropdown ? "-rotate-180" : ""} />
   </button>
 </div>

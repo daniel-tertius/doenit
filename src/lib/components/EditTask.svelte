@@ -6,12 +6,14 @@
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
 
-  let { task = $bindable(), error_message = $bindable(), other_interval = $bindable() } = $props();
+  let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
+  $inspect(error);
+  
   const title = $derived(!!task.start_date ? "Datum" : "Sperdatum");
 </script>
 
-<InputName bind:name={task.name} bind:description={task.description} bind:error_message />
+<InputName bind:name={task.name} bind:description={task.description} bind:error_message={error.name} />
 
 <div class="w-full">
   <label class="font-bold" for="date">{title}</label>
@@ -22,6 +24,7 @@
       task.start_date = start_date ? `${start_date} ${start_time}`.trim() : null;
       task.due_date = end_date ? `${end_date} ${end_time}`.trim() : null;
     }}
+    bind:error_message={error.date}
   />
 </div>
 

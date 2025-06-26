@@ -31,7 +31,7 @@
 
   const today = new Date();
   const due_date = getDate(task.due_date, "end");
-  const start_date = getDate(task.start_date, "start");
+  const start_date = getDate(task.start_date || task.due_date, "start");
 
   $inspect({ today, due_date, start_date });
 
@@ -88,7 +88,7 @@
           class:bg-primary-20l={is_selected}
         >
           <span class="text-tertiary">
-            {displayDateRange({ start: start_date, end: due_date })}
+            {displayDateRange({ start: task.start_date, end: task.due_date })}
           </span>
 
           {#if !!task.repeat_interval}
@@ -110,7 +110,7 @@
     </div>
   </button>
 
-  {#if !task.completed}
+  {#if !task.archived}
     <div class="absolute top-1 right-1 flex gap-1">
       <Important size={16} class="text-tertiary {!task.important && 'hidden'}" />
       <Urgent size={16} class="text-tertiary {!task.urgent && 'hidden'}" />

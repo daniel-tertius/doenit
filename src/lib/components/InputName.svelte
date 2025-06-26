@@ -33,15 +33,20 @@
       bind:value={name}
       type="text"
       placeholder="Gee jou taak 'n naam"
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary invalid:border-red-500 pr-7"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primarypr-7"
+      class:border-red-500={!!error_message}
+      class:placeholder:text-red-300={!!error_message}
     />
 
     <button
       type="button"
-      class="absolute top-1/2 -translate-y-[50%] right-1 h-[66.66%] rounded-full focus:ring-2 focus:ring-primary-20l focus:bg-primary-20l focus:ring-offset-2 my-auto aspect-square flex justify-center items-center focus:outline-none"
+      class="absolute top-1/2 -translate-y-[50%] right-1 h-[66.66%] rounded-full my-auto aspect-square flex justify-center items-center"
       onclick={() => (show_description = !show_description)}
     >
-      <DownChevron class="{show_description ? '-rotate-180' : ''} text-tertiary-10l" size={18} />
+      <DownChevron
+        class="{show_description ? '-rotate-180' : ''} {!!error_message ? 'text-red-300' : 'text-tertiary-10l'}"
+        size={18}
+      />
     </button>
   </div>
   {#if error_message}

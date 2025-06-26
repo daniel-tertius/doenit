@@ -1,7 +1,7 @@
 <script>
   import CreateItemButton from "$lib/components/CreateItemButton.svelte";
   import CategoryFilter from "$lib/components/CategoryFilter.svelte";
-  // import { NotificationService } from "$lib/NotificationService";
+  import { NotificationService } from "$lib/NotificationService";
   import NavbarButton from "$lib/components/NavbarButton.svelte";
   import PageHeading from "$lib/components/PageHeading.svelte";
   import HomeButton from "$lib/components/HomeButton.svelte";
@@ -32,55 +32,57 @@
     };
   });
 
-  // onMount(async () => {
-  //   // Schedule notifications when app starts
-  //   await notificationService.scheduleDailyTask();
+  onMount(async () => {
+    // Schedule notifications when app starts
+    await notificationService.scheduleDailyTask();
 
-  //   // Re-schedule when app comes to foreground
-  //   if (Capacitor.isNativePlatform()) {
-  //     App.addListener("appStateChange", async (state) => {
-  //       if (state.isActive) {
-  //         // Re-schedule when app becomes active to ensure continuity
-  //         await notificationService.scheduleDailyTask();
-  //       }
-  //     });
-  //   }
-  // });
+    // Re-schedule when app comes to foreground
+    if (Capacitor.isNativePlatform()) {
+      App.addListener("appStateChange", async (state) => {
+        if (state.isActive) {
+          // Re-schedule when app becomes active to ensure continuity
+          await notificationService.scheduleDailyTask();
+        }
+      });
+    }
+  });
 
-  // const notificationService = new NotificationService();
+  const notificationService = new NotificationService();
 
-  // onMount(async () => {
-  //   // Schedule the daily notification when app starts
-  //   await notificationService.scheduleDailyTask();
-  // });
+  onMount(async () => {
+    // Schedule the daily notification when app starts
+    await notificationService.scheduleDailyTask();
+  });
 
-  // async function toggleNotifications() {
-  //   // You can add buttons to enable/disable notifications
-  //   await notificationService.scheduleDailyTask();
-  // }
+  async function toggleNotifications() {
+    // You can add buttons to enable/disable notifications
+    await notificationService.scheduleDailyTask();
+  }
 
-  // async function cancelNotifications() {
-  //   await notificationService.cancelDailyTask();
-  // }
+  async function cancelNotifications() {
+    await notificationService.cancelDailyTask();
+  }
 </script>
 
-<PageHeading />
-<!-- NOTIFICATIONS COMING SOON -->
-<!-- <div class="flex gap-1">
+<div class="h-dvh flex flex-col bg-primary text-tertiary" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
+  <PageHeading />
+  <!-- NOTIFICATIONS COMING SOON -->
+  <!-- <div class="flex gap-1">
   <button type="button" onclick={toggleNotifications}>Enable Daily Reminders</button>
   <button type="button" onclick={cancelNotifications}>Disable Daily Reminders</button>
 </div> -->
-<main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2">
-  {@render children()}
-</main>
+  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-primary-10l">
+    {@render children()}
+  </main>
 
-<nav class="flex gap-2 shadow-sm text-tertiary p-4 border-t border-tertiary-20d bg-primary justify-between">
-  <NavbarButton />
+  <nav class="flex gap-2 text-tertiary p-4 border-t border-tertiary-20d bg-primary justify-between">
+    <NavbarButton />
 
-  {#if is_home}
-    <CategoryFilter />
-  {/if}
+    {#if is_home}
+      <CategoryFilter />
+    {/if}
 
-  <CreateItemButton />
-  <HomeButton />
-</nav>
+    <CreateItemButton />
+    <HomeButton />
+  </nav>
+</div>

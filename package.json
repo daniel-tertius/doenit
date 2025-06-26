@@ -13,8 +13,6 @@
     "app": "./scripts/app_generation.sh"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^6.0.0",
-    "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -26,18 +24,18 @@
     "vite": "^6.2.5"
   },
   "dependencies": {
+    "@capacitor-community/safe-area": "^7.0.0-alpha.1",
     "@capacitor/android": "^7.2.0",
     "@capacitor/app": "^7.0.1",
     "@capacitor/cli": "^7.2.0",
     "@capacitor/core": "^7.2.0",
+    "@capacitor/device": "^7.0.1",
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/ios": "^7.2.0",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
-    "date-picker-svelte": "^2.16.0",
-    "dayjs": "^1.11.13",
-    "dotenv": "^16.5.0",
-    "svelte-calendar": "^3.1.6"
+    "@capgo/capacitor-navigation-bar": "^7.1.21",
+    "dotenv": "^16.5.0"
   }
 }
