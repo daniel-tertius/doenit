@@ -2,6 +2,12 @@
   // List of new features - you can fetch this from an API or store
   let newFeatures = [
     {
+      id: 8,
+      title: "Kennisgewings",
+      description: "Kennisgewingstelsel is nou geïmplementeer.",
+      category: "Nuut",
+    },
+    {
       id: 6,
       title: "Beskrywing vir take",
       description: "Jy kan nou 'n beskrywing byvoeg vir jou take. Dit is diskreet weggesteek vir gebruikersgemak.",
