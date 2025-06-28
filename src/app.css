@@ -81,7 +81,7 @@
 
 .theme-light {
   /* Primary (Light Background) */
-  --color-bg-light: hsl(204, 7%, 80%);
+  --color-bg-light: hsl(204, 7%, 85%);
   --color-bg: hsl(204, 7%, 90%);
   --color-bg-dark: hsl(204, 7%, 100%);
 
@@ -90,7 +90,7 @@
 
   --color-border: hsl(204, 7%, 70%);
   --color-highlight: hsl(204, 7%, 80%);
-  --color-hover: hsl(204, 7%, 70%);
+  --color-hover: hsl(204, 7%, 75%);
   --color-shadow: hsl(204, 7%, 95%);
 
   --color-primary-30l: #aaa;

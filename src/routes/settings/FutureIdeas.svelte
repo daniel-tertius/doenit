@@ -23,7 +23,7 @@
   ];
 </script>
 
-<div class="bg-bg rounded-lg text-text">
+<div class="bg-bg rounded-lg text-text select-none">
   <div class="p-4">
     <h3 class="font-semibold mb-2">Toekomende Idees</h3>
     <ul class="space-y-4 text-sm">

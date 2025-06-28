@@ -70,7 +70,7 @@
 
 <div class="relative w-full">
   <button
-    class="bg-bg-light w-full text-text rounded-md h-15 px-4 flex items-center justify-between"
+    class="bg-bg-light w-full text-text rounded-md h-15 px-4 flex items-center justify-between hover:bg-hover"
     onclick={(e) => {
       e.stopPropagation();
       show_dropdown = !show_dropdown;

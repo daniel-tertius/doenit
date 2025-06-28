@@ -47,10 +47,10 @@
   });
 </script>
 
-<div class="h-dvh flex flex-col bg-primary text-tertiary" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
+<div class="h-dvh flex flex-col bg-bg text-text" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
   <PageHeading />
 
-  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-bg-light">
+  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-bg-dark">
     {@render children()}
   </main>
 
