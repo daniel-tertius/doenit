@@ -5,7 +5,7 @@
   import ThemeAndLanguage from "./ThemeAndLanguage.svelte";
 </script>
 
-<div class="space-y-4 text-tertiary">
+<div class="space-y-4">
   <ThemeAndLanguage />
   <Notifications />
   {#if false}
@@ -13,17 +13,18 @@
   {/if}
   <FutureIdeas />
 
-  <div class="bg-primary-20l rounded-lg">
-    <div class="p-4">
-      <h3 class="font-semibold mb-2">Oor Doenit</h3>
-      <!-- Keep in sync with: android/app/build.gradle – versionName -->
-      <p class="text-sm text-tertiary-20d mb-2">Weergawe 1.0.8</p>
-      <p class="text-sm text-tertiary-20d mb-2">Het jy hulp nodig of terugvoer? Kontak my by:</p>
-      <div class="text-center">
-        <a href="mailto:support.tricky800@passmail.com" class="text-blue-500 hover:text-blue-700 underline text-sm">
-          support.tricky800@passmail.com
-        </a>
-      </div>
-    </div>
-  </div>
+  <section class="rounded-md p-4 bg-bg space-y-2 text-text select-none">
+    <h3 class="font-semibold mb-2">Oor Doenit</h3>
+
+    <!-- Keep in sync with: android/app/build.gradle – versionName -->
+    <p>Weergawe 1.0.8</p>
+    <p class="text-text-muted">
+      Het jy hulp nodig of terugvoer? Kontak my by: <a
+        href="mailto:support.tricky800@passmail.com"
+        class="text-blue-500 hover:text-blue-700 underline"
+      >
+        support.tricky800@passmail.com
+      </a>
+    </p>
+  </section>
 </div>

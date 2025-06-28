@@ -10,9 +10,10 @@
   fill="none"
   stroke={color}
   stroke-width="2"
-  stroke-linecap="round"
   stroke-linejoin="round"
 >
-  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-  <polyline points="9 22 9 12 15 12 15 22" />
+  <!-- House outline -->
+  <path d="M3 12l9-9 9 9" />
+  <path d="M6 12v7a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-7" />
+  <path d="M10 21v-6a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v6" />
 </svg>

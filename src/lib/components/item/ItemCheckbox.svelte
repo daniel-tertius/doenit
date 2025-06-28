@@ -34,7 +34,7 @@
     {onlongpress}
     type="button"
     aria-label="check"
-    class="rounded-md border shadow-inner shadow-tertiary transition-all duration-300 bg-primary-invert border-primary-invert-20d h-6 w-6 flex items-center justify-center"
+    class="rounded-md border shadow-inner shadow-black transition-all duration-300 bg-white border-border h-6 w-6 flex items-center justify-center"
     class:bg-blue-600!={is_checked}
     class:border-blue-700!={is_checked}
     {onclick}

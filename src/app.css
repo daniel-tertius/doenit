@@ -2,6 +2,18 @@
 
 @theme {
   /* Default (Dark) Theme */
+  --color-bg-dark: hsl(204, 7%, 10%);
+  --color-bg: hsl(204, 7%, 15%);
+  --color-bg-light: hsl(204, 7%, 20%);
+
+  --color-text: hsl(28, 61%, 80%);
+  --color-text-muted: hsl(28, 61%, 50%);
+
+  --color-border: hsl(204, 7%, 30%);
+  --color-highlight: hsl(204, 7%, 30%);
+  --color-shadow: hsl(204, 7%, 5%);
+  --color-hover: hsl(204, 7%, 30%);
+
   --color-primary-30l: #636566;
   --color-primary-20l: #4d4f51;
   --color-primary-10l: #36393b;
@@ -69,6 +81,18 @@
 
 .theme-light {
   /* Primary (Light Background) */
+  --color-bg-light: hsl(204, 7%, 80%);
+  --color-bg: hsl(204, 7%, 90%);
+  --color-bg-dark: hsl(204, 7%, 100%);
+
+  --color-text: hsl(28, 61%, 10%);
+  --color-text-muted: hsl(28, 61%, 25%);
+
+  --color-border: hsl(204, 7%, 70%);
+  --color-highlight: hsl(204, 7%, 80%);
+  --color-hover: hsl(204, 7%, 70%);
+  --color-shadow: hsl(204, 7%, 95%);
+
   --color-primary-30l: #aaa;
   --color-primary-20l: #ccc;
   --color-primary-10l: #eee;
@@ -140,6 +164,18 @@
 /* Dark Theme (explicit) */
 .theme-dark {
   /* Default (Dark) Theme */
+  --color-bg-dark: hsl(204, 7%, 10%);
+  --color-bg: hsl(204, 7%, 15%);
+  --color-bg-light: hsl(204, 7%, 25%);
+
+  --color-text: hsl(28, 61%, 95%);
+  --color-text-muted: hsl(28, 10%, 80%);
+
+  --color-border: hsl(204, 7%, 30%);
+  --color-highlight: hsl(204, 7%, 25%);
+  --color-shadow: hsl(204, 7%, 5%);
+  --color-hover: hsl(204, 7%, 30%);
+
   --color-primary-30l: #636566;
   --color-primary-20l: #4d4f51;
   --color-primary-10l: #36393b;

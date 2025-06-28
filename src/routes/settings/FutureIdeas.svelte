@@ -23,17 +23,17 @@
   ];
 </script>
 
-<div class="bg-primary-20l rounded-lg">
+<div class="bg-bg rounded-lg text-text">
   <div class="p-4">
     <h3 class="font-semibold mb-2">Toekomende Idees</h3>
-    <ul class="space-y-4 text-sm text-tertiary-10d">
+    <ul class="space-y-4 text-sm">
       {#each items as { title, description }}
         <li class="space-y-1">
-          <div class="flex items-start space-x-2">
-            <span class="text-blue-500 mt-1">•</span>
-            <span class="font-medium">{title}</span>
+          <div class="flex items-start leading-loose gap-2 font-medium">
+            <span class="text-blue-500">•</span>
+            <span>{title}</span>
           </div>
-          <p class="text-xs text-tertiary-20d ml-4">
+          <p class="text-text-muted ml-4">
             {description}
           </p>
         </li>

@@ -21,7 +21,7 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-primary-20l p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none pr-5 truncate {!category_id &&
+    class="bg-bg-light p-2 w-full rounded-md open:text-text appearance-none pr-5 truncate {!category_id &&
       'text-tertiary-20d'}"
   >
     <option value="">Kies 'n kategorie</option>
@@ -34,11 +34,11 @@
   </select>
 
   {#if category_id}
-    <button onclick={() => (category_id = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
-      <Times class="text-tertiary" size={18} />
+    <button onclick={() => (category_id = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-text">
+      <Times size={18} />
     </button>
   {:else}
-    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-tertiary" size={18} />
+    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text" size={18} />
   {/if}
 </div>
 
