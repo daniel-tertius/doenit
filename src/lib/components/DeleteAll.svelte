@@ -30,7 +30,7 @@
 {#if data.selected_tasks_hash.size}
   <div transition:slide class="absolute z-1 right-1 flex items-end justify-between" style="top: {top + 4}px">
     <button
-      class="px-4 py-2 flex gap-1 bg-red-600 text-tertiary rounded-md hover:bg-red-700 transition-colors"
+      class="px-4 py-2 flex gap-1 bg-error-10d text-tertiary rounded-md hover:bg-error-20d transition-colors"
       onclick={() => (is_deleting = true)}
       type="button"
     >
@@ -44,7 +44,7 @@
 </Modal>
 
 {#snippet footer()}
-  <button class="bg-red-600 flex gap-1 items-center text-white px-4 py-2 rounded-md" type="button" onclick={deleteAll}>
+  <button class="bg-error-10d flex gap-1 items-center text-white px-4 py-2 rounded-md" type="button" onclick={deleteAll}>
     <Trash class="h-full" size={18} />
     <span>Skrap</span>
   </button>

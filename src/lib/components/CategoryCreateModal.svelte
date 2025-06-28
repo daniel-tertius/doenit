@@ -47,7 +47,7 @@
     />
 
     {#if !!error_message}
-      <div class="text-red-500 text-sm mt-1 text-right w-full" transition:slide>
+      <div class="text-error text-sm mt-1 text-right w-full" transition:slide>
         <span>{error_message}</span>
       </div>
     {/if}

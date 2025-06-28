@@ -8,8 +8,6 @@
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
-  $inspect(error);
-  
   const title = $derived(!!task.start_date ? "Datum" : "Sperdatum");
 </script>
 
@@ -62,8 +60,8 @@
     <button
       type="button"
       class="{task.urgent
-        ? 'bg-red-100 border-red-400 text-red-700'
-        : 'bg-primary-20l border-primary text-tertiary'} p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
+        ? 'bg-error-invert-30l border-error-invert-30d text-error-invert-30d'
+        : 'bg-primary-invert-20l border-primary-invert text-tertiary-invert'} p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
       onclick={() => {
         task.urgent = !task.urgent;
       }}

@@ -113,7 +113,7 @@
 
 {#snippet footer()}
   <button
-    class="bg-red-600 flex gap-1 items-center text-tertiary px-4 py-2 rounded-md"
+    class="bg-error-10d flex gap-1 items-center text-tertiary px-4 py-2 rounded-md"
     type="button"
     onclick={deleteTask}
   >

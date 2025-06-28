@@ -2,6 +2,7 @@ import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
+import { notifications } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
 
 const DEFAULT_NAME = "Standaard";
@@ -240,8 +241,11 @@ export class Data {
       task.completed++;
       task.due_date = this.#getNextDueDate(task);
       task.start_date = this.#getNextStartDate(task);
-      let new_task = await this.#DB.Task.update(task.id, task);
-      this.#addTask(new_task);
+
+      const updated = await this.#DB.Task.update(task.id, task);
+      notifications.scheduleNotifications();
+
+      this.#addTask(updated);
       return;
     }
 
@@ -250,7 +254,10 @@ export class Data {
     task.completed_at = new Date().toLocaleString("af-ZA");
 
     this.just_completed_task = task;
-    return this.#DB.Task.update(task.id, task);
+
+    const updated = await this.#DB.Task.update(task.id, task);
+    notifications.scheduleNotifications();
+    return updated;
   }
 
   /**
@@ -266,7 +273,9 @@ export class Data {
 
     task.completed = 0;
     task.archived = false;
+
     await this.#DB.Task.update(task.id, task);
+    notifications.scheduleNotifications();
   }
 
   async undoCompleteTask() {
@@ -278,7 +287,10 @@ export class Data {
 
     item.completed = 0;
     item.archived = false;
+
     await this.#DB.Task.update(id, item);
+    notifications.scheduleNotifications();
+
     this.#addTask(this.#just_completed_task);
     this.just_completed_task = null;
   }
@@ -293,6 +305,7 @@ export class Data {
     this.#removeTasks(task_ids);
 
     await this.#DB.Task.delete(task_ids);
+    await notifications.scheduleNotifications();
   }
 
   /**
@@ -311,6 +324,7 @@ export class Data {
     }
 
     const new_task = await this.#DB.Task.create(task);
+    await notifications.scheduleNotifications();
     this.#addTask(new_task);
 
     return { success: true, task: new_task };
@@ -329,6 +343,7 @@ export class Data {
     }
 
     task = await this.#DB.Task.update(task.id, task);
+    await notifications.scheduleNotifications();
     this.#updateTask(task);
 
     return { success: true, task };
@@ -346,6 +361,33 @@ export class Data {
     this.#categories = sortByField(this.#categories, "name");
 
     return new_category;
+  }
+
+  async getAllTasks() {
+    return Object.values(await this.#DB.Task.readAll()).filter(({ archived }) => !archived);
+  }
+
+  /**
+   * @param {Date} date
+   * @param {Task[]} all_tasks
+   * @returns {Task[]}
+   */
+  getTasksCountForDate(all_tasks, date) {
+    if (!date || !all_tasks?.length) return [];
+
+    const target_date = new Date(date);
+    target_date.setHours(0, 0, 0, 0);
+
+    const tasks = all_tasks.filter((task) => {
+      if (!task.due_date) return false;
+
+      const task_date = new Date(task.due_date);
+      task_date.setHours(0, 0, 0, 0);
+
+      return task_date.toLocaleDateString("en-CA") === target_date.toLocaleDateString("en-CA");
+    });
+
+    return tasks;
   }
 
   // HELPER FUNCTIONS

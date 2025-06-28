@@ -24,7 +24,6 @@
     }
 
     const result = await Data.createTask(task);
-    console.log("Create task result:", result);
     if (!result.success) {
       error = result.error;
       return;

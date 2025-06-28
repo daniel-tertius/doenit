@@ -55,12 +55,6 @@
           <p>Instellings</p>
         </a>
       </li>
-      <li class:underline={page.url.pathname === "/about"} class:font-black={page.url.pathname === "/about"}>
-        <a href="/about" class="flex gap-1 text-tertiary hover:text-tertiary">
-          <About class="text-tertiary" />
-          <p>Oor Doenit</p>
-        </a>
-      </li>
     </ul>
   </div>
 </aside>

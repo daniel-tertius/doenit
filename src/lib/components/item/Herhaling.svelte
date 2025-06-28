@@ -215,7 +215,7 @@
     </div>
 
     {#if error_message}
-      <div class="text-red-500 text-sm mt-1 flex justify-end" transition:slide>
+      <div class="text-error text-sm mt-1 flex justify-end" transition:slide>
         {error_message}
       </div>
     {/if}

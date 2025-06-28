@@ -15,6 +15,7 @@
     "/complete": "Voltooide take",
     "/categories": "Kategorieë",
     "/new": "Nog te Kom",
+    "/settings": "Instellings",
   };
 
   let padding_top = $state();

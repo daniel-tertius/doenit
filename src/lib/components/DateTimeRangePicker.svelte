@@ -87,8 +87,8 @@
     type="button"
     onclick={toggle}
     class="px-3 py-2 w-full text-left bg-primary-20l rounded-lg border border-primary"
-    class:!border-red-500={!!error_message}
-    class:!text-red-500={!!error_message}
+    class:!border-error={!!error_message}
+    class:!text-error={!!error_message}
     class:text-tertiary-20d={!start_date && !end_date}
   >
     {#if start_date || end_date}
@@ -107,7 +107,7 @@
   </button>
 
   {#if error_message && !show_picker}
-    <div class="text-red-500 text-sm mt-1 flex justify-end">
+    <div class="text-error text-sm mt-1 flex justify-end">
       {error_message}
     </div>
   {/if}
@@ -120,7 +120,7 @@
           <DateInput
             id="start-date"
             placeholder="Kies 'n begindatum"
-            class={!!error_message ? "border border-red-500 text-red-500" : ""}
+            class={!!error_message ? "border border-error text-error" : ""}
             bind:value={start_date}
             max={end_date ? end_date : undefined}
           />
@@ -135,7 +135,7 @@
                 placeholder="Kies 'n begin tyd"
                 class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none {!!start_time &&
                 error_message
-                  ? 'border border-red-500 text-red-500'
+                  ? 'border border-error text-error'
                   : ''}"
               />
               {#if start_time}
@@ -144,7 +144,7 @@
                   class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
                   onclick={() => (start_time = "")}
                 >
-                  <Times size={18} />
+                  <Times size={18} class="text-tertiary" />
                 </button>
               {/if}
             </div>
@@ -152,7 +152,7 @@
         </div>
 
         {#if error_message}
-          <div class="text-red-500 text-sm mt-1 flex justify-end">
+          <div class="text-error text-sm mt-1 flex justify-end">
             {error_message}
           </div>
         {/if}
@@ -177,7 +177,7 @@
                   class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
                   onclick={() => (end_time = "")}
                 >
-                  <Times size={18} />
+                  <Times size={18} class="text-tertiary" />
                 </button>
               {/if}
             </div>

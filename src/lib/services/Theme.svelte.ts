@@ -19,10 +19,14 @@ class Theme {
     this.value = theme;
   }
 
+  get value() {
+    return this.#value;
+  }
+
   set value(theme_value: string) {
     if (!browser) return;
 
-    if (!["dark", "light", "auto"].includes(theme_value)) {
+    if (!this.isValidTheme(theme_value)) {
       console.warn(`Invalid theme value: ${theme_value}. Valid values are 'dark', 'light', or 'auto'.`);
       return;
     }
@@ -46,8 +50,8 @@ class Theme {
     this.#value = theme_value;
   }
 
-  get value() {
-    return this.#value;
+  private isValidTheme(theme_value: string): theme_value is ThemeValue {
+    return ["dark", "light", "auto"].includes(theme_value);
   }
 }
 

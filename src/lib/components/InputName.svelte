@@ -28,14 +28,13 @@
     <input
       id="name"
       bind:this={name_input}
-      onfocusout={validateName}
       oninput={() => (error_message = "")}
       bind:value={name}
       type="text"
       placeholder="Gee jou taak 'n naam"
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primarypr-7"
-      class:border-red-500={!!error_message}
-      class:placeholder:text-red-300={!!error_message}
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary pr-7"
+      class:border-error={!!error_message}
+      class:placeholder:text-error-20l={!!error_message}
     />
 
     <button
@@ -44,13 +43,13 @@
       onclick={() => (show_description = !show_description)}
     >
       <DownChevron
-        class="{show_description ? '-rotate-180' : ''} {!!error_message ? 'text-red-300' : 'text-tertiary-10l'}"
+        class="{show_description ? '-rotate-180' : ''} {!!error_message ? 'text-error-20l' : 'text-tertiary-10l'}"
         size={18}
       />
     </button>
   </div>
   {#if error_message}
-    <div class="text-red-500 text-sm mt-1 flex justify-end">
+    <div class="text-error text-sm mt-1 flex justify-end">
       {error_message}
     </div>
   {/if}

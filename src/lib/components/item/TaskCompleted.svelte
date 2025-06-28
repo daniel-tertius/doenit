@@ -76,7 +76,7 @@
           class:bg-primary={!task.completed && !is_past && !is_ongoing}
           class:opacity-50={!!task.completed}
           class:bg-primary-10l={!!task.completed}
-          class:bg-red-800={is_past && !task.completed && !is_selected}
+          class:bg-error-30d={is_past && !task.completed && !is_selected}
           class:bg-active-30d={is_ongoing && !task.completed}
           class:bg-primary-20l={is_selected && !task.completed}
         >
@@ -91,13 +91,7 @@
       {/if}
 
       {#if category}
-        <div
-          class="text-left rounded-full px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden"
-          class:opacity-50={!!task.completed}
-          class:bg-[#2c5890]={!task.completed && !is_past && !is_ongoing}
-          class:bg-[#965cd1]={!task.completed && is_past && !is_ongoing}
-          class:bg-[#642c90]={is_ongoing && !task.completed}
-        >
+        <div class="text-left rounded-full opacity-50 px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden {is_selected ? 'bg-primary-30d' : 'bg-primary-10l'}">
           <span class="text-tertiary">{category.name}</span>
         </div>
       {/if}

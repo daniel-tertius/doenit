@@ -1,8 +1,8 @@
 <script>
-  import { displayDate, displayDateRange, displayDateTime } from "$lib";
+  import { displayDateRange } from "$lib";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
-  import { fly, slide } from "svelte/transition";
+  import { slide } from "svelte/transition";
   import { longpress } from "../long";
   import { data } from "../../../routes/Data.svelte";
   import ItemName from "./ItemName.svelte";
@@ -33,8 +33,6 @@
   const due_date = getDate(task.due_date, "end");
   const start_date = getDate(task.start_date || task.due_date, "start");
 
-  $inspect({ today, due_date, start_date });
-
   /** @type {Category?} */
   let category = $state(null);
   let checkoff_animation = $state(false);
@@ -50,8 +48,14 @@
     category = await Db.Category.read(task.category_id);
   });
 
+  /**
+   * Returns a Date object representing the start or end of the day based on the provided date string.
+   * @param {string} date Date in the format "YYYY-MM-DD HH:mm"
+   * @param {'end' | 'start'} type
+   * @return {Date | null} Returns a Date object representing the start or end of the day.
+   */
   function getDate(date, type) {
-    if (!date) return "";
+    if (!date) return null;
 
     const [day, time] = date.split(" ");
 
@@ -60,10 +64,10 @@
 </script>
 
 <div
+  in:slide={{ delay: 200 }}
   class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm {checkoff_animation
     ? 'translate-x-[80%] **:opacity-50'
     : ''}"
-  in:slide={{ delay: 200 }}
 >
   <button
     {...rest}
@@ -82,9 +86,9 @@
       {#if task.due_date}
         <div
           class="text-left rounded-full px-1.5 py-0.5 w-fit flex items-center h-fit gap-1"
-          class:bg-primary={!is_past && !is_ongoing}
-          class:bg-red-800={is_past && !is_selected}
-          class:bg-active-30d={is_ongoing}
+          class:bg-primary-10l={!is_past && !is_ongoing}
+          class:bg-error-20l={is_past && !is_selected}
+          class:bg-active-10l={is_ongoing}
           class:bg-primary-20l={is_selected}
         >
           <span class="text-tertiary">
@@ -100,9 +104,10 @@
       {#if category}
         <div
           class="text-left rounded-full px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden"
-          class:bg-[#2c5890]={!is_past && !is_ongoing}
-          class:bg-[#965cd1]={is_past && !is_ongoing}
-          class:bg-[#642c90]={is_ongoing}
+          class:bg-primary={!is_past && !is_ongoing}
+          class:bg-error-30d={is_past && !is_ongoing}
+          class:bg-active-30d={is_ongoing}
+          class:bg-primary-30d={is_selected}
         >
           <span class="text-tertiary">{category.name}</span>
         </div>

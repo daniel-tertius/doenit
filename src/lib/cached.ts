@@ -1,5 +1,5 @@
 import { Preferences } from "@capacitor/preferences";
-import type { ThemeValue } from "./services/theme.svelte";
+import type { ThemeValue } from "./services/Theme.svelte";
 
 class Cached<T> {
   private key: string;
@@ -27,3 +27,4 @@ class Cached<T> {
 
 export const selectedCategories = new Cached<string[]>("selected_categories");
 export const cached_theme = new Cached<ThemeValue>("theme");
+export const cached_notification_time = new Cached<string | null>("time");

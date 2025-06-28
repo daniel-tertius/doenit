@@ -1,5 +1,6 @@
 <script>
   import { Times } from "$lib/icon";
+  import { tick, untrack } from "svelte";
 
   /**
    * @typedef {Object} Props
@@ -20,10 +21,21 @@
   const classes = $derived(rest.class || "");
 
   $effect(() => {
-    if (!is_focused || !date_input) return;
-    console.log("DateInput: value changed", date_input);
-    date_input.focus();
-    date_input.showPicker();
+    if (!is_focused) return;
+
+    untrack(async () => {
+      await tick();
+      if (!date_input) return;
+
+      try {
+        if (date_input && date_input !== document.activeElement) {
+          date_input.focus();
+        }
+      } catch (error) {
+        date_input.blur();
+        console.error("DateInput: Error focusing date input", error);
+      }
+    });
   });
 
   /**
@@ -50,8 +62,6 @@
 
     is_focused = true;
   }
-
-  $inspect("DateInput", rest.id, " ", value, " ", display_value);
 </script>
 
 {#if !is_focused}
@@ -75,7 +85,7 @@
           is_focused = false;
         }}
       >
-        <Times size={18} />
+        <Times size={18} class="text-tertiary" />
       </button>
     {/if}
   </div>
@@ -85,11 +95,20 @@
     type="date"
     bind:this={date_input}
     bind:value
-    onclick={(e) => {
-      e.stopPropagation();
-      is_focused = false;
+    onfocus={() => {
+      tick().then(() => {
+        if (date_input) date_input.showPicker();
+      });
     }}
-    onblur={() => (is_focused = false)}
+    onclick={(e) => {
+      if (date_input) {
+        e.stopPropagation();
+        date_input.showPicker();
+      }
+    }}
+    onchange={(e) => {
+      if (!!value) is_focused = false;
+    }}
     class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none {classes}"
   />
 {/if}

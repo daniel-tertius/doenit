@@ -17,8 +17,9 @@ const config: CapacitorConfig = {
       backgroundColor: "#202325",
       overlay: true,
     },
-    PushNotifications: {
-      presentationOptions: ["badge", "sound", "alert"],
+    LocalNotifications: {
+      smallIcon: "ic_stat_logo",
+      iconColor: "#ffffff",
     },
   },
   android: {

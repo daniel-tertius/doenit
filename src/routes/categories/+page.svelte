@@ -73,7 +73,7 @@
     </form>
 
     {#if error_message}
-      <div class="text-red-600 text-sm mt-1 flex justify-end">
+      <div class="text-error-10d text-sm mt-1 flex justify-end">
         {error_message}
       </div>
     {/if}
@@ -91,7 +91,7 @@
         <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
           <div class="text-lg font-semibold text-tertiary">{category.name}</div>
 
-          <button class="text-red-500 hover:text-red-700" onclick={() => deleteCategory(category.id)}>
+          <button class="text-error hover:text-error-20d" onclick={() => deleteCategory(category.id)}>
             <Trash />
           </button>
         </div>

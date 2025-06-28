@@ -9,7 +9,7 @@ export class NotificationService {
   async scheduleDailyTask() {
     const hasPermission = await this.requestPermission();
     if (!hasPermission) {
-      console.log("Notification permission denied");
+      alert("Notification permission denied");
       return;
     }
 
@@ -20,7 +20,7 @@ export class NotificationService {
     const notifications = [];
     const now = new Date();
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 1; i++) {
       const scheduleDate = new Date();
       scheduleDate.setDate(now.getDate() + i);
       scheduleDate.setHours(19, 0, 0, 0);
@@ -32,7 +32,7 @@ export class NotificationService {
           body: "You have tasks",
           id: i + 1,
           schedule: {
-            at: scheduleDate,
+            at: new Date(Date.now() + 1000),
           },
           sound: "default",
           smallIcon: "ic_notification", // Add this line
@@ -43,11 +43,11 @@ export class NotificationService {
 
     if (notifications.length > 0) {
       await LocalNotifications.schedule({ notifications });
-      console.log(`Scheduled ${notifications.length} notifications`);
+      alert(`Scheduled ${notifications.length} notifications`);
     }
   }
 
-  async cancelDailyTask() {
+  async cancelAllNotifications() {
     // Cancel all scheduled notifications
     const pending = await LocalNotifications.getPending();
     const ids = pending.notifications.map((n) => ({ id: n.id }));
