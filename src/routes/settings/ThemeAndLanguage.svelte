@@ -25,10 +25,10 @@
   }
 </script>
 
-<div class="bg-primary-20l rounded-lg">
+<div class="bg-t-primary-600 rounded-lg">
   <button
     type="button"
-    class="w-full p-4 flex items-center justify-between hover:bg-primary-30l rounded-lg transition-colors"
+    class="focus:outline-none w-full p-4 flex items-center justify-between hover:bg-t-primary-700 rounded-lg transition-colors"
     onclick={() => (show = !show)}
   >
     <span class="font-semibold">Voorkoms</span>
@@ -44,7 +44,7 @@
             id="theme-select"
             value={theme.value}
             onchange={handleThemeChange}
-            class="bg-primary-20l p-2 w-full rounded-lg border border-primary text-tertiary appearance-none"
+            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-900 text-tertiary appearance-none"
           >
             {#each themes as theme_option}
               <option value={theme_option.value}>{theme_option.label}</option>

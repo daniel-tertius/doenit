@@ -47,14 +47,17 @@
   });
 </script>
 
-<div class="h-dvh flex flex-col bg-bg text-text" style="padding-bottom: env(safe-area-inset-bottom, 0px);">
+<div
+  class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
+>
   <PageHeading />
 
-  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-bg-dark">
+  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">
     {@render children()}
   </main>
 
-  <nav class="flex gap-2 p-4 border-t border-border bg-bg justify-between">
+  <nav class="flex gap-2 p-4 border-t border-border bg-t-primary justify-between">
     <NavbarButton />
 
     {#if is_home}

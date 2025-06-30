@@ -21,7 +21,7 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-bg-light p-2 w-full rounded-md open:text-text appearance-none pr-5 truncate {!category_id &&
+    class="bg-t-primary p-2 w-full rounded-md open:text-t-secondary appearance-none pr-5 truncate {!category_id &&
       'text-tertiary-20d'}"
   >
     <option value="">Kies 'n kategorie</option>

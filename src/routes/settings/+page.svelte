@@ -13,15 +13,15 @@
   {/if}
   <FutureIdeas />
 
-  <section class="rounded-md p-4 bg-bg space-y-2 text-text select-none">
+  <section class="rounded-md p-4 bg-t-primary-600 space-y-2 text-t-secondary select-none">
     <h3 class="font-semibold mb-2">Oor Doenit</h3>
 
     <!-- Keep in sync with: android/app/build.gradle – versionName -->
     <p>Weergawe 1.0.8</p>
-    <p class="text-text-muted">
+    <p class="text-t-secondary/60">
       Het jy hulp nodig of terugvoer? Kontak my by: <a
         href="mailto:support.tricky800@passmail.com"
-        class="text-blue-500 hover:text-blue-700 underline"
+        class="text-blue-400/80 hover:text-blue-500/80 underline"
       >
         support.tricky800@passmail.com
       </a>

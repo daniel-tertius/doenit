@@ -32,7 +32,7 @@
   });
 </script>
 
-<div class="relative bg-primary shadow-md" style="padding-top: {padding_top}px">
+<div class="relative bg-t-primary shadow-md" style="padding-top: {padding_top}px">
   <div class="w-full h-12 relative mx-auto p-2">
     {#key title}
       <div

@@ -44,7 +44,7 @@
 {#if show}
   <div class="absolute left-0 z-50 flex items-center justify-center h-12" style="top: {top}px">
     <button
-      class="rounded-full bg-primary-20l m-1 font-semibold text-tertiary *:transition-all *:duration-300 hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
+      class="rounded-full bg-t-primary-700 hover:bg-t-primary-800 m-1 font-semibold text-tertiary *:transition-all *:duration-300 focus:outline-none"
       {onclick}
     >
       <div class="h-10 w-10 p-1 flex justify-center items-center">

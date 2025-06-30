@@ -23,7 +23,7 @@
   ];
 </script>
 
-<div class="bg-bg rounded-lg text-text select-none">
+<div class="bg-t-primary-600 rounded-lg text-t-secondary select-none">
   <div class="p-4">
     <h3 class="font-semibold mb-2">Toekomende Idees</h3>
     <ul class="space-y-4 text-sm">
@@ -33,7 +33,7 @@
             <span class="text-blue-500">•</span>
             <span>{title}</span>
           </div>
-          <p class="text-text-muted ml-4">
+          <p class="text-t-secondary/60 ml-4">
             {description}
           </p>
         </li>

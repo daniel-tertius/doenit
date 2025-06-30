@@ -75,7 +75,7 @@
     class:bg-error={is_past && !is_selected}
     class:bg-active={is_ongoing && !is_selected}
     class:bg-primary={is_selected}
-    class:bg-primary-20l={!is_selected && !is_past && !is_ongoing}
+    class:bg-t-primary-400={!is_selected && !is_past && !is_ongoing}
     {onclick}
     use:longpress
     {onlongpress}

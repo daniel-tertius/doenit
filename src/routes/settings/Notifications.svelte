@@ -18,10 +18,10 @@
   let time = $state(null);
 </script>
 
-<div class="bg-primary-20l rounded-lg">
+<div class="bg-t-primary-600 rounded-lg">
   <button
     type="button"
-    class="w-full p-4 flex items-center justify-between hover:bg-primary-30l rounded-lg transition-colors"
+    class="focus:outline-none w-full p-4 flex items-center justify-between hover:bg-t-primary-700 active:bg-t-primary-700 rounded-lg transition-colors"
     onclick={() => (show = !show)}
   >
     <span class="font-semibold">Kennisgewings</span>
@@ -56,11 +56,11 @@
             type="time"
             value={time}
             onchange={(e) => (Notifications.time = e.target.value)}
-            class="bg-primary-20l p-2 w-full rounded-lg border border-primary text-tertiary appearance-none"
+            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-900 text-t-secondary appearance-none"
           />
         </div>
 
-        <div class="text-xs text-tertiary-30d">
+        <div class="text-xs text-t-secondary/60">
           {#if Notifications.status === "granted"}
             ✓ U het toestemming vir kennisgewings gegee.
           {:else if Notifications.status === "denied"}
@@ -73,7 +73,7 @@
 
       <button
         type="button"
-        class="w-full p-2 bg-primary-30l text-tertiary focus:bg-primary-10l active:bg-primary-10l rounded-lg transition-colors text-sm flex gap-2 items-center justify-center disabled:text-tertiary-30d"
+        class="w-full p-2 bg-t-primary-800 text-t-secondary focus:bg-t-primary-900 hover:bg-t-primary-900 active:bg-t-primary-900 rounded-lg transition-colors text-sm flex gap-2 items-center justify-center disabled:text-t-secondary"
         disabled={is_loading}
         onclick={async () => {
           is_loading = true;

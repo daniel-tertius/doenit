@@ -8,10 +8,10 @@
 <div class="">
   <button
     type="button"
-    class="flex justify-center items-center rounded-md h-15 w-15 bg-bg-light p-2 transition-colors hover:bg-hover"
+    class="flex justify-center items-center rounded-md h-15 w-15 bg-t-primary-700 p-2 transition-colors hover:bg-t-primary-800"
     onclick={() => (is_open = !is_open)}
   >
-    <Burger class="text-text" size={28} />
+    <Burger class="text-t-secondary" size={28} />
   </button>
 </div>
 

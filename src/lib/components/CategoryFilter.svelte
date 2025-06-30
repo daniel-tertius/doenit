@@ -41,7 +41,7 @@
 
   <div
     transition:slide
-    class="absolute left-0 text-text right-0 mt-1 bg-bg rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
+    class="absolute left-0 text-t-secondary right-0 mt-1 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
   >
     <div class="text-center font-semibold pt-1 -mb-2">
@@ -70,7 +70,7 @@
 
 <div class="relative w-full">
   <button
-    class="bg-bg-light w-full text-text rounded-md h-15 px-4 flex items-center justify-between hover:bg-hover"
+    class="bg-t-primary-700 w-full text-t-secondary rounded-md h-15 px-4 flex items-center justify-between hover:bg-t-primary-700 transition-colors"
     onclick={(e) => {
       e.stopPropagation();
       show_dropdown = !show_dropdown;

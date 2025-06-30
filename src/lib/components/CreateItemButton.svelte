@@ -25,7 +25,7 @@
   <button
     type={is_form_page ? "submit" : "button"}
     form={is_form_page ? "form" : null}
-    class="flex justify-center items-center aspect-square rounded-full h-15 w-15 bg-bg-light p-3 font-semibold text-text *:transition-all *:duration-300 hover:bg-hover"
+    class="flex justify-center items-center aspect-square rounded-full h-15 w-15 bg-t-primary-700 p-3 font-semibold text-t-secondary *:transition-all *:duration-300 hover:bg-t-primary-800"
     onclick={is_form_page ? null : onclick}
   >
     {#if navigating.to}
