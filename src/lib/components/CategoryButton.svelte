@@ -29,7 +29,7 @@
 </script>
 
 <button class="relative w-full flex items-center gap-1" onclick={onselect}>
-  <ItemCheckbox {is_selected} checkoff_animation={is_selected} />
+  <ItemCheckbox {is_selected} tick_animation={is_selected} />
   <span class="w-full flex pl-12 p-2 hover:bg-[#3d648a] cursor-pointer text-left">
     {name}
   </span>

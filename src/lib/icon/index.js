@@ -15,6 +15,7 @@ import New from "./New.svelte";
 import About from "./About.svelte";
 import Settings from "./Settings.svelte";
 import Star from "./Star.svelte";
+import Clock from "./Clock.svelte";
 
 export {
   Plus,
@@ -34,4 +35,5 @@ export {
   New,
   About,
   Star,
+  Clock,
 };

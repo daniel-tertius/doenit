@@ -54,26 +54,26 @@
   }
 </script>
 
-<div class="flex flex-col space-y-2">
+<div class="flex flex-col space-y-2 text-t-secondary">
   <div>
-    <form onsubmit={createCategory} class="flex gap-1 items-center h-12">
+    <form onsubmit={createCategory} class="flex gap-2 items-center h-12">
       <input
         type="text"
         oninput={() => (error_message = "")}
         bind:value={new_category_name}
-        placeholder="Voeg 'n nuwe kategorie by"
-        class="w-full h-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-tertiary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
+        placeholder="Voer nuwe kategorienaam in…"
+        class="w-full h-full rounded-md bg-t-primary px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
       />
 
       <button
-        class="h-full rounded-md bg-primary-20l px-4 py-2 font-medium transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
+        class="h-full rounded-md bg-t-primary-700 px-4 py-2 font-medium transition-colors hover:bg-t-primary-800 focus:outline-none"
       >
-        <Plus class="text-tertiary" />
+        <Plus />
       </button>
     </form>
 
     {#if error_message}
-      <div class="text-error-10d text-sm mt-1 flex justify-end">
+      <div class="text-error-20l text-sm mt-1 flex justify-end">
         {error_message}
       </div>
     {/if}
@@ -81,15 +81,15 @@
 
   <div class="flex flex-col space-y-2">
     {#if default_category}
-      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
-        <div class="text-lg font-semibold text-tertiary">{default_category.name}</div>
+      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-t-primary-700 rounded-md">
+        <div class="text-lg font-semibold">{default_category.name}</div>
       </div>
     {/if}
 
     {#each data.categories as category (category.id)}
       {#if category.name != DEFAULT_NAME}
-        <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-primary-20l rounded-md">
-          <div class="text-lg font-semibold text-tertiary">{category.name}</div>
+        <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-t-primary-700 rounded-md">
+          <div class="text-lg font-semibold">{category.name}</div>
 
           <button class="text-error hover:text-error-20d" onclick={() => deleteCategory(category.id)}>
             <Trash />

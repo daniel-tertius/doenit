@@ -22,7 +22,7 @@
     id="category"
     bind:value={category_id}
     class="bg-t-primary p-2 w-full rounded-md open:text-t-secondary appearance-none pr-5 truncate {!category_id &&
-      'text-tertiary-20d'}"
+      'text-t-secondary'}"
   >
     <option value="">Kies 'n kategorie</option>
     {#each data.categories as category (category.id)}

@@ -1,5 +1,5 @@
 <script>
-  import { displayDateRange } from "$lib";
+  import { displayDateRange, displayDateTime } from "$lib";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
@@ -10,6 +10,8 @@
   import Sync from "$lib/icon/Sync.svelte";
   import Important from "$lib/icon/Important.svelte";
   import Urgent from "$lib/icon/Urgent.svelte";
+  import TaskDueDate from "./TaskDueDate.svelte";
+  import { Categories } from "$lib/icon";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
@@ -35,7 +37,7 @@
 
   /** @type {Category?} */
   let category = $state(null);
-  let checkoff_animation = $state(false);
+  let tick_animation = $state(false);
 
   const is_past = $derived(!!due_date && due_date < today);
   const is_selected = $derived(data.selected_tasks_hash.has(task.id));
@@ -64,63 +66,53 @@
 </script>
 
 <div
+  class="relative text-t-secondary min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm"
+  class:translate-x-[80%]={tick_animation}
   in:slide={{ delay: 200 }}
-  class="relative min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm {checkoff_animation
-    ? 'translate-x-[80%] **:opacity-50'
-    : ''}"
 >
   <button
     {...rest}
-    class="rounded-lg flex flex-col items-start p-3 w-full h-full"
+    class="rounded-lg flex flex-col items-start p-2 w-full h-full"
     class:bg-error={is_past && !is_selected}
     class:bg-active={is_ongoing && !is_selected}
     class:bg-primary={is_selected}
-    class:bg-t-primary-400={!is_selected && !is_past && !is_ongoing}
+    class:bg-t-primary-600={!is_selected && !is_past && !is_ongoing}
     {onclick}
     use:longpress
     {onlongpress}
   >
-    <ItemName name={task.name} {checkoff_animation} />
+    <ItemName name={task.name} {tick_animation} />
 
-    <div class="pl-9 flex flex-wrap gap-1.5">
-      {#if task.due_date}
-        <div
-          class="text-left rounded-full px-1.5 py-0.5 w-fit flex items-center h-fit gap-1"
-          class:bg-primary-10l={!is_past && !is_ongoing}
-          class:bg-error-20l={is_past && !is_selected}
-          class:bg-active-10l={is_ongoing}
-          class:bg-primary-20l={is_selected}
-        >
-          <span class="text-tertiary">
-            {displayDateRange({ start: task.start_date, end: task.due_date })}
-          </span>
-
-          {#if !!task.repeat_interval}
-            <Sync class="text-tertiary" size={12} />
-          {/if}
-        </div>
-      {/if}
-
+    <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
       {#if category}
         <div
-          class="text-left rounded-full px-3 py-0.5 w-fit flex items-center h-fit overflow-hidden"
-          class:bg-primary={!is_past && !is_ongoing}
+          class="text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80"
+          class:bg-t-primary-400={!is_past && !is_ongoing}
           class:bg-error-30d={is_past && !is_ongoing}
           class:bg-active-30d={is_ongoing}
           class:bg-primary-30d={is_selected}
         >
-          <span class="text-tertiary">{category.name}</span>
+          <div class="w-4 h-4">
+            <Categories size={16} />
+          </div>
+          <span>{category.name}</span>
         </div>
+      {/if}
+
+      {#if task.due_date}
+        <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
+          {displayDateTime({ due_date, start_date })}
+        </TaskDueDate>
       {/if}
     </div>
   </button>
 
   {#if !task.archived}
     <div class="absolute top-1 right-1 flex gap-1">
-      <Important size={16} class="text-tertiary {!task.important && 'hidden'}" />
-      <Urgent size={16} class="text-tertiary {!task.urgent && 'hidden'}" />
+      <Important size={16} class={!task.important && "hidden"} />
+      <Urgent size={16} class={!task.urgent && "hidden"} />
     </div>
   {/if}
 
-  <ItemCheckbox bind:checkoff_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
+  <ItemCheckbox bind:tick_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
 </div>

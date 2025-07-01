@@ -10,7 +10,7 @@
   viewBox="0 0 512 512"
   fill={color}
   stroke={color}
-  stroke-width="2"
+  stroke-width="1"
   stroke-linecap="round"
   stroke-linejoin="round"
 >

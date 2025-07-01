@@ -8,6 +8,7 @@
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
   import Task from "$lib/components/item/Task.svelte";
+  import { notifications } from "$lib/services";
 
   data.selected_tasks_hash.clear();
   data.refreshTasks();
@@ -26,6 +27,10 @@
 
       element.scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
     }
+  });
+
+  onMount(async () => {
+    await notifications.init();
   });
 </script>
 

@@ -23,8 +23,16 @@
   --color-t-primary-800: hsl(204, 7%, 30%);
   --color-t-primary-900: hsl(204, 7%, 35%);
 
+  --color-t-secondary-100: hsl(28, 61%, 60%);
+  --color-t-secondary-200: hsl(28, 61%, 65%);
+  --color-t-secondary-300: hsl(28, 61%, 70%);
+  --color-t-secondary-400: hsl(28, 61%, 75%);
   --color-t-secondary-500: hsl(28, 61%, 80%);
   --color-t-secondary: hsl(28, 61%, 80%);
+  --color-t-secondary-600: hsl(28, 61%, 85%);
+  --color-t-secondary-700: hsl(28, 61%, 90%);
+  --color-t-secondary-800: hsl(28, 61%, 95%);
+  --color-t-secondary-900: hsl(28, 61%, 100%);
 
   /* v2 */
   --color-bg-dark: hsl(204, 7%, 10%);
@@ -119,8 +127,13 @@
   --color-t-primary-800: hsl(204, 7%, 70%);
   --color-t-primary-900: hsl(204, 7%, 65%);
 
+  --color-t-secondary-800: hsl(28, 61%, 25%);
+  --color-t-secondary-700: hsl(28, 61%, 20%);
+  --color-t-secondary-600: hsl(28, 61%, 15%);
   --color-t-secondary-500: hsl(28, 61%, 10%);
   --color-t-secondary: hsl(28, 61%, 10%);
+  --color-t-secondary-400: hsl(28, 61%, 5%);
+  --color-t-secondary-300: hsl(28, 61%, 0%);
 
   /* v2 */
   --color-bg-light: hsl(204, 7%, 85%);
@@ -219,8 +232,16 @@
   --color-t-primary-800: hsl(204, 7%, 30%);
   --color-t-primary-900: hsl(204, 7%, 35%);
 
+  --color-t-secondary-100: hsl(28, 61%, 60%);
+  --color-t-secondary-200: hsl(28, 61%, 65%);
+  --color-t-secondary-300: hsl(28, 61%, 70%);
+  --color-t-secondary-400: hsl(28, 61%, 75%);
   --color-t-secondary-500: hsl(28, 61%, 80%);
   --color-t-secondary: hsl(28, 61%, 80%);
+  --color-t-secondary-600: hsl(28, 61%, 85%);
+  --color-t-secondary-700: hsl(28, 61%, 90%);
+  --color-t-secondary-800: hsl(28, 61%, 95%);
+  --color-t-secondary-900: hsl(28, 61%, 100%);
 
   /* v2 */
   --color-bg-dark: hsl(204, 7%, 10%);

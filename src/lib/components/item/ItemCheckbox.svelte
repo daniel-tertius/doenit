@@ -4,17 +4,17 @@
   import { longpress } from "../long";
 
   let {
-    checkoff_animation = $bindable(false),
+    tick_animation = $bindable(false),
     is_selected = $bindable(false),
     onselect = () => {},
     onlongpress = () => {},
     ...rest
   } = $props();
 
-  const is_checked = $derived(is_selected || checkoff_animation);
+  const is_checked = $derived(is_selected || tick_animation);
 
   async function onclick() {
-    checkoff_animation = !checkoff_animation;
+    tick_animation = !tick_animation;
     await tick();
 
     const start_time = performance.now();
@@ -28,19 +28,22 @@
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 </script>
 
-<div {...rest} class="absolute top-1/2 -translate-y-1/2 left-4 {rest.class}">
-  <button
-    use:longpress
-    {onlongpress}
-    type="button"
-    aria-label="check"
-    class="rounded-md border shadow-inner shadow-primary-800 transition-all duration-300 bg-slate-100 border-primary-900 h-6 w-6 flex items-center justify-center"
+<button
+  {...rest}
+  use:longpress
+  type="button"
+  aria-label="check"
+  {onlongpress}
+  {onclick}
+  class="absolute top-1/2 -translate-y-1/2 left-0 hover:bg-t-primary-700 hover:opacity-50 p-4 rounded-full {rest.class}"
+>
+  <div
+    class="rounded-md border shadow-inner shadow-primary-800 transition-all duration-300 bg-slate-100 border-primary-900 h-5 w-5 flex items-center justify-center"
     class:bg-blue-600!={is_checked}
     class:border-blue-700!={is_checked}
-    {onclick}
   >
     {#if is_checked}
       <Check class="text-primary-invert" />
     {/if}
-  </button>
-</div>
+  </div>
+</button>

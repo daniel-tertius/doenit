@@ -102,7 +102,7 @@
         }
       }}
     >
-      <ItemCheckbox is_selected={!!task.archived} checkoff_animation={!!task.archived} class="left-auto right-2.5" />
+      <ItemCheckbox is_selected={!!task.archived} tick_animation={!!task.archived} class="left-auto right-2.5" />
     </button>
   </div>
 </form>
