@@ -5,6 +5,7 @@
   import Urgent from "$lib/icon/Urgent.svelte";
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
+  import DatePickerShortcut from "./DatePickerShortcut.svelte";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
@@ -24,6 +25,7 @@
     }}
     bind:error_message={error.date}
   />
+  <DatePickerShortcut bind:date={task.due_date} />
 </div>
 
 {#if task.due_date}
@@ -47,9 +49,11 @@
   <div class="flex gap-2">
     <button
       type="button"
-      class="{task.important
-        ? 'bg-yellow-100 border-yellow-700 text-yellow-700'
-        : 'bg-primary-20l border-primary '} text-tertiary p-3 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
+      class={{
+        "text-tertiary p-3 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
+        "bg-yellow-100 border-yellow-700 text-yellow-700": task.important,
+        "bg-t-primary border-primary-600 text-t-secondary": !task.important,
+      }}
       onclick={() => {
         task.important = !task.important;
       }}
@@ -59,9 +63,11 @@
     </button>
     <button
       type="button"
-      class="{task.urgent
-        ? 'bg-error-invert-30l border-error-invert-30d text-error-invert-30d'
-        : 'bg-primary-invert-20l border-primary-invert text-tertiary-invert'} p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center"
+      class={{
+        "p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
+        "bg-error-30d border-error-invert-30d text-t-secondary": task.urgent,
+        "bg-t-primary border-primary-600 text-t-secondary": !task.urgent,
+      }}
       onclick={() => {
         task.urgent = !task.urgent;
       }}

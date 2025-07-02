@@ -23,7 +23,7 @@
       {value}
       onfocus={() => (is_focused = true)}
       {placeholder}
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d"
     />
   {:else}
     <input
@@ -31,7 +31,7 @@
       onblur={() => (is_focused = false)}
       bind:this={time_input}
       bind:value
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none"
     />
   {/if}
 

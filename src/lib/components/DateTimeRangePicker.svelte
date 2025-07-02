@@ -3,8 +3,11 @@
   import DateInput from "./DateInput.svelte";
   import { Check, Times } from "$lib/icon";
   import { untrack } from "svelte";
+  import ArrowLeft from "$lib/icon/ArrowLeft.svelte";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
+
+  $inspect(end);
 
   const [sd, st] = start ? start.split(" ") : ["", ""];
   const [ed, et] = end ? end.split(" ") : ["", ""];
@@ -14,6 +17,16 @@
   let start_time = $state(st);
   let end_date = $state(ed);
   let end_time = $state(et);
+
+  $effect(() => {
+    const ed = end?.split(" ")[0] || "";
+
+    untrack(() => {
+      if (ed !== end_date) {
+        end_date = ed;
+      }
+    });
+  });
 
   $effect(() => {
     onchange({ start_date, start_time, end_date, end_time });
@@ -72,13 +85,13 @@
    * @param {string} date
    */
   const displayDate = (date) => {
-    return date
-      ? new Date(date).toLocaleDateString("af-ZA", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        })
-      : "";
+    console.log("date", date);
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("af-ZA", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   };
 </script>
 
@@ -86,7 +99,7 @@
   <button
     type="button"
     onclick={toggle}
-    class="px-3 py-2 w-full text-left bg-primary-20l rounded-lg border border-primary"
+    class="px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600"
     class:!border-error={!!error_message}
     class:!text-error={!!error_message}
     class:text-tertiary-20d={!start_date && !end_date}
@@ -94,12 +107,14 @@
     {#if start_date || end_date}
       <div class="flex items-center">
         {#if start_date}
-          <span>{displayDate(start_date)} {start_time ? start_time : ""}</span>
-          <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4-4 4M3 12h18" />
-          </svg>
+          <span>{displayDate(start_date)} {start_time || ""}</span>
         {/if}
-        <span>{displayDate(end_date)} {end_time ? end_time : ""}</span>
+
+        {#if start_date && end_date}
+          <ArrowLeft />
+        {/if}
+
+        <span>{displayDate(end_date)} {end_time || ""}</span>
       </div>
     {:else}
       Kies datum en tyd
@@ -121,8 +136,12 @@
             id="start-date"
             placeholder="Kies 'n begindatum"
             class={!!error_message ? "border border-error text-error" : ""}
-            bind:value={start_date}
+            value={start_date}
             max={end_date ? end_date : undefined}
+            onchange={({ value }) => {
+              start_date = value;
+              if (!value) start_time = "";
+            }}
           />
 
           {#if start_date}
@@ -133,7 +152,7 @@
                 type="time"
                 bind:value={start_time}
                 placeholder="Kies 'n begin tyd"
-                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none {!!start_time &&
+                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none {!!start_time &&
                 error_message
                   ? 'border border-error text-error'
                   : ''}"
@@ -160,7 +179,16 @@
         <div>
           <label for="end-date" class="block font-medium">Tot datum</label>
 
-          <DateInput open_on_mount={!end_date} id="end-date" placeholder="Kies 'n sperdatum" bind:value={end_date} />
+          <DateInput
+            open_on_mount={!end_date}
+            id="end-date"
+            placeholder="Kies 'n sperdatum"
+            value={end_date}
+            onchange={({ value }) => {
+              end_date = value;
+              if (!value) end_time = "";
+            }}
+          />
           {#if end_date}
             <div class="relative">
               <input

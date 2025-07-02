@@ -44,7 +44,7 @@
             id="theme-select"
             value={theme.value}
             onchange={handleThemeChange}
-            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-900 text-tertiary appearance-none"
+            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 text-tertiary appearance-none"
           >
             {#each themes as theme_option}
               <option value={theme_option.value}>{theme_option.label}</option>
@@ -68,7 +68,7 @@
               id="language-select"
               disabled
               bind:value={language}
-              class="bg-primary-20l p-2 w-full rounded-lg border border-primary text-tertiary appearance-none"
+              class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 text-tertiary appearance-none"
             >
               {#each languages as lang}
                 <option value={lang.value}>{lang.label}</option>

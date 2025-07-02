@@ -32,7 +32,7 @@
       bind:value={name}
       type="text"
       placeholder="Gee jou taak 'n naam"
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary pr-7"
+      class="bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 pr-7"
       class:border-error={!!error_message}
       class:placeholder:text-error-20l={!!error_message}
     />
@@ -63,7 +63,7 @@
       bind:value={description}
       placeholder="Gee meer besonderhede oor jou taak"
       rows="3"
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary resize-none min-h-18 max-h-40"
+      class="bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 resize-none min-h-18 max-h-40"
       style="field-sizing: content;"
     ></textarea>
   </div>

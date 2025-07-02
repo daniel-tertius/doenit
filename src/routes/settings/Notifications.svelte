@@ -56,7 +56,7 @@
             type="time"
             value={time}
             onchange={(e) => (Notifications.time = e.target.value)}
-            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-900 text-t-secondary appearance-none"
+            class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 text-t-secondary appearance-none"
           />
         </div>
 

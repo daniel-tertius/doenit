@@ -135,8 +135,8 @@
     <select
       id="repeat"
       bind:value={temp_repeat_interval}
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary open:text-tertiary appearance-none"
-      class:text-tertiary-30d={!temp_repeat_interval}
+      class="bg-t-primary-700 p-2 w-full rounded-lg border-primary-700 border open:text-t-secondary appearance-none {!temp_repeat_interval &&
+        'text-t-secondary/60'}"
     >
       <option value="">Geen herhaling</option>
       <option value="daily">Daagliks</option>
@@ -151,7 +151,7 @@
 
     {#if !!temp_repeat_interval}
       <button onclick={() => (temp_repeat_interval = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
-        <Times class="text-tertiary" size={18} />
+        <Times class="text-t-secondary" size={18} />
       </button>
     {/if}
   </div>
@@ -164,7 +164,7 @@
           class:bg-tertiary={temp_specific_days.has(i)}
           class:text-primary={temp_specific_days.has(i)}
           class:bg-primary-20l={!temp_specific_days.has(i)}
-          class:text-tertuary={!temp_specific_days.has(i)}
+          class:text-t-secondary={!temp_specific_days.has(i)}
           onclick={() => {
             if (temp_specific_days.has(i)) {
               temp_specific_days.delete(i);

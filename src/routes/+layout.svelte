@@ -57,7 +57,7 @@
     {@render children()}
   </main>
 
-  <nav class="flex gap-2 p-4 border-t border-border bg-t-primary justify-between">
+  <nav class="flex gap-2 p-4 border-t border-primary-600 bg-t-primary justify-between">
     <NavbarButton />
 
     {#if is_home}

@@ -42,7 +42,7 @@
       type="text"
       use:init
       placeholder="Kies 'n naam vir jou kategorie"
-      class="p-2 w-full rounded-lg border border-tertiary mt-2"
+      class="p-2 w-full rounded-lg border border-primary-600 mt-2"
       bind:value={new_category_name}
     />
 
