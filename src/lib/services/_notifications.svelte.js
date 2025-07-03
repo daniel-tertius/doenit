@@ -7,7 +7,7 @@ let notificationId = 0;
 export class NotificationService {
   constructor() {
     this.notifications = $state([]);
-    this.permission = $state("default");
+    this.permission = $state("dark");
     this.checkPermission();
   }
 

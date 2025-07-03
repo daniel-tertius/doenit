@@ -17,7 +17,7 @@
     <h3 class="font-semibold mb-2">Oor Doenit</h3>
 
     <!-- Keep in sync with: android/app/build.gradle – versionName -->
-    <p>Weergawe 1.0.8</p>
+    <p>Weergawe 1.0.9</p>
     <p class="text-t-secondary/60">
       Het jy hulp nodig of terugvoer? Kontak my by: <a
         href="mailto:support.tricky800@passmail.com"

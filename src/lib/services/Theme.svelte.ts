@@ -1,9 +1,9 @@
 import { browser } from "$app/environment";
 import { cached_theme } from "$lib/cached";
 
-export type ThemeValue = "dark" | "light" | "auto";
+export type ThemeValue = "dark" | "light";
 class Theme {
-  #value: ThemeValue = "auto";
+  #value: ThemeValue = "dark";
 
   constructor() {
     this.init();
@@ -12,8 +12,8 @@ class Theme {
   async init() {
     let theme = await cached_theme.get();
     if (!theme) {
-      cached_theme.set("auto");
-      theme = "auto";
+      cached_theme.set("dark");
+      theme = "dark";
     }
 
     this.value = theme;
@@ -26,8 +26,9 @@ class Theme {
   set value(theme_value: string) {
     if (!browser) return;
 
+    if (theme_value === "auto") theme_value = "dark";
     if (!this.isValidTheme(theme_value)) {
-      console.warn(`Invalid theme value: ${theme_value}. Valid values are 'dark', 'light', or 'auto'.`);
+      console.warn(`Invalid theme value: ${theme_value}. Valid values are 'dark' or 'light'.`);
       return;
     }
 
@@ -38,12 +39,6 @@ class Theme {
 
     let actualTheme = theme_value;
 
-    // Handle auto theme
-    if (theme_value === "auto") {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      actualTheme = prefersDark ? "dark" : "light";
-    }
-
     // Apply theme class
     root.classList.add(`theme-${actualTheme}`);
     cached_theme.set(theme_value);
@@ -51,7 +46,7 @@ class Theme {
   }
 
   private isValidTheme(theme_value: string): theme_value is ThemeValue {
-    return ["dark", "light", "auto"].includes(theme_value);
+    return ["dark", "light"].includes(theme_value);
   }
 }
 
