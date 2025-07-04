@@ -60,32 +60,30 @@
 >
   <button
     {...rest}
-    class="rounded-lg flex flex-col items-start p-2 w-full h-full"
-    class:bg-error={is_past && !task.completed && !is_selected}
-    class:bg-active={is_ongoing && !task.completed && !is_selected}
-    class:bg-primary={!!task.completed || (is_selected && !task.completed)}
-    class:bg-primary-20l={(!task.completed && !is_past && !is_ongoing && !is_selected) ||
-      (!is_selected && !!task.completed)}
+    class={{
+      "rounded-lg flex flex-col items-start p-2 w-full h-full": true,
+      "bg-t-primary-600": !is_selected && !!task.completed,
+    }}
     {onclick}
     use:longpress
     {onlongpress}
   >
     <ItemName name={task.name} completed={!!task.completed} {tick_animation} />
 
-    <div class="flex flex-wrap gap-x-5 pl-10">
-      {#if task.due_date}
-        <TaskDueDate {is_complete} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
-          {displayDateTime({ due_date, start_date })}
-        </TaskDueDate>
-      {/if}
-
+    <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
       {#if category}
-        <div class="text-left opacity-50 w-fit flex items-center h-fit gap-2">
+        <div class="text-left opacity-50 bg-t-primary-300 px-1 rounded w-fit flex items-center h-fit gap-1">
           <div class="w-4 h-4">
             <Categories size={16} />
           </div>
           <span>{category.name}</span>
         </div>
+      {/if}
+
+      {#if task.due_date}
+        <TaskDueDate {is_complete} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
+          {displayDateTime({ due_date, start_date })}
+        </TaskDueDate>
       {/if}
     </div>
   </button>

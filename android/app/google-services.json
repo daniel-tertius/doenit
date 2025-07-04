@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "546887238633",
+    "firebase_url": "https://doenit2-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "doenit2",
+    "storage_bucket": "doenit2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546887238633:android:158790fc0e5e2e7873c178",
+        "android_client_info": {
+          "package_name": "doenit.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5uvUSpZ-mkhHw9EK0QnZ_c01hE5ERzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

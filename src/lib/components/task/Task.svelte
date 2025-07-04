@@ -72,11 +72,13 @@
 >
   <button
     {...rest}
-    class="rounded-lg flex flex-col items-start p-2 w-full h-full"
-    class:bg-error={is_past && !is_selected}
-    class:bg-active={is_ongoing && !is_selected}
-    class:bg-primary={is_selected}
-    class:bg-t-primary-600={!is_selected && !is_past && !is_ongoing}
+    class={{
+      "rounded-lg flex flex-col items-start p-2 w-full h-full": true,
+      "bg-error/60": is_past && !is_selected,
+      "bg-active/60": is_ongoing && !is_selected,
+      "bg-primary": is_selected,
+      "bg-t-primary-600": !is_selected && !is_past && !is_ongoing,
+    }}
     {onclick}
     use:longpress
     {onlongpress}
@@ -86,11 +88,13 @@
     <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
       {#if category}
         <div
-          class="text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80"
-          class:bg-t-primary-400={!is_past && !is_ongoing}
-          class:bg-error-30d={is_past && !is_ongoing}
-          class:bg-active-30d={is_ongoing}
-          class:bg-primary-30d={is_selected}
+          class={{
+            "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
+            "bg-t-primary-400": !is_past && !is_ongoing,
+            "bg-error/80": is_past && !is_ongoing,
+            "bg-active/80": is_ongoing,
+            "bg-primary/80": is_selected,
+          }}
         >
           <div class="w-4 h-4">
             <Categories size={16} />

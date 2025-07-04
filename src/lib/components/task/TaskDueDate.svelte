@@ -16,14 +16,13 @@
   const { is_complete, is_past, is_ongoing, is_selected, is_repeating, children } = $props();
 </script>
 
-<!-- class:bg-primary={!is_complete && !is_past && !is_ongoing} -->
-<!-- class:bg-primary-10l={is_complete} -->
-<!-- class:bg-primary-20l={is_selected && !is_complete} -->
 <div
-  class="text-left rounded-full px-1 w-fit flex items-center h-fit gap-1 opacity-80"
-  class:bg-error-30d={is_past && !is_complete && !is_selected}
-  class:bg-active-30d={is_ongoing && !is_complete}
-  class:opacity-50={is_complete}
+  class={{
+    "text-left rounded-full px-1 w-fit flex items-center h-fit gap-1 opacity-80": true,
+    "bg-error/80": is_past && !is_complete && !is_selected,
+    "bg-active/80": is_ongoing && !is_complete,
+    "opacity-50! bg-t-primary-300": is_complete,
+  }}
 >
   <span class="flex gap-1 items-center">
     <div class="w-4 h-4">

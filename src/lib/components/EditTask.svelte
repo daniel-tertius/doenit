@@ -1,5 +1,5 @@
 <script>
-  import Herhaling from "$lib/components/item/Herhaling.svelte";
+  import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
   import Important from "$lib/icon/Important.svelte";
   import Urgent from "$lib/icon/Urgent.svelte";

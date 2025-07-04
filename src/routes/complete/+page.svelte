@@ -1,6 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
-  import TaskCompleted from "$lib/components/item/TaskCompleted.svelte";
+  import TaskCompleted from "$lib/components/task/TaskCompleted.svelte";
   import { data } from "../Data.svelte";
   import { Haptics } from "@capacitor/haptics";
 

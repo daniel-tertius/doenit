@@ -70,7 +70,7 @@
 </script>
 
 {#if !is_focused}
-  <div class="relative">
+  <div class="relative w-full">
     <input
       {...rest}
       id={undefined}

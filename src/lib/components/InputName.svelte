@@ -16,14 +16,10 @@
   function init(el) {
     setTimeout(() => el?.focus());
   }
-
-  function validateName() {
-    error_message = !name?.trim() ? "Benoem jou taak" : "";
-  }
 </script>
 
 <div>
-  <label class="font-bold" for="name">Naam</label>
+  <label class="font-bold" for="name">Wat moet gedoen word?</label>
   <div class="relative">
     <input
       id="name"

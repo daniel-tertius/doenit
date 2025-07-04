@@ -4,7 +4,7 @@
   import { data as Data } from "../Data.svelte.js";
   import Trash from "$lib/icon/Trash.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
-  import ItemCheckbox from "$lib/components/item/ItemCheckbox.svelte";
+  import ItemCheckbox from "$lib/components/task/ItemCheckbox.svelte";
   import { onMount } from "svelte";
   import { Capacitor } from "@capacitor/core";
   import { StatusBar } from "@capacitor/status-bar";
@@ -82,7 +82,7 @@
   }}
   aria-label="Sluit"
 >
-  <Trash class="w-6 h-6" color="#E01D1D" />
+  <Trash class="w-6 h-6 text-error" />
 </button>
 
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
@@ -113,7 +113,7 @@
 
 {#snippet footer()}
   <button
-    class="bg-error-10d flex gap-1 items-center text-tertiary px-4 py-2 rounded-md"
+    class="bg-error flex gap-1 items-center text-tertiary px-4 py-2 rounded-md"
     type="button"
     onclick={deleteTask}
   >

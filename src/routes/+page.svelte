@@ -7,7 +7,7 @@
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
-  import Task from "$lib/components/item/Task.svelte";
+  import Task from "$lib/components/task/Task.svelte";
   import { notifications } from "$lib/services";
 
   data.selected_tasks_hash.clear();

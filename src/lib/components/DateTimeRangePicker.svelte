@@ -99,10 +99,11 @@
   <button
     type="button"
     onclick={toggle}
-    class="px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600"
-    class:!border-error={!!error_message}
-    class:!text-error={!!error_message}
-    class:text-tertiary-20d={!start_date && !end_date}
+    class={{
+      "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
+      "border-error text-error": !!error_message,
+      "text-t-secondary/60": !start_date && !end_date,
+    }}
   >
     {#if start_date || end_date}
       <div class="flex items-center">
@@ -132,42 +133,44 @@
       <div class="flex flex-col space-y-2">
         <div>
           <label for="start-date" class="block font-medium">Vanaf datum</label>
-          <DateInput
-            id="start-date"
-            placeholder="Kies 'n begindatum"
-            class={!!error_message ? "border border-error text-error" : ""}
-            value={start_date}
-            max={end_date ? end_date : undefined}
-            onchange={({ value }) => {
-              start_date = value;
-              if (!value) start_time = "";
-            }}
-          />
+          <div class="flex gap-2 w-full">
+            <DateInput
+              id="start-date"
+              placeholder="Kies 'n begindatum"
+              class={!!error_message ? "border border-error text-error" : ""}
+              value={start_date}
+              max={end_date ? end_date : undefined}
+              onchange={({ value }) => {
+                start_date = value;
+                if (!value) start_time = "";
+              }}
+            />
 
-          {#if start_date}
-            <div class="relative">
-              <input
-                transition:slide
-                id="start-time"
-                type="time"
-                bind:value={start_time}
-                placeholder="Kies 'n begin tyd"
-                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none {!!start_time &&
-                error_message
-                  ? 'border border-error text-error'
-                  : ''}"
-              />
-              {#if start_time}
-                <button
-                  type="button"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
-                  onclick={() => (start_time = "")}
-                >
-                  <Times size={18} class="text-tertiary" />
-                </button>
-              {/if}
-            </div>
-          {/if}
+            {#if start_date}
+              <div class="relative w-full">
+                <input
+                  transition:slide
+                  id="start-time"
+                  type="time"
+                  bind:value={start_time}
+                  placeholder="Kies 'n begin tyd"
+                  class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none {!!start_time &&
+                  error_message
+                    ? 'border border-error text-error'
+                    : ''}"
+                />
+                {#if start_time}
+                  <button
+                    type="button"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
+                    onclick={() => (start_time = "")}
+                  >
+                    <Times size={18} class="text-tertiary" />
+                  </button>
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
 
         {#if error_message}
@@ -179,37 +182,39 @@
         <div>
           <label for="end-date" class="block font-medium">Tot datum</label>
 
-          <DateInput
-            open_on_mount={!end_date}
-            id="end-date"
-            placeholder="Kies 'n sperdatum"
-            value={end_date}
-            onchange={({ value }) => {
-              end_date = value;
-              if (!value) end_time = "";
-            }}
-          />
-          {#if end_date}
-            <div class="relative">
-              <input
-                id="end-time"
-                transition:slide
-                type="time"
-                placeholder="Kies 'n eind tyd"
-                bind:value={end_time}
-                class="bg-primary-20l mt-1 p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
-              />
-              {#if end_time}
-                <button
-                  type="button"
-                  class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
-                  onclick={() => (end_time = "")}
-                >
-                  <Times size={18} class="text-tertiary" />
-                </button>
-              {/if}
-            </div>
-          {/if}
+          <div class="flex gap-2">
+            <DateInput
+              open_on_mount={!end_date}
+              id="end-date"
+              placeholder="Kies 'n sperdatum"
+              value={end_date}
+              onchange={({ value }) => {
+                end_date = value;
+                if (!value) end_time = "";
+              }}
+            />
+            {#if end_date}
+              <div class="relative w-full">
+                <input
+                  id="end-time"
+                  transition:slide
+                  type="time"
+                  placeholder="Kies 'n eind tyd"
+                  bind:value={end_time}
+                  class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
+                />
+                {#if end_time}
+                  <button
+                    type="button"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
+                    onclick={() => (end_time = "")}
+                  >
+                    <Times size={18} class="text-tertiary" />
+                  </button>
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
 

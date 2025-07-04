@@ -1,7 +1,7 @@
 <script>
   import { selectedCategories } from "$lib/cached";
   import { data } from "../../routes/Data.svelte";
-  import ItemCheckbox from "./item/ItemCheckbox.svelte";
+  import ItemCheckbox from "./task/ItemCheckbox.svelte";
 
   let { id, name } = $props();
 

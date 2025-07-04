@@ -399,7 +399,7 @@ export class Data {
    */
   #validateTask(task) {
     if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
-    if (!task.name?.trim()) return { success: false, error: { name: "Benoem jou taak" } };
+    if (!task.name?.trim()) return { success: false, error: { name: "Wat moet gedoen word?" } };
 
     if (!!task.start_date && !!task.due_date && !!task.due_date && task.start_date > task.due_date) {
       return { success: false, error: { date: "Begin datum moet voor die einde datum wees" } };

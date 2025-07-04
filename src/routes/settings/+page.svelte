@@ -8,16 +8,16 @@
 <div class="space-y-4">
   <ThemeAndLanguage />
   <Notifications />
-  {#if false}
-    <Backup />
-  {/if}
+  <!-- {#if false} -->
+  <Backup />
+  <!-- {/if} -->
   <FutureIdeas />
 
   <section class="rounded-md p-4 bg-t-primary-600 space-y-2 text-t-secondary select-none">
     <h3 class="font-semibold mb-2">Oor Doenit</h3>
 
     <!-- Keep in sync with: android/app/build.gradle – versionName -->
-    <p>Weergawe 1.0.9</p>
+    <p>Weergawe 1.0.11</p>
     <p class="text-t-secondary/60">
       Het jy hulp nodig of terugvoer? Kontak my by: <a
         href="mailto:support.tricky800@passmail.com"
