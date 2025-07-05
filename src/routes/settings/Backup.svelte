@@ -1,9 +1,59 @@
 <script>
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
+  import { api } from "$lib/services/api";
 
   let show = $state(false);
   let backup_enabled = $state(false);
+  let isCreatingBackup = $state(false);
+  let isRestoring = $state(false);
+
+  async function createBackup() {
+    if (isCreatingBackup) return;
+    
+    isCreatingBackup = true;
+    try {
+      const result = await api.createBackup();
+      if (result.success) {
+        alert('Rugsteun suksesvol geskep!');
+      }
+    } catch (error) {
+      console.error('Backup error:', error);
+      alert('Fout met rugsteun: ' + error.message);
+    } finally {
+      isCreatingBackup = false;
+    }
+  }
+
+  async function restoreBackup() {
+    if (isRestoring) return;
+    
+    const confirmed = confirm('Is jy seker jy wil vanaf rugsteun herstel? Dit sal alle huidige data vervang.');
+    if (!confirmed) return;
+
+    isRestoring = true;
+    try {
+      // In a real implementation, you'd want to show a list of available backups
+      // For now, we'll need the user to provide a backup ID
+      const backupId = prompt('Voer rugsteun ID in:');
+      if (!backupId) {
+        isRestoring = false;
+        return;
+      }
+
+      const result = await api.restoreBackup(backupId);
+      if (result.success) {
+        alert('Data suksesvol herstel!');
+        // Refresh the page or update the UI as needed
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Restore error:', error);
+      alert('Fout met herstel: ' + error.message);
+    } finally {
+      isRestoring = false;
+    }
+  }
 </script>
 
 <div class="bg-primary-20l rounded-lg">
@@ -37,18 +87,20 @@
 
       <button
         type="button"
-        disabled
-        class="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        disabled={isCreatingBackup}
+        class="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+        onclick={createBackup}
       >
-        Rugsteun nou
+        {isCreatingBackup ? 'Besig met rugsteun...' : 'Rugsteun nou'}
       </button>
 
       <button
-        disabled
         type="button"
-        class="w-full p-3 bg-primary-30l text-tertiary rounded-lg hover:bg-primary-20l transition-colors"
+        disabled={isRestoring}
+        class="w-full p-3 bg-primary-30l text-tertiary rounded-lg hover:bg-primary-20l transition-colors disabled:opacity-50"
+        onclick={restoreBackup}
       >
-        Herstel vanaf rugsteun
+        {isRestoring ? 'Besig met herstel...' : 'Herstel vanaf rugsteun'}
       </button>
     </div>
   {/if}
