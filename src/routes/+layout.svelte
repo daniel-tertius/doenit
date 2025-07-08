@@ -56,19 +56,18 @@
   <!-- Show main app if authenticated -->
   <PageHeading />
 
-    <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">
-      {@render children()}
-    </main>
+  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">
+    {@render children()}
+  </main>
 
-    <nav class="flex gap-2 p-4 border-t border-primary-600 bg-t-primary justify-between">
-      <NavbarButton />
+  <nav class="flex gap-2 p-4 border-t border-primary-600 bg-t-primary justify-between">
+    <NavbarButton />
 
-      {#if is_home}
-        <CategoryFilter />
-      {/if}
+    {#if is_home}
+      <CategoryFilter />
+    {/if}
 
-      <CreateItemButton />
-      <HomeButton />
-    </nav>
-  {/if}
+    <CreateItemButton />
+    <HomeButton />
+  </nav>
 </div>
