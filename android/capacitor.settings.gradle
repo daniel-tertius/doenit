@@ -5,8 +5,14 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 include ':capacitor-community-safe-area'
 project(':capacitor-community-safe-area').projectDir = new File('../node_modules/@capacitor-community/safe-area/android')
 
+include ':capacitor-firebase-authentication'
+project(':capacitor-firebase-authentication').projectDir = new File('../node_modules/@capacitor-firebase/authentication/android')
+
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
+
+include ':capacitor-browser'
+project(':capacitor-browser').projectDir = new File('../node_modules/@capacitor/browser/android')
 
 include ':capacitor-device'
 project(':capacitor-device').projectDir = new File('../node_modules/@capacitor/device/android')
@@ -22,3 +28,6 @@ project(':capacitor-preferences').projectDir = new File('../node_modules/@capaci
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
+
+include ':codetrix-studio-capacitor-google-auth'
+project(':codetrix-studio-capacitor-google-auth').projectDir = new File('../../other_repos/CapacitorGoogleAuth/android')

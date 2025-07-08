@@ -1,11 +1,6 @@
 <script>
   let items = [
     {
-      title: "Rugsteun",
-      description:
-        "Doenit werk tans 100% vanlyn, wat beteken jou data word op jou toestel gestoor. As jy die toepassing verwyder, gaan jou data verlore. Ek werk aan 'n rugsteunfunksie om jou data veilig te hou, sodat jy nooit jou take verloor nie.",
-    },
-    {
       title: "Engels Ondersteuning",
       description:
         "Doenit is trots Afrikaans, maar ek voeg binnekort die opsie by om na Engels oor te skakel vir 'n breër gebruikerservaring.",

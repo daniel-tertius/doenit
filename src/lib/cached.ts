@@ -28,3 +28,8 @@ class Cached<T> {
 export const selectedCategories = new Cached<string[]>("selected_categories");
 export const cached_theme = new Cached<ThemeValue>("theme");
 export const cached_notification_time = new Cached<string | null>("time");
+/**
+ * The email address that has been verified.
+ */
+export const cached_email_address = new Cached<string | null>("email_address");
+export const cached_is_backup_enabled = new Cached<boolean | null>("backup_enabled");
