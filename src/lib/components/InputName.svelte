@@ -20,7 +20,7 @@
 
 <div>
   <label class="font-bold" for="name">Wat moet gedoen word?</label>
-  <div class="relative">
+  <div class="flex gap-1">
     <input
       id="name"
       bind:this={name_input}
@@ -35,7 +35,7 @@
 
     <button
       type="button"
-      class="absolute top-1/2 -translate-y-[50%] right-1 h-[66.66%] rounded-full my-auto aspect-square flex justify-center items-center"
+      class="rounded-full my-auto aspect-square flex justify-center items-center h-[42px] w-[42px]"
       onclick={() => (show_description = !show_description)}
     >
       <DownChevron

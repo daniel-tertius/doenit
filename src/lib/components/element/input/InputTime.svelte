@@ -4,9 +4,9 @@
 
   /**
    * @typedef {Object} Props
-   * @property {string} [date] - The date in ISO format (YYYY-MM-DD).
+   * @property {string | null} value - The date in ISO format (YYYY-MM-DD).
    * @property {boolean} [can_clear=true] - Whether the date can be cleared.
-   * @property {(e: { value: string }) => void} [onchange] - Callback function when the date changes.
+   * @property {(e: { value: string | null }) => void} [onchange] - Callback function when the date changes.
    */
 
   /** @type {Props & Record<string, *>}*/
@@ -17,7 +17,7 @@
   /** @type {HTMLInputElement?} */
   let date_input = $state(null);
 
-  const display_value = $derived(displayDate(value));
+  const display_value = $derived(displayTime(value));
 
   $effect(() => {
     if (!is_focused) return;
@@ -43,13 +43,17 @@
 
   /**
    * Formats the date to a human-readable string.
-   * @param {string | undefined} date
-   * @return {string} The formatted date string.
+   * @param {string | null} time
+   * @return {string} The formatted time string.
    */
-  function displayDate(date) {
-    if (!date) return "";
+  function displayTime(time) {
+    if (!time) return "";
 
-    return new Date(date).toLocaleDateString("af-ZA", {
+    const [hours, minutes] = time.split(":").map(Number);
+
+    let date = new Date(0);
+    date.setHours(hours, minutes, 0, 0);
+    return date.toLocaleTimeString("af-ZA", {
       hour: "2-digit",
       minute: "2-digit",
     });

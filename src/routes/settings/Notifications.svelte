@@ -3,7 +3,7 @@
   import { notifications as Notifications } from "$lib/services/Notification.svelte";
   import { onMount } from "svelte";
   import { Sync } from "$lib/icon";
-  import { InputSwitch } from "$lib/components/element/input";
+  import { InputSwitch, InputTime } from "$lib/components/element/input";
   import { ContainerDetails } from "$lib/components/element/container";
 
   /** @type {string?} */
@@ -14,6 +14,13 @@
     await Notifications.init();
     time = Notifications.time;
   });
+
+  function handleTimeChange({ value }) {
+    if (value === time) return;
+
+    time = value;
+    Notifications.time = value;
+  }
 </script>
 
 <ContainerDetails label="Kennisgewings">
@@ -25,13 +32,7 @@
   {#if Notifications.enabled}
     <div transition:slide>
       <label for="daily_reminder_time" class="block text-sm font-medium mb-2">Herinneringstyd</label>
-      <input
-        id="daily_reminder_time"
-        type="time"
-        value={time}
-        onchange={(e) => (Notifications.time = e.target.value)}
-        class="focus:outline-none bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 text-t-secondary appearance-none"
-      />
+      <InputTime value={time} onchange={handleTimeChange} placeholder="Kies 'n tyd" />
     </div>
 
     <div class="text-xs text-t-secondary/60">
