@@ -1,5 +1,5 @@
 <script>
-  import Times from "$lib/icon/Times.svelte";
+  import { Times } from "$lib/icon";
   import { slide } from "svelte/transition";
 
   let { value = $bindable(""), placeholder = "Kies 'n tyd", ...rest } = $props();

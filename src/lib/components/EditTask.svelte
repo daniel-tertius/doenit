@@ -1,8 +1,7 @@
 <script>
   import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
+  import { Important, Urgent } from "$lib/icon";
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";

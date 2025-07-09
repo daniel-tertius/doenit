@@ -1,6 +1,5 @@
 <script>
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
+  import { Important, Urgent } from "$lib/icon";
 
   let { important = $bindable(false), urgent = $bindable(false), onclick } = $props();
 </script>

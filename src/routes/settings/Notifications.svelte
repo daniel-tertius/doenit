@@ -2,7 +2,7 @@
   import { slide } from "svelte/transition";
   import { notifications as Notifications } from "$lib/services/Notification.svelte";
   import { onMount } from "svelte";
-  import Sync from "$lib/icon/Sync.svelte";
+  import { Sync } from "$lib/icon";
   import Toggle from "$lib/components/Toggle.svelte";
   import Details from "$lib/components/Details.svelte";
 

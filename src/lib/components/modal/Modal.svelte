@@ -1,5 +1,5 @@
 <script>
-  import Times from "$lib/icon/Times.svelte";
+  import { Times } from "$lib/icon";
   import { fade, scale } from "svelte/transition";
 
   /**
@@ -60,7 +60,10 @@
   >
   </button>
 
-  <div class="modal-content rounded-lg bg-primary-10l border border-primary-30l" transition:scale={{ start: 0.95, duration: 200 }}>
+  <div
+    class="modal-content rounded-lg bg-primary-10l border border-primary-30l"
+    transition:scale={{ start: 0.95, duration: 200 }}
+  >
     <div class="p-4 border-b border-primary-30l justify-between items-center gap-0.5 flex">
       <h2 class="font-semibold text-tertiary">{title}</h2>
       <button type="button" class="close-button" onclick={close} aria-label="Close modal">

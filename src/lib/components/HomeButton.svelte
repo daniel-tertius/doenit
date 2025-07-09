@@ -1,8 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import { navigating, page } from "$app/state";
-  import { Home } from "$lib/icon";
-  import Loading from "$lib/icon/Loading.svelte";
+  import { Home, Loading } from "$lib/icon";
 
   const show = $derived(["/complete", "/categories", "/settings", "/new"].includes(page.url.pathname));
 

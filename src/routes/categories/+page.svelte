@@ -1,9 +1,8 @@
 <script>
-  import { Trash } from "$lib/icon";
+  import { Trash, Plus } from "$lib/icon";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { fly, slide } from "svelte/transition";
-  import Plus from "$lib/icon/Plus.svelte";
   import { data } from "../Data.svelte";
 
   const DEFAULT_NAME = "Standaard";

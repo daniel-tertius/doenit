@@ -1,10 +1,9 @@
 <script>
-  import { DownChevron } from "$lib/icon";
+  import { Plus, DownChevron } from "$lib/icon";
   import { onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
   import { data } from "../../routes/Data.svelte";
   import CategoryButton from "./CategoryButton.svelte";
-  import Plus from "$lib/icon/Plus.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";

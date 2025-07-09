@@ -33,3 +33,4 @@ export const cached_notification_time = new Cached<string | null>("time");
  */
 export const cached_email_address = new Cached<string | null>("email_address");
 export const cached_is_backup_enabled = new Cached<boolean | null>("backup_enabled");
+export const cached_backup_token = new Cached<string | null>("backup_token");

@@ -1,6 +1,8 @@
-import { cached_email_address, cached_is_backup_enabled } from "$lib/cached";
+import { auth } from "$lib/firebase";
+import { cached_backup_token, cached_email_address, cached_is_backup_enabled } from "$lib/cached";
+import { data } from "../../routes/Data.svelte";
 import { FUNCTIONS_URLS } from "../firebase";
-import { AuthService } from "./auth";
+import { getAuthToken, signInWithGoogle } from "./auth";
 
 class Backup {
   #email_address: string | null = $state(null);
@@ -34,7 +36,7 @@ class Backup {
   }
 
   private async makeRequest(functionName: keyof typeof FUNCTIONS_URLS, options: RequestInit = {}) {
-    const token = await AuthService.getAuthToken();
+    const token = await getAuthToken();
 
     const config: RequestInit = {
       ...options,
@@ -59,30 +61,28 @@ class Backup {
   }
 
   async verifyEmail() {
-    const result = await AuthService.verifyEmailWithGoogle();
+    const result = await signInWithGoogle();
 
     if (result && result.email) {
       alert("E-posadres verifieer suksesvol as " + result.email);
       this.email_address = result.email;
     }
-
-    // Automatically sign out after verification
-    setTimeout(async () => {
-      await AuthService.signOut();
-    }, 2000);
+    let currentUser = auth.currentUser;
+    const token = await currentUser?.getIdToken();
+    if (token) cached_backup_token.set(token);
   }
 
   // Backup operations
   async createBackup() {
     return this.makeRequest("createBackup", {
       method: "POST",
+      body: JSON.stringify({ tasks: data.tasks, categories: data.categories }),
     });
   }
 
-  async restoreBackup(backupId: string) {
+  async restoreBackup() {
     return this.makeRequest("restoreBackup", {
       method: "POST",
-      body: JSON.stringify({ backupId }),
     });
   }
 }

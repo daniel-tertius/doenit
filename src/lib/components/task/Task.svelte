@@ -1,5 +1,5 @@
 <script>
-  import { displayDateRange, displayDateTime } from "$lib";
+  import { displayDateTime } from "$lib";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
@@ -7,11 +7,8 @@
   import { data } from "../../../routes/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
-  import Sync from "$lib/icon/Sync.svelte";
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
+  import { Categories, Important, Urgent } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
-  import { Categories } from "$lib/icon";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task

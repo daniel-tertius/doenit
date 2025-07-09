@@ -1,6 +1,5 @@
 <script>
-  import { Times } from "$lib/icon";
-  import DownChevron from "$lib/icon/DownChevron.svelte";
+  import { DownChevron, Times } from "$lib/icon";
   import { data } from "../../routes/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
 
@@ -23,7 +22,6 @@
     bind:value={category_id}
     class="bg-t-primary-700 p-2 w-full border border-primary-600 rounded-md open:text-t-secondary appearance-none pr-6 truncate {!category_id &&
       'text-t-secondary/60'}"
-    
   >
     <option value="">Kies 'n kategorie</option>
     {#each data.categories as category (category.id)}

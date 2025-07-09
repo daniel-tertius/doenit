@@ -1,20 +1,15 @@
 <script>
   import Details from "$lib/components/Details.svelte";
   import { backup } from "$lib/services";
-  import { Loading } from "$lib/icon";
-  import Google from "$lib/icon/Google.svelte";
+  import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
-  import { AuthService } from "$lib/services/auth";
 
   let isCreatingBackup = $state(false);
   let isRestoring = $state(false);
   let is_loading = $state(false);
 
-  let token = $state(null);
-
   onMount(async () => {
     await backup.init();
-    token = await AuthService.getAuthToken();
   });
 
   async function createBackup() {
@@ -42,19 +37,11 @@
 
     isRestoring = true;
     try {
-      // In a real implementation, you'd want to show a list of available backups
-      // For now, we'll need the user to provide a backup ID
-      const backupId = prompt("Voer rugsteun ID in:");
-      if (!backupId) {
-        isRestoring = false;
-        return;
-      }
-
-      const result = await backup.restoreBackup(backupId);
+      const result = await backup.restoreBackup();
       if (result.success) {
-        alert("Data suksesvol herstel!");
-        // Refresh the page or update the UI as needed
-        window.location.reload();
+        alert("Data suksesvol herstel!" + JSON.stringify(result.data));
+      } else {
+        alert("Herstel het misluk: " + result.error);
       }
     } catch (error) {
       console.error("Restore error:", error);
@@ -66,13 +53,18 @@
 
   async function handleGoogleVerification() {
     is_loading = true;
-    await backup.verifyEmail();
-    is_loading = false;
+    try {
+      await backup.verifyEmail();
+    } catch (error) {
+      console.error("Email verification failed:", error);
+      alert("Fout met e-pos verifikasie: " + error.message);
+    } finally {
+      is_loading = false;
+    }
   }
 </script>
 
 <Details label="Rugsteun">
-  <p class="p-2">Token: {token}</p>
   {#if !backup.email_address}
     <p>Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer. te gaan.</p>
 
@@ -90,11 +82,6 @@
       {/if}
     </button>
   {:else}
-    <!-- <div class="flex items-center justify-between">
-      <span class="text-sm font-medium">Outomatiese rugsteun</span>
-      <Toggle bind:value={backup.enabled} />
-    </div> -->
-
     <button
       type="button"
       disabled={isCreatingBackup}

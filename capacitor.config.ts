@@ -26,8 +26,9 @@ const config: CapacitorConfig = {
       providers: ["google.com"],
     },
     GoogleAuth: {
+      clientId: process.env.PUBLIC_GOOGLE_AUTH || "",
       scopes: ["profile", "email"],
-      forceCodeForRefreshToken: true,
+      grantOfflineAccess: true,
     },
   },
   android: {

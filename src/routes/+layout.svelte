@@ -4,13 +4,11 @@
   import NavbarButton from "$lib/components/NavbarButton.svelte";
   import PageHeading from "$lib/components/PageHeading.svelte";
   import HomeButton from "$lib/components/HomeButton.svelte";
-  import Auth from "$lib/components/Auth.svelte";
   import { Capacitor } from "@capacitor/core";
   import { goto } from "$app/navigation";
   import { App } from "@capacitor/app";
   import { page } from "$app/state";
   import { onMount } from "svelte";
-  import { user, loading } from "$lib/services/auth";
   import "../app.css";
 
   /* INIT CACHE */

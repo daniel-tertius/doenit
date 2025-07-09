@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import { MongoClient, Db, ObjectId } from "mongodb";
+import { MongoClient, Db } from "mongodb";
 import * as cors from "cors";
 import * as dotenv from "dotenv";
 
@@ -84,27 +84,42 @@ export const createBackup = functions.https.onRequest(async (req, res) => {
       const userId = decodedToken.uid;
 
       const db = await connectToDatabase();
-      console.log("Creating backup for user:", userId);
-
-      // Get all user data
-      const tasks = await db.collection("tasks").find().toArray();
-      const categories = await db.collection("categories").find().toArray();
-      console.log("Tasks:", tasks);
 
       const backup = {
         userId,
-        tasks,
-        categories,
+        tasks: req.body.tasks,
+        categories: req.body.categories,
         createdAt: new Date(),
         version: "1.0",
       };
 
-      const result = await db.collection("backups").insertOne(backup);
+      const previous_backup = await db.collection("backups").findOne({ userId });
+      let result;
+      if (previous_backup) {
+        // Update existing backup
+        result = await db
+          .collection("backups")
+          .updateOne(
+            { userId },
+            { $set: { tasks: backup.tasks, categories: backup.categories, createdAt: backup.createdAt } }
+          );
 
-      res.json({
-        success: true,
-        data: { backupId: result.insertedId, createdAt: backup.createdAt },
-      });
+        // For updateOne, check if the operation was successful
+        if (result.matchedCount > 0) {
+          res.json({ success: true });
+        } else {
+          res.status(500).json({ error: "Failed to update backup" });
+        }
+      } else {
+        result = await db.collection("backups").insertOne(backup);
+
+        // For insertOne, check if the document was inserted
+        if (result.insertedId) {
+          res.json({ success: true });
+        } else {
+          res.status(500).json({ error: "Failed to create backup" });
+        }
+      }
     } catch (error) {
       console.error("Error creating backup:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -130,32 +145,18 @@ export const restoreBackup = functions.https.onRequest(async (req, res) => {
       const decodedToken = await verifyToken(idToken);
       const userId = decodedToken.uid;
 
-      const { backupId } = req.body;
-
       const db = await connectToDatabase();
 
-      // Get backup data
-      const backup = await db.collection("backups").findOne({ _id: new ObjectId(backupId), userId });
-
+      const backup = await db.collection("backups").findOne({ userId });
       if (!backup) {
         res.status(404).json({ error: "Backup not found" });
         return;
       }
 
-      // Clear existing data
-      await db.collection("tasks").deleteMany({ userId });
-      await db.collection("categories").deleteMany({ userId });
-
-      // Restore data
-      if (backup.tasks && backup.tasks.length > 0) {
-        await db.collection("tasks").insertMany(backup.tasks);
-      }
-
-      if (backup.categories && backup.categories.length > 0) {
-        await db.collection("categories").insertMany(backup.categories);
-      }
-
-      res.json({ success: true, message: "Backup restored successfully" });
+      res.json({
+        success: true,
+        data: { tasks: backup.tasks, categories: backup.categories },
+      });
     } catch (error) {
       console.error("Error restoring backup:", error);
       res.status(500).json({ error: "Internal server error" });

@@ -2,7 +2,7 @@
   import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
   import { data as Data } from "../Data.svelte.js";
-  import Trash from "$lib/icon/Trash.svelte";
+  import { Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
   import ItemCheckbox from "$lib/components/task/ItemCheckbox.svelte";
   import { onMount } from "svelte";

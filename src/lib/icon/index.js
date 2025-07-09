@@ -1,41 +1,49 @@
-import Plus from "./Plus.svelte";
-import Save from "./Save.svelte";
-import Times from "./Times.svelte";
-import Loading from "./Loading.svelte";
-import Undo from "./Undo.svelte";
-import Burger from "./Burger.svelte";
-import Home from "./Home.svelte";
-import Check from "./Check.svelte";
-import Restore from "./Restore.svelte";
-import Categories from "./Categories.svelte";
-import Trash from "./Trash.svelte";
-import Back from "./Back.svelte";
-import DownChevron from "./DownChevron.svelte";
-import New from "./New.svelte";
 import About from "./About.svelte";
+import ArrowLeft from "./ArrowLeft.svelte";
+import Back from "./Back.svelte";
+import Burger from "./Burger.svelte";
+import Categories from "./Categories.svelte";
+import Check from "./Check.svelte";
+import Clock from "./Clock.svelte";
+import DownChevron from "./DownChevron.svelte";
+import Google from "./Google.svelte";
+import Home from "./Home.svelte";
+import Important from "./Important.svelte";
+import Loading from "./Loading.svelte";
+import New from "./New.svelte";
+import Plus from "./Plus.svelte";
+import Restore from "./Restore.svelte";
+import Save from "./Save.svelte";
 import Settings from "./Settings.svelte";
 import Star from "./Star.svelte";
-import Clock from "./Clock.svelte";
-import ArrowLeft from "./ArrowLeft.svelte";
+import Sync from "./Sync.svelte";
+import Times from "./Times.svelte";
+import Trash from "./Trash.svelte";
+import Undo from "./Undo.svelte";
+import Urgent from "./Urgent.svelte";
 
 export {
-  ArrowLeft,
-  Plus,
-  Save,
-  Times,
-  Loading,
-  Settings,
-  Undo,
-  Burger,
-  Home,
-  Check,
-  Restore,
-  Categories,
-  Trash,
-  DownChevron,
-  Back,
-  New,
   About,
-  Star,
+  ArrowLeft,
+  Back,
+  Burger,
+  Categories,
+  Check,
   Clock,
+  DownChevron,
+  Google,
+  Home,
+  Important,
+  Loading,
+  New,
+  Plus,
+  Restore,
+  Save,
+  Settings,
+  Star,
+  Sync,
+  Times,
+  Trash,
+  Undo,
+  Urgent,
 };

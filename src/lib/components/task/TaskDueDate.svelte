@@ -1,6 +1,5 @@
 <script>
-  import { Clock } from "$lib/icon";
-  import Sync from "$lib/icon/Sync.svelte";
+  import { Clock, Sync } from "$lib/icon";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */
 

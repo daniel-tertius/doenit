@@ -7,9 +7,6 @@
   import { data } from "../../../routes/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
-  import Sync from "$lib/icon/Sync.svelte";
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
   import TaskDueDate from "./TaskDueDate.svelte";
   import { Categories } from "$lib/icon";
 

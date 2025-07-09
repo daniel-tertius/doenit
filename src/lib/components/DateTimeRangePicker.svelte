@@ -1,9 +1,8 @@
 <script>
   import { slide } from "svelte/transition";
   import DateInput from "./DateInput.svelte";
-  import { Check, Times } from "$lib/icon";
+  import { ArrowLeft, Check, Times } from "$lib/icon";
   import { untrack } from "svelte";
-  import ArrowLeft from "$lib/icon/ArrowLeft.svelte";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
