@@ -1,6 +1,6 @@
 import { cached_notification_time } from "$lib/cached";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { data } from "../../routes/Data.svelte";
+import { data } from "$lib/Data.svelte";
 
 class Notification {
   #time: string | null = $state(null);

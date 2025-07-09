@@ -1,4 +1,4 @@
-import { auth } from "$lib/firebase";
+import { auth } from "$lib/services/firebase";
 import { GoogleAuthProvider, signInWithCredential, onAuthStateChanged, type User } from "firebase/auth";
 import { writable } from "svelte/store";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";

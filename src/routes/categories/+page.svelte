@@ -3,7 +3,7 @@
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { fly, slide } from "svelte/transition";
-  import { data } from "../Data.svelte";
+  import { data } from "$lib/Data.svelte";
 
   const DEFAULT_NAME = "Standaard";
 

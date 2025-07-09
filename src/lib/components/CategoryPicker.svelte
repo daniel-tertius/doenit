@@ -1,6 +1,6 @@
 <script>
   import { DownChevron, Times } from "$lib/icon";
-  import { data } from "../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
 
   let { category_id = $bindable() } = $props();

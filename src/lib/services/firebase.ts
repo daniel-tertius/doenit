@@ -26,24 +26,16 @@ if (Capacitor.isNativePlatform()) {
 
 // Firebase Cloud Functions URLs (from deployment output)
 export const FUNCTIONS_URLS = {
-  getTasks: "https://gettasks-moz6pj6djq-uc.a.run.app",
-  createTask: "https://createtask-moz6pj6djq-uc.a.run.app",
-  updateTask: "https://updatetask-moz6pj6djq-uc.a.run.app",
-  deleteTask: "https://deletetask-moz6pj6djq-uc.a.run.app",
-  getCategories: "https://getcategories-moz6pj6djq-uc.a.run.app",
-  createCategory: "https://createcategory-moz6pj6djq-uc.a.run.app",
   createBackup: "https://createbackup-moz6pj6djq-uc.a.run.app",
   restoreBackup: "https://restorebackup-moz6pj6djq-uc.a.run.app",
 };
 
 // Auth state management
 let currentUser: User | null = null;
-let authReady = false;
 
 if (browser) {
   auth.onAuthStateChanged((user) => {
     currentUser = user;
-    authReady = true;
   });
 }
 

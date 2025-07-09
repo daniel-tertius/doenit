@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
   import { longpress } from "../long";
-  import { data } from "../../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
   import TaskDueDate from "./TaskDueDate.svelte";

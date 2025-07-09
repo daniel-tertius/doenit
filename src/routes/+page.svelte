@@ -3,7 +3,7 @@
   import { Plus } from "$lib/icon";
   import { goto, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
-  import { data } from "./Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
