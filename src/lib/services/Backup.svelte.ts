@@ -64,7 +64,7 @@ class Backup {
     const result = await signInWithGoogle();
 
     if (result && result.email) {
-      alert("E-posadres verifieer suksesvol as " + result.email);
+      alert("E-posadres verifikasie suksesvol as " + result.email);
       this.email_address = result.email;
     }
     let currentUser = auth.currentUser;

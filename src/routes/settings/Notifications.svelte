@@ -3,8 +3,8 @@
   import { notifications as Notifications } from "$lib/services/Notification.svelte";
   import { onMount } from "svelte";
   import { Sync } from "$lib/icon";
-  import Toggle from "$lib/components/Toggle.svelte";
-  import Details from "$lib/components/Details.svelte";
+  import { InputSwitch } from "$lib/components/element/input";
+  import { ContainerDetails } from "$lib/components/element/container";
 
   /** @type {string?} */
   let time = $state(null);
@@ -16,10 +16,10 @@
   });
 </script>
 
-<Details label="Kennisgewings">
+<ContainerDetails label="Kennisgewings">
   <div class="flex items-center justify-between">
     <span class="text-sm font-medium">Herhinneringe</span>
-    <Toggle bind:value={Notifications.enabled} />
+    <InputSwitch bind:value={Notifications.enabled} />
   </div>
 
   {#if Notifications.enabled}
@@ -61,4 +61,4 @@
     {/if}
     Toets kennisgewings
   </button>
-</Details>
+</ContainerDetails>

@@ -54,7 +54,7 @@ export async function signInWithGoogle() {
       isEmailVerified: result.user.emailVerified,
     };
   } catch (error: any) {
-    alert("Google sign in failed:" + JSON.stringify(error));
+    alert("Google verifikasie het misluk:" + error.error);
     return {};
   }
 }

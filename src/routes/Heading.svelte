@@ -1,8 +1,8 @@
 <script>
   import { page } from "$app/state";
   import { fade } from "svelte/transition";
-  import BackButton from "./BackButton.svelte";
-  import DeleteAll from "./DeleteAll.svelte";
+  import BackButton from "../lib/components/BackButton.svelte";
+  import DeleteAll from "../lib/components/DeleteAll.svelte";
   import { onMount } from "svelte";
   import { Capacitor } from "@capacitor/core";
   import { StatusBar } from "@capacitor/status-bar";

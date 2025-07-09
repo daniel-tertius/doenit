@@ -1,6 +1,6 @@
 <script>
   import { slide } from "svelte/transition";
-  import DateInput from "./DateInput.svelte";
+  import DateInput from "./element/input/InputDate.svelte";
   import { ArrowLeft, Check, Times } from "$lib/icon";
   import { untrack } from "svelte";
 

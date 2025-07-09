@@ -1,11 +1,12 @@
 <script>
-  import Details from "$lib/components/Details.svelte";
+  import { ContainerDetails } from "$lib/components/element/container";
   import { backup } from "$lib/services";
   import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
+  import { data } from "$lib/Data.svelte";
 
-  let isCreatingBackup = $state(false);
-  let isRestoring = $state(false);
+  let is_creating_backup = $state(false);
+  let is_restoring = $state(false);
   let is_loading = $state(false);
 
   onMount(async () => {
@@ -13,9 +14,9 @@
   });
 
   async function createBackup() {
-    if (isCreatingBackup) return;
+    if (is_creating_backup) return;
 
-    isCreatingBackup = true;
+    is_creating_backup = true;
     try {
       const result = await backup.createBackup();
       if (result.success) {
@@ -25,29 +26,28 @@
       console.error("Backup error:", error);
       alert("Fout met rugsteun: " + error.message);
     } finally {
-      isCreatingBackup = false;
+      is_creating_backup = false;
     }
   }
 
   async function restoreBackup() {
-    if (isRestoring) return;
+    if (is_restoring) return;
 
     const confirmed = confirm("Is jy seker jy wil vanaf rugsteun herstel? Dit sal alle huidige data vervang.");
     if (!confirmed) return;
 
-    isRestoring = true;
+    is_restoring = true;
     try {
       const result = await backup.restoreBackup();
       if (result.success) {
-        alert("Data suksesvol herstel!" + JSON.stringify(result.data));
-      } else {
-        alert("Herstel het misluk: " + result.error);
+        await data.createCategories(result.data.categories);
+        await data.createTasks(result.data.tasks);
       }
     } catch (error) {
       console.error("Restore error:", error);
       alert("Fout met herstel: " + error.message);
     } finally {
-      isRestoring = false;
+      is_restoring = false;
     }
   }
 
@@ -64,9 +64,9 @@
   }
 </script>
 
-<Details label="Rugsteun">
+<ContainerDetails label="Rugsteun">
   {#if !backup.email_address}
-    <p>Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer. te gaan.</p>
+    <p>Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.</p>
 
     <button
       onclick={handleGoogleVerification}
@@ -78,26 +78,26 @@
         Verifying...
       {:else}
         <Google size={18} class="mr-3" />
-        Continue with Google
+        Verifieer e-posadres met Google
       {/if}
     </button>
   {:else}
     <button
       type="button"
-      disabled={isCreatingBackup}
+      disabled={is_creating_backup}
       class="w-full p-3 bg-blue-500 text-t-secondary rounded-lg hover:bg-blue-700"
       onclick={createBackup}
     >
-      {isCreatingBackup ? "Besig met rugsteun..." : "Rugsteun nou"}
+      {is_creating_backup ? "Besig met rugsteun..." : "Rugsteun nou"}
     </button>
 
     <button
       type="button"
-      disabled={isRestoring}
+      disabled={is_restoring}
       class="w-full p-3 bg-t-primary-700 text-t-secondary rounded-lg"
       onclick={restoreBackup}
     >
-      {isRestoring ? "Besig met herstel..." : "Herstel vanaf rugsteun"}
+      {is_restoring ? "Besig met herstel..." : "Herstel vanaf rugsteun"}
     </button>
 
     <!-- Geverifieer as, verander? -->
@@ -112,4 +112,4 @@
       </div>
     {/if}
   {/if}
-</Details>
+</ContainerDetails>

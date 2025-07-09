@@ -2,9 +2,7 @@
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
 
-  let { children, label } = $props();
-
-  let show = $state(false);
+  let { children, label, show = $bindable() } = $props();
 </script>
 
 <div class="bg-t-primary-600 rounded-lg">

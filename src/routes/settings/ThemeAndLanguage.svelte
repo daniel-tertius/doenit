@@ -1,5 +1,5 @@
 <script>
-  import Details from "$lib/components/Details.svelte";
+  import { ContainerDetails } from "$lib/components/element/container";
   import { DownChevron } from "$lib/icon";
   import { theme } from "$lib/services/Theme.svelte.js";
 
@@ -24,7 +24,7 @@
   }
 </script>
 
-<Details label="Voorkoms">
+<ContainerDetails label="Voorkoms">
   <div>
     <label for="theme-select" class="block text-sm font-medium mb-2">Tema</label>
     <div class="relative">
@@ -65,4 +65,4 @@
       </div>
     </div>
   {/if}
-</Details>
+</ContainerDetails>
