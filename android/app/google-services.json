@@ -13,7 +13,28 @@
           "package_name": "doenit.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "546887238633-34rf8p4n4dmpojen8lbfpj0d65qg2doq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "doenit.app",
+            "certificate_hash": "b69d7a3f00743d89e0837d75a2cdfda6a0e0782f"
+          }
+        },
+        {
+          "client_id": "546887238633-9mi7or2emtoovughm07ovgo325r6g9sb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "doenit.app",
+            "certificate_hash": "4942d275027b32623aa836214f104324899d1b16"
+          }
+        },
+        {
+          "client_id": "546887238633-ke85anm6ka70ik3endt31pkq7fh570ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCH5uvUSpZ-mkhHw9EK0QnZ_c01hE5ERzs"
@@ -21,7 +42,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546887238633-ke85anm6ka70ik3endt31pkq7fh570ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

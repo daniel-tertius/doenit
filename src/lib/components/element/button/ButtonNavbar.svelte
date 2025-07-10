@@ -1,6 +1,6 @@
 <script>
   import { Burger } from "$lib/icon";
-  import Navbar from "./Navbar.svelte";
+  import Navbar from "../../Navbar.svelte";
 
   let is_open = $state(false);
 </script>

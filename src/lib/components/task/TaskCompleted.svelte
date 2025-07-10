@@ -4,14 +4,11 @@
   import { onMount } from "svelte";
   import { slide } from "svelte/transition";
   import { longpress } from "../long";
-  import { data } from "../../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
-  import Sync from "$lib/icon/Sync.svelte";
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
   import TaskDueDate from "./TaskDueDate.svelte";
-  import { Categories } from "$lib/icon";
+  import { Categories, Sync } from "$lib/icon";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
@@ -62,7 +59,8 @@
     {...rest}
     class={{
       "rounded-lg flex flex-col items-start p-2 w-full h-full": true,
-      "bg-t-primary-600": !is_selected && !!task.completed,
+      "bg-t-primary-900 border": is_selected,
+      "bg-t-primary-600": !is_selected,
     }}
     {onclick}
     use:longpress
@@ -88,9 +86,12 @@
     </div>
   </button>
 
-  <div class="absolute top-1 right-2 flex gap-1 opacity-50 font-semibold">
-    × {task.completed}
-  </div>
+  {#if task.completed > 1}
+    <div class="absolute top-1 right-2 flex gap-1 opacity-50 font-semibold">
+      <Sync size={12} class="my-auto" />
+      × {task.completed}
+    </div>
+  {/if}
 
-  <ItemCheckbox bind:tick_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
+  <ItemCheckbox bind:tick_animation is_selected={true} onselect={async () => onselect(task)} {onlongpress} />
 </div>

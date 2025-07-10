@@ -1,6 +1,6 @@
 <script>
   import { slide } from "svelte/transition";
-  import { data } from "../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import { Trash } from "$lib/icon";
   import Modal from "./modal/Modal.svelte";
   import { onMount } from "svelte";

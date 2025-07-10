@@ -1,6 +1,6 @@
 <script>
   import { selectedCategories } from "$lib/cached";
-  import { data } from "../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import ItemCheckbox from "./task/ItemCheckbox.svelte";
 
   let { id, name } = $props();
@@ -28,9 +28,12 @@
   }
 </script>
 
-<button class="relative w-full flex items-center gap-1" onclick={onselect}>
+<button class={{
+  "relative w-full flex items-center gap-1": true,
+  "bg-t-primary-600": is_selected
+ }} onclick={onselect}>
   <ItemCheckbox {is_selected} tick_animation={is_selected} />
-  <span class="w-full flex pl-12 p-2 hover:bg-[#3d648a] cursor-pointer text-left">
+  <span class="w-full flex pl-12 p-2 cursor-pointer text-left">
     {name}
   </span>
 </button>

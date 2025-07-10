@@ -2,7 +2,7 @@
   import { Plus } from "$lib/icon";
   import { slide } from "svelte/transition";
   import Modal from "./modal/Modal.svelte";
-  import { data } from "../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
 
   let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
 

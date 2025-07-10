@@ -1,7 +1,7 @@
 <script>
   import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
-  import { data as Data } from "../Data.svelte";
+  import { data as Data } from "$lib/Data.svelte";
   import EditTask from "$lib/components/EditTask.svelte";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */

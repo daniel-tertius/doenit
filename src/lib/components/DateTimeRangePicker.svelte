@@ -1,9 +1,9 @@
 <script>
+  import { InputTime, InputDate } from "$lib/components/element/input";
+  import { ArrowLeft, Check } from "$lib/icon";
   import { slide } from "svelte/transition";
-  import DateInput from "./DateInput.svelte";
-  import { Check, Times } from "$lib/icon";
   import { untrack } from "svelte";
-  import ArrowLeft from "$lib/icon/ArrowLeft.svelte";
+  import { ButtonClear } from "./element/button";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
@@ -84,43 +84,68 @@
   /**
    * @param {string} date
    */
-  const displayDate = (date) => {
-    console.log("date", date);
+  function displayDate(date) {
     if (!date) return "";
+
     return new Date(date).toLocaleDateString("af-ZA", {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-  };
+  }
+
+  function handleStartTimeChange({ value }) {
+    if (value === start_time) return;
+    start_time = value;
+  }
+
+  function handleEndTimeChange({ value }) {
+    if (value === end_time) return;
+    end_time = value;
+  }
 </script>
 
 <div use:clickOutside>
-  <button
-    type="button"
-    onclick={toggle}
-    class={{
-      "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
-      "border-error text-error": !!error_message,
-      "text-t-secondary/60": !start_date && !end_date,
-    }}
-  >
+  <div class="relative">
+    <button
+      type="button"
+      onclick={toggle}
+      class={{
+        "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
+        "border-error text-error": !!error_message,
+        "text-t-secondary/60": !start_date && !end_date,
+      }}
+    >
+      {#if start_date || end_date}
+        <div class="flex items-center">
+          {#if start_date}
+            <span>{displayDate(start_date)} {start_time || ""}</span>
+          {/if}
+
+          {#if start_date && end_date}
+            <ArrowLeft />
+          {/if}
+
+          <span>{displayDate(end_date)} {end_time || ""}</span>
+        </div>
+      {:else}
+        Kies datum en tyd
+      {/if}
+    </button>
+
     {#if start_date || end_date}
-      <div class="flex items-center">
-        {#if start_date}
-          <span>{displayDate(start_date)} {start_time || ""}</span>
-        {/if}
-
-        {#if start_date && end_date}
-          <ArrowLeft />
-        {/if}
-
-        <span>{displayDate(end_date)} {end_time || ""}</span>
-      </div>
-    {:else}
-      Kies datum en tyd
+      <ButtonClear
+        onclick={() => {
+          start_date = "";
+          start_time = "";
+          end_date = "";
+          end_time = "";
+          error_message = "";
+          show_picker = false;
+        }}
+      />
     {/if}
-  </button>
+  </div>
 
   {#if error_message && !show_picker}
     <div class="text-error text-sm mt-1 flex justify-end">
@@ -134,7 +159,7 @@
         <div>
           <label for="start-date" class="block font-medium">Vanaf datum</label>
           <div class="flex gap-2 w-full">
-            <DateInput
+            <InputDate
               id="start-date"
               placeholder="Kies 'n begindatum"
               class={!!error_message ? "border border-error text-error" : ""}
@@ -147,28 +172,13 @@
             />
 
             {#if start_date}
-              <div class="relative w-full">
-                <input
-                  transition:slide
-                  id="start-time"
-                  type="time"
-                  bind:value={start_time}
-                  placeholder="Kies 'n begin tyd"
-                  class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none {!!start_time &&
-                  error_message
-                    ? 'border border-error text-error'
-                    : ''}"
-                />
-                {#if start_time}
-                  <button
-                    type="button"
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
-                    onclick={() => (start_time = "")}
-                  >
-                    <Times size={18} class="text-tertiary" />
-                  </button>
-                {/if}
-              </div>
+              <InputTime
+                id="start-time"
+                value={start_time}
+                onchange={handleStartTimeChange}
+                placeholder="Kies 'n begin tyd"
+                invalid={true}
+              />
             {/if}
           </div>
         </div>
@@ -183,7 +193,7 @@
           <label for="end-date" class="block font-medium">Tot datum</label>
 
           <div class="flex gap-2">
-            <DateInput
+            <InputDate
               open_on_mount={!end_date}
               id="end-date"
               placeholder="Kies 'n sperdatum"
@@ -193,26 +203,15 @@
                 if (!value) end_time = "";
               }}
             />
+
             {#if end_date}
-              <div class="relative w-full">
-                <input
-                  id="end-time"
-                  transition:slide
-                  type="time"
-                  placeholder="Kies 'n eind tyd"
-                  bind:value={end_time}
-                  class="bg-primary-20l p-2 w-full rounded-lg border border-primary placeholder:text-tertiary-30d appearance-none"
-                />
-                {#if end_time}
-                  <button
-                    type="button"
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
-                    onclick={() => (end_time = "")}
-                  >
-                    <Times size={18} class="text-tertiary" />
-                  </button>
-                {/if}
-              </div>
+              <InputTime
+                id="end-time"
+                value={end_time}
+                onchange={handleEndTimeChange}
+                placeholder="Kies 'n eind tyd"
+                invalid={true}
+              />
             {/if}
           </div>
         </div>

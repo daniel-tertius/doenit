@@ -1,7 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import TaskCompleted from "$lib/components/task/TaskCompleted.svelte";
-  import { data } from "../Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import { Haptics } from "@capacitor/haptics";
 
   /** @typedef {import('$lib/DB/DB').Task} Task */

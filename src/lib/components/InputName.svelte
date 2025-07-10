@@ -20,14 +20,14 @@
 
 <div>
   <label class="font-bold" for="name">Wat moet gedoen word?</label>
-  <div class="relative">
+  <div class="flex gap-1">
     <input
       id="name"
       bind:this={name_input}
       oninput={() => (error_message = "")}
       bind:value={name}
       type="text"
-      placeholder="Gee jou taak 'n naam"
+      placeholder="Wat moet gedoen word?"
       class="bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 pr-7"
       class:border-error={!!error_message}
       class:placeholder:text-error-20l={!!error_message}
@@ -35,15 +35,13 @@
 
     <button
       type="button"
-      class="absolute top-1/2 -translate-y-[50%] right-1 h-[66.66%] rounded-full my-auto aspect-square flex justify-center items-center"
+      class="rounded-full my-auto aspect-square flex justify-center items-center h-[42px] w-[42px] bg-t-primary-700"
       onclick={() => (show_description = !show_description)}
     >
-      <DownChevron
-        class="{show_description ? '-rotate-180' : ''} {!!error_message ? 'text-error-20l' : 'text-tertiary-10l'}"
-        size={18}
-      />
+      <DownChevron class="text-t-secondary {show_description ? '-rotate-180' : ''}" size={18} />
     </button>
   </div>
+  
   {#if error_message}
     <div class="text-error text-sm mt-1 flex justify-end">
       {error_message}

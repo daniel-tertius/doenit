@@ -1,8 +1,7 @@
 <script>
   import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
-  import Important from "$lib/icon/Important.svelte";
-  import Urgent from "$lib/icon/Urgent.svelte";
+  import { Important, Urgent } from "$lib/icon";
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
@@ -50,9 +49,9 @@
     <button
       type="button"
       class={{
-        "text-tertiary p-3 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
+        "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
         "bg-yellow-100 border-yellow-700 text-yellow-700": task.important,
-        "bg-t-primary border-primary-600 text-t-secondary": !task.important,
+        "bg-t-primary border-primary-600 ": !task.important,
       }}
       onclick={() => {
         task.important = !task.important;
@@ -64,9 +63,9 @@
     <button
       type="button"
       class={{
-        "p-2.5 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
-        "bg-error-30d border-error-invert-30d text-t-secondary": task.urgent,
-        "bg-t-primary border-primary-600 text-t-secondary": !task.urgent,
+        "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
+        "bg-error-30d border-error-invert-30d ": task.urgent,
+        "bg-t-primary border-primary-600": !task.urgent,
       }}
       onclick={() => {
         task.urgent = !task.urgent;

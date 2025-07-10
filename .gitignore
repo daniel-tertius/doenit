@@ -22,4 +22,13 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# Android build artifacts
+android/app/build/
+android/build/
+android/capacitor-cordova-android-plugins/build/
+
+functions/lib
+package-lock.json
+pglite-debug.log
+
 app-output

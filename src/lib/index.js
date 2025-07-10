@@ -304,3 +304,20 @@ export function sortByField(array, field_name, order = "asc") {
     }
   });
 }
+
+/**
+ * Wait at minimum of a specified amount of time after the given promise is given.
+ * @param {number} ms - The minimum time to wait in milliseconds.
+ * @param {() => Promise<any>} promise - The promise to wait for.
+ * @returns {Promise<void>} - A promise that resolves after the specified time.
+ */
+export function waitAtLeast(promise, ms) {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    promise().then(() => {
+      const elapsed = Date.now() - start;
+      const remaining = Math.max(0, ms - elapsed);
+      setTimeout(resolve, remaining);
+    });
+  });
+}

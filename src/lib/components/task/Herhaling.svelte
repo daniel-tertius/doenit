@@ -2,10 +2,8 @@
   import { untrack } from "svelte";
   import Modal from "../modal/Modal.svelte";
   import { slide } from "svelte/transition";
-  import { Times } from "$lib/icon";
-  import Check from "$lib/icon/Check.svelte";
+  import { Check, Times } from "$lib/icon";
   import { SvelteSet } from "svelte/reactivity";
-  import Page from "../../../routes/+page.svelte";
 
   /**
    * @typedef {"So" | "Ma" | "Di" | "Wo" | "Do" | "Vr" | "Sa"} WEEKDAY

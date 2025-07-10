@@ -2,7 +2,6 @@
   import { goto } from "$app/navigation";
   import { navigating, page } from "$app/state";
   import { Loading, Back } from "$lib/icon";
-  import { App } from "@capacitor/app";
   import { Capacitor } from "@capacitor/core";
   import { StatusBar } from "@capacitor/status-bar";
   import { onMount } from "svelte";
@@ -13,7 +12,7 @@
   const show = $derived(!["/"].includes(page.url.pathname));
 
   function onclick() {
-    window.history.back();
+    goto("/");
   }
 
   onMount(async () => {
@@ -24,20 +23,6 @@
     // @ts-ignore
     const { height = 0 } = await StatusBar.getInfo();
     top = height;
-  });
-
-  onMount(() => {
-    if (Capacitor.isNativePlatform()) {
-      App.addListener("backButton", (event) => {
-        if (!is_home) {
-          goto("/");
-        }
-      });
-    }
-
-    return () => {
-      App.removeAllListeners();
-    };
   });
 </script>
 

@@ -1,6 +1,6 @@
 import { cached_notification_time } from "$lib/cached";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { data } from "../../routes/Data.svelte";
+import { data } from "$lib/Data.svelte";
 
 class Notification {
   #time: string | null = $state(null);
@@ -92,7 +92,7 @@ class Notification {
       // Request permissions first
       const permission = await LocalNotifications.requestPermissions();
       if (permission.display !== "granted") {
-        alert("Notification permissions not granted");
+        alert("Kennisgewing toestemming is nie toegestaan nie.");
         return;
       }
 
@@ -109,7 +109,7 @@ class Notification {
         ],
       });
     } catch (error) {
-      alert("Error scheduling notification:" + error + " | " + JSON.stringify(error, null, 2));
+      alert("Probleem met kennisgewing:" + error + " | " + JSON.stringify(error, null, 2));
     }
   }
 

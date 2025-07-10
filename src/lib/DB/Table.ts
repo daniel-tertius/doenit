@@ -73,6 +73,27 @@ export class Table<T extends Task | Category> {
     }
   }
 
+  async createMany(items: Omit<T, "id" | "created_at" | "archived">[]): Promise<T[]> {
+    if (!items || !items.length) throw new Error("Items are required");
+
+    const data = await this.readAll();
+    const new_items: T[] = items.map((item) => {
+      const new_item = { ...item, created_at: new Date().toString(), id: this.generateUUID(data) } as T;
+      data[new_item.id] = new_item;
+      return new_item;
+    });
+
+    try {
+      await Preferences.set({
+        key: this.table_name,
+        value: JSON.stringify(data, null, 2),
+      });
+      return new_items;
+    } catch (error) {
+      throw new Error(`Failed to write to storage: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
   async read(id: string): Promise<T | null> {
     if (typeof window === "undefined") return null;
 

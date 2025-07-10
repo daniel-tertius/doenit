@@ -180,7 +180,7 @@ export class Data {
   }
 
   async refreshTasks() {
-    this.all_tasks = await this.#DB.Task.data;
+    this.#all_tasks = await this.#DB.Task.data;
 
     const { id } = this.categories.find(({ name }) => name === DEFAULT_NAME) ?? { id: "" };
 
@@ -363,6 +363,26 @@ export class Data {
     return new_category;
   }
 
+  /**
+   * @param {Category[]} categories
+   */
+  async createCategories(categories) {
+    if (!categories?.length) return;
+
+    await this.#DB.Category.createMany(categories);
+  }
+
+  /**
+   * @param {Task[]} tasks
+   */
+  async createTasks(tasks) {
+    if (!tasks?.length) return;
+
+    await this.#DB.Task.createMany(tasks);
+    this.all_tasks = await this.#DB.Task.data;
+    this.#tasks = this.#all_tasks.filter(({ archived }) => !archived);
+  }
+
   async getAllTasks() {
     return Object.values(await this.#DB.Task.readAll()).filter(({ archived }) => !archived);
   }
@@ -390,7 +410,9 @@ export class Data {
     return tasks;
   }
 
-  // HELPER FUNCTIONS
+  // ╔═══════════════════════════════════════════════════════════════════════════════════╗
+  // ║                                HELPER FUNCTIONS                                   ║
+  // ╚═══════════════════════════════════════════════════════════════════════════════════╝
 
   /**
    *

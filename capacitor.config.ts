@@ -21,6 +21,15 @@ const config: CapacitorConfig = {
       smallIcon: "ic_stat_logo",
       iconColor: "#ffffff",
     },
+    FirebaseAuthentication: {
+      skipNativeAuth: false,
+      providers: ["google.com"],
+    },
+    GoogleAuth: {
+      clientId: process.env.PUBLIC_GOOGLE_AUTH || "",
+      scopes: ["profile", "email"],
+      grantOfflineAccess: true,
+    },
   },
   android: {
     buildOptions: {

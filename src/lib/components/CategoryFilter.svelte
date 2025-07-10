@@ -1,10 +1,9 @@
 <script>
-  import { DownChevron } from "$lib/icon";
+  import { Plus, DownChevron } from "$lib/icon";
   import { onMount } from "svelte";
   import { fade, slide } from "svelte/transition";
-  import { data } from "../../routes/Data.svelte";
+  import { data } from "$lib/Data.svelte";
   import CategoryButton from "./CategoryButton.svelte";
-  import Plus from "$lib/icon/Plus.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";
@@ -59,12 +58,15 @@
       {/if}
     {/each}
 
-    <button class="relative w-full flex items-center gap-1 px-4" onclick={() => (is_adding = true)}>
-      <Plus />
-      <span class="w-full flex p-2 hover:bg-[#3d648a] cursor-pointer text-left font-semibold">
-        Skep nuwe kategorie
-      </span>
-    </button>
+    <div class="p-2 pt-0">
+      <button
+        class="rounded relative w-full bg-t-primary-700 flex items-center gap-1 px-4"
+        onclick={() => (is_adding = true)}
+      >
+        <Plus />
+        <span class="w-full flex p-2 cursor-pointer text-left font-semibold"> Skep nuwe kategorie </span>
+      </button>
+    </div>
   </div>
 {/if}
 
