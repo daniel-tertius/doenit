@@ -31,14 +31,6 @@
           }
         },
         {
-          "client_id": "546887238633-tlcs4u9i7pba5bf3dqnnrvm8dih4rlvr.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "doenit.app",
-            "certificate_hash": "76f6e7170d7bf5d65d42580729f4f21f188eed75"
-          }
-        },
-        {
           "client_id": "546887238633-ke85anm6ka70ik3endt31pkq7fh570ag.apps.googleusercontent.com",
           "client_type": 3
         }
