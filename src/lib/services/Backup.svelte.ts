@@ -1,12 +1,11 @@
 import { auth } from "$lib/services/firebase";
-import { cached_backup_token, cached_email_address, cached_is_backup_enabled } from "$lib/cached";
+import { cached_backup_token, cached_email_address } from "$lib/cached";
 import { data } from "$lib/Data.svelte";
 import { FUNCTIONS_URLS } from "./firebase";
 import { getAuthToken, signInWithGoogle } from "./auth";
 
 class Backup {
   #email_address: string | null = $state(null);
-  auto_enabled: boolean = $state(false);
 
   constructor() {
     this.init();
@@ -14,14 +13,6 @@ class Backup {
 
   async init() {
     this.#email_address = await cached_email_address.get();
-    const is_enabled = await cached_is_backup_enabled.get();
-    if (!is_enabled) {
-      cached_is_backup_enabled.set(false);
-      this.auto_enabled = false;
-      return;
-    }
-
-    this.auto_enabled = is_enabled;
   }
 
   get email_address() {
