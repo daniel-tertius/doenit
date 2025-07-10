@@ -42,7 +42,7 @@
   });
 </script>
 
-<div class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary">
+<div class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary **:select-none">
   <Heading />
 
   <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">

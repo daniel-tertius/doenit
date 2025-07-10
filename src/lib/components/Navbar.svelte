@@ -25,7 +25,7 @@
   }}
 />
 
-<aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-t-primary shadow-lg z-50 select-none">
+<aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-t-primary shadow-lg z-50">
   <div class="flex flex-col items-center justify-center h-full">
     <h2 class="text-lg font-semibold text-t-secondary">Kieslys</h2>
     <ul class="mt-4 space-y-2">

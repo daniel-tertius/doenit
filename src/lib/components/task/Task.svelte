@@ -88,8 +88,8 @@
           class={{
             "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
             "bg-t-primary-400": !is_past && !is_ongoing,
-            "bg-error/80": is_past && !is_ongoing,
-            "bg-active/80": is_ongoing,
+            "bg-error/80": is_past && !is_selected,
+            "bg-active/80": is_ongoing && !is_selected,
             "bg-primary/80": is_selected,
           }}
         >

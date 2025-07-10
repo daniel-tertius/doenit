@@ -7,8 +7,6 @@
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
-  $inspect(end);
-
   const [sd, st] = start ? start.split(" ") : ["", ""];
   const [ed, et] = end ? end.split(" ") : ["", ""];
 

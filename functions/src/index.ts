@@ -3,6 +3,8 @@ import * as admin from "firebase-admin";
 import { MongoClient, Db } from "mongodb";
 import * as cors from "cors";
 import * as dotenv from "dotenv";
+import * as CryptoJS from "crypto-js";
+import * as pako from "pako";
 
 // Load environment variables
 dotenv.config();
@@ -64,6 +66,56 @@ async function verifyToken(idToken: string) {
   }
 }
 
+// Helper functions for encryption and compression
+function getEncryptionKey(): string {
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error("ENCRYPTION_KEY environment variable is not set");
+  }
+  return key;
+}
+
+function compressAndEncrypt(data: any): string {
+  try {
+    // Convert data to JSON string
+    const jsonString = JSON.stringify(data);
+    
+    // Compress the data
+    const compressed = pako.gzip(jsonString);
+    
+    // Convert compressed data to base64
+    const compressedBase64 = Buffer.from(compressed).toString('base64');
+    
+    // Encrypt the compressed data
+    const encrypted = CryptoJS.AES.encrypt(compressedBase64, getEncryptionKey()).toString();
+    
+    return encrypted;
+  } catch (error) {
+    console.error("Error compressing and encrypting data:", error);
+    throw new Error("Failed to compress and encrypt data");
+  }
+}
+
+function decryptAndDecompress(encryptedData: string): any {
+  try {
+    // Decrypt the data
+    const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, getEncryptionKey());
+    const compressedBase64 = decryptedBytes.toString(CryptoJS.enc.Utf8);
+    
+    // Convert base64 back to buffer
+    const compressed = Buffer.from(compressedBase64, 'base64');
+    
+    // Decompress the data
+    const decompressed = pako.ungzip(compressed, { to: 'string' });
+    
+    // Parse JSON
+    return JSON.parse(decompressed);
+  } catch (error) {
+    console.error("Error decrypting and decompressing data:", error);
+    throw new Error("Failed to decrypt and decompress data");
+  }
+}
+
 // Backup functions
 export const createBackup = functions.https.onRequest(async (req, res) => {
   return corsHandler(req, res, async () => {
@@ -85,12 +137,19 @@ export const createBackup = functions.https.onRequest(async (req, res) => {
 
       const db = await connectToDatabase();
 
-      const backup = {
-        userId,
+      const backupData = {
         tasks: req.body.tasks,
         categories: req.body.categories,
+      };
+
+      // Compress and encrypt the backup data
+      const encryptedData = compressAndEncrypt(backupData);
+
+      const backup = {
+        userId,
+        data: encryptedData,
         createdAt: new Date(),
-        version: "1.0",
+        version: "2.0", // Updated version to indicate encrypted format
       };
 
       const previous_backup = await db.collection("backups").findOne({ userId });
@@ -101,7 +160,7 @@ export const createBackup = functions.https.onRequest(async (req, res) => {
           .collection("backups")
           .updateOne(
             { userId },
-            { $set: { tasks: backup.tasks, categories: backup.categories, createdAt: backup.createdAt } }
+            { $set: { data: backup.data, createdAt: backup.createdAt, version: backup.version } }
           );
 
         // For updateOne, check if the operation was successful
@@ -153,9 +212,29 @@ export const restoreBackup = functions.https.onRequest(async (req, res) => {
         return;
       }
 
+      let tasks, categories;
+
+      // Check if backup is encrypted (version 2.0+) or legacy format
+      if (backup.version === "2.0" && backup.data) {
+        try {
+          // Decrypt and decompress the data
+          const decryptedData = decryptAndDecompress(backup.data);
+          tasks = decryptedData.tasks;
+          categories = decryptedData.categories;
+        } catch (error) {
+          console.error("Error decrypting backup data:", error);
+          res.status(500).json({ error: "Failed to decrypt backup data" });
+          return;
+        }
+      } else {
+        // Legacy backup format (unencrypted)
+        tasks = backup.tasks;
+        categories = backup.categories;
+      }
+
       res.json({
         success: true,
-        data: { tasks: backup.tasks, categories: backup.categories },
+        data: { tasks, categories },
       });
     } catch (error) {
       console.error("Error restoring backup:", error);

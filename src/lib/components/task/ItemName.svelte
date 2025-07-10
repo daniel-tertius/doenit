@@ -2,7 +2,7 @@
   let { name, completed = false, tick_animation } = $props();
 </script>
 
-<div class="relative select-none text-t-secondary ml-10 mr-6" class:opacity-50={!name}>
+<div class="relative text-t-secondary ml-10 mr-6" class:opacity-50={!name}>
   {#if tick_animation || completed}
     <div
       class="border-b border-t-secondary absolute top-[11px] transition-all duration-300"

@@ -3,12 +3,21 @@
   import { data } from "$lib/Data.svelte";
   import { Trash } from "$lib/icon";
   import Modal from "./modal/Modal.svelte";
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { Capacitor } from "@capacitor/core";
   import { StatusBar } from "@capacitor/status-bar";
+  import { page } from "$app/state";
 
   let is_deleting = $state(false);
   let top = $state(0);
+
+  const page_route = $derived(page.route.id);
+  $effect(() => {
+    page_route;
+    untrack(() => {
+      data.selected_tasks_hash.clear();
+    });
+  });
 
   onMount(async () => {
     if (!Capacitor.isNativePlatform()) return;
@@ -44,7 +53,11 @@
 </Modal>
 
 {#snippet footer()}
-  <button class="bg-error-10d flex gap-1 items-center text-white px-4 py-2 rounded-md" type="button" onclick={deleteAll}>
+  <button
+    class="bg-error-10d flex gap-1 items-center text-white px-4 py-2 rounded-md"
+    type="button"
+    onclick={deleteAll}
+  >
     <Trash class="h-full" size={18} />
     <span>Skrap</span>
   </button>
