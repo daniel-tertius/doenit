@@ -1,12 +1,12 @@
 <script>
   import { Check } from "$lib/icon";
-  import { tick } from "svelte";
   import { longpress } from "../long";
+  import { waitAtLeast } from "$lib";
 
   let {
     tick_animation = $bindable(false),
     is_selected = $bindable(false),
-    onselect = () => {},
+    onselect = async () => {},
     onlongpress = () => {},
     ...rest
   } = $props();
@@ -15,17 +15,8 @@
 
   async function onclick() {
     tick_animation = !tick_animation;
-    await tick();
-
-    const start_time = performance.now();
-    await onselect();
-    const elapsed_time = performance.now() - start_time;
-
-    if (elapsed_time < 500) await wait(500 - elapsed_time);
+    await waitAtLeast(async () => await onselect(), 500);
   }
-
-  /** @param {number} ms */
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 </script>
 
 <button
@@ -43,7 +34,7 @@
     class:border-blue-700!={is_checked}
   >
     {#if is_checked}
-      <Check class="text-primary-invert" />
+      <Check class="text-white" />
     {/if}
   </div>
 </button>

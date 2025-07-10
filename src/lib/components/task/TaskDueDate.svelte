@@ -20,6 +20,7 @@
     "text-left rounded-full px-1 w-fit flex items-center h-fit gap-1 opacity-80": true,
     "bg-error/80": is_past && !is_complete && !is_selected,
     "bg-active/80": is_ongoing && !is_complete,
+    "bg-t-primary-400": !is_past && !is_ongoing && !is_complete && !is_selected,
     "opacity-50! bg-t-primary-300": is_complete,
   }}
 >

@@ -58,12 +58,15 @@
       {/if}
     {/each}
 
-    <button class="relative w-full flex items-center gap-1 px-4" onclick={() => (is_adding = true)}>
-      <Plus />
-      <span class="w-full flex p-2 hover:bg-[#3d648a] cursor-pointer text-left font-semibold">
-        Skep nuwe kategorie
-      </span>
-    </button>
+    <div class="p-2 pt-0">
+      <button
+        class="rounded relative w-full bg-t-primary-700 flex items-center gap-1 px-4"
+        onclick={() => (is_adding = true)}
+      >
+        <Plus />
+        <span class="w-full flex p-2 cursor-pointer text-left font-semibold"> Skep nuwe kategorie </span>
+      </button>
+    </div>
   </div>
 {/if}
 

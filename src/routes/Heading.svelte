@@ -1,7 +1,7 @@
 <script>
   import { page } from "$app/state";
   import { fade } from "svelte/transition";
-  import BackButton from "../lib/components/BackButton.svelte";
+  import { ButtonBack } from "$lib/components/element/button";
   import DeleteAll from "../lib/components/DeleteAll.svelte";
   import { onMount } from "svelte";
   import { Capacitor } from "@capacitor/core";
@@ -14,7 +14,6 @@
     "/[item_id]": "Wysig taak",
     "/complete": "Voltooide take",
     "/categories": "Kategorieë",
-    "/new": "Nog te Kom",
     "/settings": "Instellings",
   };
 
@@ -47,6 +46,6 @@
     {/key}
   </div>
 
-  <BackButton />
+  <ButtonBack />
   <DeleteAll />
 </div>

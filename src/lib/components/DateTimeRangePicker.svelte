@@ -3,6 +3,7 @@
   import { ArrowLeft, Check } from "$lib/icon";
   import { slide } from "svelte/transition";
   import { untrack } from "svelte";
+  import { ButtonClear } from "./element/button";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
@@ -105,31 +106,46 @@
 </script>
 
 <div use:clickOutside>
-  <button
-    type="button"
-    onclick={toggle}
-    class={{
-      "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
-      "border-error text-error": !!error_message,
-      "text-t-secondary/60": !start_date && !end_date,
-    }}
-  >
+  <div class="relative">
+    <button
+      type="button"
+      onclick={toggle}
+      class={{
+        "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
+        "border-error text-error": !!error_message,
+        "text-t-secondary/60": !start_date && !end_date,
+      }}
+    >
+      {#if start_date || end_date}
+        <div class="flex items-center">
+          {#if start_date}
+            <span>{displayDate(start_date)} {start_time || ""}</span>
+          {/if}
+
+          {#if start_date && end_date}
+            <ArrowLeft />
+          {/if}
+
+          <span>{displayDate(end_date)} {end_time || ""}</span>
+        </div>
+      {:else}
+        Kies datum en tyd
+      {/if}
+    </button>
+
     {#if start_date || end_date}
-      <div class="flex items-center">
-        {#if start_date}
-          <span>{displayDate(start_date)} {start_time || ""}</span>
-        {/if}
-
-        {#if start_date && end_date}
-          <ArrowLeft />
-        {/if}
-
-        <span>{displayDate(end_date)} {end_time || ""}</span>
-      </div>
-    {:else}
-      Kies datum en tyd
+      <ButtonClear
+        onclick={() => {
+          start_date = "";
+          start_time = "";
+          end_date = "";
+          end_time = "";
+          error_message = "";
+          show_picker = false;
+        }}
+      />
     {/if}
-  </button>
+  </div>
 
   {#if error_message && !show_picker}
     <div class="text-error text-sm mt-1 flex justify-end">

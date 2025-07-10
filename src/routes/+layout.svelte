@@ -1,19 +1,13 @@
 <script>
-  import CreateItemButton from "$lib/components/CreateItemButton.svelte";
-  import CategoryFilter from "$lib/components/CategoryFilter.svelte";
-  import NavbarButton from "$lib/components/NavbarButton.svelte";
-  import PageHeading from "./Heading.svelte";
-  import HomeButton from "$lib/components/HomeButton.svelte";
+  import { notifications } from "$lib/services";
   import { Capacitor } from "@capacitor/core";
+  import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
+  import Footer from "./Footer.svelte";
   import { App } from "@capacitor/app";
   import { page } from "$app/state";
   import { onMount } from "svelte";
   import "../app.css";
-  import Footer from "./Footer.svelte";
-
-  /* INIT CACHE */
-  import { theme, notifications } from "$lib/services";
 
   let { children } = $props();
 
@@ -48,11 +42,8 @@
   });
 </script>
 
-<div
-  class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary"
-  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
->
-  <PageHeading />
+<div class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary">
+  <Heading />
 
   <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">
     {@render children()}
