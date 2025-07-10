@@ -46,13 +46,11 @@ export function getCurrentUser(): User | null {
 export async function getAuthToken(): Promise<string | null> {
   const currentUser = auth.currentUser;
   if (!currentUser) {
-    console.log("No authenticated user found");
     return null;
   }
 
   try {
     const token = await currentUser.getIdToken();
-    console.log("Auth token retrieved successfully");
     return token;
   } catch (error) {
     console.error("Failed to get auth token:", error);

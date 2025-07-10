@@ -1,8 +1,7 @@
-import { auth } from "$lib/services/firebase";
 import { cached_backup_token, cached_email_address } from "$lib/cached";
-import { data } from "$lib/Data.svelte";
-import { FUNCTIONS_URLS } from "./firebase";
 import { getAuthToken, signInWithGoogle } from "./auth";
+import { auth, FUNCTIONS_URLS } from "./firebase";
+import { data } from "$lib/Data.svelte";
 
 class Backup {
   #email_address: string | null = $state(null);
