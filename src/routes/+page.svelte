@@ -37,10 +37,14 @@
 <div class="space-y-1.5">
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
-      <div class="text-lg text-tertiary">Jou lys is skoon!</div>
+      {#if data.selected_categories_hash.size === 0 && data.filter.important === false && data.filter.urgent === false}
+        <div class="text-lg text-t-secondary">Jou lys is skoon!</div>
+      {:else}
+        <div class="text-lg text-t-secondary">Geen take met huidige filters gevind nie</div>
+      {/if}
       <button
         type="button"
-        class="rounded-md bg-primary-20l px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-tertiary transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
+        class="rounded-md bg-primary-20l px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-t-secondary transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
         onclick={() => goto("/create")}
       >
         <Plus size={40} />
@@ -64,7 +68,7 @@
 
     {#if !is_same_display_date}
       {#key display_date}
-        <div in:fade={{ delay: 700 }} class="text-sm font-semibold pt-1 text-tertiary">
+        <div in:fade={{ delay: 700 }} class="text-sm font-semibold pt-1 text-t-secondary">
           {display_date}
         </div>
       {/key}

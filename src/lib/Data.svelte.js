@@ -318,6 +318,8 @@ export class Data {
     task.completed = 0;
     task.archived = false;
 
+    task.name = task.name.trim();
+    task.description = task.description?.trim() ?? "";
     const validation = this.#validateTask(task);
     if (!validation.success) {
       return { success: false, error: validation.error };
@@ -337,6 +339,8 @@ export class Data {
   async updateTask(task) {
     if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
 
+    task.name = task.name.trim();
+    task.description = task.description?.trim() ?? "";
     const validation = this.#validateTask(task);
     if (!validation.success) {
       return { success: false, error: validation.error };
@@ -355,12 +359,32 @@ export class Data {
   async createCategory(category) {
     if (!category) return;
 
+    category.name = category.name.trim();
     const new_category = await this.#DB.Category.create(category);
     this.#categories.push(new_category);
 
     this.#categories = sortByField(this.#categories, "name");
 
     return new_category;
+  }
+
+  /**
+   *
+   * @param {Category} category
+   * @returns
+   */
+  async updateCategory(category) {
+    if (!category) return;
+
+    category.name = category.name.trim();
+    const updated = await this.#DB.Category.update(category.id, category);
+    const index = this.#categories.findIndex(({ id }) => id === updated.id);
+    if (index !== -1) {
+      this.#categories[index] = updated;
+    }
+
+    this.#categories = sortByField(this.#categories, "name");
+    return updated;
   }
 
   /**

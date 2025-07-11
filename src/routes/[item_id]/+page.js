@@ -22,7 +22,7 @@ export async function load({ params }) {
       important: !!origin_task.important,
       urgent: !!origin_task.urgent,
       completed: origin_task.completed ?? 0,
-      repeat_interval: origin_task.repeat_interval_number > 1 ? "other" : origin_task.repeat_interval || "",
+      repeat_interval: origin_task.repeat_interval,
       repeat_interval_number: origin_task.repeat_interval_number || 1,
       repeat_specific_days: origin_task.repeat_specific_days || [],
       archived: origin_task.archived || false,

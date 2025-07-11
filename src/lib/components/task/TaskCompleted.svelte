@@ -69,19 +69,25 @@
     <ItemName name={task.name} completed={!!task.completed} {tick_animation} />
 
     <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
+      {#if task.due_date}
+        <TaskDueDate {is_complete} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
+          {displayDateTime({ due_date, start_date })}
+        </TaskDueDate>
+      {/if}
+
       {#if category}
-        <div class="text-left opacity-50 bg-t-primary-300 px-1 rounded w-fit flex items-center h-fit gap-1">
+        <div
+          class={{
+            "text-left opacity-50 bg-t-primary-300 px-1 rounded w-fit flex items-center h-fit gap-1": true,
+            "bg-t-primary-700": is_selected,
+            "bg-t-primary-300": !is_selected,
+          }}
+        >
           <div class="w-4 h-4">
             <Categories size={16} />
           </div>
           <span>{category.name}</span>
         </div>
-      {/if}
-
-      {#if task.due_date}
-        <TaskDueDate {is_complete} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
-          {displayDateTime({ due_date, start_date })}
-        </TaskDueDate>
       {/if}
     </div>
   </button>

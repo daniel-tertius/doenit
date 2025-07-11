@@ -6,10 +6,12 @@ import Categories from "./Categories.svelte";
 import Check from "./Check.svelte";
 import Clock from "./Clock.svelte";
 import DownChevron from "./DownChevron.svelte";
+import Edit from "./Edit.svelte";
 import Google from "./Google.svelte";
 import Home from "./Home.svelte";
 import Important from "./Important.svelte";
 import Loading from "./Loading.svelte";
+import More from "./More.svelte";
 import New from "./New.svelte";
 import Plus from "./Plus.svelte";
 import Restore from "./Restore.svelte";
@@ -31,10 +33,12 @@ export {
   Check,
   Clock,
   DownChevron,
+  Edit,
   Google,
   Home,
   Important,
   Loading,
+  More,
   New,
   Plus,
   Restore,

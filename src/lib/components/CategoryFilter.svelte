@@ -58,15 +58,13 @@
       {/if}
     {/each}
 
-    <div class="p-2 pt-0">
-      <button
-        class="rounded relative w-full bg-t-primary-700 flex items-center gap-1 px-4"
-        onclick={() => (is_adding = true)}
-      >
-        <Plus />
-        <span class="w-full flex p-2 cursor-pointer text-left font-semibold"> Skep nuwe kategorie </span>
-      </button>
-    </div>
+    <button
+      class="rounded relative w-full bg-active/30 flex items-center gap-1 px-4"
+      onclick={() => (is_adding = true)}
+    >
+      <Plus />
+      <span class="w-full flex p-2 cursor-pointer text-left font-semibold"> Skep nuwe kategorie </span>
+    </button>
   </div>
 {/if}
 

@@ -4,6 +4,7 @@
   import { slide } from "svelte/transition";
   import { Check, Times } from "$lib/icon";
   import { SvelteSet } from "svelte/reactivity";
+  import ButtonClear from "../element/button/ButtonClear.svelte";
 
   /**
    * @typedef {"So" | "Ma" | "Di" | "Wo" | "Do" | "Vr" | "Sa"} WEEKDAY
@@ -35,9 +36,9 @@
   const DAYS_OF_WEEK = ["So", "Ma", "Di", "Wo", "Do", "Vr", "Sa"];
 
   let is_mounting = $state(true);
-  let temp_other_interval = $state(other_interval);
-  let temp_repeat_interval = $state(repeat_interval);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
+  let temp_other_interval = $state(other_interval);
+  let temp_repeat_interval = $state(repeat_interval_number > 1 ? "other" : repeat_interval);
   /** @type {Set<(0 | 1 | 2 | 3 | 4 | 5 | 6)>}*/
   let temp_specific_days = $state(new SvelteSet(specific_days));
   let is_dialog_open = $state(false);
@@ -148,9 +149,7 @@
     </select>
 
     {#if !!temp_repeat_interval}
-      <button onclick={() => (temp_repeat_interval = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
-        <Times class="text-t-secondary" size={18} />
-      </button>
+      <ButtonClear onclick={() => (temp_repeat_interval = "")} />
     {/if}
   </div>
   {#if temp_repeat_interval === "weekly_custom_days"}
@@ -202,7 +201,7 @@
           onchange={() => {
             error_message = "";
           }}
-          class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
+          class="bg-primary-20l p-2 w-full rounded-lg border border-primary appearance-none"
         >
           <option value="daily">Dae</option>
           <option value="weekly">Weke</option>

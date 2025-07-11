@@ -1,5 +1,7 @@
 <script>
-  let { name, completed = false, tick_animation } = $props();
+  import { More } from "$lib/icon";
+
+  let { name, completed = false, tick_animation, description = "" } = $props();
 </script>
 
 <div class="relative text-t-secondary ml-10 mr-6" class:opacity-50={!name}>
@@ -11,7 +13,10 @@
     ></div>
   {/if}
 
-  <span class="text-left font-semibold my-auto overflow-hidden line-clamp-1" class:opacity-50={!!completed}>
+  <span class="flex items-center text-left font-semibold my-auto relative" class:opacity-50={!!completed}>
     {name || "Geen beskrywing…"}
+    {#if description && description.trim()}
+      <More size={14} class="ml-1 opacity-60" />
+    {/if}
   </span>
 </div>

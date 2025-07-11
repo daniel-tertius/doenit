@@ -80,9 +80,15 @@
     use:longpress
     {onlongpress}
   >
-    <ItemName name={task.name} {tick_animation} />
+    <ItemName name={task.name} {tick_animation} description={task.description} />
 
     <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
+      {#if task.due_date}
+        <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
+          {displayDateTime({ due_date, start_date })}
+        </TaskDueDate>
+      {/if}
+
       {#if category}
         <div
           class={{
@@ -90,7 +96,7 @@
             "bg-t-primary-400": !is_past && !is_ongoing,
             "bg-error/80": is_past && !is_selected,
             "bg-active/80": is_ongoing && !is_selected,
-            "bg-primary/80": is_selected,
+            "bg-t-primary-700": is_selected,
           }}
         >
           <div class="w-4 h-4">
@@ -98,12 +104,6 @@
           </div>
           <span>{category.name}</span>
         </div>
-      {/if}
-
-      {#if task.due_date}
-        <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
-          {displayDateTime({ due_date, start_date })}
-        </TaskDueDate>
       {/if}
     </div>
   </button>

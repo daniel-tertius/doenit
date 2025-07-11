@@ -1,7 +1,7 @@
 <script>
-  import { goto } from "$app/navigation";
-  import { navigating, page } from "$app/state";
   import { Plus, Loading, Check, Home } from "$lib/icon";
+  import { navigating, page } from "$app/state";
+  import { goto } from "$app/navigation";
 
   /** @type {Record<string, import("svelte").Component<*, {}, "">>}*/
   const ICON_CHART = {
