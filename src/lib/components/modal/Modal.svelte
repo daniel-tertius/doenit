@@ -61,7 +61,7 @@
   </button>
 
   <div
-    class="modal-content rounded-lg bg-primary-10l border border-primary-30l"
+    class="modal-content rounded-lg bg-t-primary border border-primary-30l"
     transition:scale={{ start: 0.95, duration: 200 }}
   >
     <div class="p-4 border-b border-primary-30l justify-between items-center gap-0.5 flex">

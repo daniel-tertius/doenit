@@ -18,7 +18,7 @@
   ];
 </script>
 
-<div class="bg-t-primary-600 rounded-lg text-t-secondary">
+<div class="bg-t-primary rounded-lg text-t-secondary">
   <div class="p-4">
     <h3 class="font-semibold mb-2">Toekomende Idees</h3>
     <ul class="space-y-4 text-sm">

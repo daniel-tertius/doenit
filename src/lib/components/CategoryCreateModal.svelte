@@ -3,6 +3,7 @@
   import { slide } from "svelte/transition";
   import Modal from "./modal/Modal.svelte";
   import { data } from "$lib/Data.svelte";
+  import InputText from "./element/input/InputText.svelte";
 
   let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
 
@@ -38,13 +39,7 @@
 
 <Modal bind:open {footer} title="Skep Kategorie" {onclose}>
   <div class="p-4">
-    <input
-      type="text"
-      use:init
-      placeholder="Kies 'n naam vir jou kategorie"
-      class="p-2 w-full rounded-lg border border-primary-600 mt-2"
-      bind:value={new_category_name}
-    />
+    <InputText bind:value={new_category_name} focus_on_mount placeholder="Kies 'n naam vir jou kategorie" />
 
     {#if !!error_message}
       <div class="text-error text-sm mt-1 text-right w-full" transition:slide>

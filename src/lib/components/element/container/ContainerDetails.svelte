@@ -5,7 +5,7 @@
   let { children, label, show = $bindable() } = $props();
 </script>
 
-<div class="bg-t-primary-600 rounded-lg">
+<div class="bg-t-primary rounded-lg">
   <button
     type="button"
     class="focus:outline-none w-full p-4 flex items-center justify-between hover:bg-t-primary-700 active:bg-t-primary-700 rounded-lg transition-colors"

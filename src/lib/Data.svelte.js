@@ -53,6 +53,8 @@ export class Data {
     categories: new SvelteSet(),
   });
 
+  is_init_complete = $state(false);
+
   #DB = DB.getInstance();
 
   /** @type {Set<string>} */
@@ -88,6 +90,8 @@ export class Data {
 
     const category_data = await this.#DB.Category.data;
     this.#categories = category_data.filter(({ archived }) => !archived);
+
+    this.is_init_complete = true;
   }
 
   get all_tasks() {
@@ -180,6 +184,10 @@ export class Data {
   }
 
   async refreshTasks() {
+    while (!this.is_init_complete) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
     this.#all_tasks = await this.#DB.Task.data;
 
     const { id } = this.categories.find(({ name }) => name === DEFAULT_NAME) ?? { id: "" };

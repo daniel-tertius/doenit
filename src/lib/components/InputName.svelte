@@ -1,36 +1,27 @@
 <script>
-  import { onMount } from "svelte";
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
+  import InputText from "./element/input/InputText.svelte";
 
   let { name = $bindable(), description = $bindable(), error_message = $bindable() } = $props();
 
-  /** @type {HTMLElement?} */
-  let name_input = $state(null);
   let show_description = $state(!!description);
-
-  onMount(() => {
-    init(name_input);
-  });
-
-  function init(el) {
-    setTimeout(() => el?.focus());
-  }
 </script>
 
 <div>
   <label class="font-bold" for="name">Wat moet gedoen word?</label>
   <div class="flex gap-1">
-    <input
+    <InputText
       id="name"
-      bind:this={name_input}
-      oninput={() => (error_message = "")}
       bind:value={name}
-      type="text"
+      focus_on_mount
+      oninput={() => (error_message = "")}
       placeholder="Wat moet gedoen word?"
-      class="bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 pr-7"
-      class:border-error={!!error_message}
-      class:placeholder:text-error-20l={!!error_message}
+      class={{
+        "bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 pr-7": true,
+        "border-error": !!error_message,
+        "placeholder:text-error-20l": !!error_message,
+      }}
     />
 
     <button
@@ -41,7 +32,7 @@
       <DownChevron class="text-t-secondary {show_description ? '-rotate-180' : ''}" size={18} />
     </button>
   </div>
-  
+
   {#if error_message}
     <div class="text-error text-sm mt-1 flex justify-end">
       {error_message}

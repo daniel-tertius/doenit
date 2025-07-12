@@ -5,6 +5,7 @@
   import { fly, slide } from "svelte/transition";
   import { data } from "$lib/Data.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
+  import InputText from "$lib/components/element/input/InputText.svelte";
 
   const DEFAULT_NAME = "Standaard";
 
@@ -72,10 +73,6 @@
     is_editing = false;
   }
 
-  function init(el) {
-    setTimeout(() => el?.focus());
-  }
-
   function openEditModal(cat) {
     category = cat;
     edited_category_name = cat.name;
@@ -87,12 +84,11 @@
 <div class="flex flex-col space-y-2 text-t-secondary">
   <div>
     <form onsubmit={createCategory} class="flex gap-2 items-center h-12">
-      <input
-        type="text"
-        oninput={() => (error_message = "")}
+      <InputText
         bind:value={new_category_name}
         placeholder="Voer nuwe kategorienaam in…"
-        class="w-full h-full rounded-md bg-t-primary px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
+        class="w-full h-12 rounded-md bg-t-primary px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
+        oninput={() => (error_message = "")}
       />
 
       <button
@@ -134,15 +130,14 @@
   </div>
 </div>
 
-<Modal bind:open={is_editing} {footer} title="Skep Kategorie">
+<Modal bind:open={is_editing} {footer} title="Wysig jou kategorie naam">
   {#if category}
     <div class="p-4">
-      <input
-        type="text"
-        use:init
-        placeholder="Kies 'n naam vir jou kategorie"
-        class="p-2 w-full rounded-lg border border-primary-600 mt-2"
+      <InputText
         bind:value={edited_category_name}
+        focus_on_mount
+        placeholder="Kies 'n naam vir jou kategorie"
+        oninput={() => (error_message = "")}
       />
 
       {#if !!error_message}

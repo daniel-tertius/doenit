@@ -33,7 +33,7 @@
   async function restoreBackup() {
     if (is_restoring) return;
 
-    const confirmed = confirm("Is jy seker jy wil vanaf rugsteun herstel? Dit sal alle huidige data vervang.");
+    const confirmed = confirm("Is jy seker jy wil vanaf rugsteun herstel?");
     if (!confirmed) return;
 
     is_restoring = true;
@@ -42,6 +42,7 @@
       if (result.success) {
         await data.createCategories(result.data.categories);
         await data.createTasks(result.data.tasks);
+        alert("Herstel suksesvol!");
       }
     } catch (error) {
       console.error("Restore error:", error);
@@ -66,7 +67,7 @@
 
 <ContainerDetails label="Rugsteun">
   {#if !backup.email_address}
-    <p>Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.</p>
+    <p class="text-sm text-t-secondary/80">Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.</p>
 
     <button
       onclick={handleGoogleVerification}
@@ -84,20 +85,40 @@
   {:else}
     <button
       type="button"
-      disabled={is_creating_backup}
-      class="w-full p-3 bg-blue-500 text-t-secondary rounded-lg hover:bg-blue-700"
+      disabled={is_restoring || is_creating_backup}
+      class="w-full p-2 bg-blue-600 text-white rounded-lg transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       onclick={createBackup}
     >
-      {is_creating_backup ? "Besig met rugsteun..." : "Rugsteun nou"}
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+          ></path>
+        </svg>
+        {is_creating_backup ? "Besig met rugsteun..." : "Rugsteun nou"}
+      </div>
     </button>
 
     <button
       type="button"
-      disabled={is_restoring}
-      class="w-full p-3 bg-t-primary-700 text-t-secondary rounded-lg"
+      disabled={is_restoring || is_creating_backup}
+      class="w-full p-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       onclick={restoreBackup}
     >
-      {is_restoring ? "Besig met herstel..." : "Herstel vanaf rugsteun"}
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+          ></path>
+        </svg>
+        {is_restoring ? "Besig met herstel..." : "Herstel vanaf rugsteun"}
+      </div>
     </button>
 
     <!-- Geverifieer as, verander? -->

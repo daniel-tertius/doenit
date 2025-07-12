@@ -15,7 +15,7 @@
 
   const page_id = $derived(page.route.id ?? "");
   const is_form_page = $derived(["/create", "/[item_id]"].includes(page_id));
-  const Icon = $derived(ICON_CHART[page_id] || Plus);
+  const Icon = $derived(ICON_CHART[page_id]);
   const type = $derived(is_form_page ? "submit" : "button");
   const form = $derived(is_form_page ? "form" : null);
   const onclick = $derived(is_form_page ? null : () => goto(page_id === "/" ? "/create" : "/"));
