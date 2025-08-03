@@ -76,7 +76,7 @@
     >
       {#if is_loading}
         <Loading />
-        Verifying...
+        Besig…
       {:else}
         <Google size={18} class="mr-3" />
         Verifieer e-posadres met Google

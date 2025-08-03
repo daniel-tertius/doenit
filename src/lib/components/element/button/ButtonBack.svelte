@@ -34,9 +34,9 @@
     >
       <div class="h-10 w-10 p-1 flex justify-center items-center">
         {#if navigating.to}
-          <Loading size={24} class="text-tertiary" />
+          <Loading size={24} class="text-t-secondary" />
         {:else if !is_home}
-          <Back size={24} class="text-tertiary" />
+          <Back size={24} class="text-t-secondary" />
         {/if}
       </div>
     </button>
