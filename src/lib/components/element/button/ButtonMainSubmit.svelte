@@ -29,9 +29,9 @@
     {onclick}
   >
     {#if navigating.to}
-      <Loading size={24} color="text-t-secondary" />
+      <Loading size={24} class="text-t-secondary" />
     {:else}
-      <Icon size={24} color="text-t-secondary" />
+      <Icon size={24} class="text-t-secondary" />
     {/if}
   </button>
 {/if}

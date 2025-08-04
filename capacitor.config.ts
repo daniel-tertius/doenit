@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
   appName: "Doenit",
   webDir: "build",
   server: {
-    androidScheme: "https",
+    androidScheme: "doenit",
     iosScheme: "capacitor",
     allowNavigation: ["*.firebaseapp.com"],
   },

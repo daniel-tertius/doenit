@@ -34,6 +34,7 @@
         <li class="text-t-secondary">
           <a
             {href}
+            draggable="false"
             class="flex gap-1 py-2 px-4 rounded transition-colors duration-300 hover:bg-t-primary-600"
             class:bg-t-primary-700={is_active}
             class:font-semibold={is_active}
