@@ -3,5 +3,7 @@
     <string name="app_name">Doenit</string>
     <string name="title_activity_main">Doenit</string>
     <string name="package_name">doenit.app</string>
-    <string name="custom_url_scheme">doenit.app</string>
+    <string name="custom_url_scheme">doenit</string>
+    <string name="widget_name">Doenit Widget</string>
+    <string name="widget_description">Maklike oorsig oor jou take</string>
 </resources>

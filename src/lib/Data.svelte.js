@@ -4,6 +4,7 @@ import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
 import { notifications } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
+import { Widget } from "./services/widget";
 
 const DEFAULT_NAME = "Standaard";
 
@@ -252,6 +253,7 @@ export class Data {
 
       const updated = await this.#DB.Task.update(task.id, task);
       notifications.scheduleNotifications();
+      await this.#updateWidget();
 
       this.#addTask(updated);
       return;
@@ -265,6 +267,7 @@ export class Data {
 
     const updated = await this.#DB.Task.update(task.id, task);
     notifications.scheduleNotifications();
+    await this.#updateWidget();
     return updated;
   }
 
@@ -314,6 +317,7 @@ export class Data {
 
     await this.#DB.Task.delete(task_ids);
     await notifications.scheduleNotifications();
+    await this.#updateWidget();
   }
 
   /**
@@ -335,6 +339,7 @@ export class Data {
 
     const new_task = await this.#DB.Task.create(task);
     await notifications.scheduleNotifications();
+    await this.#updateWidget();
     this.#addTask(new_task);
 
     return { success: true, task: new_task };
@@ -356,6 +361,7 @@ export class Data {
 
     task = await this.#DB.Task.update(task.id, task);
     await notifications.scheduleNotifications();
+    await this.#updateWidget();
     this.#updateTask(task);
 
     return { success: true, task };
@@ -653,6 +659,17 @@ export class Data {
     );
 
     return new_day.toLocaleDateString("en-CA");
+  }
+
+  /**
+   * Update the Android widget with current tasks
+   */
+  async #updateWidget() {
+    try {
+      await Widget.updateWidget(this.tasks);
+    } catch (error) {
+      console.error("Failed to update widget:", error);
+    }
   }
 }
 export const data = new Data();

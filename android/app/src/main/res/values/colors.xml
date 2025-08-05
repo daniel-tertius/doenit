@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- Widget colors -->
+    <color name="widget_background">#FFFFFF</color>
+    <color name="widget_heading_background">#3b4144</color>
+    <color name="widget_border">#E0E0E0</color>
+    <color name="widget_text_primary">#212121</color>
+    <color name="widget_text_secondary">#757575</color>
+    <color name="task_item_background">#F8F9FA</color>
+    <color name="primary_color">#3B4144</color>
+</resources>
