@@ -135,56 +135,56 @@ public class TaskWidgetService extends RemoteViewsService {
         private void loadTasks() {
             tasks.clear();
             
-            // // Read from Capacitor storage (SharedPreferences)
-            // SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
-            // String itemsJson = prefs.getString("Item", "{}");
+            // Read from Capacitor storage (SharedPreferences)
+            SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
+            String itemsJson = prefs.getString("Item", "{}");
             
-            // try {
-            //     JSONObject items = new JSONObject(itemsJson);
-            //     JSONArray names = items.names();
+            try {
+                JSONObject items = new JSONObject(itemsJson);
+                JSONArray names = items.names();
                 
-            //     if (names != null) {
-            //         for (int i = 0; i < names.length(); i++) {
-            //             String key = names.getString(i);
-            //             JSONObject taskJson = items.getJSONObject(key);
+                if (names != null) {
+                    for (int i = 0; i < names.length(); i++) {
+                        String key = names.getString(i);
+                        JSONObject taskJson = items.getJSONObject(key);
                         
-            //             // Only include non-archived, non-completed tasks
-            //             if (!taskJson.optBoolean("archived", false) && 
-            //                 taskJson.optInt("completed", 0) == 0) {
+                        // Only include non-archived, non-completed tasks
+                        if (!taskJson.optBoolean("archived", false) && 
+                            taskJson.optInt("completed", 0) == 0) {
                             
-            //                 TaskItem task = new TaskItem();
-            //                 task.id = key;
-            //                 task.name = taskJson.optString("name", "");
-            //                 task.dueDate = formatDueDate(taskJson.optString("due_date", ""));
-            //                 task.important = taskJson.optBoolean("important", false);
-            //                 task.urgent = taskJson.optBoolean("urgent", false);
+                            TaskItem task = new TaskItem();
+                            task.id = key;
+                            task.name = taskJson.optString("name", "");
+                            task.dueDate = formatDueDate(taskJson.optString("due_date", ""));
+                            task.important = taskJson.optBoolean("important", false);
+                            task.urgent = taskJson.optBoolean("urgent", false);
                             
-            //                 tasks.add(task);
-            //             }
-            //         }
-            //     }
+                            tasks.add(task);
+                        }
+                    }
+                }
                 
-            //     // Sort tasks by due date and priority
-            //     tasks.sort((a, b) -> {
-            //         // Important and urgent tasks first
-            //         if (a.important && a.urgent && !(b.important && b.urgent)) return -1;
-            //         if (b.important && b.urgent && !(a.important && a.urgent)) return 1;
+                // Sort tasks by due date and priority
+                tasks.sort((a, b) -> {
+                    // Important and urgent tasks first
+                    if (a.important && a.urgent && !(b.important && b.urgent)) return -1;
+                    if (b.important && b.urgent && !(a.important && a.urgent)) return 1;
                     
-            //         // Then important tasks
-            //         if (a.important && !b.important) return -1;
-            //         if (b.important && !a.important) return 1;
+                    // Then important tasks
+                    if (a.important && !b.important) return -1;
+                    if (b.important && !a.important) return 1;
                     
-            //         // Then urgent tasks
-            //         if (a.urgent && !b.urgent) return -1;
-            //         if (b.urgent && !a.urgent) return 1;
+                    // Then urgent tasks
+                    if (a.urgent && !b.urgent) return -1;
+                    if (b.urgent && !a.urgent) return 1;
                     
-            //         // Finally by due date
-            //         return a.dueDate.compareTo(b.dueDate);
-            //     });
+                    // Finally by due date
+                    return a.dueDate.compareTo(b.dueDate);
+                });
                 
-            // } catch (JSONException e) {
-            //     e.printStackTrace();
-            // }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         
         private String formatDueDate(String dueDateStr) {

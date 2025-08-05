@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.net.Uri;
 import doenit.app.R;
+import java.util.Set;
 
 public class TaskWidgetProvider extends AppWidgetProvider {
     
@@ -19,11 +21,6 @@ public class TaskWidgetProvider extends AppWidgetProvider {
     private static final String EXTRA_TASK_ID = "task_id";
 
     public static void updateTasksData(Context context, String tasksJson) {
-        // SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        // SharedPreferences.Editor editor = prefs.edit();
-        // editor.putString(PREF_TASKS, tasksJson);
-        // editor.apply();
-
         // Update all widgets
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
@@ -45,12 +42,20 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
         
         String action = intent.getAction();
+        android.util.Log.d("TaskWidget", "onReceive called with action: " + action);
+        
         if (ACTION_ADD_TASK.equals(action)) {
-            // Open the app to create a new task - use string class name instead
+            android.util.Log.d("TaskWidget", "Handling ADD_TASK action");
+            // Open the app to create a new task
             Intent appIntent = new Intent(context, MainActivity.class);
             appIntent.putExtra("route", "/create");
             appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            context.startActivity(appIntent);
+            try {
+                context.startActivity(appIntent);
+                android.util.Log.d("TaskWidget", "Started MainActivity with /create route");
+            } catch (Exception e) {
+                android.util.Log.e("TaskWidget", "Failed to start MainActivity", e);
+            }
         } else if (ACTION_COMPLETE_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
             // Handle task completion
@@ -82,16 +87,13 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             context, 0, addTaskIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.add_task_button, addTaskPendingIntent);
 
-        // Set up click action for app name/logo to open main app - use string class name
+        // Set up click action for app name/logo to open main app
         Intent appIntent = new Intent(context, MainActivity.class);
         appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent mainAppPendingIntent = PendingIntent.getActivity(
             context, 1, appIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         
-        // Make the app name text clickable (need to add ID to layout)
         views.setOnClickPendingIntent(R.id.app_name_text, mainAppPendingIntent);
-        
-        // Make the app logo clickable (need to add ID to layout)  
         views.setOnClickPendingIntent(R.id.app_logo, mainAppPendingIntent);
 
         // Set up list item click template
