@@ -48,6 +48,7 @@
         android:orientation="vertical"
         android:background="@drawable/widget_background"
         android:gravity="center_vertical"
+        android:paddingTop="4dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:paddingBottom="4dp">
