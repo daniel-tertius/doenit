@@ -73,29 +73,39 @@ public class TaskWidgetService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int position) {
-            if (position >= tasks.size()) {
-                return null;
-            }
+            if (position >= tasks.size()) return null;
 
             TaskItem task = tasks.get(position);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget_item);
             
             views.setTextViewText(R.id.task_name, task.name);
             views.setTextViewText(R.id.task_due_date, task.dueDate);
+            if (task.dueDate != null && !task.dueDate.isEmpty()) {
+                views.setViewVisibility(R.id.task_due_date, android.view.View.VISIBLE);
+                // Check if due date is past and set color accordingly
+                if (isDatePast(task.dueDate)) {
+                    views.setTextColor(R.id.task_due_date, android.graphics.Color.parseColor("#a34747"));
+                }
+            } else {
+                views.setViewVisibility(R.id.task_due_date, android.view.View.GONE);
+            }
+
+            views.setTextViewText(R.id.task_category, task.category);
+            if (task.category != null && !task.category.isEmpty()) {
+                views.setViewVisibility(R.id.task_category, android.view.View.VISIBLE);
+            } else {
+                views.setViewVisibility(R.id.task_category, android.view.View.GONE);
+            }
             
             // Set priority indicators
             if (task.important) {
                 views.setImageViewResource(R.id.important_icon, R.drawable.ic_important);
                 views.setViewVisibility(R.id.important_icon, android.view.View.VISIBLE);
-            } else {
-                views.setViewVisibility(R.id.important_icon, android.view.View.GONE);
             }
             
             if (task.urgent) {
                 views.setImageViewResource(R.id.urgent_icon, R.drawable.ic_urgent);
                 views.setViewVisibility(R.id.urgent_icon, android.view.View.VISIBLE);
-            } else {
-                views.setViewVisibility(R.id.urgent_icon, android.view.View.GONE);
             }
 
             // Set up click action for task item (to open task details)
@@ -105,8 +115,8 @@ public class TaskWidgetService extends RemoteViewsService {
 
             // Set up click action for complete button
             Intent completeIntent = new Intent();
-            completeIntent.setAction("COMPLETE_TASK");
-            completeIntent.putExtra("task_id", task.id);
+            completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
+            completeIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
             views.setOnClickFillInIntent(R.id.complete_button, completeIntent);
 
             return views;
@@ -138,69 +148,141 @@ public class TaskWidgetService extends RemoteViewsService {
             // Read from Capacitor storage (SharedPreferences)
             SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
             String itemsJson = prefs.getString("Item", "{}");
+            String categoriesJson = prefs.getString("Category", "{}");
             
+            // Parse categories for name lookup
             try {
+                JSONObject categories = new JSONObject(categoriesJson);
                 JSONObject items = new JSONObject(itemsJson);
                 JSONArray names = items.names();
                 
-                if (names != null) {
-                    for (int i = 0; i < names.length(); i++) {
-                        String key = names.getString(i);
-                        JSONObject taskJson = items.getJSONObject(key);
-                        
-                        // Only include non-archived, non-completed tasks
-                        if (!taskJson.optBoolean("archived", false) && 
-                            taskJson.optInt("completed", 0) == 0) {
-                            
-                            TaskItem task = new TaskItem();
-                            task.id = key;
-                            task.name = taskJson.optString("name", "");
-                            task.dueDate = formatDueDate(taskJson.optString("due_date", ""));
-                            task.important = taskJson.optBoolean("important", false);
-                            task.urgent = taskJson.optBoolean("urgent", false);
-                            
-                            tasks.add(task);
-                        }
-                    }
+                if (names == null) return;
+
+                for (int i = 0; i < names.length(); i++) {
+                    String key = names.getString(i);
+                    JSONObject taskJson = items.getJSONObject(key);
+                    
+                    // Only include non-archived, non-completed tasks
+                    boolean isArchived = taskJson.optBoolean("archived", false);
+                    boolean isCompleted = taskJson.optInt("completed", 0) > 0;
+                    if (isArchived || isCompleted) continue;
+
+                    TaskItem task = new TaskItem();
+                    task.id = key;
+                    task.name = taskJson.optString("name", "");
+                    task.dueDate = formatDateToAfrikaans(taskJson.optString("due_date", ""));
+                    
+                    // Get category name from category ID
+                    String categoryId = taskJson.optString("category_id", "");
+                    task.category = getCategoryName(categoryId, categories);
+                    task.important = taskJson.optBoolean("important", false);
+                    task.urgent = taskJson.optBoolean("urgent", false);
+                    
+                    tasks.add(task);    
                 }
-                
-                // Sort tasks by due date and priority
+
+                // Replace the three separate sort calls with this single comprehensive sort
                 tasks.sort((a, b) -> {
-                    // Important and urgent tasks first
-                    if (a.important && a.urgent && !(b.important && b.urgent)) return -1;
-                    if (b.important && b.urgent && !(a.important && a.urgent)) return 1;
+                    // Primary: Due date (tasks with due dates come first, then by date)
+                    int dateComparison = compareDueDates(a.dueDate, b.dueDate);
+                    if (dateComparison != 0) {
+                        return dateComparison;
+                    }
+
+                    // Secondary: Priority based on importance and urgency (Eisenhower Matrix)
+                    int aPriority = getPriorityLevel(a.important, a.urgent);
+                    int bPriority = getPriorityLevel(b.important, b.urgent);
                     
-                    // Then important tasks
-                    if (a.important && !b.important) return -1;
-                    if (b.important && !a.important) return 1;
+                    if (aPriority != bPriority) {
+                        return Integer.compare(aPriority, bPriority); // Lower number = higher priority
+                    }
                     
-                    // Then urgent tasks
-                    if (a.urgent && !b.urgent) return -1;
-                    if (b.urgent && !a.urgent) return 1;
-                    
-                    // Finally by due date
-                    return a.dueDate.compareTo(b.dueDate);
+                    // Tertiary: Alphabetical by name
+                    return a.name.compareToIgnoreCase(b.name);
                 });
-                
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        
-        private String formatDueDate(String dueDateStr) {
-            if (dueDateStr.isEmpty()) return "";
-            
-            try {
-                // Simple date formatting - you may want to improve this
-                String[] parts = dueDateStr.split(" ");
-                if (parts.length > 0) {
-                    return parts[0]; // Just return the date part
+
+        private String getCategoryName(String categoryId, JSONObject categories) {
+            // Get category name from category ID
+            if (!categoryId.isEmpty() && categories.has(categoryId)) {
+                try {
+                    JSONObject category = categories.getJSONObject(categoryId);
+                    return category.optString("name", "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            }
+            return "";
+        }
+
+        private String formatDateToAfrikaans(String dateString) {
+            if (dateString == null || dateString.isEmpty() || dateString.equals("null")) {
+                return "";
             }
             
-            return dueDateStr;
+            try {
+                java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH);
+                java.util.Date date = inputFormat.parse(dateString);
+                
+                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
+                return outputFormat.format(date);
+            } catch (java.text.ParseException e) {
+                return dateString; // Return original string if parsing fails
+            }
+        }
+
+        private boolean isDatePast(String formattedDate) {
+            if (formattedDate == null || formattedDate.isEmpty()) {
+                return false;
+            }
+            
+            try {
+                // Parse the formatted Afrikaans date back to compare with today
+                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
+                java.util.Date dueDate = outputFormat.parse(formattedDate);
+                
+                // Get today's date at midnight for comparison
+                java.util.Calendar today = java.util.Calendar.getInstance();
+                today.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                today.set(java.util.Calendar.MINUTE, 0);
+                today.set(java.util.Calendar.SECOND, 0);
+                today.set(java.util.Calendar.MILLISECOND, 0);
+                
+                return dueDate.before(today.getTime());
+            } catch (java.text.ParseException e) {
+                return false; // If we can't parse the date, assume it's not past
+            }
+        }
+
+        private int getPriorityLevel(boolean important, boolean urgent) {
+            // Eisenhower Matrix priority levels
+            if (important && urgent) return 1;     // Do First (Crisis)
+            if (important && !urgent) return 2;   // Schedule (Important, not urgent)
+            if (!important && urgent) return 3;   // Delegate (Urgent, not important)
+            return 4;                              // Don't Do (Neither important nor urgent)
+        }
+
+        private int compareDueDates(String dateA, String dateB) {
+            boolean aHasDate = dateA != null && !dateA.isEmpty();
+            boolean bHasDate = dateB != null && !dateB.isEmpty();
+            
+            // Tasks with due dates come before tasks without due dates
+            if (aHasDate && !bHasDate) return -1;
+            if (!aHasDate && bHasDate) return 1;
+            if (!aHasDate && !bHasDate) return 0;
+            
+            // Both have due dates - compare them
+            try {
+                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
+                java.util.Date parsedDateA = outputFormat.parse(dateA);
+                java.util.Date parsedDateB = outputFormat.parse(dateB);
+                return parsedDateA.compareTo(parsedDateB);
+            } catch (java.text.ParseException e) {
+                return dateA.compareTo(dateB); // Fallback to string comparison
+            }
         }
     }
 
@@ -208,6 +290,7 @@ public class TaskWidgetService extends RemoteViewsService {
         String id;
         String name;
         String dueDate;
+        String category;
         boolean important;
         boolean urgent;
     }

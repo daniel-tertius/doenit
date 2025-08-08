@@ -13,10 +13,10 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
         // Register plugins
         registerPlugin(TaskWidgetPlugin.class);
+
+        super.onCreate(savedInstanceState);
         
         // Enable edge-to-edge display
         getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);

@@ -666,10 +666,11 @@ export class Data {
    */
   async #updateWidget() {
     try {
-      await Widget.updateWidget(this.tasks);
+      await Widget.updateWidget();
     } catch (error) {
       console.error("Failed to update widget:", error);
     }
   }
 }
+
 export const data = new Data();

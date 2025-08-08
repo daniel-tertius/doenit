@@ -13,12 +13,14 @@ import android.net.Uri;
 import doenit.app.R;
 import java.util.Set;
 
+import org.json.JSONObject;
+import org.json.JSONException;
+
 public class TaskWidgetProvider extends AppWidgetProvider {
-    
     private static final String PREFS_NAME = "DoenitWidgetPrefs";
-    private static final String ACTION_ADD_TASK = "ADD_TASK";
-    private static final String ACTION_COMPLETE_TASK = "COMPLETE_TASK";
-    private static final String EXTRA_TASK_ID = "task_id";
+    public static final String ACTION_ADD_TASK = "ADD_TASK";
+    public static final String ACTION_COMPLETE_TASK = "COMPLETE_TASK";
+    public static final String EXTRA_TASK_ID = "task_id";
 
     public static void updateTasksData(Context context, String tasksJson) {
         // Update all widgets
@@ -58,6 +60,13 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             }
         } else if (ACTION_COMPLETE_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
+            android.util.Log.d("TaskWidget", "Handling COMPLETE_TASK action for taskId: " + taskId);
+            
+            if (taskId == null) {
+                android.util.Log.e("TaskWidget", "taskId is null in COMPLETE_TASK action");
+                return;
+            }
+            
             // Handle task completion
             TaskWidgetService.completeTask(context, taskId);
             
@@ -65,7 +74,14 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
-            onUpdate(context, appWidgetManager, appWidgetIds);
+         
+            // Notify data changed first
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+        
+            // Then update the widgets
+            for (int appWidgetId : appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, appWidgetId);
+            }
         }
     }
 
@@ -105,5 +121,42 @@ public class TaskWidgetProvider extends AppWidgetProvider {
 
         appWidgetManager.updateAppWidget(appWidgetId, views);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list_view);
+    }
+
+    public static void completeTask(Context context, String taskId) {
+        SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
+        String itemsJson = prefs.getString("Item", "{}");
+        
+        try {
+            JSONObject items = new JSONObject(itemsJson);
+            if (!items.has(taskId)) return;
+
+            JSONObject task = items.getJSONObject(taskId);
+            
+            // Check if it's a repeating task
+            String repeatInterval = task.optString("repeat_interval", "");
+            String dueDate = task.optString("due_date", "");
+            boolean isRepeatTask = !repeatInterval.isEmpty() && !dueDate.isEmpty();
+            
+            if (isRepeatTask) {
+                // For repeating tasks, increment completed count and update due date
+                int completed = task.optInt("completed", 0) + 1;
+                task.put("completed", completed);
+                // Note: Due date calculation would need to be implemented here
+                // to match the logic in your Data.svelte.js #getNextDueDate method
+            } else {
+                // For non-repeating tasks, mark as completed and archived
+                task.put("completed", 1);
+                task.put("archived", true);
+                task.put("completed_at", new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new java.util.Locale("af", "ZA")).format(new java.util.Date()));
+            }
+            
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("Item", items.toString());
+            editor.apply();
+        
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }
