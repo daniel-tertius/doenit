@@ -18,8 +18,9 @@ import org.json.JSONException;
 
 public class TaskWidgetProvider extends AppWidgetProvider {
     private static final String PREFS_NAME = "DoenitWidgetPrefs";
-    public static final String ACTION_ADD_TASK = "ADD_TASK";
-    public static final String ACTION_COMPLETE_TASK = "COMPLETE_TASK";
+    public static final String ACTION_ADD_TASK = "doenit.app.ADD_TASK";
+    public static final String ACTION_COMPLETE_TASK = "doenit.app.COMPLETE_TASK";
+    public static final String ACTION_OPEN_TASK = "doenit.app.OPEN_TASK";
     public static final String EXTRA_TASK_ID = "task_id";
 
     public static void updateTasksData(Context context, String tasksJson) {
@@ -45,6 +46,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         
         String action = intent.getAction();
         android.util.Log.d("TaskWidget", "onReceive called with action: " + action);
+        android.util.Log.d("TaskWidget", "Intent extras: " + intent.getExtras());
         
         if (ACTION_ADD_TASK.equals(action)) {
             android.util.Log.d("TaskWidget", "Handling ADD_TASK action");
@@ -62,26 +64,44 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
             android.util.Log.d("TaskWidget", "Handling COMPLETE_TASK action for taskId: " + taskId);
             
-            if (taskId == null) {
-                android.util.Log.e("TaskWidget", "taskId is null in COMPLETE_TASK action");
-                return;
-            }
+            if (taskId != null) {
+                // Handle task completion
+                completeTask(context, taskId);
+                
+                // Update all widgets
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+                ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
+                int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
+             
+                // Notify data changed first
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
             
-            // Handle task completion
-            TaskWidgetService.completeTask(context, taskId);
-            
-            // Update all widgets
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
-            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
-         
-            // Notify data changed first
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
-        
-            // Then update the widgets
-            for (int appWidgetId : appWidgetIds) {
-                updateAppWidget(context, appWidgetManager, appWidgetId);
+                // Then update the widgets
+                for (int appWidgetId : appWidgetIds) {
+                    updateAppWidget(context, appWidgetManager, appWidgetId);
+                }
+            } else {
+                android.util.Log.e("TaskWidget", "COMPLETE_TASK action received but no task ID found");
             }
+        } else if (ACTION_OPEN_TASK.equals(action)) {
+            String taskId = intent.getStringExtra(EXTRA_TASK_ID);
+            android.util.Log.d("TaskWidget", "Handling OPEN_TASK action for taskId: " + taskId);
+            
+            if (taskId != null) {
+                // Open the app to view/edit the task
+                Intent appIntent = new Intent(context, MainActivity.class);
+                appIntent.putExtra("route", "/");
+                appIntent.putExtra("task_id", taskId);
+                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                try {
+                    context.startActivity(appIntent);
+                    android.util.Log.d("TaskWidget", "Started MainActivity to view task: " + taskId);
+                } catch (Exception e) {
+                    android.util.Log.e("TaskWidget", "Failed to start MainActivity", e);
+                }
+            }
+        } else {
+            android.util.Log.d("TaskWidget", "Unhandled action: " + action);
         }
     }
 
@@ -114,13 +134,12 @@ public class TaskWidgetProvider extends AppWidgetProvider {
 
         // Set up list item click template
         Intent itemClickIntent = new Intent(context, TaskWidgetProvider.class);
-        itemClickIntent.setAction(ACTION_COMPLETE_TASK);
         PendingIntent itemClickPendingIntent = PendingIntent.getBroadcast(
             context, 0, itemClickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setPendingIntentTemplate(R.id.widget_list_view, itemClickPendingIntent);
 
-        appWidgetManager.updateAppWidget(appWidgetId, views);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list_view);
+        appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
     public static void completeTask(Context context, String taskId) {
@@ -154,7 +173,10 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("Item", items.toString());
             editor.apply();
-        
+
+            // Refresh the widget data
+            updateTasksData(context, items.toString());
+            android.util.Log.d("TaskWidget", "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -19,29 +19,6 @@ public class TaskWidgetService extends RemoteViewsService {
         return new TaskRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 
-    public static void completeTask(Context context, String taskId) {
-        // This would integrate with your Capacitor storage
-        // For now, we'll just mark it as completed in SharedPreferences
-        SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
-        String itemsJson = prefs.getString("Item", "{}");
-        
-        try {
-            JSONObject items = new JSONObject(itemsJson);
-            if (items.has(taskId)) {
-                JSONObject task = items.getJSONObject(taskId);
-                task.put("completed", task.optInt("completed", 0) + 1);
-                task.put("archived", true);
-                task.put("completed_at", new java.util.Date().toString());
-                
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("Item", items.toString());
-                editor.apply();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     class TaskRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         private Context context;
         private List<TaskItem> tasks;
@@ -76,6 +53,8 @@ public class TaskWidgetService extends RemoteViewsService {
             if (position >= tasks.size()) return null;
 
             TaskItem task = tasks.get(position);
+            android.util.Log.d("TaskWidget", "Creating view for task: " + task.name + " (ID: " + task.id + ")");
+            
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget_item);
             
             views.setTextViewText(R.id.task_name, task.name);
@@ -109,15 +88,17 @@ public class TaskWidgetService extends RemoteViewsService {
             }
 
             // Set up click action for task item (to open task details)
-            Intent fillInIntent = new Intent();
-            fillInIntent.putExtra("task_id", task.id);
-            views.setOnClickFillInIntent(R.id.task_item_layout, fillInIntent);
+            // Intent fillInIntent = new Intent();
+            // fillInIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
+            // fillInIntent.putExtra("click_action", TaskWidgetProvider.ACTION_OPEN_TASK);
+            // views.setOnClickFillInIntent(R.id.task_item_layout, fillInIntent);
 
             // Set up click action for complete button
             Intent completeIntent = new Intent();
             completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
             completeIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
             views.setOnClickFillInIntent(R.id.complete_button, completeIntent);
+            android.util.Log.d("TaskWidget", "Set up complete button for task: " + task.id);
 
             return views;
         }
