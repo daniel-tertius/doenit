@@ -32,14 +32,14 @@ show_invalid_option() {
 
 # Main menu
 show_menu() {
-    echo -e "${CYAN}╔═══════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}║                   DOENIT ONTWIKKELING CLI                 ║${NC}"
-    echo -e "${CYAN}╠═══════════════════════════════════════════════════════════╣${NC}"
-    echo -e "${CYAN}║ ${YELLOW}1.${NC} Web Ontwikkeling        ${CYAN}║ ${YELLOW}5.${NC} Ontplooi na Toestel (dev) ${CYAN}║${NC}"
-    echo -e "${CYAN}║ ${YELLOW}2.${NC} Functions Bestuur       ${CYAN}║ ${YELLOW}6.${NC} Toestel Bestuur           ${CYAN}║${NC}"
-    echo -e "${CYAN}║ ${YELLOW}3.${NC} Installeer Dependencies ${CYAN}║ ${YELLOW}7.${NC} Widget Debug              ${CYAN}║${NC}"
-    echo -e "${CYAN}║ ${YELLOW}4.${NC} Bou AAB leêr            ${CYAN}║ ${YELLOW}8.${NC} App Logs Kyk              ${CYAN}║${NC}"
-    echo -e "${CYAN}╚═══════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║                   DOENIT ONTWIKKELING CLI                        ║${NC}"
+    echo -e "${CYAN}╠══════════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${CYAN}║ ${YELLOW}1.${NC} Web Ontwikkeling (npm run dev) ${CYAN}║ ${YELLOW}5.${NC} Ontplooi na Toestel (dev) ${CYAN}║${NC}"
+    echo -e "${CYAN}║ ${YELLOW}2.${NC} Firebase Functions Bestuur     ${CYAN}║ ${YELLOW}6.${NC} Toestel Bestuur           ${CYAN}║${NC}"
+    echo -e "${CYAN}║ ${YELLOW}3.${NC} Installeer Dependencies        ${CYAN}║ ${YELLOW}7.${NC} Widget Debug              ${CYAN}║${NC}"
+    echo -e "${CYAN}║ ${YELLOW}4.${NC} Bou AAB leêr (produksie)       ${CYAN}║ ${YELLOW}8.${NC} App Logs Kyk              ${CYAN}║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
 
@@ -284,17 +284,17 @@ widget_debug() {
         return
     fi
     
-    echo "1. Test widget aksies"
-    echo "2. Force widget update"
+    echo "1. Toets widget aksies"
+    echo "2. Forseer widget opdateering"
     read -p "Kies opsie: " widget_choice
     
     case $widget_choice in
         1)
-            echo -e "${BLUE}Test widget aksies...${NC}"
+            echo -e "${BLUE}Toets widget aksies...${NC}"
             adb shell am broadcast -a "doenit.app.COMPLETE_TASK" -e "task_id" "test_task_123" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
             ;;
         2)
-            echo -e "${BLUE}Force widget update...${NC}"
+            echo -e "${BLUE}Forseer widget opdateering...${NC}"
             adb shell am broadcast -a "android.appwidget.action.APPWIDGET_UPDATE" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
             ;;
     esac
