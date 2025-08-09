@@ -1,38 +1,54 @@
-# sv
+# Doenit - Afrikaanse Taak Bestuur App
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+'n SvelteKit-gebaseerde mobiele aplikasie gebou met Capacitor vir taak bestuur en produktiwiteit.
 
-## Creating a project
+## Projek Struktuur
 
-If you're seeing this, you've probably already done this step. Congrats!
+Hierdie is 'n monorepo wat bevat:
+- **Hoof App**: SvelteKit web aplikasie met Capacitor vir mobiel
+- **Firebase Functions**: Backend cloud functions
+- **Packages**: Persoonlike Capacitor plugins (Google Auth)
+- **Tools**: Bou en ontplooi scripts
 
-```bash
-# create a new project in the current directory
-npx sv create
+Vir gedetailleerde struktuur inligting, sien [docs/README.md](docs/README.md).
 
-# create a new project in my-app
-npx sv create my-app
-```
 
-## Developing
+## Doenit CLI - Alles-in-Een Ontwikkeling Hulpmiddel
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+**Die maklikste manier om met Doenit te werk!** 🚀
 
 ```bash
-npm run build
+# Start die volledige CLI hulpmiddel
+npm run cli
+
+# Of gebruik die vinnige launcher
+./doenit
 ```
 
-You can preview the production build with `npm run preview`.
+Die Doenit CLI hanteer **alles** wat jy nodig het:
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+### 🌐 **Web Ontwikkeling**
+- Start ontwikkeling server
+- Bou vir produksie
+- Preview builds
+
+### 🔥 **Firebase Bestuur**
+- Functions emulator
+- Deploy functions
+- View logs
+- Database bestuur
+
+### 📱 **Mobiele App**
+- Bou en installeer debug/release
+- Ontplooi na toestel
+- Widget debugging
+- App logs monitor
+
+### 🛠️ **Utilities**
+- Dependencies installeer/update
+- Clean builds
+- Toestel status
+- Projek struktuur
+- Help en inligting
+
+**Net een opdrag - alles beskikbaar!** ✨

@@ -10,7 +10,7 @@ repo_root=$(git rev-parse --show-toplevel)
 cd $repo_root
 
 # Source the file containing the functions
-source ./scripts/functions.sh
+source ./tools/functions.sh
 echo_prefix="${yellow}[${magenta}SCRIPT${yellow}]${clear}"
 
 if [ ! -f android/app.keystore ]; then
