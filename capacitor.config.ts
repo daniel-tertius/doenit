@@ -1,10 +1,14 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 import dotenv from "dotenv";
-dotenv.config();
+
+// Load environment-specific configuration
+const environment = process.env.NODE_ENV || 'development';
+dotenv.config({ path: `.env.${environment}` });
+dotenv.config(); // Load default .env as fallback
 
 const config: CapacitorConfig = {
-  appId: "doenit.app",
-  appName: "Doenit",
+  appId: process.env.PUBLIC_APP_ID || "doenit.app.dev",
+  appName: process.env.PUBLIC_APP_NAME || "Doenit Dev",
   webDir: "build",
   server: {
     androidScheme: "https",
@@ -33,7 +37,7 @@ const config: CapacitorConfig = {
   },
   android: {
     buildOptions: {
-      keystorePath: "./app.keystore",
+      keystorePath: environment === 'production' ? "./app-production.keystore" : "./app.keystore",
       keystorePassword: process.env.PUBLIC_KEYSTORE_PASSWORD,
       keystoreAlias: process.env.PUBLIC_KEYSTORE_ALIAS,
       keystoreAliasPassword: process.env.PUBLIC_KEYSTORE_PASSWORD,

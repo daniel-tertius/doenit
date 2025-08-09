@@ -6,11 +6,15 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
+    "build:dev": "NODE_ENV=development vite build",
+    "build:prod": "NODE_ENV=production vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
     "app": "./tools/app_generation.sh",
+    "app:dev": "./tools/app_generation.sh dev",
+    "app:prod": "./tools/app_generation.sh prod",
     "cli": "./tools/doenit-cli.sh",
     "dev-cli": "./tools/doenit-cli.sh"
   },

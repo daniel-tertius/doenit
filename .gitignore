@@ -17,6 +17,11 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.test
+!.env.development.example
+!.env.production.example
+
+# Production keystore - keep secure!
+android/app-production.keystore
 
 # Vite
 vite.config.js.timestamp-*

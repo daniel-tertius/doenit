@@ -1,16 +1,42 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'
+
+// Load environment variables from .env file
+def envFile = project.rootProject.file('../.env')
+def envProps = new Properties()
+if (envFile.exists()) {
+    envFile.withInputStream { envProps.load(it) }
+}
+
+// Load environment-specific .env file based on NODE_ENV
+def nodeEnv = System.getenv('NODE_ENV') ?: 'development'
+def envSpecificFile = project.rootProject.file("../.env.${nodeEnv}")
+if (envSpecificFile.exists()) {
+    envSpecificFile.withInputStream { envProps.load(it) }
+}
+
+// Set app ID based on environment
+def appId = envProps.getProperty('PUBLIC_APP_ID', 'doenit.app.dev')
+def appName = envProps.getProperty('PUBLIC_APP_NAME', 'Doenit Dev')
+
+// Only apply Google Services plugin for production builds
+if (appId == 'doenit.app') {
+    apply plugin: 'com.google.gms.google-services'
+}
 
 android {
-    namespace "doenit.app"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace "doenit.app"  // Keep static namespace
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "doenit.app"
+        applicationId appId
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 29
         versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Set app name based on environment
+        manifestPlaceholders = [appName: appName]
+        
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -18,6 +44,10 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // Debug builds will use the app ID as-is (doenit.app.dev for dev, doenit.app for prod)
+            versionNameSuffix '-debug'
+        }
         release {
             minifyEnabled true
             shrinkResources true
@@ -39,11 +69,13 @@ dependencies {
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
     implementation project(':capacitor-android')
     
-    // Firebase SDK
-    implementation platform('com.google.firebase:firebase-bom:33.1.1')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-auth'
+    // Firebase SDK - only for production builds
+    if (appId == 'doenit.app') {
+        implementation platform('com.google.firebase:firebase-bom:33.1.1')
+        implementation 'com.google.firebase:firebase-analytics'
+        implementation 'com.google.firebase:firebase-messaging'
+        implementation 'com.google.firebase:firebase-auth'
+    }
     implementation 'com.google.android.gms:play-services-auth:21.2.0'
 
     testImplementation "junit:junit:$junitVersion"
