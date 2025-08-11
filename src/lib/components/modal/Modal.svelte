@@ -109,19 +109,6 @@
     flex-direction: column;
   }
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .modal-header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-
   .close-button {
     background: none;
     border: none;
