@@ -56,7 +56,7 @@ public class TaskWidgetService extends RemoteViewsService {
             TaskItem task = tasks.get(position);
             Log.d("Doenit", "Creating view for task: " + task.name + " (ID: " + task.id + ")");
             
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget_item);
+            RemoteViews views = new RemoteViews(this.context.getPackageName(), R.layout.task_widget_item);
             
             views.setTextViewText(R.id.task_name, task.name);
             views.setTextViewText(R.id.task_due_date, task.dueDate);
@@ -88,13 +88,7 @@ public class TaskWidgetService extends RemoteViewsService {
                 views.setViewVisibility(R.id.urgent_icon, android.view.View.VISIBLE);
             }
 
-            // Set up click action for task item (to open task details)
-            // Intent fillInIntent = new Intent();
-            // fillInIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
-            // fillInIntent.putExtra("click_action", TaskWidgetProvider.ACTION_OPEN_TASK);
-            // views.setOnClickFillInIntent(R.id.task_item_layout, fillInIntent);
-
-            // Set up click action for complete button
+            // Set up the "Complete Task" button
             Intent completeIntent = new Intent();
             completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
             completeIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);

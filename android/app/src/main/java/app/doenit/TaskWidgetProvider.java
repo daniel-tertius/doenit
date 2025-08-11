@@ -110,36 +110,37 @@ public class TaskWidgetProvider extends AppWidgetProvider {
 
         // Set up the list view
         Intent serviceIntent = new Intent(context, TaskWidgetService.class);
-        serviceIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        serviceIntent.setData(Uri.parse(serviceIntent.toUri(Intent.URI_INTENT_SCHEME)));
-        
         views.setRemoteAdapter(R.id.widget_list_view, serviceIntent);
+
+        // Set up PendingIntent template for list item clicks
+        Intent templateIntent = new Intent(context, TaskWidgetProvider.class);
+        templateIntent.setAction(ACTION_COMPLETE_TASK);
+        // Use a unique request code based on widget ID
+        PendingIntent templatePendingIntent = PendingIntent.getBroadcast(
+            context, 
+            appWidgetId, 
+            templateIntent, 
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
+        views.setPendingIntentTemplate(R.id.widget_list_view, templatePendingIntent);
+
+        // Set up empty view
         views.setEmptyView(R.id.widget_list_view, R.id.empty_view);
 
-        // Set up the "Add Task" button
+        // Set up add task button
         Intent addTaskIntent = new Intent(context, TaskWidgetProvider.class);
         addTaskIntent.setAction(ACTION_ADD_TASK);
         PendingIntent addTaskPendingIntent = PendingIntent.getBroadcast(
-            context, 0, addTaskIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            context, 
+            appWidgetId + 1000, // Different request code
+            addTaskIntent, 
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
         views.setOnClickPendingIntent(R.id.add_task_button, addTaskPendingIntent);
 
-        // Set up click action for app name/logo to open main app
-        Intent appIntent = new Intent(context, MainActivity.class);
-        appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent mainAppPendingIntent = PendingIntent.getActivity(
-            context, 1, appIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        
-        views.setOnClickPendingIntent(R.id.app_name_text, mainAppPendingIntent);
-        views.setOnClickPendingIntent(R.id.app_logo, mainAppPendingIntent);
-
-        // Set up list item click template
-        Intent itemClickIntent = new Intent(context, TaskWidgetProvider.class);
-        PendingIntent itemClickPendingIntent = PendingIntent.getBroadcast(
-            context, 0, itemClickIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        views.setPendingIntentTemplate(R.id.widget_list_view, itemClickPendingIntent);
-
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list_view);
+        // Update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+        Log.d("Doenit", "Updated widget " + appWidgetId + " with PendingIntent template");
     }
 
     public static void completeTask(Context context, String taskId) {
