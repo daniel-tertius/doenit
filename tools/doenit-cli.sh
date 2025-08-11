@@ -315,17 +315,12 @@ widget_debug() {
     fi
     
     echo "1. Toets widget aksies"
-    echo "2. Forseer widget opdateering"
     read -p "Kies opsie: " widget_choice
     
     case $widget_choice in
         1)
             echo -e "${BLUE}Toets widget aksies...${NC}"
             adb shell am broadcast -a "doenit.app.COMPLETE_TASK" -e "task_id" "test_task_123" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
-            ;;
-        2)
-            echo -e "${BLUE}Forseer widget opdateering...${NC}"
-            adb shell am broadcast -a "android.appwidget.action.APPWIDGET_UPDATE" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
             ;;
     esac
 }
@@ -339,7 +334,7 @@ view_app_logs() {
     echo -e "${BLUE}📋 Kyk app logs (Ctrl+C om te stop)...${NC}"
     echo -e "${CYAN}Monitoring beide produksie (doenit.app) en ontwikkeling (doenit.app.dev) apps${NC}"
     adb logcat -c
-    adb logcat | grep -E "(doenit\.app|doenit)"
+    adb logcat | grep "Doenit"
 }
 
 # Begin CLI

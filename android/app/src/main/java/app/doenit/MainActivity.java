@@ -2,6 +2,7 @@ package doenit.app;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
 import com.getcapacitor.BridgeActivity;
 import java.util.Set;
 
@@ -37,9 +38,9 @@ public class MainActivity extends BridgeActivity {
         if (intent == null) return;
 
         String route = intent.getStringExtra("route");
-        android.util.Log.d("MainActivity", "Intent received with route: " + route);
+        Log.d("Doenit - MainActivity", "Intent received with route: " + route);
         
-        if (route != null && ALLOWED_ROUTES.contains(route)) {
+        if (route != null) {
             // Wait for the web view to be ready
             if (getBridge() != null) {
                 getBridge().getWebView().post(() -> {
@@ -51,7 +52,7 @@ public class MainActivity extends BridgeActivity {
                 });
             }
         } else if (route != null) {
-            android.util.Log.w("MainActivity", "Attempted navigation to unauthorized route: " + route);
+            Log.w("Doenit - MainActivity", "Attempted navigation to unauthorized route: " + route);
         }
     }
 }

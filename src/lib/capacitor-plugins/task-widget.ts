@@ -1,3 +1,5 @@
+import type { Task } from "$lib/DB/DB";
+
 export interface TaskWidgetPlugin {
-  updateWidget(): Promise<{ success: boolean; message: string }>;
+  updateWidget({ tasks }: { tasks: Task[] }): Promise<{ success: boolean; message: string }>;
 }

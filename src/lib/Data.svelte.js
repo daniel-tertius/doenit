@@ -666,7 +666,7 @@ export class Data {
    */
   async #updateWidget() {
     try {
-      await Widget.updateWidget();
+      await Widget.updateWidget(this.tasks);
     } catch (error) {
       console.error("Failed to update widget:", error);
     }

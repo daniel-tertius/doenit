@@ -45,24 +45,24 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         super.onReceive(context, intent);
         
         String action = intent.getAction();
-        android.util.Log.d("TaskWidget", "onReceive called with action: " + action);
-        android.util.Log.d("TaskWidget", "Intent extras: " + intent.getExtras());
+        Log.d("Doenit", "onReceive called with action: " + action);
+        Log.d("Doenit", "Intent extras: " + intent.getExtras());
         
         if (ACTION_ADD_TASK.equals(action)) {
-            android.util.Log.d("TaskWidget", "Handling ADD_TASK action");
+            Log.d("Doenit", "Handling ADD_TASK action");
             // Open the app to create a new task
             Intent appIntent = new Intent(context, MainActivity.class);
             appIntent.putExtra("route", "/create");
             appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             try {
                 context.startActivity(appIntent);
-                android.util.Log.d("TaskWidget", "Started MainActivity with /create route");
+                Log.d("Doenit", "Started MainActivity with /create route");
             } catch (Exception e) {
                 android.util.Log.e("TaskWidget", "Failed to start MainActivity", e);
             }
         } else if (ACTION_COMPLETE_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
-            android.util.Log.d("TaskWidget", "Handling COMPLETE_TASK action for taskId: " + taskId);
+            Log.d("Doenit", "Handling COMPLETE_TASK action for taskId: " + taskId);
             
             if (taskId != null) {
                 // Handle task completion
@@ -85,7 +85,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
             }
         } else if (ACTION_OPEN_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
-            android.util.Log.d("TaskWidget", "Handling OPEN_TASK action for taskId: " + taskId);
+            Log.d("Doenit", "Handling OPEN_TASK action for taskId: " + taskId);
             
             if (taskId != null) {
                 // Open the app to view/edit the task
@@ -95,13 +95,13 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 try {
                     context.startActivity(appIntent);
-                    android.util.Log.d("TaskWidget", "Started MainActivity to view task: " + taskId);
+                    Log.d("Doenit", "Started MainActivity to view task: " + taskId);
                 } catch (Exception e) {
                     android.util.Log.e("TaskWidget", "Failed to start MainActivity", e);
                 }
             }
         } else {
-            android.util.Log.d("TaskWidget", "Unhandled action: " + action);
+            Log.d("Doenit", "Unhandled action: " + action);
         }
     }
 
@@ -176,7 +176,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
 
             // Refresh the widget data
             updateTasksData(context, items.toString());
-            android.util.Log.d("TaskWidget", "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
+            Log.d("Doenit", "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
         } catch (JSONException e) {
             e.printStackTrace();
         }

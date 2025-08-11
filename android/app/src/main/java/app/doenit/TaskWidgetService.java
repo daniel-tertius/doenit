@@ -3,6 +3,7 @@ package doenit.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import org.json.JSONArray;
@@ -53,7 +54,7 @@ public class TaskWidgetService extends RemoteViewsService {
             if (position >= tasks.size()) return null;
 
             TaskItem task = tasks.get(position);
-            android.util.Log.d("TaskWidget", "Creating view for task: " + task.name + " (ID: " + task.id + ")");
+            Log.d("Doenit", "Creating view for task: " + task.name + " (ID: " + task.id + ")");
             
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget_item);
             
@@ -98,7 +99,7 @@ public class TaskWidgetService extends RemoteViewsService {
             completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
             completeIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
             views.setOnClickFillInIntent(R.id.complete_button, completeIntent);
-            android.util.Log.d("TaskWidget", "Set up complete button for task: " + task.id);
+            Log.d("Doenit", "Set up complete button for task: " + task.id);
 
             return views;
         }
@@ -125,17 +126,23 @@ public class TaskWidgetService extends RemoteViewsService {
 
         private void loadTasks() {
             tasks.clear();
+            Log.d("Doenit", "Loading tasks from SharedPreferences");
             
             // Read from Capacitor storage (SharedPreferences)
             SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
             String itemsJson = prefs.getString("Item", "{}");
             String categoriesJson = prefs.getString("Category", "{}");
             
+            Log.d("Doenit", "Items JSON length: " + itemsJson.length());
+            Log.d("Doenit", "Items JSON preview: " + (itemsJson.length() > 100 ? itemsJson.substring(0, 100) + "..." : itemsJson));
+            
             // Parse categories for name lookup
             try {
                 JSONObject categories = new JSONObject(categoriesJson);
                 JSONObject items = new JSONObject(itemsJson);
                 JSONArray names = items.names();
+                
+                Log.d("Doenit", "Found " + (names != null ? names.length() : 0) + " total items");
                 
                 if (names == null) return;
 
@@ -181,7 +188,10 @@ public class TaskWidgetService extends RemoteViewsService {
                     // Tertiary: Alphabetical by name
                     return a.name.compareToIgnoreCase(b.name);
                 });
+                
+                Log.d("Doenit - TaskWidget", "Loaded " + tasks.size() + " active tasks for widget");
             } catch (JSONException e) {
+                Log.e("Doenit - TaskWidget", "Error parsing JSON", e);
                 e.printStackTrace();
             }
         }

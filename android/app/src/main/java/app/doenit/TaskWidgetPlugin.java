@@ -3,6 +3,7 @@ package doenit.app;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.util.Log;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -20,6 +21,7 @@ public class TaskWidgetPlugin extends Plugin {
     public void updateWidget(PluginCall call) {
         try {
             JSONArray tasks = call.getArray("tasks");
+
             if (tasks == null) {
                 JSObject ret = new JSObject();
                 ret.put("success", false);
