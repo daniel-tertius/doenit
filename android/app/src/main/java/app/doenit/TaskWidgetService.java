@@ -3,14 +3,19 @@ package doenit.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
 import android.util.Log;
+
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import doenit.app.R;
 
 public class TaskWidgetService extends RemoteViewsService {
@@ -88,12 +93,17 @@ public class TaskWidgetService extends RemoteViewsService {
                 views.setViewVisibility(R.id.urgent_icon, android.view.View.VISIBLE);
             }
 
-            // Set up the "Complete Task" button
+            // Set up fill-in intent for COMPLETE_TASK (complete_button)
             Intent completeIntent = new Intent();
             completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
             completeIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
             views.setOnClickFillInIntent(R.id.complete_button, completeIntent);
-            Log.d("Doenit", "Set up complete button for task: " + task.id);
+
+            // Set up fill-in intent for OPEN_TASK (task_item_layout)
+            Intent openIntent = new Intent();
+            openIntent.setAction(TaskWidgetProvider.ACTION_OPEN_TASK);
+            openIntent.putExtra(TaskWidgetProvider.EXTRA_TASK_ID, task.id);
+            views.setOnClickFillInIntent(R.id.task_item_layout, openIntent);
 
             return views;
         }
@@ -124,26 +134,26 @@ public class TaskWidgetService extends RemoteViewsService {
             
             // Read from Capacitor storage (SharedPreferences)
             SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
-            String itemsJson = prefs.getString("Item", "{}");
+            String tasksJson = prefs.getString("Item", "{}");
             String categoriesJson = prefs.getString("Category", "{}");
             
-            Log.d("Doenit", "Items JSON length: " + itemsJson.length());
-            Log.d("Doenit", "Items JSON preview: " + (itemsJson.length() > 100 ? itemsJson.substring(0, 100) + "..." : itemsJson));
+            Log.d("Doenit", "Tasks JSON length: " + tasksJson.length());
+            Log.d("Doenit", "Tasks JSON preview: " + (tasksJson.length() > 100 ? tasksJson.substring(0, 100) + "..." : tasksJson));
             
             // Parse categories for name lookup
             try {
                 JSONObject categories = new JSONObject(categoriesJson);
-                JSONObject items = new JSONObject(itemsJson);
+                JSONObject items = new JSONObject(tasksJson);
                 JSONArray names = items.names();
                 
-                Log.d("Doenit", "Found " + (names != null ? names.length() : 0) + " total items");
+                Log.d("Doenit", "Found " + (names != null ? names.length() : 0) + " total tasks");
                 
                 if (names == null) return;
 
                 for (int i = 0; i < names.length(); i++) {
                     String key = names.getString(i);
                     JSONObject taskJson = items.getJSONObject(key);
-                    
+
                     // Only include non-archived, non-completed tasks
                     boolean isArchived = taskJson.optBoolean("archived", false);
                     boolean isCompleted = taskJson.optInt("completed", 0) > 0;

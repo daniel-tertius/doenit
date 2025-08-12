@@ -14,7 +14,10 @@
   function init(el) {
     if (!focus_on_mount) return;
 
-    setTimeout(() => el?.focus());
+    setTimeout(() => {
+      el?.focus();
+      el?.click();
+    }, 100);
   }
 </script>
 

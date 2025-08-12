@@ -70,7 +70,7 @@
   <button
     {...rest}
     class={{
-      "rounded-lg flex flex-col items-start p-2 w-full h-full": true,
+      "rounded-lg flex flex-col items-start py-4 px-2 w-full h-full": true,
       "bg-error/60": is_past && !is_selected,
       "bg-active/60": is_ongoing && !is_selected,
       "bg-primary": is_selected,

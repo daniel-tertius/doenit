@@ -34,12 +34,12 @@ show_invalid_option() {
 show_menu() {
     echo -e "${CYAN}╔══════════════════════════════════════════════════════════════════╗${NC}"
     echo -e "${CYAN}║                   DOENIT ONTWIKKELING CLI                        ║${NC}"
-    echo -e "${CYAN}╠═══════════════════════════════════════╦══════════════════════════╣${NC}"
+    echo -e "${CYAN}╠═══════════════════════════════════╦══════════════════════════════╣${NC}"
     echo -e "${CYAN}║ ${YELLOW}1.${NC} Web Ontwikkeling (npm run dev) ${CYAN}║ ${YELLOW}5.${NC} Bou en Installeer (dev)   ${CYAN}║${NC}"
     echo -e "${CYAN}║ ${YELLOW}2.${NC} Firebase Functions Bestuur     ${CYAN}║ ${YELLOW}6.${NC} Toestel Bestuur           ${CYAN}║${NC}"
     echo -e "${CYAN}║ ${YELLOW}3.${NC} Installeer Dependencies        ${CYAN}║ ${YELLOW}7.${NC} Widget Debug              ${CYAN}║${NC}"
     echo -e "${CYAN}║ ${YELLOW}4.${NC} Bou App (produksie)            ${CYAN}║ ${YELLOW}8.${NC} App Logs Kyk              ${CYAN}║${NC}"
-    echo -e "${CYAN}╚═════════════════════════════════════╩════════════════════════════╝${NC}"
+    echo -e "${CYAN}╚═══════════════════════════════════╩══════════════════════════════╝${NC}"
     echo ""
 }
 
@@ -320,7 +320,7 @@ widget_debug() {
     case $widget_choice in
         1)
             echo -e "${BLUE}Toets widget aksies...${NC}"
-            adb shell am broadcast -a "doenit.app.COMPLETE_TASK" -e "task_id" "test_task_123" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
+            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
             ;;
     esac
 }

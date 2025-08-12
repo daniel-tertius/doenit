@@ -21,7 +21,7 @@ public class TaskWidgetPlugin extends Plugin {
     public void updateWidget(PluginCall call) {
         try {
             JSONArray tasks = call.getArray("tasks");
-
+            Log.d("Doenit - TaskWidgetPlugin", "Updating widget with tasks: " + tasks);
             if (tasks == null) {
                 JSObject ret = new JSObject();
                 ret.put("success", false);

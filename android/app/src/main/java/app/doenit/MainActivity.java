@@ -7,11 +7,6 @@ import com.getcapacitor.BridgeActivity;
 import java.util.Set;
 
 public class MainActivity extends BridgeActivity {
-    
-    private static final Set<String> ALLOWED_ROUTES = Set.of(
-        "/create", "/", "/settings"
-    );
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Register plugins
@@ -40,7 +35,7 @@ public class MainActivity extends BridgeActivity {
         String route = intent.getStringExtra("route");
         Log.d("Doenit - MainActivity", "Intent received with route: " + route);
         
-        if (route != null) {
+        if (route != "null" && route != null && !route.isEmpty()) {
             // Wait for the web view to be ready
             if (getBridge() != null) {
                 getBridge().getWebView().post(() -> {
@@ -51,8 +46,6 @@ public class MainActivity extends BridgeActivity {
                     );
                 });
             }
-        } else if (route != null) {
-            Log.w("Doenit - MainActivity", "Attempted navigation to unauthorized route: " + route);
         }
     }
 }

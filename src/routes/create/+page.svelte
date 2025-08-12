@@ -4,8 +4,6 @@
   import { data as Data } from "$lib/Data.svelte";
   import EditTask from "$lib/components/EditTask.svelte";
 
-  /** @typedef {import('$lib/DB/DB').Task} Task */
-
   let { data } = $props();
 
   let task = $state(data.task);
