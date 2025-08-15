@@ -51,7 +51,7 @@
       class={{
         "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
         "bg-yellow-100 border-yellow-700 text-yellow-700": task.important,
-        "bg-t-primary border-primary-600 ": !task.important,
+        "bg-t-primary border-dark-400 ": !task.important,
       }}
       onclick={() => {
         task.important = !task.important;
@@ -65,7 +65,7 @@
       class={{
         "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
         "bg-error-30d border-error-invert-30d ": task.urgent,
-        "bg-t-primary border-primary-600": !task.urgent,
+        "bg-t-primary border-dark-400": !task.urgent,
       }}
       onclick={() => {
         task.urgent = !task.urgent;

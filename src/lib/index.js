@@ -1,3 +1,6 @@
+export const DEFAULT_HEX_COLOR = "#242729";
+export const DEFAULT_NAME = "Standaard";
+
 /**
  * @param {Object} a0
  * @param {string | Date | number | null} a0.due_date

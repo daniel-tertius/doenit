@@ -10,11 +10,6 @@
       description:
         "Deel take met vriende of wys spesifieke take aan iemand toe. Werk saam aan een taak of hou mekaar gemotiveerd met gedeelde verantwoordelikhede.",
     },
-    {
-      title: "Widget",
-      description:
-        "Voeg 'n widget by jou tuisskerm om vinnig toegang te hê tot jou take sonder om die toepassing oop te maak. Hou jou take in sig en bestuur dit maklik.",
-    },
   ];
 </script>
 

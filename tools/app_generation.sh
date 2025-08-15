@@ -3,7 +3,7 @@
 # Environment handling
 ENVIRONMENT=${1:-"dev"}  # Default to dev if no argument provided
 if [ "$ENVIRONMENT" = "prod" ]; then
-    ENV_FILE=".env.production"
+    ENV_FILE=".env"
     OUTPUT_SUFFIX=""
 else
     ENV_FILE=".env.development"
@@ -56,8 +56,8 @@ npm i || {
 
 echo -e "${echo_prefix} Building Svelte code for $ENVIRONMENT environment…"
 if [ "$ENVIRONMENT" = "prod" ]; then
-    NODE_ENV=production npm run build:prod || {
-        echo -e "${red}[ERROR] 'npm run build:prod' failed${clear}"
+    npm run build || {
+        echo -e "${red}[ERROR] 'npm run build' failed${clear}"
         exit 1
     }
 else

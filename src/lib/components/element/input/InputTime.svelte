@@ -80,7 +80,7 @@
       onfocus={() => (is_focused = true)}
       class={[
         {
-          "bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d": true,
+          "bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d": true,
         },
         rest.classes ?? "",
       ]}
@@ -112,7 +112,7 @@
     }}
     class={[
       {
-        "bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none": true,
+        "bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d appearance-none": true,
       },
       rest.classes ?? "",
     ]}

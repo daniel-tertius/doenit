@@ -41,9 +41,9 @@
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
-    "@capacitor/status-bar": "^7.0.1",
+    "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
+    "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
     "dotenv": "^16.5.0",
-    "firebase": "^11.10.0",
-    "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth"
+    "firebase": "^11.10.0"
   }
 }

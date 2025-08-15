@@ -1,9 +1,12 @@
 import { browser } from "$app/environment";
+import { DEFAULT_HEX_COLOR } from "$lib";
 import { cached_theme } from "$lib/cached";
+import { Capacitor } from "@capacitor/core";
 
 export type ThemeValue = "dark" | "light";
 class Theme {
-  #value: ThemeValue = "dark";
+  #value: ThemeValue = $state("dark");
+  #edge_to_edge_bg_colour: string = $derived(this.#value === "dark" ? DEFAULT_HEX_COLOR : "#ffffff");
 
   constructor() {
     this.init();
@@ -43,10 +46,27 @@ class Theme {
     root.classList.add(`theme-${actualTheme}`);
     cached_theme.set(theme_value);
     this.#value = theme_value;
+    this.updateEdgeToEdge();
+  }
+
+  toggle() {
+    if (this.value === "dark") {
+      this.value = "light";
+    } else {
+      this.value = "dark";
+    }
   }
 
   private isValidTheme(theme_value: string): theme_value is ThemeValue {
     return ["dark", "light"].includes(theme_value);
+  }
+
+  private async updateEdgeToEdge() {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const { EdgeToEdge } = await import("@capawesome/capacitor-android-edge-to-edge-support");
+
+    await EdgeToEdge.setBackgroundColor({ color: this.#edge_to_edge_bg_colour });
   }
 }
 

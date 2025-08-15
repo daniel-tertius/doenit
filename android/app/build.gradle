@@ -4,19 +4,21 @@ apply plugin: 'com.android.application'
 def envFile = project.rootProject.file('../.env')
 def envProps = new Properties()
 if (envFile.exists()) {
-    envFile.withInputStream { envProps.load(it) }
+    envProps.load(new FileInputStream(envFile))
 }
 
 // Load environment-specific .env file based on NODE_ENV
-def nodeEnv = System.getenv('NODE_ENV') ?: 'development'
-def envSpecificFile = project.rootProject.file("../.env.${nodeEnv}")
+def nodeEnv = System.getenv('NODE_ENV') ?: 'production'
+def envSpecificFile = nodeEnv == 'development' ? 
+    project.rootProject.file('../.env.development') : 
+    project.rootProject.file('../.env')
 if (envSpecificFile.exists()) {
-    envSpecificFile.withInputStream { envProps.load(it) }
+    envProps.load(new FileInputStream(envSpecificFile))
 }
 
 // Set app ID based on environment
-def appId = envProps.getProperty('PUBLIC_APP_ID', 'doenit.app.dev')
-def appName = envProps.getProperty('PUBLIC_APP_NAME', 'Doenit Dev')
+def appId = envProps.getProperty('PUBLIC_APP_ID', 'doenit.app')
+def appName = envProps.getProperty('PUBLIC_APP_NAME', 'Doenit')
 
 // Only apply Google Services plugin for production builds
 if (appId == 'doenit.app') {
@@ -30,8 +32,8 @@ android {
         applicationId appId
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 29
-        versionName "1.0.0"
+        versionCode 32
+        versionName "1.1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // Set app name based on environment

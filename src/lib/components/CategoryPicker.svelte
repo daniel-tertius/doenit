@@ -2,10 +2,9 @@
   import { DownChevron, Times } from "$lib/icon";
   import { data } from "$lib/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
+  import { DEFAULT_NAME } from "$lib";
 
   let { category_id = $bindable() } = $props();
-
-  const DEFAULT_NAME = "Standaard";
 
   let is_adding = $state(false);
 
@@ -20,7 +19,7 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-t-primary-700 p-2 w-full border border-primary-600 rounded-md open:text-t-secondary appearance-none pr-6 truncate {!category_id &&
+    class="bg-t-primary-700 p-2 w-full border border-dark-400 rounded-md open:text-t-secondary appearance-none pr-6 truncate {!category_id &&
       'text-t-secondary/60'}"
   >
     <option value="">Kies 'n kategorie</option>

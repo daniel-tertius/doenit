@@ -109,7 +109,7 @@
       type="button"
       onclick={toggle}
       class={{
-        "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-primary-600": true,
+        "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-dark-400": true,
         "border-error text-error": !!error_message,
         "text-t-secondary/60": !start_date && !end_date,
       }}

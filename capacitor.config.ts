@@ -2,13 +2,12 @@ import type { CapacitorConfig } from "@capacitor/cli";
 import dotenv from "dotenv";
 
 // Load environment-specific configuration
-const environment = process.env.NODE_ENV || 'development';
-dotenv.config({ path: `.env.${environment}` });
-dotenv.config(); // Load default .env as fallback
+const env = process.env.NODE_ENV === "development" ? ".env.development" : ".env";
+dotenv.config({ path: env });
 
 const config: CapacitorConfig = {
-  appId: process.env.PUBLIC_APP_ID || "doenit.app.dev",
-  appName: process.env.PUBLIC_APP_NAME || "Doenit Dev",
+  appId: process.env.PUBLIC_APP_ID || "doenit.app",
+  appName: process.env.PUBLIC_APP_NAME || "Doenit",
   webDir: "build",
   server: {
     androidScheme: "https",
@@ -16,11 +15,6 @@ const config: CapacitorConfig = {
     allowNavigation: ["*.firebaseapp.com"],
   },
   plugins: {
-    StatusBar: {
-      style: "Dark",
-      backgroundColor: "#202325",
-      overlaysWebView: true,
-    },
     LocalNotifications: {
       smallIcon: "ic_stat_logo",
       iconColor: "#ffffff",
@@ -37,7 +31,7 @@ const config: CapacitorConfig = {
   },
   android: {
     buildOptions: {
-      keystorePath: environment === 'production' ? "./app-production.keystore" : "./app.keystore",
+      keystorePath: "./app.keystore",
       keystorePassword: process.env.PUBLIC_KEYSTORE_PASSWORD,
       keystoreAlias: process.env.PUBLIC_KEYSTORE_ALIAS,
       keystoreAliasPassword: process.env.PUBLIC_KEYSTORE_PASSWORD,

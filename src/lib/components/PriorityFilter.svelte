@@ -10,7 +10,7 @@
     class={{
       "text-tertiary p-2 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
       "bg-yellow-100 border-yellow-700 text-yellow-700": important,
-      "bg-t-primary border-primary-600 text-t-secondary": !important,
+      "bg-t-primary border-dark-400 text-t-secondary": !important,
     }}
     onclick={(event) => {
       if (event) event.stopPropagation();
@@ -28,7 +28,7 @@
     class={{
       "p-2 rounded-lg border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
       "bg-error-30d border-error-invert-30d text-t-secondary": urgent,
-      "bg-t-primary border-primary-600 text-t-secondary": !urgent,
+      "bg-t-primary border-dark-400 text-t-secondary": !urgent,
     }}
     onclick={(event) => {
       if (event) event.stopPropagation();

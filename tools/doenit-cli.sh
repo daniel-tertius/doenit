@@ -23,7 +23,16 @@ cd "$repo_root"
 # Source helper functions
 source ./tools/functions.sh 2>/dev/null || echo "Waarskuwing: functions.sh nie gevind nie"
 
-PACKAGE_NAME="doenit.app"
+# Get package name based on environment
+get_package_name() {
+    local env_file=".env.development"
+    if [ -f "$env_file" ]; then
+        local app_id=$(grep "^PUBLIC_APP_ID=" "$env_file" | cut -d'=' -f2)
+        echo "${app_id:-doenit.app}"
+    else
+        echo "doenit.app"
+    fi
+}
 
 # Helper function: Show invalid option error
 show_invalid_option() {
@@ -141,9 +150,9 @@ build_app() {
     fi
     
     # Check if production keystore exists
-    if [ ! -f "android/app-production.keystore" ]; then
+    if [ ! -f "android/app.keystore" ]; then
         echo -e "${RED}❌ Produksie keystore nie gevind nie${NC}"
-        echo "Skep dit met: ${CYAN}./tools/generate-production-keystore.sh${NC}"
+        echo -e "Skep dit met: ${CYAN}./tools/generate-production-keystore.sh${NC}"
         return 1
     fi
     
@@ -218,6 +227,7 @@ build_and_install() {
     }
     
     echo -e "${BLUE}📱 Bou Android debug APK...${NC}"
+    export NODE_ENV=development
     cd android
     if ./gradlew assembleDebug; then
         echo -e "${GREEN}✅ Debug APK gebou${NC}"
@@ -246,6 +256,7 @@ build_and_install() {
         return 1
     fi
     cd ..
+    unset NODE_ENV
     
     # Copy to app-output for convenience
     mkdir -p app-output
@@ -314,13 +325,22 @@ widget_debug() {
         return
     fi
     
-    echo "1. Toets widget aksies"
+    echo "1. Toets widget aksies (dev package)"
+    echo "2. Toets widget aksies (prod package)"
     read -p "Kies opsie: " widget_choice
     
     case $widget_choice in
         1)
-            echo -e "${BLUE}Toets widget aksies...${NC}"
-            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "${PACKAGE_NAME}/doenit.app.TaskWidgetProvider"
+            echo -e "${BLUE}Toets widget aksies vir ontwikkeling app...${NC}"
+            local dev_package=$(get_package_name)
+            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "${dev_package}/doenit.app.TaskWidgetProvider"
+            ;;
+        2)
+            echo -e "${BLUE}Toets widget aksies vir produksie app...${NC}"
+            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "doenit.app/doenit.app.TaskWidgetProvider"
+            ;;
+        *)
+            show_invalid_option
             ;;
     esac
 }
@@ -334,7 +354,7 @@ view_app_logs() {
     echo -e "${BLUE}📋 Kyk app logs (Ctrl+C om te stop)...${NC}"
     echo -e "${CYAN}Monitoring beide produksie (doenit.app) en ontwikkeling (doenit.app.dev) apps${NC}"
     adb logcat -c
-    adb logcat | grep "Doenit"
+    adb logcat | grep -E "(Doenit|Console)"
 }
 
 # Begin CLI

@@ -13,10 +13,6 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(TaskWidgetPlugin.class);
 
         super.onCreate(savedInstanceState);
-        
-        // Enable edge-to-edge display
-        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
-        getWindow().setNavigationBarColor(android.graphics.Color.TRANSPARENT);
 
         // Handle intent
         handleIntent(getIntent());

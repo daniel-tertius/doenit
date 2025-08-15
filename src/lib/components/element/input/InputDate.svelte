@@ -78,7 +78,7 @@
       type="text"
       value={display_value}
       onfocus={() => (is_focused = true)}
-      class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d {classes}"
+      class="bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d {classes}"
     />
     {#if can_clear && value}
       <button
@@ -114,6 +114,6 @@
     onchange={(e) => {
       if (!!value) is_focused = false;
     }}
-    class="bg-primary-20l p-2 w-full rounded-lg border border-primary-600 placeholder:text-tertiary-30d appearance-none {classes}"
+    class="bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d appearance-none {classes}"
   />
 {/if}

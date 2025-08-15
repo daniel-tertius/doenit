@@ -16,6 +16,9 @@
   async function createBackup() {
     if (is_creating_backup) return;
 
+    const confirmed = confirm("Is jy seker jy wil 'n rugsteun skep? Dit gaan vorige rugsteune oorskryf.");
+    if (!confirmed) return;
+
     is_creating_backup = true;
     try {
       const result = await backup.createBackup();

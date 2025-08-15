@@ -18,7 +18,7 @@
       oninput={() => (error_message = "")}
       placeholder="Wat moet gedoen word?"
       class={{
-        "bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 pr-7": true,
+        "bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 pr-7": true,
         "border-error": !!error_message,
         "placeholder:text-error-20l": !!error_message,
       }}
@@ -48,7 +48,7 @@
       bind:value={description}
       placeholder="Gee meer besonderhede oor jou taak"
       rows="3"
-      class="bg-t-primary-700 p-2 w-full rounded-lg border border-primary-600 resize-none min-h-18 max-h-40"
+      class="bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 resize-none min-h-18 max-h-40"
       style="field-sizing: content;"
     ></textarea>
   </div>

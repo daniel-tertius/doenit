@@ -105,7 +105,6 @@
 
     <div class="text-center text-sm text-t-secondary/60 space-y-2">
       <p>Ontwikkel met ❤️ vir die gemeenskap</p>
-      <p>Elke druppel in die emmer help om nuwe funksies en verbeteringe aan te bring.</p>
     </div>
   </div>
 

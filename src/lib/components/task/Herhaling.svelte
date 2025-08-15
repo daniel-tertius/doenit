@@ -134,7 +134,7 @@
     <select
       id="repeat"
       bind:value={temp_repeat_interval}
-      class="bg-t-primary-700 p-2 w-full rounded-lg border-primary-700 border open:text-t-secondary appearance-none {!temp_repeat_interval &&
+      class="bg-t-primary-700 p-2 w-full rounded-lg border-dark-500 border open:text-t-secondary appearance-none {!temp_repeat_interval &&
         'text-t-secondary/60'}"
     >
       <option value="">Geen herhaling</option>

@@ -14,7 +14,7 @@
   <div class="flex gap-2 mt-2" transition:slide>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-primary-600 w-full text-sm shadow-sm"
+      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
       onclick={() => {
         date = today.toLocaleDateString("en-CA");
       }}
@@ -24,7 +24,7 @@
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-primary-600 w-full text-sm shadow-sm"
+      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
       onclick={() => {
         date = tomorrow.toLocaleDateString("en-CA");
       }}
@@ -34,7 +34,7 @@
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-primary-600 w-full text-sm shadow-sm"
+      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_week.toLocaleDateString("en-CA");
       }}
@@ -44,7 +44,7 @@
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-primary-600 w-full text-sm shadow-sm"
+      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_month.toLocaleDateString("en-CA");
       }}

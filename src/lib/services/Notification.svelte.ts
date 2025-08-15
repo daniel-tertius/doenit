@@ -114,6 +114,11 @@ class Notification {
   }
 
   async scheduleNotifications() {
+    if (!this.#enabled || !this.#time) {
+      console.warn("Notifications are disabled or time is not set.");
+      return;
+    }
+
     await this.cancelAll();
 
     // Schedule a notification for 30 days in advance.

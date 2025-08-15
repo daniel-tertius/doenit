@@ -1,9 +1,38 @@
 @import "tailwindcss";
 
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @theme {
+  /* v4 */
+  --color-light: hsl(204, 7%, 100%);
+  --color-light-100: hsl(204, 7%, 95%);
+  --color-light-200: hsl(204, 7%, 90%);
+  --color-light-300: hsl(204, 7%, 85%);
+  --color-light-400: hsl(204, 7%, 80%);
+  --color-light-500: hsl(204, 7%, 75%);
+  --color-light-600: hsl(204, 7%, 70%);
+  --color-light-700: hsl(204, 7%, 65%);
+  --color-light-800: hsl(204, 7%, 60%);
+  --color-light-900: hsl(204, 7%, 55%);
+
+  --color-dark: hsl(204, 7%, 0%);
+  --color-dark-100: hsl(204, 7%, 5%);
+  --color-dark-200: hsl(204, 7%, 10%);
+  --color-dark-300: hsl(204, 7%, 15%);
+  --color-dark-400: hsl(204, 7%, 20%);
+  --color-dark-500: hsl(204, 7%, 25%);
+  --color-dark-600: hsl(204, 7%, 30%);
+  --color-dark-700: hsl(204, 7%, 35%);
+  --color-dark-800: hsl(204, 7%, 40%);
+  --color-dark-900: hsl(204, 7%, 45%);
+
+  --color-dark-secondary: hsl(28, 61%, 80%);
+
+
   /* Default (Dark) Theme */
   /* v3 */
-  --color-primary-200: hsl(204, 7%, 0%);
+  /* --color-primary-200: hsl(204, 7%, 0%);
   --color-primary-300: hsl(204, 7%, 5%);
   --color-primary-400: hsl(204, 7%, 10%);
   --color-primary-500: hsl(204, 7%, 15%);
@@ -11,7 +40,7 @@
   --color-primary-600: hsl(204, 7%, 20%);
   --color-primary-700: hsl(204, 7%, 25%);
   --color-primary-800: hsl(204, 7%, 30%);
-  --color-primary-900: hsl(204, 7%, 35%);
+  --color-primary-900: hsl(204, 7%, 35%); */
 
   --color-t-primary-200: hsl(204, 7%, 0%);
   --color-t-primary-300: hsl(204, 7%, 5%);
@@ -114,18 +143,20 @@
 }
 
 .theme-light {
+  --color-dark-secondary: hsl(204, 7%, 100%);
+
   /* Primary (Light Background) */
 
   /* v3 */
-  --color-t-primary-200: hsl(204, 7%, 100%);
-  --color-t-primary-300: hsl(204, 7%, 95%);
-  --color-t-primary-400: hsl(204, 7%, 90%);
-  --color-t-primary-500: hsl(204, 7%, 85%);
-  --color-t-primary: hsl(204, 7%, 85%);
-  --color-t-primary-600: hsl(204, 7%, 80%);
-  --color-t-primary-700: hsl(204, 7%, 75%);
-  --color-t-primary-800: hsl(204, 7%, 70%);
-  --color-t-primary-900: hsl(204, 7%, 65%);
+  --color-t-primary-200: hsl(204, 7%, 85%);
+  --color-t-primary-300: hsl(204, 7%, 90%);
+  --color-t-primary-400: hsl(204, 7%, 95%);
+  --color-t-primary-500: hsl(204, 7%, 100%);
+  --color-t-primary: hsl(204, 7%, 100%);
+  --color-t-primary-600: hsl(204, 7%, 95%);
+  --color-t-primary-700: hsl(204, 7%, 90%);
+  --color-t-primary-800: hsl(204, 7%, 85%);
+  --color-t-primary-900: hsl(204, 7%, 80%);
 
   --color-t-secondary-800: hsl(28, 61%, 25%);
   --color-t-secondary-700: hsl(28, 61%, 20%);

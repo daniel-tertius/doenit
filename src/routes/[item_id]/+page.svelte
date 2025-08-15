@@ -5,9 +5,6 @@
   import { Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
   import ItemCheckbox from "$lib/components/task/ItemCheckbox.svelte";
-  import { onMount } from "svelte";
-  import { Capacitor } from "@capacitor/core";
-  import { StatusBar } from "@capacitor/status-bar";
   import EditTask from "$lib/components/EditTask.svelte";
 
   let { data } = $props();
@@ -16,17 +13,6 @@
   let is_deleting = $state(false);
   let error = $state({});
   let other_interval = $state(data.task.repeat_interval_number > 1 ? data.task.repeat_interval : "");
-  let top = $state(0);
-
-  onMount(async () => {
-    if (!Capacitor.isNativePlatform()) return;
-
-    StatusBar.setOverlaysWebView({ overlay: true });
-
-    // @ts-ignore
-    const { height = 0 } = await StatusBar.getInfo();
-    top = height;
-  });
 
   $effect(() => {
     if (!task.due_date) {
@@ -74,9 +60,7 @@
 
 <button
   type="button"
-  class="fixed"
-  style="right: calc(12px + env(safe-area-inset-right, 0px));"
-  style:top="{top + 12}px"
+  class="fixed top-3 right-3"
   onclick={() => {
     is_deleting = true;
   }}

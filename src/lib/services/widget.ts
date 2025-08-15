@@ -10,7 +10,7 @@ export class Widget {
    */
   static async updateWidget(tasks: Task[]) {
     if (!Capacitor.isNativePlatform()) {
-      alert("Widget update called on web platform - ignoring");
+      console.warn("Widget update called on web platform - ignoring");
       return;
     }
 

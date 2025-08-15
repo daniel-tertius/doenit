@@ -2,13 +2,12 @@
   import { displayDateTime } from "$lib";
   import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
-  import { slide } from "svelte/transition";
-  import { longpress } from "../long";
   import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import ItemCheckbox from "./ItemCheckbox.svelte";
   import { Categories, Important, Urgent } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
+  import TaskContainer from "./TaskContainer.svelte";
 
   /**
    * @typedef {import('$lib/DB/DB').Task} Task
@@ -62,51 +61,43 @@
   }
 </script>
 
-<div
-  class="relative text-t-secondary min-h-10 transition-all rounded-lg duration-600 delay-350 shadow-sm"
-  class:translate-x-[80%]={tick_animation}
-  in:slide={{ delay: 200 }}
+<TaskContainer
+  {tick_animation}
+  class={{
+    "bg-error/60": is_past && !is_selected,
+    "bg-active/60": is_ongoing && !is_selected,
+    "bg-black/20 dark:bg-white/20 border": is_selected,
+    "bg-white dark:bg-dark-300 ": !is_selected && !is_past && !is_ongoing,
+  }}
+  {onclick}
+  {onlongpress}
 >
-  <button
-    {...rest}
-    class={{
-      "rounded-lg flex flex-col items-start py-4 px-2 w-full h-full": true,
-      "bg-error/60": is_past && !is_selected,
-      "bg-active/60": is_ongoing && !is_selected,
-      "bg-primary": is_selected,
-      "bg-t-primary-600": !is_selected && !is_past && !is_ongoing,
-    }}
-    {onclick}
-    use:longpress
-    {onlongpress}
-  >
-    <ItemName name={task.name} {tick_animation} description={task.description} />
+  <ItemName name={task.name} {tick_animation} description={task.description} />
 
-    <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
-      {#if task.due_date}
-        <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
-          {displayDateTime({ due_date, start_date })}
-        </TaskDueDate>
-      {/if}
+  <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
+    {#if task.due_date}
+      <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
+        {displayDateTime({ due_date, start_date })}
+      </TaskDueDate>
+    {/if}
 
-      {#if category}
-        <div
-          class={{
-            "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
-            "bg-t-primary-400": !is_past && !is_ongoing,
-            "bg-error/80": is_past && !is_selected,
-            "bg-active/80": is_ongoing && !is_selected,
-            "bg-t-primary-700": is_selected,
-          }}
-        >
-          <div class="w-4 h-4">
-            <Categories size={16} />
-          </div>
-          <span>{category.name}</span>
+    {#if category}
+      <div
+        class={{
+          "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
+          "bg-t-primary-400": !is_past && !is_ongoing,
+          "bg-error/80": is_past && !is_selected,
+          "bg-active/80": is_ongoing && !is_selected,
+          "bg-t-primary-700": is_selected,
+        }}
+      >
+        <div class="w-4 h-4">
+          <Categories size={16} />
         </div>
-      {/if}
-    </div>
-  </button>
+        <span>{category.name}</span>
+      </div>
+    {/if}
+  </div>
 
   {#if !task.archived}
     <div class="absolute top-1 right-1 flex gap-1">
@@ -115,5 +106,5 @@
     </div>
   {/if}
 
-  <ItemCheckbox bind:tick_animation {is_selected} onselect={async () => onselect(task)} {onlongpress} />
-</div>
+  <ItemCheckbox bind:tick_animation {is_selected} onselect={() => onselect(task)} {onlongpress} />
+</TaskContainer>

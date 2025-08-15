@@ -1,12 +1,10 @@
 import { page } from "$app/state";
-import { sortByField } from "$lib";
+import { DEFAULT_NAME, sortByField } from "$lib";
 import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
 import { notifications } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
 import { Widget } from "./services/widget";
-
-const DEFAULT_NAME = "Standaard";
 
 /** @typedef {import('$lib/DB/DB').Task} Task */
 /** @typedef {import('$lib/DB/DB').Category} Category */

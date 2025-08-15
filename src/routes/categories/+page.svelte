@@ -6,8 +6,7 @@
   import { data } from "$lib/Data.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
   import InputText from "$lib/components/element/input/InputText.svelte";
-
-  const DEFAULT_NAME = "Standaard";
+  import { DEFAULT_NAME } from "$lib";
 
   let new_category_name = $state("");
   let edited_category_name = $state("");

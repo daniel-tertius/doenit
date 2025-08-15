@@ -7,8 +7,7 @@
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";
-
-  const DEFAULT_NAME = "Standaard";
+  import { DEFAULT_NAME } from "$lib";
 
   let show_dropdown = $state(false);
   let is_adding = $state(false);
@@ -32,16 +31,12 @@
 <svelte:window onclick={() => (show_dropdown = false)} />
 
 {#if show_dropdown}
-  <div
-    transition:fade
-    class="fixed inset-0 w-full z-1 bg-black/25"
-    style="height: calc(100% - 93px - env(safe-area-inset-bottom, 0px));"
-  ></div>
+  <div transition:fade class="fixed inset-0 w-full z-1 bg-black/25" style="height: calc(100% - 93px);"></div>
 
   <div
     transition:slide
     class="absolute left-0 text-t-secondary right-0 mt-1 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
-    style="bottom: calc(93px + env(safe-area-inset-bottom, 0px))"
+    style="bottom: calc(93px)"
   >
     <div class="text-center font-semibold pt-1 -mb-2">
       <span class="h-fit leading-tight">Filtreer op:</span>

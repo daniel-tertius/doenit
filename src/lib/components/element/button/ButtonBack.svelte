@@ -2,11 +2,6 @@
   import { goto } from "$app/navigation";
   import { navigating, page } from "$app/state";
   import { Loading, Back } from "$lib/icon";
-  import { Capacitor } from "@capacitor/core";
-  import { StatusBar } from "@capacitor/status-bar";
-  import { onMount } from "svelte";
-
-  let top = $state(0);
 
   const is_home = $derived(page.url.pathname === "/");
   const show = $derived(!["/"].includes(page.url.pathname));
@@ -14,20 +9,10 @@
   function onclick() {
     goto("/");
   }
-
-  onMount(async () => {
-    if (!Capacitor.isNativePlatform()) return;
-
-    StatusBar.setOverlaysWebView({ overlay: true });
-
-    // @ts-ignore
-    const { height = 0 } = await StatusBar.getInfo();
-    top = height;
-  });
 </script>
 
 {#if show}
-  <div class="absolute left-0 z-50 flex items-center justify-center h-12" style="top: {top}px">
+  <div class="absolute left-0 top-0 z-50 flex items-center justify-center h-12">
     <button
       class="rounded-full bg-t-primary-700 hover:bg-t-primary-800 m-1 font-semibold text-tertiary *:transition-all *:duration-300 focus:outline-none"
       {onclick}
