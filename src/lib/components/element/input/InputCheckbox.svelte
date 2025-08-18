@@ -2,6 +2,7 @@
   import { Check } from "$lib/icon";
   import { longpress } from "../../long";
   import { waitAtLeast } from "$lib";
+  import { t } from "$lib/services/Language.svelte";
 
   let {
     tick_animation = $bindable(false),
@@ -27,7 +28,7 @@
   {...rest}
   use:longpress
   type="button"
-  aria-label="check"
+  aria-label={t("check")}
   {onlongpress}
   {onclick}
   class="absolute top-1/2 -translate-y-1/2 left-0 hover:bg-t-primary-700 hover:opacity-50 p-4 rounded-full {rest.class}"

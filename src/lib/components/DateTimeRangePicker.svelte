@@ -4,7 +4,7 @@
   import { slide } from "svelte/transition";
   import { untrack } from "svelte";
   import { ButtonClear } from "./element/button";
-  import { t } from "$lib/services/Language.svelte";
+  import { t, language } from "$lib/services/Language.svelte";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
@@ -86,7 +86,7 @@
   function displayDate(date) {
     if (!date) return "";
 
-    return new Date(date).toLocaleDateString("af-ZA", {
+    return new Date(date).toLocaleDateString(language.value === "af" ? "af-ZA" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",

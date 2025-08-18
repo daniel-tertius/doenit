@@ -2,6 +2,7 @@ import { cached_backup_token, cached_email_address } from "$lib/cached";
 import { getAuthToken, signInWithGoogle } from "./auth";
 import { auth, FUNCTIONS_URLS } from "./firebase";
 import { data } from "$lib/Data.svelte";
+import { t } from "../Language.svelte";
 
 class Backup {
   #email_address: string | null = $state(null);
@@ -54,7 +55,7 @@ class Backup {
     const result = await signInWithGoogle();
 
     if (result && result.email) {
-      alert("E-posadres verifikasie suksesvol as " + result.email);
+      alert(t("email_verification_success") + " " + result.email);
       this.email_address = result.email;
     }
     let currentUser = auth.currentUser;

@@ -65,6 +65,7 @@ export const translations = {
     from_date: "Vanaf datum",
     date: "Datum",
     due_date: "Sperdatum",
+    forever: "verewig",
 
     // Repeat/Recurrence
     repeat: "Herhaal",
@@ -145,6 +146,7 @@ export const translations = {
     invalid_email: "Ongeldige e-posadres",
     invalid_date: "Ongeldige datum",
     invalid_time: "Ongeldige tyd",
+    start_date_before_end: "Begin datum moet voor die einde datum wees",
 
     // Backup additional messages
     backup_error: "Fout met rugsteun:",
@@ -155,6 +157,8 @@ export const translations = {
     backup_description: "Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.",
     verify_email_with_google: "Verifieer e-posadres met Google",
     verifying: "Besig…",
+    email_verification_success: "E-posadres verifikasie suksesvol as",
+    google_verification_failed: "Google verifikasie het misluk:",
     backup_in_progress: "Besig met rugsteun…",
     backup_now: "Rugsteun nou",
     restore_in_progress: "Besig met herstel…",
@@ -170,6 +174,12 @@ export const translations = {
     // Lys
     empty_list: "Jou lys is skoon",
     no_tasks_found: "Geen take met huidige filters gevind nie",
+
+    // Accessibility labels
+    close: "Sluit",
+    toggle_theme: "Skakel tema",
+    close_modal: "Sluit venster",
+    check: "Merk",
   },
 
   en: {
@@ -237,6 +247,7 @@ export const translations = {
     from_date: "From date",
     date: "Date",
     due_date: "Due date",
+    forever: "forever",
 
     // Repeat/Recurrence
     repeat: "Repeat",
@@ -317,6 +328,7 @@ export const translations = {
     invalid_email: "Invalid email address",
     invalid_date: "Invalid date",
     invalid_time: "Invalid time",
+    start_date_before_end: "Start date must be before end date",
 
     // Backup additional messages
     backup_error: "Backup error:",
@@ -327,6 +339,8 @@ export const translations = {
     backup_description: "To use backup, you must first verify your email address.",
     verify_email_with_google: "Verify email address with Google",
     verifying: "Verifying…",
+    email_verification_success: "Email verification successful as",
+    google_verification_failed: "Google verification failed:",
     backup_in_progress: "Creating backup…",
     backup_now: "Backup now",
     restore_in_progress: "Restoring…",
@@ -342,5 +356,11 @@ export const translations = {
     // Lys
     empty_list: "Your list is empty",
     no_tasks_found: "No tasks found with current filters",
+
+    // Accessibility labels
+    close: "Close",
+    toggle_theme: "Toggle theme",
+    close_modal: "Close modal",
+    check: "Check",
   },
 };

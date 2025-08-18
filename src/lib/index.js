@@ -1,9 +1,17 @@
-import { t } from "./services";
+import { t, language } from "./services";
 
 export const AFRIKAANS = Symbol("af");
 export const ENGLISH = Symbol("en");
 
 export const DEFAULT_HEX_COLOR = "#242729";
+
+/**
+ * Get the current locale for date formatting
+ * @returns {string} The locale string (e.g., "af-ZA" or "en-US")
+ */
+function getCurrentLocale() {
+  return language.value === "af" ? "af-ZA" : "en-US";
+}
 
 /**
  * @param {Object} a0
@@ -14,7 +22,7 @@ export function displayDate({ due_date, start_date }) {
   if (!due_date) return "";
 
   if (!start_date) {
-    return new Date(due_date).toLocaleDateString("af-ZA", {
+    return new Date(due_date).toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -31,7 +39,7 @@ export function displayDate({ due_date, start_date }) {
 
   // Same date
   if (+startDate === +dueDate) {
-    return startDate.toLocaleDateString("af-ZA", {
+    return startDate.toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -40,7 +48,7 @@ export function displayDate({ due_date, start_date }) {
 
   // Same year and month
   if (startYear === dueYear && startMonth === dueMonth) {
-    return `${startDate.getDate()}-${dueDate.getDate()} ${startDate.toLocaleDateString("af-ZA", {
+    return `${startDate.getDate()}-${dueDate.getDate()} ${startDate.toLocaleDateString(getCurrentLocale(), {
       month: "short",
       year: "numeric",
     })}`;
@@ -48,14 +56,14 @@ export function displayDate({ due_date, start_date }) {
 
   // Same year, different month
   if (startYear === dueYear) {
-    const startStr = startDate.toLocaleDateString("af-ZA", { month: "short", day: "numeric" });
-    const dueStr = dueDate.toLocaleDateString("af-ZA", { month: "short", day: "numeric", year: "numeric" });
+    const startStr = startDate.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric" });
+    const dueStr = dueDate.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric", year: "numeric" });
     return `${startStr} - ${dueStr}`;
   }
 
   // Different years
-  const startStr = startDate.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
-  const dueStr = dueDate.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
+  const startStr = startDate.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
+  const dueStr = dueDate.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
   return `${startStr} - ${dueStr}`;
 }
 
@@ -78,15 +86,15 @@ export function displayDateRange({ start, end }) {
   }
 
   if (!end) {
-    return `${displayDate({ due_date: start })} – verewig`;
+    return `${displayDate({ due_date: start })} – ${t("forever")}`;
   }
 
   if (start instanceof Date) {
-    start = start.toLocaleString("af-ZA").substring(0, 16);
+    start = start.toLocaleString(getCurrentLocale()).substring(0, 16);
   }
 
   if (end instanceof Date) {
-    end = end.toLocaleString("af-ZA").substring(0, 16);
+    end = end.toLocaleString(getCurrentLocale()).substring(0, 16);
   }
 
   const [start_date] = start.split(" ");
@@ -95,7 +103,7 @@ export function displayDateRange({ start, end }) {
   const [end_year, end_month, end_day] = end_date.split("-");
 
   if (start_year === end_year && start_month === end_month && start_day === end_day) {
-    const dateStr = new Date(start_date).toLocaleDateString("af-ZA", {
+    const dateStr = new Date(start_date).toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -105,7 +113,7 @@ export function displayDateRange({ start, end }) {
   }
 
   if (start_year === end_year && start_month === end_month) {
-    const monthYear = new Date(start_date).toLocaleDateString("af-ZA", {
+    const monthYear = new Date(start_date).toLocaleDateString(getCurrentLocale(), {
       month: "short",
       year: "numeric",
     });
@@ -113,8 +121,8 @@ export function displayDateRange({ start, end }) {
   }
 
   if (start_year === end_year) {
-    const startStr = new Date(start_date).toLocaleDateString("af-ZA", { month: "short", day: "numeric" });
-    const endStr = new Date(end_date).toLocaleDateString("af-ZA", { month: "short", day: "numeric", year: "numeric" });
+    const startStr = new Date(start_date).toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric" });
+    const endStr = new Date(end_date).toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric", year: "numeric" });
     return `${startStr} – ${endStr}`;
   }
 }
@@ -129,7 +137,7 @@ export function displayDateTime({ due_date, start_date }) {
 
   if (!start_date) {
     const date = new Date(due_date);
-    const dateStr = date.toLocaleDateString("af-ZA", {
+    const dateStr = date.toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -139,7 +147,7 @@ export function displayDateTime({ due_date, start_date }) {
       return dateStr;
     }
 
-    const timeStr = date.toLocaleTimeString("af-ZA", {
+    const timeStr = date.toLocaleTimeString(getCurrentLocale(), {
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -159,14 +167,14 @@ export function displayDateTime({ due_date, start_date }) {
 
   const startTime = isTimeAtMidnightUTC(start_date)
     ? ""
-    : startDate.toLocaleTimeString("af-ZA", { hour: "2-digit", minute: "2-digit" });
+    : startDate.toLocaleTimeString(getCurrentLocale(), { hour: "2-digit", minute: "2-digit" });
   const dueTime = isTimeAtMidnightUTC(due_date)
     ? ""
-    : dueDate.toLocaleTimeString("af-ZA", { hour: "2-digit", minute: "2-digit" });
+    : dueDate.toLocaleTimeString(getCurrentLocale(), { hour: "2-digit", minute: "2-digit" });
 
   // Same date
   if (+startDateOnly === +dueDateOnly) {
-    const dateStr = startDateOnly.toLocaleDateString("af-ZA", {
+    const dateStr = startDateOnly.toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -183,7 +191,7 @@ export function displayDateTime({ due_date, start_date }) {
 
   // Same year and month
   if (startYear === dueYear && startMonth === dueMonth) {
-    const monthYear = startDateOnly.toLocaleDateString("af-ZA", {
+    const monthYear = startDateOnly.toLocaleDateString(getCurrentLocale(), {
       month: "short",
       year: "numeric",
     });
@@ -194,21 +202,21 @@ export function displayDateTime({ due_date, start_date }) {
 
   // Same year, different month
   if (startYear === dueYear) {
-    const startStr = startDateOnly.toLocaleDateString("af-ZA", { month: "short", day: "numeric" });
-    const dueStr = dueDateOnly.toLocaleDateString("af-ZA", { month: "short", day: "numeric", year: "numeric" });
+    const startStr = startDateOnly.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric" });
+    const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric", year: "numeric" });
     return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
   }
 
   // Different years
-  const startStr = startDateOnly.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
-  const dueStr = dueDateOnly.toLocaleDateString("af-ZA", { year: "numeric", month: "short", day: "numeric" });
+  const startStr = startDateOnly.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
+  const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
   return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
 }
 
 export function displayDateShort(date) {
   if (!date) return "";
 
-  return new Date(date).toLocaleDateString("af-ZA", {
+  return new Date(date).toLocaleDateString(getCurrentLocale(), {
     month: "short",
     day: "numeric",
   });

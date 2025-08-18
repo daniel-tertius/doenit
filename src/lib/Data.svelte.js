@@ -2,7 +2,7 @@ import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
-import { notifications } from "$lib/services";
+import { notifications, language, t } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
 import { Widget } from "./services/widget";
 
@@ -276,7 +276,7 @@ export class Data {
 
     task.completed = 1;
     task.archived = true;
-    task.completed_at = new Date().toLocaleString("af-ZA");
+    task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
 
     this.just_completed_task = task;
 
@@ -478,7 +478,7 @@ export class Data {
     if (!task.name?.trim()) return { success: false, error: { name: "Wat moet gedoen word?" } };
 
     if (!!task.start_date && !!task.due_date && !!task.due_date && task.start_date > task.due_date) {
-      return { success: false, error: { date: "Begin datum moet voor die einde datum wees" } };
+      return { success: false, error: { date: t("start_date_before_end") } };
     }
 
     if (task.archived && !task.completed) {
@@ -486,7 +486,7 @@ export class Data {
     }
 
     if (!!task.completed && !task.repeat_interval) {
-      if (!task.completed_at) task.completed_at = new Date().toLocaleString("af-ZA");
+      if (!task.completed_at) task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
       if (!task.archived) task.archived = true;
     }
 

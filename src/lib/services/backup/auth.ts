@@ -3,6 +3,7 @@ import { GoogleAuthProvider, signInWithCredential, onAuthStateChanged, type User
 import { writable } from "svelte/store";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
+import { t } from "../Language.svelte";
 
 // Svelte store for auth state
 export const user = writable<User | null>(null);
@@ -54,7 +55,7 @@ export async function signInWithGoogle() {
       isEmailVerified: result.user.emailVerified,
     };
   } catch (error: any) {
-    alert("Google verifikasie het misluk:" + error.error);
+    alert(t("google_verification_failed") + " " + error.error);
     return {};
   }
 }

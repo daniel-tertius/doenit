@@ -1,6 +1,7 @@
 <script>
   import { ButtonClear } from "$lib/components/element/button";
   import { tick, untrack } from "svelte";
+  import { language } from "$lib/services";
 
   /**
    * @typedef {Object} Props
@@ -53,7 +54,7 @@
 
     let date = new Date(0);
     date.setHours(hours, minutes, 0, 0);
-    return date.toLocaleTimeString("af-ZA", {
+    return date.toLocaleTimeString(language.value === "af" ? "af-ZA" : "en-US", {
       hour: "2-digit",
       minute: "2-digit",
     });

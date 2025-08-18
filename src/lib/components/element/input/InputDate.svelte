@@ -1,6 +1,7 @@
 <script>
   import { Times } from "$lib/icon";
   import { tick, untrack } from "svelte";
+  import { language } from "$lib/services";
 
   /**
    * @typedef {Object} Props
@@ -51,7 +52,7 @@
   function displayDate(date) {
     if (!date) return "";
 
-    return new Date(date).toLocaleDateString("af-ZA", {
+    return new Date(date).toLocaleDateString(language.value === "af" ? "af-ZA" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",

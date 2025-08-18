@@ -67,7 +67,7 @@
   >
     <div class="p-4 border-b border-primary-30l justify-between items-center gap-0.5 flex">
       <h2 class="font-semibold text-tertiary">{title}</h2>
-      <button type="button" class="close-button" onclick={close} aria-label="Close modal">
+      <button type="button" class="close-button" onclick={close} aria-label={t("close_modal")}>
         <Times class="text-tertiary" size={18} />
       </button>
     </div>

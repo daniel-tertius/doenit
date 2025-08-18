@@ -21,7 +21,7 @@
     <button
       class="relative flex h-12 w-full p-1 gap-2 rounded-lg dark:bg-dark-secondary bg-dark-300"
       onclick={() => theme.toggle()}
-      aria-label="Toggle theme"
+      aria-label={t("toggle_theme")}
     >
       <div class="absolute z-2 top-3 left-1/4 -translate-x-1/2 text-dark-300 bg-transparent flex gap-2 items-center">
         <Sun size={24} variant={theme.value === "light" ? "filled" : "outline"} />

@@ -65,7 +65,7 @@
   onclick={() => {
     is_deleting = true;
   }}
-  aria-label="Sluit"
+  aria-label={t("close")}
 >
   <Trash class="w-6 h-6 text-error" />
 </button>
