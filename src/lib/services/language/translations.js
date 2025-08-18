@@ -128,7 +128,7 @@ export const translations = {
     // Support & About
     support: "Ondersteuning",
     about_doenit: "Oor Doenit",
-    version: "Weergawe 1.1.1",
+    version: "Weergawe",
     support_message: "Geniet jy Doenit? Ondersteun my deur om vir my 'n koffie te koop!",
     support_appreciation: "Jou ondersteuning beteken baie vir my!",
     thank_you: "Baie dankie!",
@@ -310,7 +310,7 @@ export const translations = {
     // Support & About
     support: "Support",
     about_doenit: "About Doenit",
-    version: "Version 1.1.1",
+    version: "Version",
     support_message: "Enjoying Doenit? Support me by buying me a coffee!",
     support_appreciation: "Your support means a lot to me!",
     thank_you: "Thank you so much!",
