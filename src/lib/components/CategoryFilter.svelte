@@ -36,7 +36,7 @@
   <div
     transition:slide
     class="absolute left-0 text-t-secondary right-0 mt-1 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
-    style="bottom: calc(93px)"
+    style="bottom: calc(92px)"
   >
     <div class="text-center font-semibold pt-1 -mb-2">
       <span class="h-fit leading-tight">{t("filter_on")}:</span>
