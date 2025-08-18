@@ -1,5 +1,9 @@
+import { t } from "./services";
+
+export const AFRIKAANS = Symbol("af");
+export const ENGLISH = Symbol("en");
+
 export const DEFAULT_HEX_COLOR = "#242729";
-export const DEFAULT_NAME = "Standaard";
 
 /**
  * @param {Object} a0
@@ -224,23 +228,23 @@ export function formatDate(date) {
  * @returns {string}
  */
 export function displayPrettyDate(date) {
-  if (!date) return "Geen datum";
+  if (!date) return t("no_date");
 
   // Check if the date is in the past
   const date_obj = new Date(date);
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  if (date_obj < now) return "Verby";
+  if (date_obj < now) return t("past");
 
   date = formatDate(date);
   const today = formatDate(new Date());
-  if (date === today) return "Vandag";
+  if (date === today) return t("today");
 
   const tomorrow = formatDate(Date.now() + 86400000);
-  if (date === tomorrow) return "Môre";
+  if (date === tomorrow) return t("tomorrow");
 
   const day_after_tomorrow = formatDate(Date.now() + 2 * 86400000);
-  if (date === day_after_tomorrow) return "Oormôre";
+  if (date === day_after_tomorrow) return t("day_after_tomorrow");
 
   const this_week_start = new Date();
   this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
@@ -249,7 +253,7 @@ export function displayPrettyDate(date) {
 
   const inputDate = new Date(date);
   if (inputDate >= this_week_start && inputDate <= this_week_end) {
-    return "Hierdie week";
+    return t("this_week");
   }
 
   const currentMonth = new Date().getMonth();
@@ -258,17 +262,17 @@ export function displayPrettyDate(date) {
   const inputYear = inputDate.getFullYear();
 
   if (inputMonth === currentMonth && inputYear === currentYear) {
-    return "Hierdie maand";
+    return t("this_month");
   }
 
   const nextMonth = (currentMonth + 1) % 12;
   const nextMonthYear = nextMonth === 0 ? currentYear + 1 : currentYear;
 
   if (inputMonth === nextMonth && inputYear === nextMonthYear) {
-    return "Volgende maand";
+    return t("next_month");
   }
 
-  return "Later";
+  return t("later");
 }
 
 /**

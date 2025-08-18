@@ -4,6 +4,7 @@
   import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
   import { data } from "$lib/Data.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   let is_creating_backup = $state(false);
   let is_restoring = $state(false);
@@ -16,18 +17,18 @@
   async function createBackup() {
     if (is_creating_backup) return;
 
-    const confirmed = confirm("Is jy seker jy wil 'n rugsteun skep? Dit gaan vorige rugsteune oorskryf.");
+    const confirmed = confirm(t("backup_confirmation"));
     if (!confirmed) return;
 
     is_creating_backup = true;
     try {
       const result = await backup.createBackup();
       if (result.success) {
-        alert("Rugsteun suksesvol geskep!");
+        alert(t("backup_success"));
       }
     } catch (error) {
       console.error("Backup error:", error);
-      alert("Fout met rugsteun: " + error.message);
+      alert(t("backup_error") + " " + error.message);
     } finally {
       is_creating_backup = false;
     }
@@ -36,7 +37,7 @@
   async function restoreBackup() {
     if (is_restoring) return;
 
-    const confirmed = confirm("Is jy seker jy wil vanaf rugsteun herstel?");
+    const confirmed = confirm(t("restore_confirmation"));
     if (!confirmed) return;
 
     is_restoring = true;
@@ -45,11 +46,11 @@
       if (result.success) {
         await data.createCategories(result.data.categories);
         await data.createTasks(result.data.tasks);
-        alert("Herstel suksesvol!");
+        alert(t("restore_success"));
       }
     } catch (error) {
       console.error("Restore error:", error);
-      alert("Fout met herstel: " + error.message);
+      alert(t("restore_error") + " " + error.message);
     } finally {
       is_restoring = false;
     }
@@ -61,16 +62,16 @@
       await backup.verifyEmail();
     } catch (error) {
       console.error("Email verification failed:", error);
-      alert("Fout met e-pos verifikasie: " + error.message);
+      alert(t("email_verification_error") + " " + error.message);
     } finally {
       is_loading = false;
     }
   }
 </script>
 
-<ContainerDetails label="Rugsteun">
+<ContainerDetails label={t("backup_label")}>
   {#if !backup.email_address}
-    <p class="text-sm text-t-secondary/80">Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.</p>
+    <p class="text-sm text-t-secondary/80">{t("backup_description")}</p>
 
     <button
       onclick={handleGoogleVerification}
@@ -79,10 +80,10 @@
     >
       {#if is_loading}
         <Loading />
-        Besig…
+        {t("verifying")}
       {:else}
         <Google size={18} class="mr-3" />
-        Verifieer e-posadres met Google
+        {t("verify_email_with_google")}
       {/if}
     </button>
   {:else}
@@ -101,7 +102,7 @@
             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
           ></path>
         </svg>
-        {is_creating_backup ? "Besig met rugsteun..." : "Rugsteun nou"}
+        {is_creating_backup ? t("backup_in_progress") : t("backup_now")}
       </div>
     </button>
 
@@ -120,18 +121,18 @@
             d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
           ></path>
         </svg>
-        {is_restoring ? "Besig met herstel..." : "Herstel vanaf rugsteun"}
+        {is_restoring ? t("restore_in_progress") : t("restore_from_backup")}
       </div>
     </button>
 
     <!-- Geverifieer as, verander? -->
     {#if backup.email_address}
       <div class="mt-2 p-3 bg-t-primary rounded-md">
-        <p class="text-sm text-t-secondary-700 mb-1">Geverifieerde e-pos:</p>
+        <p class="text-sm text-t-secondary-700 mb-1">{t("verified_email")}:</p>
         <p class="font-medium text-t-secondary-700">{backup.email_address}</p>
         <!-- Verander epos adres? -->
         <button type="button" class="mt-2 text-blue-600 hover:underline" onclick={handleGoogleVerification}>
-          Verander e-posadres
+          {t("change_email")}
         </button>
       </div>
     {/if}

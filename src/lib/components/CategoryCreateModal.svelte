@@ -4,6 +4,7 @@
   import Modal from "./modal/Modal.svelte";
   import { data } from "$lib/Data.svelte";
   import InputText from "./element/input/InputText.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
 
@@ -16,7 +17,7 @@
 
   async function addCategory() {
     if (!new_category_name.trim()) {
-      error_message = "Voer 'n kategorie naam in";
+      error_message = t("enter_category_name");
       return;
     }
 
@@ -37,9 +38,9 @@
   }
 </script>
 
-<Modal bind:open {footer} title="Skep Kategorie" {onclose}>
+<Modal bind:open {footer} title={t("create_category")} {onclose}>
   <div class="p-4">
-    <InputText bind:value={new_category_name} focus_on_mount placeholder="Kies 'n naam vir jou kategorie" />
+    <InputText bind:value={new_category_name} focus_on_mount placeholder={t("choose_category_name")} />
 
     {#if !!error_message}
       <div class="text-error text-sm mt-1 text-right w-full" transition:slide>
@@ -56,6 +57,6 @@
     onclick={addCategory}
   >
     <Plus class="h-full" size={18} />
-    <span>Skep</span>
+    <span>{t("create")}</span>
   </button>
 {/snippet}

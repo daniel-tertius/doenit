@@ -1,6 +1,7 @@
 <script>
   import { page } from "$app/state";
   import { Categories, Home, Check, Settings } from "$lib/icon";
+  import { t } from "$lib/services/Language.svelte";
   import { fly } from "svelte/transition";
 
   let isReady = false;
@@ -11,12 +12,12 @@
 
   let { onclose } = $props();
 
-  const item = [
-    { Icon: Home, label: "Tuis", href: "/" },
-    { Icon: Check, label: "Voltooide Take", href: "/complete" },
-    { Icon: Categories, label: "Kategorieë", href: "/categories" },
-    { Icon: Settings, label: "Instellings", href: "/settings" },
-  ];
+  const NAVIGATION_TIMES = $derived([
+    { Icon: Home, label: t("home"), href: "/" },
+    { Icon: Check, label: t("completed_tasks"), href: "/complete" },
+    { Icon: Categories, label: t("categories"), href: "/categories" },
+    { Icon: Settings, label: t("settings"), href: "/settings" },
+  ]);
 </script>
 
 <svelte:window
@@ -27,9 +28,9 @@
 
 <aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-t-primary shadow-lg z-50">
   <div class="flex flex-col items-center justify-center h-full">
-    <h2 class="text-lg font-semibold text-t-secondary">Kieslys</h2>
+    <h2 class="text-lg font-semibold text-t-secondary">{t("menu")}</h2>
     <ul class="mt-4 space-y-2">
-      {#each item as { Icon, label, href }}
+      {#each NAVIGATION_TIMES as { Icon, label, href }}
         {@const is_active = page.url.pathname === href}
         <li class="text-t-secondary">
           <a

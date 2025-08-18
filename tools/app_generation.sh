@@ -3,7 +3,7 @@
 # Environment handling
 ENVIRONMENT=${1:-"dev"}  # Default to dev if no argument provided
 if [ "$ENVIRONMENT" = "prod" ]; then
-    ENV_FILE=".env"
+    ENV_FILE=".env.production"
     OUTPUT_SUFFIX=""
 else
     ENV_FILE=".env.development"

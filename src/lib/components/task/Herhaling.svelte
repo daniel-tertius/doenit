@@ -5,6 +5,7 @@
   import { Check, Times } from "$lib/icon";
   import { SvelteSet } from "svelte/reactivity";
   import ButtonClear from "../element/button/ButtonClear.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   /**
    * @typedef {"So" | "Ma" | "Di" | "Wo" | "Do" | "Vr" | "Sa"} WEEKDAY
@@ -25,15 +26,15 @@
   } = $props();
 
   /** @type {Record<string, string>}*/
-  const OTHER_REPEAT_INTERVALS = {
-    daily: "dae",
-    weekly: "weke",
-    monthly: "maande",
-    yearly: "jare",
-  };
+  const OTHER_REPEAT_INTERVALS = $derived({
+    daily: t("days"),
+    weekly: t("weeks"),
+    monthly: t("months"),
+    yearly: t("years"),
+  });
 
   /** @type {WEEKDAY[]} */
-  const DAYS_OF_WEEK = ["So", "Ma", "Di", "Wo", "Do", "Vr", "Sa"];
+  const DAYS_OF_WEEK = $derived([t("sun"), t("mon"), t("tue"), t("wed"), t("thu"), t("fri"), t("sat")]);
 
   let is_mounting = $state(true);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
@@ -49,7 +50,7 @@
     if (repeat_interval_number < 2) return "";
 
     const repeat_interval_display = OTHER_REPEAT_INTERVALS[other_interval];
-    return ` (elke ${repeat_interval_number} ${repeat_interval_display})`;
+    return ` (${t("every")} ${repeat_interval_number} ${repeat_interval_display})`;
   });
 
   const temp_display_other = $derived.by(() => {
@@ -57,7 +58,7 @@
     if (!temp_other_interval || temp_other_interval === "other") return "";
 
     const repeat_interval_display = OTHER_REPEAT_INTERVALS[temp_other_interval];
-    return ` elke ${temp_repeat_interval_number} ${repeat_interval_display}`;
+    return ` ${t("every")} ${temp_repeat_interval_number} ${repeat_interval_display}`;
   });
 
   $effect(() => {
@@ -106,7 +107,7 @@
     }
 
     if (!temp_other_interval) {
-      error_message = "Kies 'n herhalingsperiode";
+      error_message = t("choose_repeat_period");
       return;
     }
 
@@ -128,7 +129,7 @@
 </script>
 
 <div transition:slide>
-  <label class="font-bold" for="repeat">Herhaal</label>
+  <label class="font-bold" for="repeat">{t("repeat")}</label>
 
   <div class="relative">
     <select
@@ -137,15 +138,15 @@
       class="bg-t-primary-700 p-2 w-full rounded-lg border-dark-500 border open:text-t-secondary appearance-none {!temp_repeat_interval &&
         'text-t-secondary/60'}"
     >
-      <option value="">Geen herhaling</option>
-      <option value="daily">Daagliks</option>
-      <option value="workdaily">Daagliks (Ma-Vr)</option>
-      <option value="weekly_custom_days">Weekliks (Kies Dae)</option>
-      <option value="weekly">Weekliks</option>
-      <option value="monthly">Maandliks</option>
-      <option value="yearly">Jaarliks</option>
-      <option hidden={temp_repeat_interval === "other"} value="other">Ander{display_other}</option>
-      <option hidden={temp_repeat_interval !== "other"} value="other_temp">Ander{display_other}</option>
+      <option value="">{t("no_repeat")}</option>
+      <option value="daily">{t("daily")}</option>
+      <option value="workdaily">{t("daily_workdays")}</option>
+      <option value="weekly_custom_days">{t("weekly_custom")}</option>
+      <option value="weekly">{t("weekly")}</option>
+      <option value="monthly">{t("monthly")}</option>
+      <option value="yearly">{t("yearly")}</option>
+      <option hidden={temp_repeat_interval === "other"} value="other">{t("other")}{display_other}</option>
+      <option hidden={temp_repeat_interval !== "other"} value="other_temp">{t("other")}{display_other}</option>
     </select>
 
     {#if !!temp_repeat_interval}
@@ -177,11 +178,11 @@
   {/if}
 </div>
 
-<Modal bind:open={is_dialog_open} title="Herhaal{temp_display_other || ' elke…'}" {footer}>
+<Modal bind:open={is_dialog_open} title="{t('repeat')}{temp_display_other || ` ${t('every')}…`}" {footer}>
   <div class="p-4 space-y-4">
     <div class="flex sm:flex-row gap-4">
       <div class="flex-1">
-        <label for="repeat_interval_number" class="block text-sm font-semibold text-tertiary mb-1">Elke</label>
+        <label for="repeat_interval_number" class="block text-sm font-semibold text-tertiary mb-1">{t("every")}</label>
         <input
           id="repeat_interval_number"
           type="number"
@@ -194,7 +195,7 @@
         />
       </div>
       <div class="flex-1">
-        <label for="custom_interval" class="block text-sm font-semibold text-teriary mb-1">Periode</label>
+        <label for="custom_interval" class="block text-sm font-semibold text-teriary mb-1">{t("period")}</label>
         <select
           id="custom_interval"
           bind:value={temp_other_interval}
@@ -203,10 +204,10 @@
           }}
           class="bg-primary-20l p-2 w-full rounded-lg border border-primary appearance-none"
         >
-          <option value="daily">Dae</option>
-          <option value="weekly">Weke</option>
-          <option value="monthly">Maande</option>
-          <option value="yearly">Jare</option>
+          <option value="daily">{t("days")}</option>
+          <option value="weekly">{t("weeks")}</option>
+          <option value="monthly">{t("months")}</option>
+          <option value="yearly">{t("years")}</option>
         </select>
       </div>
     </div>
@@ -226,8 +227,8 @@
     onclick={() => {
       save();
     }}
-  >
-    <Check size={18} />
-    <span>Bevestig</span>
-  </button>
-{/snippet}
+    >
+      <Check size={18} />
+      <span>{t("confirm")}</span>
+    </button>
+  {/snippet}

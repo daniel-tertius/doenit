@@ -1,6 +1,7 @@
 <script>
   import { Times } from "$lib/icon";
   import { fade, scale } from "svelte/transition";
+  import { t } from "$lib/services/Language.svelte";
 
   /**
    * @typedef {Object} Props
@@ -74,7 +75,7 @@
       {@render children?.()}
     </div>
     <div class="p-4 border-t border-primary-30l justify-between items-center gap-0.5 flex">
-      <button type="button" class="py-2 px-4 bg-primary-30l text-tertiary rounded-md" onclick={close}>Kanselleer</button
+      <button type="button" class="py-2 px-4 bg-primary-30l text-tertiary rounded-md" onclick={close}>{t("cancel")}</button
       >
       {@render footer?.()}
     </div>

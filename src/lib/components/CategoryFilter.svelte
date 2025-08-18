@@ -7,7 +7,7 @@
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";
-  import { DEFAULT_NAME } from "$lib";
+  import { t } from "$lib/services/Language.svelte";
 
   let show_dropdown = $state(false);
   let is_adding = $state(false);
@@ -17,7 +17,7 @@
 
   onMount(async () => {
     await data.refreshCategories();
-    default_category = data.categories.find(({ name }) => name === DEFAULT_NAME) ?? null;
+    default_category = data.categories.find(({ is_default }) => is_default) ?? null;
   });
 
   function filterTasks() {
@@ -39,16 +39,16 @@
     style="bottom: calc(93px)"
   >
     <div class="text-center font-semibold pt-1 -mb-2">
-      <span class="h-fit leading-tight">Filtreer op:</span>
+      <span class="h-fit leading-tight">{t("filter_on")}:</span>
     </div>
     <PriorityFilter bind:important={data.filter.important} bind:urgent={data.filter.urgent} onclick={filterTasks} />
 
     {#if default_category}
-      <CategoryButton id={default_category.id} name={default_category.name} />
+      <CategoryButton id={default_category.id} name={t('DEFAULT_NAME')} />
     {/if}
 
-    {#each data.categories ?? [] as { id, name } (id)}
-      {#if name != DEFAULT_NAME}
+    {#each data.categories ?? [] as { id, name, is_default } (id)}
+      {#if !is_default}
         <CategoryButton {id} {name} />
       {/if}
     {/each}
@@ -58,7 +58,7 @@
       onclick={() => (is_adding = true)}
     >
       <Plus />
-      <span class="w-full flex p-2 cursor-pointer text-left font-semibold"> Skep nuwe kategorie </span>
+      <span class="w-full flex p-2 cursor-pointer text-left font-semibold">{t("create_new_category")}</span>
     </button>
   </div>
 {/if}
@@ -72,11 +72,11 @@
     }}
   >
     {#if data.selected_categories_hash.size === 0}
-      Alle Kategorieë
+      {t("all_categories")}
     {:else if data.selected_categories_hash.size === 1}
-      1 Kategorie geselekteer
-    {:else if data.selected_categories_hash.size > 1}
-      {data.selected_categories_hash.size} Kategorieë geselekteer
+      {t("category_selected")}
+    {:else}
+      {t("categories_selected", { count: data.selected_categories_hash.size })}
     {/if}
 
     <DownChevron class={show_dropdown ? "-rotate-180" : ""} />

@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
-  import ItemCheckbox from "./ItemCheckbox.svelte";
+  import { InputCheckbox } from "../element/input";
   import { Categories, Important, Urgent } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
   import TaskContainer from "./TaskContainer.svelte";
@@ -106,5 +106,13 @@
     </div>
   {/if}
 
-  <ItemCheckbox bind:tick_animation {is_selected} onselect={() => onselect(task)} {onlongpress} />
+  <InputCheckbox
+    bind:tick_animation
+    {is_selected}
+    onselect={(e) => {
+      e.stopPropagation();
+      onselect(task);
+    }}
+    {onlongpress}
+  />
 </TaskContainer>

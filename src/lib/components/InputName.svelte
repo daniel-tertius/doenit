@@ -2,6 +2,7 @@
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
   import InputText from "./element/input/InputText.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   let { name = $bindable(), description = $bindable(), error_message = $bindable() } = $props();
 
@@ -9,14 +10,14 @@
 </script>
 
 <div>
-  <label class="font-bold" for="name">Wat moet gedoen word?</label>
+  <label class="font-bold" for="name">{t("what_needs_to_be_done")}</label>
   <div class="flex gap-1">
     <InputText
       id="name"
       bind:value={name}
       focus_on_mount
       oninput={() => (error_message = "")}
-      placeholder="Wat moet gedoen word?"
+      placeholder={t("what_needs_to_be_done")}
       class={{
         "bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 pr-7": true,
         "border-error": !!error_message,
@@ -42,11 +43,11 @@
 
 {#if show_description}
   <div transition:slide>
-    <label class="font-bold" for="description">Beskrywing</label>
+    <label class="font-bold" for="description">{t("description")}</label>
     <textarea
       id="description"
       bind:value={description}
-      placeholder="Gee meer besonderhede oor jou taak"
+      placeholder={t("description_placeholder")}
       rows="3"
       class="bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 resize-none min-h-18 max-h-40"
       style="field-sizing: content;"

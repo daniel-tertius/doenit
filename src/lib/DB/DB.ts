@@ -43,6 +43,7 @@ export interface Task {
 
 export interface Category {
   id: string;
+  is_default?: boolean;
   archived: boolean;
   created_at: string;
   name: string;

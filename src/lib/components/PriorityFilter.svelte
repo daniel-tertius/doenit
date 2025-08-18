@@ -1,5 +1,8 @@
 <script>
+  import { data } from "$lib/Data.svelte";
   import { Important, Urgent } from "$lib/icon";
+  import Sync from "$lib/icon/Sync.svelte";
+  import { t } from "$lib/services";
 
   let { important = $bindable(false), urgent = $bindable(false), onclick } = $props();
 </script>
@@ -20,7 +23,7 @@
     }}
   >
     <Important />
-    <span>Belangrik</span>
+    <span>{t("important")}</span>
   </button>
 
   <button
@@ -38,6 +41,10 @@
     }}
   >
     <Urgent />
-    Dringend
+    <span>{t("urgent")}</span>
+  </button>
+
+  <button onclick={() => data.selected_categories_hash.clear()}>
+    <Sync class="p-1" />
   </button>
 </div>

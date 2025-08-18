@@ -1,6 +1,7 @@
 <script>
   import { displayDateShort } from "$lib";
   import { slide } from "svelte/transition";
+  import { t } from "$lib/services/Language.svelte";
 
   let { date = $bindable() } = $props();
 </script>
@@ -19,7 +20,7 @@
         date = today.toLocaleDateString("en-CA");
       }}
     >
-      <span>Vandag</span>
+      <span>{t("today")}</span>
       <div class="text-t-secondary/60 text-[12px]">{displayDateShort(today)}</div>
     </button>
     <button
@@ -29,7 +30,7 @@
         date = tomorrow.toLocaleDateString("en-CA");
       }}
     >
-      Môre
+      {t("tomorrow")}
       <div class="text-t-secondary/60 text-[12px]">{displayDateShort(tomorrow)}</div>
     </button>
     <button
@@ -39,7 +40,7 @@
         date = in_a_week.toLocaleDateString("en-CA");
       }}
     >
-      Oor 'n week
+      {t("in_a_week")}
       <div class="text-t-secondary/60 text-[12px]">{displayDateShort(in_a_week)}</div>
     </button>
     <button
@@ -49,7 +50,7 @@
         date = in_a_month.toLocaleDateString("en-CA");
       }}
     >
-      Oor 'n maand
+      {t("in_a_month")}
       <div class="text-t-secondary/60 text-[12px]">{displayDateShort(in_a_month)}</div>
     </button>
   </div>

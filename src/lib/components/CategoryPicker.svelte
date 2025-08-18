@@ -2,7 +2,7 @@
   import { DownChevron, Times } from "$lib/icon";
   import { data } from "$lib/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
-  import { DEFAULT_NAME } from "$lib";
+  import { t } from "$lib/services/Language.svelte";
 
   let { category_id = $bindable() } = $props();
 
@@ -22,13 +22,13 @@
     class="bg-t-primary-700 p-2 w-full border border-dark-400 rounded-md open:text-t-secondary appearance-none pr-6 truncate {!category_id &&
       'text-t-secondary/60'}"
   >
-    <option value="">Kies 'n kategorie</option>
+    <option value="">{t("choose_category")}</option>
     {#each data.categories as category (category.id)}
-      {#if category.name != DEFAULT_NAME}
+      {#if !category.is_default}
         <option value={category.id}>{category.name}</option>
       {/if}
     {/each}
-    <option class="font-semibold" value={null}>+ Skep kategorie</option>
+    <option class="font-semibold" value={null}>+ {t("create_category")}</option>
   </select>
 
   {#if category_id}

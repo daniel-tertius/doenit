@@ -4,6 +4,7 @@
   import { slide } from "svelte/transition";
   import { untrack } from "svelte";
   import { ButtonClear } from "./element/button";
+  import { t } from "$lib/services/Language.svelte";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 
@@ -155,11 +156,11 @@
     <div class="absolute z-50 bg-primary-10l border rounded shadow-lg p-4 w-full mt-2" transition:slide>
       <div class="flex flex-col space-y-2">
         <div>
-          <label for="start-date" class="block font-medium">Vanaf datum</label>
+          <label for="start-date" class="block font-medium">{t('from_date')}</label>
           <div class="flex gap-2 w-full">
             <InputDate
               id="start-date"
-              placeholder="Kies 'n begindatum"
+              placeholder={t("choose_start_date")}
               class={!!error_message ? "border border-error text-error" : ""}
               value={start_date}
               max={end_date ? end_date : undefined}
@@ -174,7 +175,7 @@
                 id="start-time"
                 value={start_time}
                 onchange={handleStartTimeChange}
-                placeholder="Kies 'n begin tyd"
+                placeholder={t("choose_start_time")}
                 invalid={true}
               />
             {/if}
@@ -188,13 +189,13 @@
         {/if}
 
         <div>
-          <label for="end-date" class="block font-medium">Tot datum</label>
+          <label for="end-date" class="block font-medium">{t('to_date')}</label>
 
           <div class="flex gap-2">
             <InputDate
               open_on_mount={!end_date}
               id="end-date"
-              placeholder="Kies 'n sperdatum"
+              placeholder={t("choose_due_date")}
               value={end_date}
               onchange={({ value }) => {
                 end_date = value;
@@ -207,7 +208,7 @@
                 id="end-time"
                 value={end_time}
                 onchange={handleEndTimeChange}
-                placeholder="Kies 'n eind tyd"
+                placeholder={t("choose_end_time")}
                 invalid={true}
               />
             {/if}

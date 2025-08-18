@@ -1,19 +1,23 @@
 <script>
   import { ContainerDetails } from "$lib/components/element/container";
-  import { DownChevron, Moon, Sun } from "$lib/icon";
+  import { ButtonLanguage } from "$lib/components/element/button";
+  import { Moon, Sun } from "$lib/icon";
+  import { language } from "$lib/services";
   import { theme } from "$lib/services/Theme.svelte.js";
+  import { t } from "$lib/services/Language.svelte";
 
-  let language = $state("af");
-
-  const languages = [
-    { value: "af", label: "Afrikaans" },
-    { value: "en", label: "English" },
-  ];
+  /**
+   * Handle language change
+   * @param {'af' | 'en'} lang
+   */
+  function onlanguagechange(lang) {
+    language.value = lang;
+  }
 </script>
 
-<ContainerDetails label="Voorkoms">
+<ContainerDetails label={t("appearance")}>
   <div>
-    <label for="theme-select" class="block text-sm font-medium mb-2">Tema</label>
+    <label for="theme-select" class="block text-sm font-medium mb-2">{t("theme")}</label>
     <button
       class="relative flex h-12 w-full p-1 gap-2 rounded-lg dark:bg-dark-secondary bg-dark-300"
       onclick={() => theme.toggle()}
@@ -21,11 +25,13 @@
     >
       <div class="absolute z-2 top-3 left-1/4 -translate-x-1/2 text-dark-300 bg-transparent flex gap-2 items-center">
         <Sun size={24} variant={theme.value === "light" ? "filled" : "outline"} />
-        <span class="text-sm font-medium">Ligte tema</span>
+        <span class="text-sm font-medium">{t("light_theme")}</span>
       </div>
 
-      <div class="absolute z-2 top-3 right-1/4 translate-x-1/2 text-dark-secondary bg-transparent flex gap-2 items-center">
-        <span class="text-sm font-medium">Donker tema</span>
+      <div
+        class="absolute z-2 top-3 right-1/4 translate-x-1/2 text-dark-secondary bg-transparent flex gap-2 items-center"
+      >
+        <span class="text-sm font-medium">{t("dark_theme")}</span>
         <Moon size={24} variant={theme.value === "dark" ? "filled" : "outline"} />
       </div>
       <div class="absolute inset-0 {theme.value === 'dark' ? 'translate-x-full' : 'translate-x-0'} w-1/2 h-full p-1">
@@ -34,24 +40,21 @@
     </button>
   </div>
 
-  {#if false}
-    <div>
-      <label for="language-select" class="block text-sm font-medium mb-2">Taal</label>
-      <div class="relative">
-        <select
-          id="language-select"
-          disabled
-          bind:value={language}
-          class="bg-primary-20l p-2 w-full rounded-lg border border-dark-400 text-tertiary appearance-none"
-        >
-          {#each languages as lang}
-            <option value={lang.value}>{lang.label}</option>
-          {/each}
-        </select>
-        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-tertiary" size={18} />
-        </div>
-      </div>
+  <div>
+    <label for="language-select" class="block text-sm font-medium mb-2">{t("language")}</label>
+    <div class="flex gap-2">
+      <ButtonLanguage
+        selected={language.value === "af"}
+        flagSrc="flags/af.webp"
+        languageName={t("afrikaans")}
+        onclick={() => onlanguagechange("af")}
+      />
+      <ButtonLanguage
+        selected={language.value === "en"}
+        flagSrc="flags/en.webp"
+        languageName={t("english")}
+        onclick={() => onlanguagechange("en")}
+      />
     </div>
-  {/if}
+  </div>
 </ContainerDetails>

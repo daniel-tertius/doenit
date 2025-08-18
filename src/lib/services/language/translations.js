@@ -1,0 +1,346 @@
+/** @type {Record<'en' | 'af', Record<string | symbol, string>>} */
+export const translations = {
+  af: {
+    DEFAULT_NAME: "Standaard",
+
+    // Theme & Language
+    light_theme: "Lig",
+    dark_theme: "Donker",
+    afrikaans: "Afrikaans",
+    english: "Engels",
+    language: "Taal",
+    theme: "Tema",
+    appearance: "Voorkoms",
+
+    // Navigation & Pages
+    task_list: "Taaklys",
+    new_task: "Nuwe taak",
+    edit_task: "Wysig taak",
+    menu: "Kieslys",
+    home: "Tuis",
+    completed_tasks: "Voltooide take",
+    categories: "Kategorieë",
+    settings: "Instellings",
+
+    // Task Actions
+    priority: "Prioriteit",
+    create_new_task: "Skep 'n nuwe taak",
+    what_needs_to_be_done: "Wat moet gedoen word?",
+    description: "Beskrywing",
+    complete: "Voltooi",
+    description_placeholder: "Gee meer besonderhede oor jou taak",
+    important: "Belangrik",
+    urgent: "Dringend",
+    filter_on: "Filtreer op",
+    no_description: "Geen beskrywing…",
+
+    // Buttons & Actions
+    create: "Skep",
+    delete: "Skrap",
+    cancel: "Kanselleer",
+    confirm: "Bevestig",
+    save: "Stoor",
+    edit: "Wysig",
+    undo: "Ontdoen",
+    restore: "Herstel",
+
+    // Date & Time
+    no_date: "Geen datum",
+    this_week: "Hierdie week",
+    this_month: "Hierdie maand",
+    next_month: "Volgende maand",
+    later: "Later",
+    past: "Verby",
+    today: "Vandag",
+    tomorrow: "Môre",
+    day_after_tomorrow: "Oormôre",
+    in_a_week: "Oor 'n week",
+    in_a_month: "Oor 'n maand",
+    choose_start_date: "Kies 'n begindatum",
+    choose_start_time: "Kies 'n begin tyd",
+    choose_due_date: "Kies 'n sperdatum",
+    choose_end_time: "Kies 'n eind tyd",
+    choose_time: "Kies 'n tyd",
+    to_date: "Tot datum",
+    from_date: "Vanaf datum",
+    date: "Datum",
+    due_date: "Sperdatum",
+
+    // Repeat/Recurrence
+    repeat: "Herhaal",
+    no_repeat: "Geen herhaling",
+    daily: "Daagliks",
+    daily_workdays: "Daagliks (Ma-Vr)",
+    weekly_custom: "Weekliks (Kies Dae)",
+    weekly: "Weekliks",
+    monthly: "Maandliks",
+    yearly: "Jaarliks",
+    other: "Ander",
+    days: "dae",
+    weeks: "weke",
+    months: "maande",
+    years: "jare",
+    every: "Elke",
+    period: "Periode",
+    choose_repeat_period: "Kies 'n herhalingsperiode",
+
+    // Weekdays
+    sun: "So",
+    mon: "Ma",
+    tue: "Di",
+    wed: "Wo",
+    thu: "Do",
+    fri: "Vr",
+    sat: "Sa",
+
+    // Categories
+    category: "Kategorie",
+    enter_category_name: "Benoem jou kategorie",
+    edit_category_name: "Wysig jou kategorie naam",
+    enter_new_category_name: "Voer nuwe kategorienaam in…",
+    create_category: "Skep Kategorie",
+    choose_category_name: "Kies 'n naam vir jou kategorie",
+    choose_category: "Kies 'n kategorie",
+    create_new_category: "Skep nuwe kategorie",
+    all_categories: "Alle Kategorieë",
+    categories_selected: "{{count}} Kategorieë geselekteer",
+    category_selected: "1 Kategorie geselekteer",
+
+    // Delete/Confirmation
+    delete_permanently: "Vee permanent uit?",
+    delete_task: "Skrap Taak?",
+    delete_confirmation_single: "Is u seker u wil hierdie taak permanent uitvee?",
+    delete_confirmation_multiple: "Is u seker u wil hierdie take permanent uitvee?",
+    delete_task_confirmation: "Is u seker u wil hierdie taak skrap?",
+
+    // Notifications
+    notifications: "Kennisgewings",
+    reminders: "Herhinneringe",
+    reminder_time: "Herinneringstyd",
+    test_notifications: "Toets kennisgewings",
+    test_notification_title: "Toets Kennisgewing",
+    test_notification_body: "Hier is 'n toets kennisgewing.",
+    notification_granted: "✓ U het toestemming vir kennisgewings gegee.",
+    notification_denied: "✗ U het toestemming vir kennisgewings geweier.",
+    notification_pending: "⚠ Toestemming vir kennisgewings is nog nie versoek nie.",
+
+    // Support & About
+    support: "Ondersteuning",
+    about_doenit: "Oor Doenit",
+    version: "Weergawe 1.1.1",
+    support_message: "Geniet jy Doenit? Ondersteun my deur om vir my 'n koffie te koop!",
+    support_appreciation: "Jou ondersteuning beteken baie vir my!",
+    thank_you: "Baie dankie!",
+    contact_support: "Het jy hulp nodig of terugvoer? Kontak my by:",
+
+    // Backup
+    backup_confirmation: "Is jy seker jy wil 'n rugsteun skep? Dit gaan vorige rugsteune oorskryf.",
+    backup_success: "Rugsteun suksesvol geskep!",
+    verified_email: "Geverifieerde e-pos:",
+    change_email: "Verander e-posadres",
+    english_support: "Engels Ondersteuning",
+
+    // Error messages and validation
+    required_field: "Hierdie veld is vereist",
+    invalid_email: "Ongeldige e-posadres",
+    invalid_date: "Ongeldige datum",
+    invalid_time: "Ongeldige tyd",
+
+    // Backup additional messages
+    backup_error: "Fout met rugsteun:",
+    restore_error: "Fout met herstel:",
+    email_verification_error: "Fout met e-pos verifikasie:",
+    restore_confirmation: "Is jy seker jy wil vanaf rugsteun herstel?",
+    restore_success: "Herstel suksesvol!",
+    backup_description: "Om rugsteun te gebruik, moet jy eers jou e-posadres verifieer.",
+    verify_email_with_google: "Verifieer e-posadres met Google",
+    verifying: "Besig…",
+    backup_in_progress: "Besig met rugsteun…",
+    backup_now: "Rugsteun nou",
+    restore_in_progress: "Besig met herstel…",
+    restore_from_backup: "Herstel vanaf rugsteun",
+    backup_label: "Rugsteun",
+
+    // Notification service messages
+    notification_permission_denied: "Kennisgewing toestemming is nie toegestaan nie.",
+    notification_problem: "Probleem met kennisgewing:",
+    test_notification_default_title: "Toets Kennisgewing",
+    test_notification_default_body: "Hier is 'n toets kennisgewing!",
+
+    // Lys
+    empty_list: "Jou lys is skoon",
+    no_tasks_found: "Geen take met huidige filters gevind nie",
+  },
+
+  en: {
+    DEFAULT_NAME: "Default",
+
+    // Theme & Language
+    light_theme: "Light",
+    dark_theme: "Dark",
+    afrikaans: "Afrikaans",
+    english: "English",
+    language: "Language",
+    theme: "Theme",
+    appearance: "Appearance",
+
+    // Navigation & Pages
+    task_list: "Task List",
+    new_task: "New Task",
+    edit_task: "Edit Task",
+    menu: "Menu",
+    home: "Home",
+    completed_tasks: "Completed Tasks",
+    categories: "Categories",
+    settings: "Settings",
+
+    // Task Actions
+    priority: "Priority",
+    create_new_task: "Create a new task",
+    what_needs_to_be_done: "What needs to be done?",
+    description: "Description",
+    complete: "Complete",
+    description_placeholder: "Give more details about your task",
+    important: "Important",
+    urgent: "Urgent",
+    filter_on: "Filter on",
+    no_description: "No description…",
+
+    // Buttons & Actions
+    create: "Create",
+    delete: "Delete",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    save: "Save",
+    edit: "Edit",
+    undo: "Undo",
+    restore: "Restore",
+
+    // Date & Time
+    no_date: "No Date",
+    this_week: "This Week",
+    this_month: "This Month",
+    next_month: "Next Month",
+    later: "Later",
+    past: "Past",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    day_after_tomorrow: "Day after tomorrow",
+    in_a_week: "In a week",
+    in_a_month: "In a month",
+    choose_start_date: "Choose a start date",
+    choose_start_time: "Choose a start time",
+    choose_due_date: "Choose a due date",
+    choose_end_time: "Choose an end time",
+    choose_time: "Choose a time",
+    to_date: "To date",
+    from_date: "From date",
+    date: "Date",
+    due_date: "Due date",
+
+    // Repeat/Recurrence
+    repeat: "Repeat",
+    no_repeat: "No repeat",
+    daily: "Daily",
+    daily_workdays: "Daily (Mon-Fri)",
+    weekly_custom: "Weekly (Choose Days)",
+    weekly: "Weekly",
+    monthly: "Monthly",
+    yearly: "Yearly",
+    other: "Other",
+    days: "days",
+    weeks: "weeks",
+    months: "months",
+    years: "years",
+    every: "Every",
+    period: "Period",
+    choose_repeat_period: "Choose a repeat period",
+
+    // Weekdays
+    sun: "Sun",
+    mon: "Mon",
+    tue: "Tue",
+    wed: "Wed",
+    thu: "Thu",
+    fri: "Fri",
+    sat: "Sat",
+
+    // Categories
+    category: "Category",
+    enter_category_name: "Enter category name",
+    edit_category_name: "Edit your category name",
+    enter_new_category_name: "Enter new category name…",
+    create_category: "Create Category",
+    choose_category_name: "Choose a name for your category",
+    choose_category: "Choose a category",
+    create_new_category: "Create new category",
+    all_categories: "All Categories",
+    categories_selected: "{{count}} Categories selected",
+    category_selected: "1 Category selected",
+
+    // Delete/Confirmation
+    delete_permanently: "Delete permanently?",
+    delete_task: "Delete Task?",
+    delete_confirmation_single: "Are you sure you want to permanently delete this task?",
+    delete_confirmation_multiple: "Are you sure you want to permanently delete these tasks?",
+    delete_task_confirmation: "Are you sure you want to delete this task?",
+
+    // Notifications
+    notifications: "Notifications",
+    reminders: "Reminders",
+    reminder_time: "Reminder Time",
+    test_notifications: "Test notifications",
+    test_notification_title: "Test Notification",
+    test_notification_body: "Here is a test notification.",
+    notification_granted: "✓ You have granted permission for notifications.",
+    notification_denied: "✗ You have denied permission for notifications.",
+    notification_pending: "⚠ Permission for notifications has not been requested yet.",
+
+    // Support & About
+    support: "Support",
+    about_doenit: "About Doenit",
+    version: "Version 1.1.1",
+    support_message: "Enjoying Doenit? Support me by buying me a coffee!",
+    support_appreciation: "Your support means a lot to me!",
+    thank_you: "Thank you so much!",
+    contact_support: "Need help or have feedback? Contact me at:",
+
+    // Backup
+    backup_confirmation: "Are you sure you want to create a backup? This will overwrite previous backups.",
+    backup_success: "Backup created successfully!",
+    verified_email: "Verified email:",
+    change_email: "Change email address",
+    english_support: "English Support",
+
+    // Error messages and validation
+    required_field: "This field is required",
+    invalid_email: "Invalid email address",
+    invalid_date: "Invalid date",
+    invalid_time: "Invalid time",
+
+    // Backup additional messages
+    backup_error: "Backup error:",
+    restore_error: "Restore error:",
+    email_verification_error: "Email verification error:",
+    restore_confirmation: "Are you sure you want to restore from backup?",
+    restore_success: "Restore successful!",
+    backup_description: "To use backup, you must first verify your email address.",
+    verify_email_with_google: "Verify email address with Google",
+    verifying: "Verifying…",
+    backup_in_progress: "Creating backup…",
+    backup_now: "Backup now",
+    restore_in_progress: "Restoring…",
+    restore_from_backup: "Restore from backup",
+    backup_label: "Backup",
+
+    // Notification service messages
+    notification_permission_denied: "Notification permission is not granted.",
+    notification_problem: "Notification problem:",
+    test_notification_default_title: "Test Notification",
+    test_notification_default_body: "Here is a test notification!",
+
+    // Lys
+    empty_list: "Your list is empty",
+    no_tasks_found: "No tasks found with current filters",
+  },
+};

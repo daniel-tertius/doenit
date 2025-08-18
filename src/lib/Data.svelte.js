@@ -1,5 +1,5 @@
 import { page } from "$app/state";
-import { DEFAULT_NAME, sortByField } from "$lib";
+import { sortByField } from "$lib";
 import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
 import { notifications } from "$lib/services";
@@ -147,7 +147,7 @@ export class Data {
       return tasks.filter(({ archived }) => archived == (page.url.pathname !== "/"));
     }
 
-    const default_cat_id = this.categories.find(({ name }) => name === DEFAULT_NAME)?.id ?? "";
+    const default_cat_id = this.categories.find(({ is_default }) => is_default)?.id ?? "";
 
     if (page.url.pathname === "/complete") {
       return tasks.filter(({ archived }) => !!archived);
@@ -189,7 +189,7 @@ export class Data {
 
     this.#all_tasks = await this.#DB.Task.data;
 
-    const { id } = this.categories.find(({ name }) => name === DEFAULT_NAME) ?? { id: "" };
+    const { id = "" } = this.categories.find(({ is_default }) => is_default) ?? {};
 
     switch (page.url.pathname) {
       case "/complete":
@@ -221,9 +221,26 @@ export class Data {
     const all_categories = await this.#DB.Category.readAll();
     this.categories = Object.values(all_categories).filter(({ archived }) => !archived);
 
-    let default_category = this.categories.find(({ name }) => name === DEFAULT_NAME);
+    // Remove after 1 Dec 2025
+    const { translations } = await import("$lib/services/language/translations.js");
+    console.log("Cleaning up categories...");
+    for (const category of this.categories) {
+      if (category.is_default != null) continue;
+
+      const no_allowed = Object.values(translations).some((lang) => lang.DEFAULT_NAME === category.name);
+      if (no_allowed) {
+        console.log(`Deleting category: ${category.name}`);
+        await this.#DB.Category.delete(category.id);
+        this.categories = this.categories.filter(({ id }) => id !== category.id);
+      } else {
+        category.is_default = false;
+        await this.#DB.Category.update(category.id, category);
+      }
+    }
+
+    const default_category = this.categories.find(({ is_default }) => is_default);
     if (!default_category) {
-      const category = await this.#DB.Category.create({ name: DEFAULT_NAME });
+      const category = await this.#DB.Category.create({ name: "", is_default: true });
 
       this.categories = sortByField([category, ...this.categories], "name");
       return this.categories;
@@ -372,6 +389,7 @@ export class Data {
     if (!category) return;
 
     category.name = category.name.trim();
+    category.is_default = false;
     const new_category = await this.#DB.Category.create(category);
     this.#categories.push(new_category);
 

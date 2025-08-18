@@ -3,18 +3,19 @@
   import { fade } from "svelte/transition";
   import { ButtonBack } from "$lib/components/element/button";
   import DeleteAll from "../lib/components/DeleteAll.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   /** @type {Record<string, string>} */
-  const TITLES = {
-    "/": "Taaklys",
-    "/create": "Nuwe taak",
-    "/[item_id]": "Wysig taak",
-    "/complete": "Voltooide take",
-    "/categories": "Kategorieë",
-    "/settings": "Instellings",
-  };
+  const TITLES = $derived({
+    "/": t("task_list"),
+    "/create": t("new_task"),
+    "/[item_id]": t("edit_task"),
+    "/complete": t("completed_tasks"),
+    "/categories": t("categories"),
+    "/settings": t("settings"),
+  });
 
-  const title = $derived(TITLES[page.route.id ?? "/"] || "Taaklys");
+  const title = $derived(TITLES[page.route.id ?? "/"] || t("task_list"));
 </script>
 
 <div class="relative bg-t-primary shadow-md">

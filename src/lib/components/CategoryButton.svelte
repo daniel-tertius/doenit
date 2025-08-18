@@ -1,7 +1,7 @@
 <script>
   import { selectedCategories } from "$lib/cached";
   import { data } from "$lib/Data.svelte";
-  import ItemCheckbox from "./task/ItemCheckbox.svelte";
+  import { InputCheckbox } from "./element/input";
 
   let { id, name } = $props();
 
@@ -28,11 +28,14 @@
   }
 </script>
 
-<button class={{
-  "relative w-full flex items-center gap-1": true,
-  "bg-t-primary-600": is_selected
- }} onclick={onselect}>
-  <ItemCheckbox {is_selected} tick_animation={is_selected} />
+<button
+  class={{
+    "relative w-full flex items-center gap-1": true,
+    "bg-t-primary-600": is_selected,
+  }}
+  onclick={onselect}
+>
+  <InputCheckbox {is_selected} tick_animation={is_selected} />
   <span class="w-full flex pl-12 p-2 cursor-pointer text-left">
     {name}
   </span>

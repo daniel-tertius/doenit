@@ -4,7 +4,7 @@
   import { onMount } from "svelte";
   import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
-  import ItemCheckbox from "./ItemCheckbox.svelte";
+  import { InputCheckbox } from "../element/input";
   import TaskDueDate from "./TaskDueDate.svelte";
   import { Categories, Sync } from "$lib/icon";
   import TaskContainer from "./TaskContainer.svelte";
@@ -52,8 +52,9 @@
   {tick_animation}
   class={{
     "rounded-lg flex flex-col items-start py-4 px-2 w-full h-full": true,
-    "bg-t-primary-900 border": is_selected,
-    "bg-t-primary-600": !is_selected,
+    // "bg-t-primary-900 border": is_selected,
+    "bg-black/20 dark:bg-white/20 border": is_selected,
+    "bg-white dark:bg-dark-400": !is_selected,
   }}
   {onclick}
   {onlongpress}
@@ -90,5 +91,13 @@
     </div>
   {/if}
 
-  <ItemCheckbox bind:tick_animation is_selected={true} onselect={async () => onselect(task)} {onlongpress} />
+  <InputCheckbox
+    bind:tick_animation
+    is_selected={true}
+    onselect={(e) => {
+      e.stopPropagation();
+      onselect(task);
+    }}
+    {onlongpress}
+  />
 </TaskContainer>

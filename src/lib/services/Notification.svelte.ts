@@ -1,6 +1,7 @@
 import { cached_notification_time } from "$lib/cached";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { data } from "$lib/Data.svelte";
+import { t } from "$lib/services/Language.svelte";
 
 class Notification {
   #time: string | null = $state(null);
@@ -92,7 +93,7 @@ class Notification {
       // Request permissions first
       const permission = await LocalNotifications.requestPermissions();
       if (permission.display !== "granted") {
-        alert("Kennisgewing toestemming is nie toegestaan nie.");
+        alert(t("notification_permission_denied"));
         return;
       }
 
@@ -100,16 +101,16 @@ class Notification {
       await LocalNotifications.schedule({
         notifications: [
           {
-            title: "Toets Kennisgewing",
-            body: "Hier is 'n toets kennisgewing!",
+            title: t("test_notification_default_title"),
+            body: t("test_notification_default_body"),
             id: Number(Date.now().toString().slice(-9)),
-            schedule: { at: new Date(Date.now() + 500) }, // Trigger 5 seconds from now
+            schedule: { at: new Date(Date.now() + 500) },
             actionTypeId: "",
           },
         ],
       });
     } catch (error) {
-      alert("Probleem met kennisgewing:" + error + " | " + JSON.stringify(error, null, 2));
+      alert(t("notification_problem") + " " + String(error) + " | " + JSON.stringify(error, null, 2));
     }
   }
 
@@ -138,11 +139,12 @@ class Notification {
         continue;
       }
 
+      const dailyTitle = t("daily_reminder_title");
+      const dailyBody = tasks.length === 1 ? t("daily_reminder_one") : t("daily_reminder_many", { count: tasks.length });
+
       notifications.push({
-        title: "Daaglikse herhinnering",
-        body: `Jy het ${
-          tasks.length === 1 ? `1 taak` : `${tasks.length} take`
-        } om te doen vandag! Sterkte en geniet dit. 😊`,
+        title: dailyTitle,
+        body: dailyBody,
         id: i + 1,
         schedule: { at: new Date(date) },
         actionTypeId: "",
@@ -155,10 +157,10 @@ class Notification {
         if (!has_due_time) continue;
 
         // YYYYY-MM-DD HH:mm
-        const taskDate = new Date(task.due_date);
+        const taskDate = new Date(task.due_date!);
 
         notifications.push({
-          title: "Jy moet 'n taak doen!",
+          title: t("task_due_title"),
           body: task.name,
           id: +`${i + 1}${j + 1}`,
           schedule: { at: taskDate },

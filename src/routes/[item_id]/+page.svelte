@@ -4,8 +4,9 @@
   import { data as Data } from "$lib/Data.svelte.js";
   import { Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
-  import ItemCheckbox from "$lib/components/task/ItemCheckbox.svelte";
+  import { InputCheckbox } from "$lib/components/element/input";
   import EditTask from "$lib/components/EditTask.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   let { data } = $props();
 
@@ -69,15 +70,16 @@
   <Trash class="w-6 h-6 text-error" />
 </button>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary relative">
   <EditTask bind:error bind:task bind:other_interval />
 
-  <div class="grid gap-2 grid-cols-[auto_min-content] w-full h-11 items-center">
-    <span class="font-bold text-left">Voltooi</span>
-    <button
-      class="relative w-11 h-11"
-      type="button"
-      onclick={() => {
+  <div class="h-12 flex">
+    <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
+
+    <InputCheckbox
+      class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2!"
+      onselect={(event) => {
+        event.stopPropagation();
         if (task.archived) {
           task.completed = 0;
           task.archived = false;
@@ -85,14 +87,14 @@
           task.completed++;
         }
       }}
-    >
-      <ItemCheckbox is_selected={!!task.archived} tick_animation={!!task.archived} class="left-auto right-2.5" />
-    </button>
+      is_selected={!!task.archived}
+      tick_animation={!!task.archived}
+    />
   </div>
 </form>
 
-<Modal bind:open={is_deleting} {footer} title="Skrap Taak?">
-  <p class="p-4">Is u seker u wil hierdie taak skrap?</p>
+<Modal bind:open={is_deleting} {footer} title={t("delete_task")}>
+  <p class="p-4">{t("delete_task_confirmation")}</p>
 </Modal>
 
 {#snippet footer()}
@@ -102,6 +104,6 @@
     onclick={deleteTask}
   >
     <Trash class="h-full" size={18} />
-    <span>Skrap</span>
+    <span>{t("delete")}</span>
   </button>
 {/snippet}

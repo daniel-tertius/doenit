@@ -8,7 +8,7 @@
     android:gravity="center_vertical"
     android:minHeight="48dp">
 
-    <!-- Checkbox (for completion) -->
+    <!-- InputCheckbox (for completion) -->
     <ImageView
         android:id="@+id/complete_button"
         android:layout_width="24dp"

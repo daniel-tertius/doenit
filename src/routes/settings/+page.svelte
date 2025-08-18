@@ -1,7 +1,6 @@
 <script>
   import About from "./About.svelte";
   import Backup from "./Backup.svelte";
-  import FutureIdeas from "./FutureIdeas.svelte";
   import Notifications from "./Notifications.svelte";
   import Support from "./Support.svelte";
   import ThemeAndLanguage from "./ThemeAndLanguage.svelte";
@@ -12,6 +11,5 @@
   <Notifications />
   <Backup />
   <Support />
-  <FutureIdeas />
   <About />
 </div>

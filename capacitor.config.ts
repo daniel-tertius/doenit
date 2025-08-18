@@ -2,7 +2,7 @@ import type { CapacitorConfig } from "@capacitor/cli";
 import dotenv from "dotenv";
 
 // Load environment-specific configuration
-const env = process.env.NODE_ENV === "development" ? ".env.development" : ".env";
+const env = process.env.NODE_ENV === "development" ? ".env.development" : ".env.production";
 dotenv.config({ path: env });
 
 const config: CapacitorConfig = {
@@ -18,6 +18,7 @@ const config: CapacitorConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_logo",
       iconColor: "#ffffff",
+      sound: "notification.wav"
     },
     FirebaseAuthentication: {
       skipNativeAuth: false,

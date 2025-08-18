@@ -5,6 +5,7 @@
   import { Sync } from "$lib/icon";
   import { InputSwitch, InputTime } from "$lib/components/element/input";
   import { ContainerDetails } from "$lib/components/element/container";
+  import { t } from "$lib/services/Language.svelte";
 
   /** @type {string?} */
   let time = $state(null);
@@ -23,25 +24,25 @@
   }
 </script>
 
-<ContainerDetails label="Kennisgewings">
+<ContainerDetails label={t("notifications")}>
   <div class="flex items-center justify-between">
-    <span class="text-sm font-medium">Herhinneringe</span>
+    <span class="text-sm font-medium">{t("reminders")}</span>
     <InputSwitch bind:value={Notifications.enabled} />
   </div>
 
   {#if Notifications.enabled}
     <div transition:slide>
-      <label for="daily_reminder_time" class="block text-sm font-medium mb-2">Herinneringstyd</label>
-      <InputTime value={time} onchange={handleTimeChange} placeholder="Kies 'n tyd" />
+      <label for="daily_reminder_time" class="block text-sm font-medium mb-2">{t("reminder_time")}</label>
+      <InputTime value={time} onchange={handleTimeChange} placeholder={t("choose_time")} />
     </div>
 
     <div class="text-xs text-t-secondary/60">
       {#if Notifications.status === "granted"}
-        ✓ U het toestemming vir kennisgewings gegee.
+        {t("notification_granted")}
       {:else if Notifications.status === "denied"}
-        ✗ U het toestemming vir kennisgewings geweier.
+        {t("notification_denied")}
       {:else}
-        ⚠ Toestemming vir kennisgewings is nog nie versoek nie.
+        {t("notification_pending")}
       {/if}
     </div>
   {/if}
@@ -52,7 +53,7 @@
     disabled={is_loading}
     onclick={async () => {
       is_loading = true;
-      await Notifications.testNotification("Toets Kennisgewing", "Hier is 'n toets kennisgewing.");
+      await Notifications.testNotification(t("test_notification_title"), t("test_notification_body"));
       await new Promise((resolve) => setTimeout(resolve, 2000));
       is_loading = false;
     }}
@@ -60,6 +61,6 @@
     {#if is_loading}
       <Sync class="animate-spin" size={10} />
     {/if}
-    Toets kennisgewings
+    {t("test_notifications")}
   </button>
 </ContainerDetails>

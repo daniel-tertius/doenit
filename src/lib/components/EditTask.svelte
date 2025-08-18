@@ -5,10 +5,11 @@
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
-  const title = $derived(!!task.start_date ? "Datum" : "Sperdatum");
+  const title = $derived(!!task.start_date ? t("date") : t("due_date"));
 </script>
 
 <InputName bind:name={task.name} bind:description={task.description} bind:error_message={error.name} />
@@ -37,13 +38,13 @@
 {/if}
 
 <div>
-  <label class="font-bold" for="category">Kategorie</label>
+  <label class="font-bold" for="category">{t("category")}</label>
 
   <CategoryPicker bind:category_id={task.category_id} />
 </div>
 
 <div>
-  <label class="font-bold" for="category">Prioriteit</label>
+  <label class="font-bold" for="category">{t("priority")}</label>
 
   <div class="flex gap-2">
     <button
@@ -58,7 +59,7 @@
       }}
     >
       <Important />
-      <span>Belangrik</span>
+      <span>{t("important")}</span>
     </button>
     <button
       type="button"
@@ -72,7 +73,7 @@
       }}
     >
       <Urgent />
-      Dringend
+      {t("urgent")}
     </button>
   </div>
 </div>

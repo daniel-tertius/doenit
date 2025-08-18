@@ -2,7 +2,6 @@ import type { Task, Category } from "$lib/DB/DB";
 import { Preferences } from "@capacitor/preferences";
 
 export class Table<T extends Task | Category> {
-  private lock = Promise.resolve(); // Mutex for synchronization
   private table_name: string;
 
   constructor(table_name: string) {

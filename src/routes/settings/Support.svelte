@@ -4,6 +4,7 @@
   import { App } from "@capacitor/app";
   import { fade } from "svelte/transition";
   import { onMount, onDestroy } from "svelte";
+  import { t } from "$lib/services/Language.svelte";
 
   // Payment URLs
   const kofiUrl = "https://ko-fi.com/tertius1";
@@ -74,10 +75,10 @@
 </script>
 
 <div class="bg-t-primary rounded-lg p-4">
-  <h2 class="font-semibold text-t-secondary mb-3">Ondersteuning</h2>
+  <h2 class="font-semibold text-t-secondary mb-3">{t("support")}</h2>
 
   <div class="space-y-3">
-    <p class="text-sm text-t-secondary/80">Geniet jy Doenit? Ondersteun my deur om vir my 'n koffie te koop!</p>
+    <p class="text-sm text-t-secondary/80">{t("support_message")}</p>
 
     <div class="space-y-2">
       <button
@@ -102,10 +103,6 @@
         Ko-fi
       </button>
     </div>
-
-    <div class="text-center text-sm text-t-secondary/60 space-y-2">
-      <p>Ontwikkel met ❤️ vir die gemeenskap</p>
-    </div>
   </div>
 
   <!-- Thank you message -->
@@ -113,8 +110,8 @@
     <div transition:fade={{ duration: 300 }} class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div class="bg-t-primary-400 p-6 rounded-lg border border-t-primary-600 max-w-sm mx-4 text-center">
         <div class="text-4xl mb-4">🎉</div>
-        <h3 class="text-xl font-bold mb-2">Baie dankie!</h3>
-        <p class="text-t-secondary/80">Jou ondersteuning beteken baie vir my!</p>
+        <h3 class="text-xl font-bold mb-2">{t("thank_you")}</h3>
+        <p class="text-t-secondary/80">{t("support_appreciation")}</p>
       </div>
     </div>
   {/if}

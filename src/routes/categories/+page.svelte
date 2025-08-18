@@ -1,12 +1,12 @@
 <script>
+  import InputText from "$lib/components/element/input/InputText.svelte";
+  import Modal from "$lib/components/modal/Modal.svelte";
   import { Trash, Plus, Edit, Check } from "$lib/icon";
-  import { DB } from "$lib/DB/DB";
-  import { onMount } from "svelte";
+  import { t } from "$lib/services/Language.svelte";
   import { fly, slide } from "svelte/transition";
   import { data } from "$lib/Data.svelte";
-  import Modal from "$lib/components/modal/Modal.svelte";
-  import InputText from "$lib/components/element/input/InputText.svelte";
-  import { DEFAULT_NAME } from "$lib";
+  import { DB } from "$lib/DB/DB";
+  import { onMount } from "svelte";
 
   let new_category_name = $state("");
   let edited_category_name = $state("");
@@ -23,7 +23,7 @@
   onMount(async () => {
     await data.refreshCategories();
 
-    default_category = data.categories.find(({ name }) => name === DEFAULT_NAME) ?? null;
+    default_category = data.categories.find(({ is_default }) => is_default) ?? null;
     default_id = default_category?.id ?? "";
   });
 
@@ -36,10 +36,13 @@
     const Db = DB.getInstance();
     await Db.Category.archive(id);
 
+    data.selected_categories_hash.delete(id);
     const index = data.categories.findIndex((category) => category.id === id);
     if (index !== -1) {
       data.categories.splice(index, 1);
     }
+    
+    data.refreshCategories();
   }
 
   /**
@@ -49,7 +52,7 @@
     e.preventDefault();
 
     if (!new_category_name?.trim()) {
-      error_message = "Benoem jou kategorie";
+      error_message = t("enter_category_name");
       return;
     }
 
@@ -61,7 +64,7 @@
     if (!category) return;
 
     if (!edited_category_name.trim()) {
-      error_message = "Benoem jou kategorie";
+      error_message = t("enter_category_name");
       return;
     }
 
@@ -85,13 +88,13 @@
     <form onsubmit={createCategory} class="flex gap-2 items-center h-12">
       <InputText
         bind:value={new_category_name}
-        placeholder="Voer nuwe kategorienaam in…"
-        class="w-full h-12 rounded-md bg-t-primary px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
+        placeholder={t("enter_new_category_name")}
+        class="w-full h-12 rounded-md dark:bg-dark-300 dark:border-dark-700 bg-white border border-light-500 px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
         oninput={() => (error_message = "")}
       />
 
       <button
-        class="h-full rounded-md bg-t-primary-700 px-4 py-2 font-medium transition-colors hover:bg-t-primary-800 focus:outline-none"
+        class="h-full rounded-md dark:bg-dark-300 dark:border-dark-700 bg-light-200 border border-light-300 px-4 py-2 font-medium transition-colors hover:bg-t-primary-800 focus:outline-none"
       >
         <Plus />
       </button>
@@ -107,12 +110,12 @@
   <div class="flex flex-col space-y-2">
     {#if default_category}
       <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-t-primary-700 rounded-md">
-        <div class="text-lg font-semibold">{default_category.name}</div>
+        <div class="text-lg font-semibold">{t('DEFAULT_NAME')}</div>
       </div>
     {/if}
 
     {#each data.categories as category (category.id)}
-      {#if category.name != DEFAULT_NAME}
+      {#if !category.is_default}
         <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between bg-t-primary-700 rounded-md">
           <button class="p-2 w-fit" onclick={() => openEditModal(category)}>
             <Edit />
@@ -129,13 +132,13 @@
   </div>
 </div>
 
-<Modal bind:open={is_editing} {footer} title="Wysig jou kategorie naam">
+<Modal bind:open={is_editing} {footer} title={t("edit_category_name")}>
   {#if category}
     <div class="p-4">
       <InputText
         bind:value={edited_category_name}
         focus_on_mount
-        placeholder="Kies 'n naam vir jou kategorie"
+        placeholder={t("enter_category_name")}
         oninput={() => (error_message = "")}
       />
 
@@ -155,6 +158,6 @@
     onclick={editCategory}
   >
     <Check class="h-full" size={18} />
-    <span>Stoor</span>
+    <span>{t("save")}</span>
   </button>
 {/snippet}

@@ -5,6 +5,7 @@
   import Modal from "./modal/Modal.svelte";
   import { untrack } from "svelte";
   import { page } from "$app/state";
+  import { t } from "$lib/services/Language.svelte";
 
   let is_deleting = $state(false);
 
@@ -35,8 +36,10 @@
   </div>
 {/if}
 
-<Modal bind:open={is_deleting} {footer} title="Vee permanent uit?">
-  <p class="p-4">Is u seker u wil hierdie {data.selected_tasks_hash.size > 1 ? "take" : "taak"} permanent uitvee?</p>
+<Modal bind:open={is_deleting} {footer} title={t("delete_permanently")}>
+  <p class="p-4">
+    {data.selected_tasks_hash.size > 1 ? t("delete_confirmation_multiple") : t("delete_confirmation_single")}
+  </p>
 </Modal>
 
 {#snippet footer()}
@@ -46,6 +49,6 @@
     onclick={deleteAll}
   >
     <Trash class="h-full" size={18} />
-    <span>Skrap</span>
+    <span>{t("delete")}</span>
   </button>
 {/snippet}
