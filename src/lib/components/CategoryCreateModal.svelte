@@ -4,7 +4,7 @@
   import Modal from "./modal/Modal.svelte";
   import { data } from "$lib/Data.svelte";
   import InputText from "./element/input/InputText.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
 

@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithCredential, onAuthStateChanged, type User
 import { writable } from "svelte/store";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
-import { t } from "../Language.svelte";
+import { t } from "$lib/services";
 
 // Svelte store for auth state
 export const user = writable<User | null>(null);

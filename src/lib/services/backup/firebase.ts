@@ -4,9 +4,7 @@ import { browser } from "$app/environment";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { Capacitor } from "@capacitor/core";
 
-// Your Firebase config object
 const firebaseConfig = {
-  // Replace with your Firebase project configuration
   apiKey: "AIzaSyCH5uvUSpZ-mkhHw9EK0QnZ_c01hE5ERzs",
   authDomain: "doenit2.firebaseapp.com",
   projectId: "doenit2",

@@ -4,7 +4,7 @@
   import { App } from "@capacitor/app";
   import { fade } from "svelte/transition";
   import { onMount, onDestroy } from "svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   // Payment URLs
   const kofiUrl = "https://ko-fi.com/tertius1";
@@ -45,9 +45,8 @@
     await openPaymentLink(url);
   }
 
-  // Setup app state listeners
   onMount(() => {
-    const handleAppStateChange = (state) => {
+    App.addListener("appStateChange", (state) => {
       // Show thank you message when user returns to app after payment
       if (state.isActive && is_payment_initiated) {
         show_thank_you = true;
@@ -58,19 +57,7 @@
           show_thank_you = false;
         }, 3000);
       }
-    };
-
-    // Add listener for app state changes
-    App.addListener("appStateChange", handleAppStateChange);
-
-    // Cleanup function
-    return () => {
-      App.removeAllListeners();
-    };
-  });
-
-  onDestroy(() => {
-    App.removeAllListeners();
+    });
   });
 </script>
 

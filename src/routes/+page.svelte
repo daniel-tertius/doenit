@@ -8,7 +8,7 @@
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
   import Task from "$lib/components/task/Task.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   data.selected_tasks_hash.clear();
   data.refreshTasks();
@@ -34,9 +34,9 @@
   {#if data.tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       {#if data.selected_categories_hash.size === 0 && data.filter.important === false && data.filter.urgent === false}
-        <div class="text-lg text-t-secondary">{t('empty_list')}</div>
+        <div class="text-lg text-t-secondary">{t("empty_list")}</div>
       {:else}
-        <div class="text-lg text-t-secondary">{t('no_tasks_found')}</div>
+        <div class="text-lg text-t-secondary">{t("no_tasks_found")}</div>
       {/if}
       <button
         type="button"

@@ -1,6 +1,9 @@
-import type { TaskWidgetPlugin } from "$lib/capacitor-plugins/task-widget";
 import type { Task } from "$lib/DB/DB";
 import { Capacitor } from "@capacitor/core";
+
+interface TaskWidgetPlugin {
+  updateWidget({ tasks }: { tasks: Task[] }): Promise<{ success: boolean; message: string }>;
+}
 
 const TaskWidget = Capacitor.registerPlugin<TaskWidgetPlugin>("TaskWidget");
 

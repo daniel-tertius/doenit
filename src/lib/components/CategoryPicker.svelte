@@ -2,7 +2,7 @@
   import { DownChevron, Times } from "$lib/icon";
   import { data } from "$lib/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let { category_id = $bindable() } = $props();
 

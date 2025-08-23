@@ -1,66 +1,127 @@
 <script>
   import { slide } from "svelte/transition";
-  import { notifications as Notifications } from "$lib/services/Notification.svelte";
-  import { onMount } from "svelte";
-  import { Sync } from "$lib/icon";
+  import { notifications } from "$lib/services";
+  import { onMount, untrack } from "svelte";
+  import { Bell, CheckCircle, XCircle, Clock, TestTube } from "$lib/icon";
   import { InputSwitch, InputTime } from "$lib/components/element/input";
   import { ContainerDetails } from "$lib/components/element/container";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
-  /** @type {string?} */
-  let time = $state(null);
   let is_loading = $state(false);
+  let is_testing = $state(false);
 
   onMount(async () => {
-    await Notifications.init();
-    time = Notifications.time;
+    await notifications.init();
   });
 
   function handleTimeChange({ value }) {
-    if (value === time) return;
+    if (value === notifications.time) return;
 
-    time = value;
-    Notifications.time = value;
+    notifications.time = value;
+  }
+
+  async function requestPermission() {
+    is_loading = true;
+
+    try {
+      const status = await notifications.requestPermission();
+      notifications.status = status;
+    } catch (error) {
+      console.error("Permission request failed:", error);
+    } finally {
+      is_loading = false;
+    }
   }
 </script>
 
 <ContainerDetails label={t("notifications")}>
-  <div class="flex items-center justify-between">
-    <span class="text-sm font-medium">{t("reminders")}</span>
-    <InputSwitch bind:value={Notifications.enabled} />
-  </div>
-
-  {#if Notifications.enabled}
-    <div transition:slide>
-      <label for="daily_reminder_time" class="block text-sm font-medium mb-2">{t("reminder_time")}</label>
-      <InputTime value={time} onchange={handleTimeChange} placeholder={t("choose_time")} />
+  <!-- Main toggle with better explanation -->
+  <div class="space-y-4">
+    <div class="flex items-start gap-4">
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-sm font-medium">{t("reminders")}</span>
+          <InputSwitch bind:value={notifications.enabled} />
+        </div>
+          <!-- Toggle for past due date notifications -->
+          {#if notifications.enabled}
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium">{t("notify_past_due_tasks")}</span>
+            <InputSwitch bind:value={notifications.past_tasks_enabled} />
+          </div>
+          {/if}
+        <p class="text-sm text-t-secondary/70">
+          {notifications.enabled ? t("notifications_enabled_description") : t("notifications_disabled_description")}
+        </p>
+      </div>
     </div>
 
-    <div class="text-xs text-t-secondary/60">
-      {#if Notifications.status === "granted"}
-        {t("notification_granted")}
-      {:else if Notifications.status === "denied"}
-        {t("notification_denied")}
+    <!-- Permission status with visual indicator -->
+    <div class="flex items-center gap-3 p-3 rounded-lg bg-t-secondary/5 border border-t-secondary/10">
+      {#if notifications.status === "granted"}
+        <CheckCircle size={20} class="text-green-600 dark:text-green-400" />
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-green-600 dark:text-green-400">{t("notification_granted")}</span>
+          </div>
+        </div>
+      {:else if notifications.status === "denied"}
+        <XCircle size={20} class="text-red-600 dark:text-red-400" />
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-red-600 dark:text-red-400">{t("notification_denied")}</span>
+            <button
+              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-white hover:bg-t-primary-700 transition-colors"
+              onclick={requestPermission}
+              disabled={is_loading}
+            >
+              {is_loading ? t("loading") : t("request_permission")}
+            </button>
+          </div>
+        </div>
       {:else}
-        {t("notification_pending")}
+        <Clock size={20} class="text-yellow-600 dark:text-yellow-400" />
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-yellow-600 dark:text-yellow-400">{t("notification_pending")}</span>
+            <button
+              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-white hover:bg-t-primary-700 transition-colors"
+              onclick={requestPermission}
+              disabled={is_loading}
+            >
+              {is_loading ? t("loading") : t("request_permission")}
+            </button>
+          </div>
+        </div>
       {/if}
     </div>
-  {/if}
 
-  <button
-    type="button"
-    class="w-full p-2 bg-t-primary-800 text-t-secondary focus:bg-t-primary-900 hover:bg-t-primary-900 active:bg-t-primary-900 rounded-lg transition-colors text-sm flex gap-2 items-center justify-center disabled:text-t-secondary"
-    disabled={is_loading}
-    onclick={async () => {
-      is_loading = true;
-      await Notifications.testNotification(t("test_notification_title"), t("test_notification_body"));
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      is_loading = false;
-    }}
-  >
-    {#if is_loading}
-      <Sync class="animate-spin" size={10} />
+    {#if notifications.enabled}
+      <div transition:slide class="space-y-4">
+        <!-- Time picker with better layout -->
+        <div>
+          <label for="daily_reminder_time" class="flex items-center gap-2 text-sm font-medium mb-2">
+            <Clock size={16} class="text-t-secondary/60" />
+            {t("reminder_time")}
+          </label>
+          <InputTime
+            value={notifications.time}
+            can_clear={false}
+            onchange={handleTimeChange}
+            placeholder={t("choose_time")}
+          />
+        </div>
+
+        <!-- Helpful information -->
+        <div class="text-sm text-t-secondary/60 p-3 rounded-lg bg-t-secondary/5 border-l-4 border-t-primary-600">
+          <div class="font-medium mb-1">{t("how_notifications_work")}</div>
+          <ul class="space-y-1 list-disc list-inside">
+            <li>{t("notification_info_1")}</li>
+            <li>{t("notification_info_2")}</li>
+            <li>{t("notification_info_3")}</li>
+          </ul>
+        </div>
+      </div>
     {/if}
-    {t("test_notifications")}
-  </button>
+  </div>
 </ContainerDetails>

@@ -8,22 +8,24 @@
   import { page } from "$app/state";
   import { onMount } from "svelte";
   import "../app.css";
+  import { SplashScreen } from "@capacitor/splash-screen";
 
   let { children } = $props();
 
   const is_home = $derived(page.url.pathname === "/");
 
-  onMount(async () => {
-    await notifications.init();
+  onMount(() => {
+    SplashScreen.hide({ fadeOutDuration: 300 });
+    notifications.init();
   });
 
-  onMount(async () => {
+  onMount(() => {
     // Re-schedule when app comes to foreground
     if (Capacitor.isNativePlatform()) {
-      App.addListener("appStateChange", async (state) => {
+      App.addListener("appStateChange", (state) => {
         if (state.isActive) {
           // Re-schedule when app becomes active to ensure continuity
-          await notifications.refreshNotification();
+          notifications.scheduleNotifications();
         }
       });
     }
@@ -35,14 +37,10 @@
         if (is_home) {
           App.exitApp();
         } else {
-          goto("/");
+          goto("/", { invalidateAll: false });
         }
       });
     }
-
-    return () => {
-      App.removeAllListeners();
-    };
   });
 </script>
 

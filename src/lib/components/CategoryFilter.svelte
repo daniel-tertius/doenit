@@ -7,7 +7,7 @@
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let show_dropdown = $state(false);
   let is_adding = $state(false);

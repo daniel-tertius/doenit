@@ -2,7 +2,7 @@
   import { Check } from "$lib/icon";
   import { longpress } from "../../long";
   import { waitAtLeast } from "$lib";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let {
     tick_animation = $bindable(false),

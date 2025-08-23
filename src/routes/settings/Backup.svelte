@@ -4,7 +4,7 @@
   import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
   import { data } from "$lib/Data.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let is_creating_backup = $state(false);
   let is_restoring = $state(false);

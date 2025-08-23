@@ -1,7 +1,7 @@
 <script>
   import { displayDateShort } from "$lib";
   import { slide } from "svelte/transition";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let { date = $bindable() } = $props();
 </script>

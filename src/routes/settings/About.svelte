@@ -1,5 +1,5 @@
 <script>
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 </script>
 
 <section class="rounded-md p-4 bg-t-primary space-y-2 text-t-secondary">
@@ -9,7 +9,7 @@
   <!-- android/app/build.gradle – versionName -->
   <!-- package.json – "version" -->
 
-  <p>{t("version")} 1.2.0</p>
+  <p>{t("version")} 1.2.1</p>
   <p class="text-sm text-t-secondary/80">
     {t("contact_support")}
     <a href="mailto:support.tricky800@passmail.com" class="text-blue-400/80 hover:text-blue-500/80 underline">

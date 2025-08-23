@@ -5,7 +5,7 @@
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 

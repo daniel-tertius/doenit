@@ -46,7 +46,7 @@ class Theme {
     root.classList.add(`theme-${actualTheme}`);
     cached_theme.set(theme_value);
     this.#value = theme_value;
-    this.updateEdgeToEdge();
+    this.updateEdgeToEdgeColour();
   }
 
   toggle() {
@@ -61,7 +61,7 @@ class Theme {
     return ["dark", "light"].includes(theme_value);
   }
 
-  private async updateEdgeToEdge() {
+  private async updateEdgeToEdgeColour() {
     if (!Capacitor.isNativePlatform()) return;
 
     const { EdgeToEdge } = await import("@capawesome/capacitor-android-edge-to-edge-support");

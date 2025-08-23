@@ -4,7 +4,7 @@ import { selectedCategories } from "$lib/cached";
 import { DB } from "$lib/DB/DB";
 import { notifications, language, t } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
-import { Widget } from "./services/widget";
+import { Widget } from "./services";
 
 /** @typedef {import('$lib/DB/DB').Task} Task */
 /** @typedef {import('$lib/DB/DB').Category} Category */
@@ -446,7 +446,7 @@ export class Data {
    * @param {Task[]} all_tasks
    * @returns {Task[]}
    */
-  getTasksCountForDate(all_tasks, date) {
+  getTasksOnDate(all_tasks, date) {
     if (!date || !all_tasks?.length) return [];
 
     const target_date = new Date(date);
@@ -459,6 +459,29 @@ export class Data {
       task_date.setHours(0, 0, 0, 0);
 
       return task_date.toLocaleDateString("en-CA") === target_date.toLocaleDateString("en-CA");
+    });
+
+    return tasks;
+  }
+
+  /**
+   * @param {Date} date
+   * @param {Task[]} all_tasks
+   * @returns {Task[]}
+   */
+  getTasksBeforeDate(all_tasks, date) {
+    if (!date || !all_tasks?.length) return [];
+
+    const target_date = new Date(date);
+    target_date.setHours(0, 0, 0, 0);
+
+    const tasks = all_tasks.filter((task) => {
+      if (!task.due_date) return false;
+
+      const task_date = new Date(task.due_date);
+      task_date.setHours(0, 0, 0, 0);
+
+      return task_date < target_date;
     });
 
     return tasks;
@@ -486,7 +509,8 @@ export class Data {
     }
 
     if (!!task.completed && !task.repeat_interval) {
-      if (!task.completed_at) task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
+      if (!task.completed_at)
+        task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
       if (!task.archived) task.archived = true;
     }
 

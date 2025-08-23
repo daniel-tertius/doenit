@@ -1,7 +1,7 @@
 {
   "name": "doenit",
   "private": false,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -41,6 +41,7 @@
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
+    "@capacitor/splash-screen": "^7.0.2",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
     "dotenv": "^16.5.0",

@@ -5,7 +5,7 @@
   import { Check, Times } from "$lib/icon";
   import { SvelteSet } from "svelte/reactivity";
   import ButtonClear from "../element/button/ButtonClear.svelte";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   /**
    * @typedef {"So" | "Ma" | "Di" | "Wo" | "Do" | "Vr" | "Sa"} WEEKDAY

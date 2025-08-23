@@ -2,7 +2,7 @@
   import InputText from "$lib/components/element/input/InputText.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { Trash, Plus, Edit, Check } from "$lib/icon";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
   import { fly, slide } from "svelte/transition";
   import { data } from "$lib/Data.svelte";
   import { DB } from "$lib/DB/DB";

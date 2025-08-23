@@ -18,7 +18,12 @@ const config: CapacitorConfig = {
     LocalNotifications: {
       smallIcon: "ic_stat_logo",
       iconColor: "#ffffff",
-      sound: "notification.wav"
+      sound: "notification.wav",
+    },
+
+    SplashScreen: {
+      launchAutoHide: true,
+      showSpinner: false,
     },
     FirebaseAuthentication: {
       skipNativeAuth: false,

@@ -5,7 +5,7 @@
   import Modal from "./modal/Modal.svelte";
   import { untrack } from "svelte";
   import { page } from "$app/state";
-  import { t } from "$lib/services/Language.svelte";
+  import { t } from "$lib/services";
 
   let is_deleting = $state(false);
 

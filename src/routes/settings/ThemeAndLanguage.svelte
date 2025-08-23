@@ -3,8 +3,8 @@
   import { ButtonLanguage } from "$lib/components/element/button";
   import { Moon, Sun } from "$lib/icon";
   import { language } from "$lib/services";
-  import { theme } from "$lib/services/Theme.svelte.js";
-  import { t } from "$lib/services/Language.svelte";
+  import { theme } from "$lib/services";
+  import { t } from "$lib/services";
 
   /**
    * Handle language change
