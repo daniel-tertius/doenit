@@ -1,13 +1,10 @@
 import { page } from "$app/state";
 import { sortByField } from "$lib";
 import { selectedCategories } from "$lib/cached";
-import { DB } from "$lib/DB/DB";
 import { notifications, language, t } from "$lib/services";
 import { SvelteSet } from "svelte/reactivity";
 import { Widget } from "./services";
-
-/** @typedef {import('$lib/DB/DB').Task} Task */
-/** @typedef {import('$lib/DB/DB').Category} Category */
+import { DB } from "$lib/DB";
 
 export class Data {
   /** @type {Record<string, (arg0: { date: Date, num?: number, specific_days?: number[]}) => number>} */
@@ -54,8 +51,6 @@ export class Data {
 
   is_init_complete = $state(false);
 
-  #DB = DB.getInstance();
-
   /** @type {Set<string>} */
   #selected_categories_hash = $state(new SvelteSet());
   /** @type {Task[]} */
@@ -72,9 +67,7 @@ export class Data {
   /** @type {Task | null} */
   #just_completed_task = $state(null);
 
-  constructor() {
-    this.init();
-  }
+  constructor() {}
 
   async init() {
     const is_home = page.url.pathname === "/";
@@ -84,10 +77,11 @@ export class Data {
       this.#selected_categories_hash = new SvelteSet(selected_categories_hash);
     }
 
-    this.#all_tasks = await this.#DB.Task.data;
+    this.#all_tasks = await DB.Task.getAll();
+    console.log("this.#all_tasks", this.#all_tasks);
     this.#tasks = this.#all_tasks.filter(({ archived }) => !!archived === !is_home);
 
-    const category_data = await this.#DB.Category.data;
+    const category_data = await DB.Category.getAll();
     this.#categories = category_data.filter(({ archived }) => !archived);
 
     this.is_init_complete = true;
@@ -187,7 +181,7 @@ export class Data {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    this.#all_tasks = await this.#DB.Task.data;
+    this.#all_tasks = await DB.Task.getAll();
 
     const { id = "" } = this.categories.find(({ is_default }) => is_default) ?? {};
 
@@ -218,35 +212,21 @@ export class Data {
    * @returns {Promise<Category[]>}
    */
   async refreshCategories() {
-    const all_categories = await this.#DB.Category.readAll();
-    this.categories = Object.values(all_categories).filter(({ archived }) => !archived);
-
-    // Remove after 1 Dec 2025
-    const { translations } = await import("$lib/services/language/translations.js");
-    console.log("Cleaning up categories...");
-    for (const category of this.categories) {
-      if (category.is_default != null) continue;
-
-      const no_allowed = Object.values(translations).some((lang) => lang.DEFAULT_NAME === category.name);
-      if (no_allowed) {
-        console.log(`Deleting category: ${category.name}`);
-        await this.#DB.Category.delete(category.id);
-        this.categories = this.categories.filter(({ id }) => id !== category.id);
-      } else {
-        category.is_default = false;
-        await this.#DB.Category.update(category.id, category);
-      }
-    }
+    this.categories = await DB.Category.getAll({
+      sort: [{ name: "asc" }],
+      selector: {
+        archived: { $ne: true },
+      },
+    });
 
     const default_category = this.categories.find(({ is_default }) => is_default);
     if (!default_category) {
-      const category = await this.#DB.Category.create({ name: "", is_default: true });
+      const category = await DB.Category.create({ name: "", is_default: true });
 
-      this.categories = sortByField([category, ...this.categories], "name");
+      this.categories = [category, ...this.categories];
       return this.categories;
     }
 
-    sortByField(this.categories, "name");
     return this.categories;
   }
 
@@ -266,7 +246,7 @@ export class Data {
       task.due_date = this.#getNextDueDate(task);
       task.start_date = this.#getNextStartDate(task);
 
-      const updated = await this.#DB.Task.update(task.id, task);
+      const updated = await DB.Task.update(task.id, task);
       notifications.scheduleNotifications();
       await this.#updateWidget();
 
@@ -280,7 +260,7 @@ export class Data {
 
     this.just_completed_task = task;
 
-    const updated = await this.#DB.Task.update(task.id, task);
+    const updated = await DB.Task.update(task.id, task);
     notifications.scheduleNotifications();
     await this.#updateWidget();
     return updated;
@@ -300,7 +280,7 @@ export class Data {
     task.completed = 0;
     task.archived = false;
 
-    await this.#DB.Task.update(task.id, task);
+    await DB.Task.update(task.id, task);
     notifications.scheduleNotifications();
   }
 
@@ -308,13 +288,13 @@ export class Data {
     if (!this.#just_completed_task) return;
 
     const id = this.#just_completed_task.id;
-    const item = await this.#DB.Task.read(this.#just_completed_task.id);
+    const item = await DB.Task.get(this.#just_completed_task.id);
     if (!item) return;
 
     item.completed = 0;
     item.archived = false;
 
-    await this.#DB.Task.update(id, item);
+    await DB.Task.update(id, item);
     notifications.scheduleNotifications();
 
     this.#addTask(this.#just_completed_task);
@@ -330,7 +310,7 @@ export class Data {
 
     this.#removeTasks(task_ids);
 
-    await this.#DB.Task.delete(task_ids);
+    await DB.Task.delete(task_ids);
     await notifications.scheduleNotifications();
     await this.#updateWidget();
   }
@@ -352,7 +332,7 @@ export class Data {
       return { success: false, error: validation.error };
     }
 
-    const new_task = await this.#DB.Task.create(task);
+    const new_task = await DB.Task.create(task);
     await notifications.scheduleNotifications();
     await this.#updateWidget();
     this.#addTask(new_task);
@@ -374,7 +354,7 @@ export class Data {
       return { success: false, error: validation.error };
     }
 
-    task = await this.#DB.Task.update(task.id, task);
+    task = await DB.Task.update(task.id, task);
     await notifications.scheduleNotifications();
     await this.#updateWidget();
     this.#updateTask(task);
@@ -390,7 +370,7 @@ export class Data {
 
     category.name = category.name.trim();
     category.is_default = false;
-    const new_category = await this.#DB.Category.create(category);
+    const new_category = await DB.Category.create(category);
     this.#categories.push(new_category);
 
     this.#categories = sortByField(this.#categories, "name");
@@ -407,7 +387,7 @@ export class Data {
     if (!category) return;
 
     category.name = category.name.trim();
-    const updated = await this.#DB.Category.update(category.id, category);
+    const updated = await DB.Category.update(category.id, category);
     const index = this.#categories.findIndex(({ id }) => id === updated.id);
     if (index !== -1) {
       this.#categories[index] = updated;
@@ -423,7 +403,7 @@ export class Data {
   async createCategories(categories) {
     if (!categories?.length) return;
 
-    await this.#DB.Category.createMany(categories);
+    await DB.Category.createMany(categories);
   }
 
   /**
@@ -432,13 +412,9 @@ export class Data {
   async createTasks(tasks) {
     if (!tasks?.length) return;
 
-    await this.#DB.Task.createMany(tasks);
-    this.all_tasks = await this.#DB.Task.data;
+    await DB.Task.createMany(tasks);
+    this.all_tasks = await DB.Task.getAll();
     this.#tasks = this.#all_tasks.filter(({ archived }) => !archived);
-  }
-
-  async getAllTasks() {
-    return Object.values(await this.#DB.Task.readAll()).filter(({ archived }) => !archived);
   }
 
   /**

@@ -3,6 +3,7 @@ import { LocalNotifications } from "@capacitor/local-notifications";
 import { data } from "$lib/Data.svelte";
 import { t } from "$lib/services";
 import { Capacitor } from "@capacitor/core";
+import { DB } from "$lib/DB";
 
 class Notification {
   #time: string | null = $state(null);
@@ -153,7 +154,11 @@ class Notification {
     const [hours = 8, minutes = 0] = this.#time?.split(":").map(Number) ?? [];
     date.setHours(hours, minutes, 0, 0);
 
-    const all_tasks = await data.getAllTasks();
+    const all_tasks = await DB.Task.getAll({
+      selector: { archived: false },
+      sort: [{ due_date: "asc" }],
+    });
+
     for (let i = 0; i < 30; i++) {
       if (this.#past_tasks_enabled) {
         const tasks = data.getTasksBeforeDate(all_tasks, date);

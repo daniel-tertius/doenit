@@ -1,6 +1,6 @@
 export async function load() {
   return {
-    /** @type {Omit<import("$lib/DB/DB.js").Task, 'id' | 'created_at'>} */
+    /** @type {Omit<Task, 'id' | 'created_at'>} */
     task: {
       name: "",
       description: "",

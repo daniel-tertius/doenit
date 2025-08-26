@@ -7,11 +7,22 @@
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
-  import Task from "$lib/components/task/Task.svelte";
+  import TaskComponent from "$lib/components/task/Task.svelte";
   import { t } from "$lib/services";
+  import { DB } from "$lib/DB";
 
   data.selected_tasks_hash.clear();
-  data.refreshTasks();
+
+  /** @type {Task[]} */
+  let tasks = $state([]);
+
+  onMount(() => {
+    // Subscribe reactively
+    const sub = DB.Task.subscribe((result) => (tasks = result), { selector: { completed: 0 } });
+
+    // Clean up subscription when component unmounts
+    return () => sub.unsubscribe();
+  });
 
   onMount(() => {
     const task_id = navigating.from?.params?.item_id || page.url.searchParams.get("new_id");
@@ -31,7 +42,7 @@
 </script>
 
 <div class="space-y-1.5">
-  {#if data.tasks.length === 0}
+  {#if tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       {#if data.selected_categories_hash.size === 0 && data.filter.important === false && data.filter.urgent === false}
         <div class="text-lg text-t-secondary">{t("empty_list")}</div>
@@ -49,9 +60,9 @@
     </div>
   {/if}
 
-  {#each data.tasks as task, i (task.id)}
+  {#each tasks as task, i (task.id)}
     {@const display_date = displayPrettyDate(task.due_date)}
-    {@const last_display_date = displayPrettyDate(data.tasks[i - 1]?.due_date)}
+    {@const last_display_date = displayPrettyDate(tasks[i - 1]?.due_date)}
     {@const is_same_display_date = display_date === last_display_date}
     {@const onselect = async () => {
       await data.completeTask(task);
@@ -71,7 +82,7 @@
     {/if}
 
     <div id={task.id}>
-      <Task
+      <TaskComponent
         {task}
         {onselect}
         onclick={() => {

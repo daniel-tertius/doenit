@@ -1,8 +1,6 @@
 <script>
   import { Clock, Sync } from "$lib/icon";
 
-  /** @typedef {import('$lib/DB/DB').Task} Task */
-
   /** @typedef {Object} Props
    * @property {boolean} is_complete
    * @property {boolean} is_past

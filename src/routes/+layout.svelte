@@ -8,14 +8,12 @@
   import { page } from "$app/state";
   import { onMount } from "svelte";
   import "../app.css";
-  import { SplashScreen } from "@capacitor/splash-screen";
 
-  let { children } = $props();
+  let { children, data } = $props();
 
   const is_home = $derived(page.url.pathname === "/");
 
   onMount(() => {
-    SplashScreen.hide({ fadeOutDuration: 300 });
     notifications.init();
   });
 

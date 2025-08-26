@@ -1,4 +1,3 @@
-import type { Task, Category } from "$lib/DB/DB";
 import { Preferences } from "@capacitor/preferences";
 
 export class Table<T extends Task | Category> {

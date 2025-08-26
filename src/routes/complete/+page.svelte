@@ -4,8 +4,6 @@
   import { data } from "$lib/Data.svelte";
   import { Haptics } from "@capacitor/haptics";
 
-  /** @typedef {import('$lib/DB/DB').Task} Task */
-
   data.selected_tasks_hash.clear();
   data.refreshTasks();
 

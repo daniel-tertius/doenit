@@ -1,6 +1,5 @@
 <script>
   import { displayDateTime } from "$lib";
-  import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
   import { data } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
@@ -8,11 +7,7 @@
   import TaskDueDate from "./TaskDueDate.svelte";
   import { Categories, Sync } from "$lib/icon";
   import TaskContainer from "./TaskContainer.svelte";
-
-  /**
-   * @typedef {import('$lib/DB/DB').Task} Task
-   * @typedef {import('$lib/DB/DB').Category} Category
-   */
+  import { DB } from "$lib/DB";
 
   /**
    * @typedef {Object} Props
@@ -42,9 +37,8 @@
 
   onMount(async () => {
     if (!task.category_id) return;
-    const Db = DB.getInstance();
 
-    category = await Db.Category.read(task.category_id);
+    category = await DB.Category.get(task.category_id);
   });
 </script>
 

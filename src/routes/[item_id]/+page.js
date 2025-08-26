@@ -1,16 +1,14 @@
-import { DB } from "$lib/DB/DB.js";
+import { DB } from "$lib/DB";
 import { error } from "@sveltejs/kit";
 
 export async function load({ params }) {
-  const Db = DB.getInstance();
-
-  const origin_task = await Db.Task.read(params.item_id);
+  const origin_task = await DB.Task.get(params.item_id);
   if (!origin_task) {
     error(404, "Task not found");
   }
 
   return {
-    /** @type {import("$lib/DB/DB.js").Task} */
+    /** @type {Task} */
     task: {
       id: origin_task.id,
       completed_at: null,

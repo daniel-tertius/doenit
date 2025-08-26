@@ -20,7 +20,6 @@ const config: CapacitorConfig = {
       iconColor: "#ffffff",
       sound: "notification.wav",
     },
-
     SplashScreen: {
       launchAutoHide: true,
       showSpinner: false,

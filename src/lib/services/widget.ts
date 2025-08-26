@@ -1,4 +1,3 @@
-import type { Task } from "$lib/DB/DB";
 import { Capacitor } from "@capacitor/core";
 
 interface TaskWidgetPlugin {

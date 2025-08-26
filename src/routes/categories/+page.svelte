@@ -5,8 +5,8 @@
   import { t } from "$lib/services";
   import { fly, slide } from "svelte/transition";
   import { data } from "$lib/Data.svelte";
-  import { DB } from "$lib/DB/DB";
   import { onMount } from "svelte";
+  import { DB } from "$lib/DB";
 
   let new_category_name = $state("");
   let edited_category_name = $state("");
@@ -15,10 +15,10 @@
 
   let error_message = $state("");
   let is_editing = $state(false);
-  /** @type {import('$lib/DB/DB').Category?} */
+  /** @type {Category?} */
   let category = $state(null);
 
-  /** @type {import('$lib/DB/DB').Category?} */
+  /** @type {Category?} */
   let default_category = $state(null);
   onMount(async () => {
     await data.refreshCategories();
@@ -33,15 +33,14 @@
   async function deleteCategory(id) {
     if (id === default_id) return;
 
-    const Db = DB.getInstance();
-    await Db.Category.archive(id);
+    await DB.Category.archive(id);
 
     data.selected_categories_hash.delete(id);
     const index = data.categories.findIndex((category) => category.id === id);
     if (index !== -1) {
       data.categories.splice(index, 1);
     }
-    
+
     data.refreshCategories();
   }
 
@@ -110,7 +109,7 @@
   <div class="flex flex-col space-y-2">
     {#if default_category}
       <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between p-2 bg-t-primary-700 rounded-md">
-        <div class="text-lg font-semibold">{t('DEFAULT_NAME')}</div>
+        <div class="text-lg font-semibold">{t("DEFAULT_NAME")}</div>
       </div>
     {/if}
 

@@ -12,7 +12,7 @@
   let show_dropdown = $state(false);
   let is_adding = $state(false);
 
-  /** @type {import('$lib/DB/DB').Category?} */
+  /** @type {Category?} */
   let default_category = $state(null);
 
   onMount(async () => {
@@ -44,7 +44,7 @@
     <PriorityFilter bind:important={data.filter.important} bind:urgent={data.filter.urgent} onclick={filterTasks} />
 
     {#if default_category}
-      <CategoryButton id={default_category.id} name={t('DEFAULT_NAME')} />
+      <CategoryButton id={default_category.id} name={t("DEFAULT_NAME")} />
     {/if}
 
     {#each data.categories ?? [] as { id, name, is_default } (id)}
