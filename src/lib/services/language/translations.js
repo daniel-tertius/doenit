@@ -33,6 +33,7 @@ export const translations = {
     urgent: "Dringend",
     filter_on: "Filtreer op",
     no_description: "Geen beskrywing…",
+    error_updating_task: "Fout met opdateer",
 
     // Buttons & Actions
     create: "Skep",
@@ -41,7 +42,6 @@ export const translations = {
     confirm: "Bevestig",
     save: "Stoor",
     edit: "Wysig",
-    undo: "Ontdoen",
     restore: "Herstel",
 
     // Date & Time
@@ -230,6 +230,7 @@ export const translations = {
     urgent: "Urgent",
     filter_on: "Filter on",
     no_description: "No description…",
+    error_updating_task: "Error updating the task.",
 
     // Buttons & Actions
     create: "Create",
@@ -238,7 +239,6 @@ export const translations = {
     confirm: "Confirm",
     save: "Save",
     edit: "Edit",
-    undo: "Undo",
     restore: "Restore",
 
     // Date & Time

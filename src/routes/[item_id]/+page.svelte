@@ -1,12 +1,12 @@
 <script>
   import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
-  import { data as Data } from "$lib/Data.svelte.js";
   import { Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { InputCheckbox } from "$lib/components/element/input";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t } from "$lib/services";
+  import { DB } from "$lib/DB.js";
 
   let { data } = $props();
 
@@ -39,23 +39,33 @@
       task.repeat_interval = other_interval;
     }
 
-    const result = await Data.updateTask(task);
-    if (!result.success) {
-      error = result.error;
+    const result = await DB.Task.update(task.id, task);
+    if (!result) {
+      error = { message: t("error_updating_task") };
       return;
     }
 
-    //@ts-ignore
-    onclose(event);
-  }
-
-  async function onclose() {
-    await goto("/");
+    goto("/");
   }
 
   async function deleteTask() {
-    await Data.deleteTasks([task.id]);
+    await DB.Task.delete(task.id);
     await goto("/");
+  }
+
+  /**
+   * @param {Event} event
+   */
+  async function handleSelectTask(event) {
+    event.stopPropagation();
+    if (task.archived) {
+      task.completed = 0;
+      task.archived = false;
+    } else {
+      task.completed++;
+    }
+
+    await DB.Task.update(task.id, task);
   }
 </script>
 
@@ -78,15 +88,7 @@
 
     <InputCheckbox
       class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2!"
-      onselect={(event) => {
-        event.stopPropagation();
-        if (task.archived) {
-          task.completed = 0;
-          task.archived = false;
-        } else {
-          task.completed++;
-        }
-      }}
+      onselect={handleSelectTask}
       is_selected={!!task.archived}
       tick_animation={!!task.archived}
     />

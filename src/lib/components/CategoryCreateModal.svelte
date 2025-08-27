@@ -1,19 +1,15 @@
 <script>
-  import { Plus } from "$lib/icon";
+  import InputText from "./element/input/InputText.svelte";
   import { slide } from "svelte/transition";
   import Modal from "./modal/Modal.svelte";
-  import { data } from "$lib/Data.svelte";
-  import InputText from "./element/input/InputText.svelte";
   import { t } from "$lib/services";
+  import { Plus } from "$lib/icon";
+  import { DB } from "$lib/DB";
 
-  let { open = $bindable(), oncreate, onclose: handleClose = () => {} } = $props();
+  let { open = $bindable(), oncreate, onclose } = $props();
 
   let new_category_name = $state("");
   let error_message = $state("");
-
-  function init(el) {
-    setTimeout(() => el?.focus());
-  }
 
   async function addCategory() {
     if (!new_category_name.trim()) {
@@ -22,8 +18,7 @@
     }
 
     open = false;
-    data.createTask;
-    const category = await data.createCategory({
+    const category = await DB.Category.create({
       name: new_category_name.trim(),
     });
 
@@ -32,13 +27,13 @@
     oncreate(category?.id);
   }
 
-  function onclose(e) {
+  function handleClose() {
     new_category_name = "";
-    handleClose(e);
+    onclose();
   }
 </script>
 
-<Modal bind:open {footer} title={t("create_category")} {onclose}>
+<Modal bind:open {footer} title={t("create_category")} onclose={handleClose}>
   <div class="p-4">
     <InputText bind:value={new_category_name} focus_on_mount placeholder={t("choose_category_name")} />
 

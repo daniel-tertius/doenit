@@ -3,8 +3,8 @@
   import { backup } from "$lib/services";
   import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
-  import { data } from "$lib/Data.svelte";
   import { t } from "$lib/services";
+  import { DB } from "$lib/DB";
 
   let is_creating_backup = $state(false);
   let is_restoring = $state(false);
@@ -44,8 +44,8 @@
     try {
       const result = await backup.restoreBackup();
       if (result.success) {
-        await data.createCategories(result.data.categories);
-        await data.createTasks(result.data.tasks);
+        await DB.Task.createMany(result.data.tasks);
+        await DB.Category.createMany(result.data.categories);
         alert(t("restore_success"));
       }
     } catch (error) {

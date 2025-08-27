@@ -43,13 +43,13 @@
           <span class="text-sm font-medium">{t("reminders")}</span>
           <InputSwitch bind:value={notifications.enabled} />
         </div>
-          <!-- Toggle for past due date notifications -->
-          {#if notifications.enabled}
+        <!-- Toggle for past due date notifications -->
+        {#if notifications.enabled}
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium">{t("notify_past_due_tasks")}</span>
             <InputSwitch bind:value={notifications.past_tasks_enabled} />
           </div>
-          {/if}
+        {/if}
         <p class="text-sm text-t-secondary/70">
           {notifications.enabled ? t("notifications_enabled_description") : t("notifications_disabled_description")}
         </p>
@@ -71,7 +71,7 @@
           <div class="flex items-center justify-between">
             <span class="text-sm text-red-600 dark:text-red-400">{t("notification_denied")}</span>
             <button
-              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-white hover:bg-t-primary-700 transition-colors"
+              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-secondary hover:bg-t-primary-700 transition-colors"
               onclick={requestPermission}
               disabled={is_loading}
             >
@@ -85,7 +85,7 @@
           <div class="flex items-center justify-between">
             <span class="text-sm text-yellow-600 dark:text-yellow-400">{t("notification_pending")}</span>
             <button
-              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-white hover:bg-t-primary-700 transition-colors"
+              class="text-sm px-3 py-1 rounded-full bg-t-primary-600 text-secondary hover:bg-t-primary-700 transition-colors"
               onclick={requestPermission}
               disabled={is_loading}
             >

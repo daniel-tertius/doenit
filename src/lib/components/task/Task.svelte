@@ -1,7 +1,7 @@
 <script>
   import { displayDateTime } from "$lib";
   import { onMount } from "svelte";
-  import { data } from "$lib/Data.svelte";
+  import { Selected } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import { InputCheckbox } from "../element/input";
   import { Categories, Important, Urgent } from "$lib/icon";
@@ -31,12 +31,15 @@
   let tick_animation = $state(false);
 
   const is_past = $derived(!!due_date && due_date < today);
-  const is_selected = $derived(data.selected_tasks_hash.has(task.id));
+  const is_selected = $derived(Selected.tasks.has(task.id));
   const is_ongoing = $derived(!!due_date && !!start_date && today >= start_date && today <= due_date);
 
   onMount(async () => {
     if (!task.category_id) return;
-    category = await DB.Category.get(task.category_id);
+
+    try {
+      category = await DB.Category.get(task.category_id);
+    } catch (e) {}
   });
 
   /**
@@ -104,7 +107,9 @@
     {is_selected}
     onselect={(e) => {
       e.stopPropagation();
-      onselect(task);
+      setTimeout(() => {
+        onselect(task);
+      }, 500);
     }}
     {onlongpress}
   />

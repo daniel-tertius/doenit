@@ -1,8 +1,8 @@
 import { cached_backup_token, cached_email_address } from "$lib/cached";
 import { getAuthToken, signInWithGoogle } from "./auth";
 import { auth, FUNCTIONS_URLS } from "./firebase";
-import { data } from "$lib/Data.svelte";
 import { t } from "$lib/services";
+import { DB } from "$lib/DB";
 
 class Backup {
   #email_address: string | null = $state(null);
@@ -65,9 +65,11 @@ class Backup {
 
   // Backup operations
   async createBackup() {
+    const tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
+    const categories = await DB.Category.getAll({ selector: { archived: { $ne: true } } });
     return this.makeRequest("createBackup", {
       method: "POST",
-      body: JSON.stringify({ tasks: data.tasks, categories: data.categories }),
+      body: JSON.stringify({ tasks, categories }),
     });
   }
 

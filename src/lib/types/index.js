@@ -29,6 +29,6 @@
 
 /**
  * @typedef {Object} DB
- * @property {import('$lib/RxDB/Table').Table<Task>} Task - The table interface for Task entities.
- * @property {import('$lib/RxDB/Table').Table<Category>} Category - The table interface for Category entities.
+ * @property {import('$lib/DB/_Table').Table<Task>} Task - The table interface for Task entities.
+ * @property {import('$lib/DB/_Table').Table<Category>} Category - The table interface for Category entities.
  */

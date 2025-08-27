@@ -20,7 +20,7 @@
    */
   async function onclick(e) {
     tick_animation = !tick_animation;
-    await waitAtLeast(() => onselect(e), 500);
+    onselect(e);
   }
 </script>
 

@@ -26,7 +26,6 @@ import Sun from "./Sun.svelte";
 import TestTube from "./TestTube.svelte";
 import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
-import Undo from "./Undo.svelte";
 import Urgent from "./Urgent.svelte";
 import XCircle from "./XCircle.svelte";
 
@@ -59,7 +58,6 @@ export {
   TestTube,
   Times,
   Trash,
-  Undo,
   Urgent,
   XCircle,
 };

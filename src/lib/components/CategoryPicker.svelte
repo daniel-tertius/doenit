@@ -1,17 +1,29 @@
 <script>
   import { DownChevron, Times } from "$lib/icon";
-  import { data } from "$lib/Data.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import { t } from "$lib/services";
+  import { onMount } from "svelte";
+  import { DB } from "$lib/DB";
 
   let { category_id = $bindable() } = $props();
 
+  /** @type {Category[]} */
+  let categories = $state([]);
   let is_adding = $state(false);
 
   $effect(() => {
     if (category_id === null) {
       is_adding = true;
     }
+  });
+
+  onMount(() => {
+    const sub = DB.Category.subscribe((result) => (categories = result), {
+      selector: { archived: { $ne: true }, is_default: { $ne: true } },
+      sort: [{ name: "asc" }],
+    });
+
+    return () => sub.unsubscribe();
   });
 </script>
 
@@ -23,7 +35,7 @@
       'text-t-secondary/60'}"
   >
     <option value="">{t("choose_category")}</option>
-    {#each data.categories as category (category.id)}
+    {#each categories as category (category.id)}
       {#if !category.is_default}
         <option value={category.id}>{category.name}</option>
       {/if}

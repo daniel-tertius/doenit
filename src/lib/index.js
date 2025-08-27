@@ -62,7 +62,11 @@ export function displayDate({ due_date, start_date }) {
   }
 
   // Different years
-  const startStr = startDate.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
+  const startStr = startDate.toLocaleDateString(getCurrentLocale(), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
   const dueStr = dueDate.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
   return `${startStr} - ${dueStr}`;
 }
@@ -122,7 +126,11 @@ export function displayDateRange({ start, end }) {
 
   if (start_year === end_year) {
     const startStr = new Date(start_date).toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric" });
-    const endStr = new Date(end_date).toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric", year: "numeric" });
+    const endStr = new Date(end_date).toLocaleDateString(getCurrentLocale(), {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
     return `${startStr} – ${endStr}`;
   }
 }
@@ -203,13 +211,25 @@ export function displayDateTime({ due_date, start_date }) {
   // Same year, different month
   if (startYear === dueYear) {
     const startStr = startDateOnly.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric" });
-    const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), { month: "short", day: "numeric", year: "numeric" });
+    const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
     return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
   }
 
   // Different years
-  const startStr = startDateOnly.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
-  const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), { year: "numeric", month: "short", day: "numeric" });
+  const startStr = startDateOnly.toLocaleDateString(getCurrentLocale(), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const dueStr = dueDateOnly.toLocaleDateString(getCurrentLocale(), {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
   return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
 }
 
@@ -335,4 +355,102 @@ export function waitAtLeast(promise, ms) {
       setTimeout(resolve, remaining);
     });
   });
+}
+
+/**
+ * @param {Task[]} data
+ */
+export function sortTasksByDueDate(data) {
+  if (!data?.length) return [];
+
+  let past_tasks = [];
+  let today_tasks = [];
+  let tomorrow_tasks = [];
+  let day_after_tomorrow_tasks = [];
+  let this_week_tasks = [];
+  let this_month_tasks = [];
+  let next_month_tasks = [];
+  let later_tasks = [];
+  let no_date = [];
+
+  const today = new Date().setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today).setDate(new Date(today).getDate() + 1);
+  const day_after_tomorrow = new Date(today).setDate(new Date(today).getDate() + 2);
+  const this_week_start = new Date();
+  this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
+  const this_week_end = new Date(this_week_start);
+  this_week_end.setDate(this_week_end.getDate() + 6);
+
+  const current_month = new Date().getMonth();
+  const current_year = new Date().getFullYear();
+
+  const next_month = (current_month + 1) % 12;
+  const next_month_year = next_month === 0 ? current_year + 1 : current_year;
+
+  data = sortByField(data, "name", "asc");
+  for (const task of data) {
+    if (!task.due_date) {
+      no_date.push(task);
+      continue;
+    }
+
+    const due_date = new Date(new Date(task.due_date).setHours(0, 0, 0, 0));
+    if (+due_date < today) {
+      past_tasks.push(task);
+    } else if (+due_date === today) {
+      today_tasks.push(task);
+    } else if (+due_date === tomorrow) {
+      tomorrow_tasks.push(task);
+    } else if (+due_date === day_after_tomorrow) {
+      day_after_tomorrow_tasks.push(task);
+    } else if (due_date >= this_week_start && due_date <= this_week_end) {
+      this_week_tasks.push(task);
+    } else if (due_date.getMonth() === current_month && due_date.getFullYear() === current_year) {
+      this_month_tasks.push(task);
+    } else if (due_date.getMonth() === next_month && due_date.getFullYear() === next_month_year) {
+      next_month_tasks.push(task);
+    } else {
+      later_tasks.push(task);
+    }
+  }
+
+  const with_date = [
+    ...sortTasksByPriority(sortByField(past_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(today_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(tomorrow_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(day_after_tomorrow_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(this_week_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(this_month_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(next_month_tasks, "due_date", "asc")),
+    ...sortTasksByPriority(sortByField(later_tasks, "due_date", "asc")),
+  ];
+
+  return [...with_date, ...sortTasksByPriority(no_date)];
+}
+
+/**
+ *
+ * @param {Task[]} data
+ * @returns {Task[]}
+ */
+function sortTasksByPriority(data) {
+  // Sort by Urgent and Important first, then Important, then Urgent
+  const urgent_important = [];
+  const important_only = [];
+  const urgent_only = [];
+  const neither = [];
+
+  for (const task_no_date of data) {
+    if (task_no_date.urgent && task_no_date.important) {
+      urgent_important.push(task_no_date);
+    } else if (task_no_date.important) {
+      important_only.push(task_no_date);
+    } else if (task_no_date.urgent) {
+      urgent_only.push(task_no_date);
+    } else {
+      neither.push(task_no_date);
+    }
+  }
+
+  return [...urgent_important, ...important_only, ...urgent_only, ...neither];
 }

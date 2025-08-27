@@ -1,11 +1,12 @@
 import { cached_notification_past_tasks, cached_notification_time } from "$lib/cached";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { data } from "$lib/Data.svelte";
 import { t } from "$lib/services";
 import { Capacitor } from "@capacitor/core";
 import { DB } from "$lib/DB";
+import { sortTasksByDueDate } from "$lib";
 
 class Notification {
+  #initiated: boolean = false;
   #time: string | null = $state(null);
   #enabled: boolean = $state(false);
   #past_tasks_enabled: boolean = $state(false);
@@ -94,8 +95,15 @@ class Notification {
       time = null;
     }
 
+    let past_tasks = await cached_notification_past_tasks.get();
+    if (past_tasks == null) {
+      cached_notification_past_tasks.set(false);
+      past_tasks = false;
+    }
+
     this.#time = time;
     this.#enabled = time !== null;
+    this.#past_tasks_enabled = past_tasks;
     this.#status = await this.requestPermission();
   }
 
@@ -138,7 +146,18 @@ class Notification {
     await this.cancelAll();
   }
 
-  async scheduleNotifications() {
+  async scheduleNotifications(all_tasks?: Task[]) {
+    console.debug("[Doenit]: Re-scheduling notifications");
+
+    if (all_tasks == null) {
+      all_tasks = await DB.Task.getAll({ selector: { completed: 0, archived: { $ne: true } } });
+    }
+
+    if (!this.#initiated) {
+      await this.init();
+      this.#initiated = true;
+    }
+
     if (!this.#enabled || !this.#time) {
       console.warn("Notifications are disabled or time is not set.");
       return;
@@ -154,29 +173,27 @@ class Notification {
     const [hours = 8, minutes = 0] = this.#time?.split(":").map(Number) ?? [];
     date.setHours(hours, minutes, 0, 0);
 
-    const all_tasks = await DB.Task.getAll({
-      selector: { archived: false },
-      sort: [{ due_date: "asc" }],
-    });
-
+    all_tasks = sortTasksByDueDate(all_tasks);
     for (let i = 0; i < 30; i++) {
       if (this.#past_tasks_enabled) {
-        const tasks = data.getTasksBeforeDate(all_tasks, date);
-        let body = tasks
-          .map(
-            (task, idx) =>
-              `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
-          )
-          .join("\n");
-        notifications.push({
-          title: tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
-          body: body,
-          id: +`${all_tasks.length}${i + 1}`,
-          schedule: { at: new Date(+date) /* Need to copy date */ },
-        });
+        const tasks = getTasksBeforeDate(all_tasks, date);
+        if (!!tasks.length) {
+          let body = tasks
+            .map(
+              (task, idx) =>
+                `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+            )
+            .join("\n");
+          notifications.push({
+            title: tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
+            body: body,
+            id: +`${all_tasks.length}${i + 1}`,
+            schedule: { at: new Date(+date) /* Need to copy date */ },
+          });
+        }
       }
 
-      const tasks = data.getTasksOnDate(all_tasks, date);
+      const tasks = getTasksOnDate(all_tasks, date);
       if (!tasks.length) {
         date.setDate(date.getDate() + 1);
         continue;
@@ -238,3 +255,35 @@ class Notification {
 }
 
 export const notifications = new Notification();
+
+function getTasksOnDate(tasks: Task[], date: Date): Task[] {
+  if (!date || !tasks?.length) return [];
+
+  const target_date = new Date(date);
+  target_date.setHours(0, 0, 0, 0);
+
+  return tasks.filter((task) => {
+    if (!task.due_date) return false;
+
+    const task_date = new Date(task.due_date);
+    task_date.setHours(0, 0, 0, 0);
+
+    return task_date.toLocaleDateString("en-CA") === target_date.toLocaleDateString("en-CA");
+  });
+}
+
+function getTasksBeforeDate(tasks: Task[], date: Date): Task[] {
+  if (!date || !tasks?.length) return [];
+
+  const target_date = new Date(date);
+  target_date.setHours(0, 0, 0, 0);
+
+  return tasks.filter((task) => {
+    if (!task.due_date) return false;
+
+    const task_date = new Date(task.due_date);
+    task_date.setHours(0, 0, 0, 0);
+
+    return task_date < target_date;
+  });
+}

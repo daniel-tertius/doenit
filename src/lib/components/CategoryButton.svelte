@@ -1,30 +1,25 @@
 <script>
   import { selectedCategories } from "$lib/cached";
-  import { data } from "$lib/Data.svelte";
+  import { Selected } from "$lib/Data.svelte";
   import { InputCheckbox } from "./element/input";
 
   let { id, name } = $props();
 
-  const is_selected = $derived(data.selected_categories_hash.has(id));
+  const is_selected = $derived(Selected.categories.has(id));
 
   /**
    * Handles the selection of a category.
-   * @param {*} event
+   * @param {Event} event
    */
   function onselect(event) {
-    if (event) event.stopPropagation();
+    event.stopPropagation();
 
     if (is_selected) {
-      data.selected_categories_hash.delete(id);
+      Selected.categories.delete(id);
     } else {
-      data.selected_categories_hash.add(id);
+      Selected.categories.add(id);
     }
-    selectedCategories.set([...data.selected_categories_hash]);
-
-    let tasks = data.all_tasks;
-    tasks = data.filterTasksByPriority(tasks);
-    tasks = data.filterTasksByCategory(tasks);
-    data.tasks = tasks;
+    selectedCategories.set([...Selected.categories]);
   }
 </script>
 

@@ -1,26 +1,39 @@
 <script>
-  import { displayPrettyDate } from "$lib";
+  import { displayPrettyDate, sortTasksByDueDate } from "$lib";
+  import TaskComponent from "$lib/components/task/Task.svelte";
   import { Plus } from "$lib/icon";
   import { goto, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
-  import { data } from "$lib/Data.svelte";
+  import { Selected } from "$lib/Data.svelte";
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
-  import TaskComponent from "$lib/components/task/Task.svelte";
   import { t } from "$lib/services";
   import { DB } from "$lib/DB";
 
-  data.selected_tasks_hash.clear();
+  Selected.tasks.clear();
 
   /** @type {Task[]} */
   let tasks = $state([]);
+  /** @type {Category[]} */
+  let categories = $state([]);
+  const filtered_tasks = $derived(filterTasksByCategory(tasks));
+  const default_category = $derived(categories.find(({ is_default }) => is_default));
 
   onMount(() => {
-    // Subscribe reactively
-    const sub = DB.Task.subscribe((result) => (tasks = result), { selector: { completed: 0 } });
+    const sub = DB.Task.subscribe((result) => (tasks = sortTasksByDueDate(result)), {
+      selector: { archived: { $ne: true } },
+    });
 
-    // Clean up subscription when component unmounts
+    return () => sub.unsubscribe();
+  });
+
+  onMount(() => {
+    const sub = DB.Category.subscribe((result) => (categories = result), {
+      selector: { archived: { $ne: true } },
+      sort: [{ name: "asc" }],
+    });
+
     return () => sub.unsubscribe();
   });
 
@@ -39,12 +52,30 @@
       element.scrollIntoView({ behavior: "smooth", block: "start", inline: "start" });
     }
   });
+
+  /**
+   * @param {Task[]} tasks
+   * @returns {Task[]}
+   */
+  function filterTasksByCategory(tasks) {
+    if (!Selected.categories.size) {
+      return tasks;
+    }
+
+    return tasks.filter(({ category_id = "" }) => {
+      if (!category_id && default_category) {
+        return Selected.categories.has(default_category.id);
+      }
+
+      return Selected.categories.has(category_id);
+    });
+  }
 </script>
 
-<div class="space-y-1.5">
-  {#if tasks.length === 0}
+<div class="space-y-1.5 overflow-x-hidden">
+  {#if filtered_tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
-      {#if data.selected_categories_hash.size === 0 && data.filter.important === false && data.filter.urgent === false}
+      {#if Selected.categories.size === 0}
         <div class="text-lg text-t-secondary">{t("empty_list")}</div>
       {:else}
         <div class="text-lg text-t-secondary">{t("no_tasks_found")}</div>
@@ -60,12 +91,12 @@
     </div>
   {/if}
 
-  {#each tasks as task, i (task.id)}
+  {#each filtered_tasks as task, i (task.id)}
     {@const display_date = displayPrettyDate(task.due_date)}
-    {@const last_display_date = displayPrettyDate(tasks[i - 1]?.due_date)}
+    {@const last_display_date = displayPrettyDate(filtered_tasks[i - 1]?.due_date)}
     {@const is_same_display_date = display_date === last_display_date}
     {@const onselect = async () => {
-      await data.completeTask(task);
+      await DB.Task.complete(task);
       await tick();
       const element = document.getElementById(task.id);
       if (!element) return;
@@ -82,28 +113,30 @@
     {/if}
 
     <div id={task.id}>
-      <TaskComponent
-        {task}
-        {onselect}
-        onclick={() => {
-          if (!data.selected_tasks_hash.size) return goto(`/${task.id}`);
+      {#key task.id + task.due_date}
+        <TaskComponent
+          {task}
+          {onselect}
+          onclick={() => {
+            if (!Selected.tasks.size) return goto(`/${task.id}`);
 
-          if (data.selected_tasks_hash.has(task.id)) {
-            data.selected_tasks_hash.delete(task.id);
-          } else {
-            data.selected_tasks_hash.add(task.id);
-            Haptics.vibrate({ duration: 50 });
-          }
-        }}
-        onlongpress={() => {
-          Haptics.vibrate({ duration: 100 });
-          if (data.selected_tasks_hash.has(task.id)) {
-            data.selected_tasks_hash.delete(task.id);
-          } else {
-            data.selected_tasks_hash.add(task.id);
-          }
-        }}
-      />
+            if (Selected.tasks.has(task.id)) {
+              Selected.tasks.delete(task.id);
+            } else {
+              Selected.tasks.add(task.id);
+              Haptics.vibrate({ duration: 50 });
+            }
+          }}
+          onlongpress={() => {
+            Haptics.vibrate({ duration: 100 });
+            if (Selected.tasks.has(task.id)) {
+              Selected.tasks.delete(task.id);
+            } else {
+              Selected.tasks.add(task.id);
+            }
+          }}
+        />
+      {/key}
     </div>
   {/each}
 </div>

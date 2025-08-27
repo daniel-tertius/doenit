@@ -1,56 +1,51 @@
 <script>
   import { Plus, DownChevron } from "$lib/icon";
   import { onMount } from "svelte";
-  import { fade, slide } from "svelte/transition";
-  import { data } from "$lib/Data.svelte";
+  import { slide } from "svelte/transition";
+  import { Selected } from "$lib/Data.svelte";
   import CategoryButton from "./CategoryButton.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
-  import PriorityFilter from "./PriorityFilter.svelte";
   import { selectedCategories } from "$lib/cached";
   import { t } from "$lib/services";
+  import { DB } from "$lib/DB";
 
   let show_dropdown = $state(false);
   let is_adding = $state(false);
 
   /** @type {Category?} */
   let default_category = $state(null);
+  /** @type {Category[]} */
+  let categories = $state([]);
 
   onMount(async () => {
-    await data.refreshCategories();
-    default_category = data.categories.find(({ is_default }) => is_default) ?? null;
+    default_category = await DB.Category.getDefault();
   });
 
-  function filterTasks() {
-    let tasks = data.all_tasks;
-    tasks = data.filterTasksByPriority(tasks);
-    tasks = data.filterTasksByCategory(tasks);
-    data.tasks = tasks;
-  }
+  onMount(() => {
+    const sub = DB.Category.subscribe((result) => (categories = result), {
+      selector: { archived: { $ne: true }, is_default: { $ne: true } },
+      sort: [{ name: "asc" }],
+    });
+
+    return () => sub.unsubscribe();
+  });
 </script>
 
-<svelte:window onclick={() => (show_dropdown = false)} />
-
 {#if show_dropdown}
-  <div transition:fade class="fixed inset-0 w-full z-1 bg-black/25" style="height: calc(100% - 93px);"></div>
-
   <div
     transition:slide
-    class="absolute left-0 text-t-secondary right-0 mt-1 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
+    class="absolute left-0 text-t-secondary right-0 mt-1 border border-t-primary-800 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(92px)"
   >
     <div class="text-center font-semibold pt-1 -mb-2">
       <span class="h-fit leading-tight">{t("filter_on")}:</span>
     </div>
-    <PriorityFilter bind:important={data.filter.important} bind:urgent={data.filter.urgent} onclick={filterTasks} />
 
     {#if default_category}
       <CategoryButton id={default_category.id} name={t("DEFAULT_NAME")} />
     {/if}
-
-    {#each data.categories ?? [] as { id, name, is_default } (id)}
-      {#if !is_default}
-        <CategoryButton {id} {name} />
-      {/if}
+    {#each categories as { id, name } (id)}
+      <CategoryButton {id} {name} />
     {/each}
 
     <button
@@ -71,25 +66,22 @@
       show_dropdown = !show_dropdown;
     }}
   >
-    {#if data.selected_categories_hash.size === 0}
+    {#if Selected.categories.size === 0}
       {t("all_categories")}
-    {:else if data.selected_categories_hash.size === 1}
+    {:else if Selected.categories.size === 1}
       {t("category_selected")}
     {:else}
-      {t("categories_selected", { count: data.selected_categories_hash.size })}
+      {t("categories_selected", { count: Selected.categories.size })}
     {/if}
 
     <DownChevron class={show_dropdown ? "-rotate-180" : ""} />
   </button>
 </div>
 
-<!-- TODO: Add Search -->
-
 <CategoryCreateModal
   bind:open={is_adding}
   oncreate={async (new_category_id) => {
-    await data.refreshCategories();
-    data.selected_categories_hash.add(new_category_id);
-    selectedCategories.set([...data.selected_categories_hash]);
+    Selected.categories.add(new_category_id);
+    selectedCategories.set([...Selected.categories]);
   }}
 />

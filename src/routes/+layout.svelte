@@ -1,5 +1,5 @@
 <script>
-  import { notifications, theme } from "$lib/services";
+  import { notifications, theme, Widget } from "$lib/services";
   import { Capacitor } from "@capacitor/core";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
@@ -7,26 +7,19 @@
   import { App } from "@capacitor/app";
   import { page } from "$app/state";
   import { onMount } from "svelte";
+  import { DB } from "$lib/DB";
   import "../app.css";
 
-  let { children, data } = $props();
+  let { children } = $props();
 
   const is_home = $derived(page.url.pathname === "/");
 
   onMount(() => {
-    notifications.init();
-  });
+    const sub = DB.Task.subscribe((tasks) => handleTasksUpdate(tasks), {
+      selector: { archived: { $ne: true } },
+    });
 
-  onMount(() => {
-    // Re-schedule when app comes to foreground
-    if (Capacitor.isNativePlatform()) {
-      App.addListener("appStateChange", (state) => {
-        if (state.isActive) {
-          // Re-schedule when app becomes active to ensure continuity
-          notifications.scheduleNotifications();
-        }
-      });
-    }
+    return () => sub.unsubscribe();
   });
 
   onMount(() => {
@@ -40,6 +33,14 @@
       });
     }
   });
+
+  /**
+   * @param {Task[]} tasks
+   */
+  function handleTasksUpdate(tasks) {
+    notifications.scheduleNotifications(tasks);
+    Widget.updateWidget(tasks);
+  }
 </script>
 
 <div
