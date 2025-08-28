@@ -8,7 +8,7 @@
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB";
 
   Selected.tasks.clear();

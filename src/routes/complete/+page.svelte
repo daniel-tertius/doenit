@@ -12,7 +12,7 @@
   let tasks = $state([]);
 
   onMount(() => {
-    const sub = DB.Task.subscribe((result) => (tasks = result), { selector: { archived: { $eq: true } } });
+    const sub = DB.Task.subscribe((result) => (tasks = result), { selector: { $or: [{ archived: { $eq: true } }, { completed: { $gt: 0 } }] } });
 
     return () => sub.unsubscribe();
   });

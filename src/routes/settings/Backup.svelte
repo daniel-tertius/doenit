@@ -1,9 +1,9 @@
 <script>
   import { ContainerDetails } from "$lib/components/element/container";
-  import { backup } from "$lib/services";
+  import { backup } from "$lib/services/backup/backup.svelte";
   import { Google, Loading } from "$lib/icon";
   import { onMount } from "svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB";
 
   let is_creating_backup = $state(false);

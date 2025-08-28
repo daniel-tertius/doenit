@@ -1,11 +1,11 @@
 <script>
   import { slide } from "svelte/transition";
-  import { notifications } from "$lib/services";
-  import { onMount, untrack } from "svelte";
-  import { Bell, CheckCircle, XCircle, Clock, TestTube } from "$lib/icon";
+  import { notifications } from "$lib/services/notification.svelte";
+  import { onMount } from "svelte";
+  import { CheckCircle, XCircle, Clock } from "$lib/icon";
   import { InputSwitch, InputTime } from "$lib/components/element/input";
   import { ContainerDetails } from "$lib/components/element/container";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 
   let is_loading = $state(false);
   let is_testing = $state(false);
@@ -50,9 +50,6 @@
             <InputSwitch bind:value={notifications.past_tasks_enabled} />
           </div>
         {/if}
-        <p class="text-sm text-t-secondary/70">
-          {notifications.enabled ? t("notifications_enabled_description") : t("notifications_disabled_description")}
-        </p>
       </div>
     </div>
 
@@ -110,16 +107,6 @@
             onchange={handleTimeChange}
             placeholder={t("choose_time")}
           />
-        </div>
-
-        <!-- Helpful information -->
-        <div class="text-sm text-t-secondary/60 p-3 rounded-lg bg-t-secondary/5 border-l-4 border-t-primary-600">
-          <div class="font-medium mb-1">{t("how_notifications_work")}</div>
-          <ul class="space-y-1 list-disc list-inside">
-            <li>{t("notification_info_1")}</li>
-            <li>{t("notification_info_2")}</li>
-            <li>{t("notification_info_3")}</li>
-          </ul>
         </div>
       </div>
     {/if}

@@ -126,19 +126,12 @@ export const translations = {
     notification_denied: "Toestemming geweier",
 
     notification_pending: "Toestemming benodig",
-    notifications_enabled_description: "Jy sal daaglikse herhinneringe kry vir jou take.",
-    notifications_disabled_description: "Skakel kennisgewings aan om daaglikse herhinneringe te ontvang.",
     request_permission: "Gee toestemming",
     loading: "Laai",
     testing: "Toets",
     daily_reminder_explanation: "Jy sal elke dag op hierdie tyd 'n herinnering kry as jy take het.",
     daily_reminder_title: "U het {{task_count}} take vir vandag:",
     daily_reminder_title_singular: "U het 1 taak vir vandag:",
-    how_notifications_work: "Hoe kennisgewings werk:",
-    notification_info_1: "Jy kry 'n daaglikse herinnering op die gekose tyd",
-    notification_info_2: "Kennisgewings word slegs gestuur as jy take het",
-    notification_info_3: "Take met spesifieke tye kry ook individuele herhinneringe",
-    task_due_title: "'n Taak is geskeduleer vir nou!",
 
     // Support & About
     support: "Ondersteuning",
@@ -322,8 +315,6 @@ export const translations = {
     notification_granted: "Permissions granted",
     notification_denied: "Permissions denied",
     notification_pending: "Permissions needed",
-    notifications_enabled_description: "You'll receive daily reminders for your tasks.",
-    notifications_disabled_description: "Enable notifications to receive daily reminders.",
     request_permission: "Grant permission",
     loading: "Loading",
     testing: "Testing",
@@ -331,11 +322,6 @@ export const translations = {
     daily_reminder_title: "You have {{task_count}} tasks for today:",
     daily_reminder_title_singular: "You have 1 task for today:",
     test_notification_description: "Send a test notification to see if everything works.",
-    how_notifications_work: "How notifications work:",
-    notification_info_1: "You'll get a daily reminder at your chosen time",
-    notification_info_2: "Notifications are only sent when you have tasks",
-    notification_info_3: "Tasks with specific times get individual reminders too",
-    task_due_title: "A task is scheduled for now!",
 
     // Support & About
     support: "Support",

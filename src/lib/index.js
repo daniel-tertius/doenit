@@ -1,4 +1,4 @@
-import { t, language } from "./services";
+import { t, language } from "./services/language.svelte";
 
 export const AFRIKAANS = Symbol("af");
 export const ENGLISH = Symbol("en");

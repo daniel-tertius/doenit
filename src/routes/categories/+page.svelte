@@ -3,7 +3,7 @@
   import Modal from "$lib/components/modal/Modal.svelte";
   import { Trash, Plus, Edit, Check } from "$lib/icon";
   import { fly, slide } from "svelte/transition";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
 

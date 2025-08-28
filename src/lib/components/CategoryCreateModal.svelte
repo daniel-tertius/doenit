@@ -2,7 +2,7 @@
   import InputText from "./element/input/InputText.svelte";
   import { slide } from "svelte/transition";
   import Modal from "./modal/Modal.svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { Plus } from "$lib/icon";
   import { DB } from "$lib/DB";
 

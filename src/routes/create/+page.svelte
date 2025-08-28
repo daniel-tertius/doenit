@@ -2,7 +2,7 @@
   import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
   import EditTask from "$lib/components/EditTask.svelte";
-  import { language, t } from "$lib/services";
+  import { t, language } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
 
   let { data } = $props();

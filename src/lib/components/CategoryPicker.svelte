@@ -1,7 +1,7 @@
 <script>
   import { DownChevron, Times } from "$lib/icon";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
 

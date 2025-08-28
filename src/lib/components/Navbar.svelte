@@ -1,7 +1,7 @@
 <script>
   import { page } from "$app/state";
   import { Categories, Home, Check, Settings } from "$lib/icon";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { fly } from "svelte/transition";
 
   let isReady = false;

@@ -1,11 +1,11 @@
 <script>
-  import { slide } from "svelte/transition";
+  import { fade, slide } from "svelte/transition";
   import { Selected } from "$lib/Data.svelte";
   import { Trash } from "$lib/icon";
   import Modal from "./modal/Modal.svelte";
   import { untrack } from "svelte";
   import { page } from "$app/state";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB";
 
   let is_deleting = $state(false);
@@ -26,7 +26,7 @@
 </script>
 
 {#if Selected.tasks.size}
-  <div transition:slide class="absolute z-1 right-1 flex items-end justify-between top-1">
+  <div transition:fade class="absolute z-1 right-1 flex items-end justify-between top-1">
     <button
       class="px-4 py-2 flex gap-1 bg-error-10d text-tertiary rounded-md hover:bg-error-20d transition-colors"
       onclick={() => (is_deleting = true)}

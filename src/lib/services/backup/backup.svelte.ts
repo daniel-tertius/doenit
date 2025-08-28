@@ -1,7 +1,7 @@
 import { cached_backup_token, cached_email_address } from "$lib/cached";
 import { getAuthToken, signInWithGoogle } from "./auth";
 import { auth, FUNCTIONS_URLS } from "./firebase";
-import { t } from "$lib/services";
+import { t } from "$lib/services/language.svelte";
 import { DB } from "$lib/DB";
 
 class Backup {

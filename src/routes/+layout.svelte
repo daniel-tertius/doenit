@@ -1,5 +1,7 @@
 <script>
-  import { notifications, theme, Widget } from "$lib/services";
+  import { notifications } from "$lib/services/notification.svelte";
+  import { theme } from "$lib/services/theme.svelte";
+  import { Widget } from "$lib/services/widget";
   import { Capacitor } from "@capacitor/core";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";

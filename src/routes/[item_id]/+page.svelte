@@ -5,7 +5,7 @@
   import Modal from "$lib/components/modal/Modal.svelte";
   import { InputCheckbox } from "$lib/components/element/input";
   import EditTask from "$lib/components/EditTask.svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
 
   let { data } = $props();

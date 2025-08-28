@@ -1,6 +1,6 @@
 <script>
   import { More } from "$lib/icon";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 
   let { name, completed = false, tick_animation, description = "" } = $props();
 </script>

@@ -3,8 +3,8 @@
   import { Haptics, ImpactStyle } from "@capacitor/haptics";
   import { App } from "@capacitor/app";
   import { fade } from "svelte/transition";
-  import { onMount, onDestroy } from "svelte";
-  import { t } from "$lib/services";
+  import { onMount } from "svelte";
+  import { t } from "$lib/services/language.svelte";
 
   // Payment URLs
   const kofiUrl = "https://ko-fi.com/tertius1";

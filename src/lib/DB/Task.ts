@@ -1,6 +1,6 @@
 import type { RxCollection } from "rxdb";
 import { Table } from "./_Table";
-import { language } from "$lib/services";
+import { language } from "$lib/services/language.svelte";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {

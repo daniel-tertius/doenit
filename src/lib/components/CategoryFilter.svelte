@@ -6,7 +6,7 @@
   import CategoryButton from "./CategoryButton.svelte";
   import CategoryCreateModal from "./CategoryCreateModal.svelte";
   import { selectedCategories } from "$lib/cached";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB";
 
   let show_dropdown = $state(false);
@@ -37,7 +37,7 @@
     class="absolute left-0 text-t-secondary right-0 mt-1 border border-t-primary-800 bg-t-primary rounded-t-md max-h-[66dvh] overflow-y-auto z-10"
     style="bottom: calc(92px)"
   >
-    <div class="text-center font-semibold pt-1 -mb-2">
+    <div class="text-center font-semibold pt-1">
       <span class="h-fit leading-tight">{t("filter_on")}:</span>
     </div>
 

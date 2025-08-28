@@ -1,7 +1,7 @@
 <script>
   import { Times } from "$lib/icon";
   import { tick, untrack } from "svelte";
-  import { language } from "$lib/services";
+  import { language } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props

@@ -2,9 +2,8 @@
   import { ContainerDetails } from "$lib/components/element/container";
   import { ButtonLanguage } from "$lib/components/element/button";
   import { Moon, Sun } from "$lib/icon";
-  import { language } from "$lib/services";
-  import { theme } from "$lib/services";
-  import { t } from "$lib/services";
+  import { t, language } from "$lib/services/language.svelte";
+  import { theme } from "$lib/services/theme.svelte";
 
   /**
    * Handle language change

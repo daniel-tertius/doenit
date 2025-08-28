@@ -2,7 +2,7 @@
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
   import InputText from "./element/input/InputText.svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 
   let { name = $bindable(), description = $bindable(), error_message = $bindable() } = $props();
 

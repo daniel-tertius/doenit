@@ -1,6 +1,6 @@
 import { cached_notification_past_tasks, cached_notification_time } from "$lib/cached";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { t } from "$lib/services";
+import { t } from "$lib/services/language.svelte";
 import { Capacitor } from "@capacitor/core";
 import { DB } from "$lib/DB";
 import { sortTasksByDueDate } from "$lib";

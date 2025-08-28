@@ -4,7 +4,7 @@
   import { slide } from "svelte/transition";
   import { untrack } from "svelte";
   import { ButtonClear } from "./element/button";
-  import { t, language } from "$lib/services";
+  import { t, language } from "$lib/services/language.svelte";
 
   let { start, end, onchange, error_message = $bindable() } = $props();
 

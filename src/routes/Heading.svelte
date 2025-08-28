@@ -3,7 +3,7 @@
   import { fade } from "svelte/transition";
   import { ButtonBack } from "$lib/components/element/button";
   import DeleteAll from "../lib/components/DeleteAll.svelte";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 
   /** @type {Record<string, string>} */
   const TITLES = $derived({

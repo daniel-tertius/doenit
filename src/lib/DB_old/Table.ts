@@ -33,13 +33,14 @@ export class Table<T extends Task | Category> {
     }
   }
 
-  async readAll(): Promise<Record<string, T>> {
+  async readAll(): Promise<Record<string, T> | null> {
     try {
       const { value } = await Preferences.get({ key: this.table_name });
-      return value ? JSON.parse(value) : {};
+      if (value === "{}") return null;
+      return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error("Failed to read data:", error);
-      return {};
+      return null;
     }
   }
 
@@ -131,6 +132,12 @@ export class Table<T extends Task | Category> {
       key: this.table_name,
       value: JSON.stringify(data, null, 2),
     });
+  }
+
+  async destroy() {
+    if (typeof window === "undefined") return;
+
+    await Preferences.remove({ key: this.table_name });
   }
 
   async archive(id: string): Promise<void> {

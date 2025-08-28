@@ -1,5 +1,5 @@
 <script>
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 </script>
 
 <section class="rounded-md p-4 bg-t-primary space-y-2 text-t-secondary">

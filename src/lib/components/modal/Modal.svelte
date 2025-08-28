@@ -1,7 +1,7 @@
 <script>
   import { Times } from "$lib/icon";
   import { fade, scale } from "svelte/transition";
-  import { t } from "$lib/services";
+  import { t } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props

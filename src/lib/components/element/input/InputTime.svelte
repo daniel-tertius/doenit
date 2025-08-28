@@ -1,6 +1,6 @@
 <script>
   import { ButtonClear } from "../button";
-  import { language } from "$lib/services";
+  import { language } from "$lib/services/language.svelte";
   import { tick, untrack } from "svelte";
 
   /**

@@ -1,5 +1,4 @@
-import { createRxDatabase, type RxDatabase } from "rxdb";
-import type { MangoQuery, RxCollection } from "rxdb";
+import { createRxDatabase } from "rxdb";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
 import { TaskTable } from "./DB/Task";
 import { CategoryTable } from "./DB/Category";
@@ -70,13 +69,24 @@ async function initDB() {
 }
 
 class DBClass {
-  readonly Task: TaskTable;
-  readonly Category: CategoryTable;
+  #Task: TaskTable | undefined;
+  #Category: CategoryTable | undefined;
 
-  constructor(db: RxDatabase) {
-    this.Task = new TaskTable(db.collections.Task);
-    this.Category = new CategoryTable(db.collections.Category);
+  async init() {
+    const db = await initDB();
+    this.#Task = new TaskTable(db.collections.Task);
+    this.#Category = new CategoryTable(db.collections.Category);
+  }
+
+  get Task(): TaskTable {
+    if (!this.#Task) throw new Error("Task table not initialized");
+    return this.#Task;
+  }
+
+  get Category(): CategoryTable {
+    if (!this.#Category) throw new Error("Category table not initialized");
+    return this.#Category;
   }
 }
 
-export const DB = new DBClass(await initDB());
+export const DB = new DBClass();
