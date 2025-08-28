@@ -30,6 +30,8 @@ public class TaskWidgetProvider extends AppWidgetProvider {
     public static final String EXTRA_TASK_ID = "task_id";
 
     public static void updateTasksData(Context context, String tasksJson) {
+        Log.d("Doenit - updateTasksData", "Updating widget with tasksJson: " + tasksJson);
+
         // Update all widgets
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);

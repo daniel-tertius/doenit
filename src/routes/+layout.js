@@ -1,12 +1,17 @@
 import { DB as old_DB } from "$lib/DB_old/DB";
 import { DB } from "$lib/DB";
+import { notifications } from "$lib/services/notification.svelte";
+import { SplashScreen } from "@capacitor/splash-screen";
 
 export const ssr = false;
 
 export async function load() {
+  SplashScreen.show();
   await DB.init();
-
   await migratePreferenceToRxDB();
+
+  notifications.init();
+  SplashScreen.hide();
 }
 
 async function migratePreferenceToRxDB() {

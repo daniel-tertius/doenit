@@ -1,18 +1,12 @@
 <script>
   import { slide } from "svelte/transition";
   import { notifications } from "$lib/services/notification.svelte";
-  import { onMount } from "svelte";
   import { CheckCircle, XCircle, Clock } from "$lib/icon";
   import { InputSwitch, InputTime } from "$lib/components/element/input";
   import { ContainerDetails } from "$lib/components/element/container";
   import { t } from "$lib/services/language.svelte";
 
   let is_loading = $state(false);
-  let is_testing = $state(false);
-
-  onMount(async () => {
-    await notifications.init();
-  });
 
   function handleTimeChange({ value }) {
     if (value === notifications.time) return;

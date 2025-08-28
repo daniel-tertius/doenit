@@ -4,6 +4,7 @@ import { t } from "$lib/services/language.svelte";
 import { Capacitor } from "@capacitor/core";
 import { DB } from "$lib/DB";
 import { sortTasksByDueDate } from "$lib";
+import { App } from "@capacitor/app";
 
 class Notification {
   #initiated: boolean = false;
@@ -89,6 +90,16 @@ class Notification {
   }
 
   async init() {
+    await this.#init();
+    App.addListener("appStateChange", async (state) => {
+      if (!state.isActive) return;
+
+      const status = await LocalNotifications.checkPermissions();
+      this.#status = status.display;
+    });
+  }
+
+  async #init() {
     let time = await cached_notification_time.get();
     if (time === undefined) {
       cached_notification_time.set(null);
@@ -104,7 +115,9 @@ class Notification {
     this.#time = time;
     this.#enabled = time !== null;
     this.#past_tasks_enabled = past_tasks;
-    this.#status = await this.requestPermission();
+    
+    const existing_permission = await LocalNotifications.checkPermissions();
+    this.#status = existing_permission.display;
   }
 
   /**
@@ -216,9 +229,6 @@ class Notification {
         id: i + 1,
         schedule: { at: new Date(+date) /* Need to copy date */ },
       });
-
-      // TODO: Herhaalde take
-      // TODO: Verstreke take
 
       // Schedule a notification for the tasks with time set in the due date.
       for (let j = 0; j < tasks.length; j++) {

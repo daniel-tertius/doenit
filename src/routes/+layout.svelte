@@ -25,15 +25,15 @@
   });
 
   onMount(() => {
-    if (Capacitor.isNativePlatform()) {
-      App.addListener("backButton", (event) => {
-        if (is_home) {
-          App.exitApp();
-        } else {
-          goto("/", { invalidateAll: false });
-        }
-      });
-    }
+    if (!Capacitor.isNativePlatform()) return;
+
+    App.addListener("backButton", (event) => {
+      if (is_home) {
+        App.exitApp();
+      } else {
+        goto("/", { invalidateAll: false });
+      }
+    });
   });
 
   /**
