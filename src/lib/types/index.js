@@ -15,6 +15,7 @@
  * @property {boolean} important - Indicates if the task is marked as important.
  * @property {boolean} urgent - Indicates if the task is marked as urgent.
  * @property {string} [category_id] - Optional category ID associated with the task.
+ * @property {string|null} [room_id] - Optional room ID for shared tasks.
  */
 
 /**
@@ -28,7 +29,17 @@
  */
 
 /**
+ * Represents a room for shared tasks.
+ * @typedef {Object} Room
+ * @property {string} id - Primary key (UUID).
+ * @property {string} name - Name of the room.
+ * @property {string[]} users - Array of user emails in the room.
+ * @property {string} created_at - Timestamp when the room was created.
+ */
+
+/**
  * @typedef {Object} DB
  * @property {import('$lib/DB/_Table').Table<Task>} Task - The table interface for Task entities.
  * @property {import('$lib/DB/_Table').Table<Category>} Category - The table interface for Category entities.
+ * @property {import('$lib/DB/Room').RoomTable} Room - The table interface for Room entities.
  */

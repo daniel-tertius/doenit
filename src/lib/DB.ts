@@ -1,9 +1,13 @@
-import { createRxDatabase } from "rxdb";
+import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema";
 import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
-import { TaskTable } from "./DB/Task";
+import { addRxPlugin, createRxDatabase } from "rxdb";
 import { CategoryTable } from "./DB/Category";
+import { TaskTable } from "./DB/Task";
+import { RoomTable } from "./DB/Room";
 
 async function initDB() {
+  addRxPlugin(RxDBMigrationSchemaPlugin);
+
   const DB = await createRxDatabase({
     name: "doenitDb",
     storage: getRxStorageDexie({
@@ -14,9 +18,16 @@ async function initDB() {
 
   await DB.addCollections({
     Task: {
+      migrationStrategies: {
+        1: (oldData) => {
+          // Migrate from version 0 to 1
+          return oldData;
+        },
+      },
       schema: {
         title: "task",
-        version: 0,
+        version: 1,
+
         description: "describes a task",
         type: "object",
         properties: {
@@ -36,6 +47,7 @@ async function initDB() {
           important: { type: "boolean" },
           urgent: { type: "boolean" },
           category_id: { type: "string" },
+          room_id: { type: ["string", "null"] },
           archived: { type: "boolean" },
           created_at: { type: "string" },
         },
@@ -63,6 +75,26 @@ async function initDB() {
         primaryKey: "id",
       },
     },
+    Room: {
+      schema: {
+        title: "room",
+        version: 0,
+        description: "describes a room for shared tasks",
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            maxLength: 50,
+          },
+          name: { type: "string" },
+          users: { type: "array", items: { type: "string" } },
+          archived: { type: "boolean" },
+          created_at: { type: "string" },
+        },
+        required: ["id", "name", "users", "archived", "created_at"],
+        primaryKey: "id",
+      },
+    },
   });
 
   return DB;
@@ -71,13 +103,15 @@ async function initDB() {
 class DBClass {
   #Task: TaskTable | undefined;
   #Category: CategoryTable | undefined;
+  #Room: RoomTable | undefined;
 
   async init() {
-    if (!!this.#Task && !!this.#Category) return;
+    if (!!this.#Task && !!this.#Category && !!this.#Room) return;
 
     const db = await initDB();
     this.#Task = new TaskTable(db.collections.Task);
     this.#Category = new CategoryTable(db.collections.Category);
+    this.#Room = new RoomTable(db.collections.Room);
   }
 
   get Task(): TaskTable {
@@ -88,6 +122,11 @@ class DBClass {
   get Category(): CategoryTable {
     if (!this.#Category) throw new Error("Category table not initialized");
     return this.#Category;
+  }
+
+  get Room(): RoomTable {
+    if (!this.#Room) throw new Error("Room table not initialized");
+    return this.#Room;
   }
 }
 
