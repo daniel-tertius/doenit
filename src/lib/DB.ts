@@ -22,12 +22,11 @@ async function initDB() {
         1: (oldData) => {
           // Migrate from version 0 to 1
           return oldData;
-        },
+        }
       },
       schema: {
         title: "task",
         version: 1,
-
         description: "describes a task",
         type: "object",
         properties: {

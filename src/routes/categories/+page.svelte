@@ -110,19 +110,28 @@
   </div>
 
   <div class="flex flex-col space-y-2">
-    <div class="flex items-center justify-between p-2 bg-t-primary-700 rounded-md">
+    <div class="flex items-center justify-between p-2 bg-t-primary-600 rounded-md">
       <div class="text-lg font-semibold">{t("DEFAULT_NAME")}</div>
     </div>
 
     {#each categories as category (category.id)}
-      <div in:slide out:fly={{ x: 100 }} class="flex items-center justify-between bg-t-primary-700 rounded-md">
-        <button class="p-2 w-fit" onclick={() => openEditModal(category)}>
-          <Edit />
+      <div
+        in:slide
+        out:fly={{ x: 100 }}
+        class="grid grid-cols-[52px_1fr_48px] items-center justify-between bg-t-primary-600 rounded-md"
+      >
+        <button class="h-full w-full flex justify-center items-center" onclick={() => openEditModal(category)}>
+          <div class="rounded-full p-2 w-fit flex justify-center items-center bg-dark-700">
+            <Edit />
+          </div>
         </button>
 
-        <div class="p-2 pl-0 w-full text-lg font-semibold">{category.name}</div>
+        <div class="py-3 w-full! text-lg font-semibold">{category.name}</div>
 
-        <button class="p-2 text-error hover:text-error-20d" onclick={() => deleteCategory(category.id)}>
+        <button
+          class="h-full text-error hover:text-error-20d flex items-center justify-center"
+          onclick={() => deleteCategory(category.id)}
+        >
           <Trash />
         </button>
       </div>

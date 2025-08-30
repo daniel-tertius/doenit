@@ -358,6 +358,15 @@ export function waitAtLeast(promise, ms) {
 }
 
 /**
+ * Waits for a specified amount of time.
+ * @param {number} ms - The time to wait in milliseconds.
+ * @returns {Promise<void>} - A promise that resolves after the specified time.
+ */
+export function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
  * @param {Task[]} data
  */
 export function sortTasksByDueDate(data) {
@@ -434,23 +443,17 @@ export function sortTasksByDueDate(data) {
  * @returns {Task[]}
  */
 function sortTasksByPriority(data) {
-  // Sort by Urgent and Important first, then Important, then Urgent
-  const urgent_important = [];
-  const important_only = [];
-  const urgent_only = [];
-  const neither = [];
+  // Sort by Important first, then not important
+  const important = [];
+  const not_important = [];
 
-  for (const task_no_date of data) {
-    if (task_no_date.urgent && task_no_date.important) {
-      urgent_important.push(task_no_date);
-    } else if (task_no_date.important) {
-      important_only.push(task_no_date);
-    } else if (task_no_date.urgent) {
-      urgent_only.push(task_no_date);
+  for (const task of data) {
+    if (task.important) {
+      important.push(task);
     } else {
-      neither.push(task_no_date);
+      not_important.push(task);
     }
   }
 
-  return [...urgent_important, ...important_only, ...urgent_only, ...neither];
+  return [...important, ...not_important];
 }

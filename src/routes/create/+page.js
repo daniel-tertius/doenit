@@ -10,7 +10,6 @@ export async function load() {
       repeat_specific_days: [],
       completed_at: null,
       important: false,
-      urgent: false,
       repeat_interval: "",
       repeat_interval_number: 1,
       archived: false,

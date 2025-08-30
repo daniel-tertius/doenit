@@ -12,6 +12,7 @@ import Edit from "./Edit.svelte";
 import Google from "./Google.svelte";
 import Home from "./Home.svelte";
 import Important from "./Important.svelte";
+import Leave from "./Leave.svelte";
 import Loading from "./Loading.svelte";
 import Moon from "./Moon.svelte";
 import More from "./More.svelte";
@@ -20,13 +21,13 @@ import Plus from "./Plus.svelte";
 import Restore from "./Restore.svelte";
 import Save from "./Save.svelte";
 import Settings from "./Settings.svelte";
+import Shared from "./Shared.svelte";
 import Star from "./Star.svelte";
 import Sync from "./Sync.svelte";
 import Sun from "./Sun.svelte";
 import TestTube from "./TestTube.svelte";
 import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
-import Urgent from "./Urgent.svelte";
 import XCircle from "./XCircle.svelte";
 
 export {
@@ -44,6 +45,7 @@ export {
   Google,
   Home,
   Important,
+  Leave,
   Loading,
   Moon,
   More,
@@ -52,12 +54,12 @@ export {
   Restore,
   Save,
   Settings,
+  Shared,
   Star,
   Sync,
   Sun,
   TestTube,
   Times,
   Trash,
-  Urgent,
   XCircle,
 };

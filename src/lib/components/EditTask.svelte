@@ -1,11 +1,13 @@
 <script>
   import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
-  import { Important, Urgent } from "$lib/icon";
+  import { Important } from "$lib/icon";
   import InputName from "$lib/components/InputName.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
   import { t } from "$lib/services/language.svelte";
+  import { Button } from "./element/button";
+  import ShareTask from "./ShareTask.svelte";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
@@ -44,36 +46,26 @@
 </div>
 
 <div>
-  <label class="font-bold" for="category">{t("priority")}</label>
-
-  <div class="flex gap-2">
-    <button
-      type="button"
+  <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-dark-800">
+    <Important size={32} class="m-auto" />
+    <div class="flex flex-col">
+      <span class="font-bold">Is dit belangrik?</span>
+      <span class="italic">Dit sal hoër in lys verskyn</span>
+    </div>
+    <Button
       class={{
-        "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
-        "bg-yellow-100 border-yellow-700 text-yellow-700": task.important,
-        "bg-t-primary border-dark-400 ": !task.important,
+        "bg-yellow-100! border-yellow-700! text-yellow-700!": task.important,
       }}
+      type="button"
+      aria-label="Belangrik"
       onclick={() => {
         task.important = !task.important;
       }}
     >
-      <Important />
-      <span>{t("important")}</span>
-    </button>
-    <button
-      type="button"
-      class={{
-        "text-t-secondary p-3 rounded border w-full text-sm shadow-sm transition-colors flex gap-1 justify-center items-center": true,
-        "bg-error-30d border-error-invert-30d ": task.urgent,
-        "bg-t-primary border-dark-400": !task.urgent,
-      }}
-      onclick={() => {
-        task.urgent = !task.urgent;
-      }}
-    >
-      <Urgent />
-      {t("urgent")}
-    </button>
+      <Important size={16} />
+      <span>Belangrik</span>
+    </Button>
   </div>
+
+  <ShareTask bind:room_id={task.room_id} />
 </div>

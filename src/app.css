@@ -351,3 +351,12 @@
   --color-active-invert-20d: #3b624c;
   --color-active-invert-30d: #345543;
 }
+
+
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

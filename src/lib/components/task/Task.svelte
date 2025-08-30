@@ -4,7 +4,7 @@
   import { Selected } from "$lib/Data.svelte";
   import ItemName from "./ItemName.svelte";
   import { InputCheckbox } from "../element/input";
-  import { Categories, Important, Urgent } from "$lib/icon";
+  import { Categories, Important, Shared } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
   import TaskContainer from "./TaskContainer.svelte";
   import { DB } from "$lib/DB";
@@ -63,7 +63,7 @@
     "bg-error/60": is_past && !is_selected,
     "bg-active/60": is_ongoing && !is_selected,
     "bg-black/20 dark:bg-white/20 border": is_selected,
-    "bg-white dark:bg-dark-300 ": !is_selected && !is_past && !is_ongoing,
+    "bg-white dark:bg-dark-400 ": !is_selected && !is_past && !is_ongoing,
   }}
   {onclick}
   {onlongpress}
@@ -95,12 +95,12 @@
     {/if}
   </div>
 
-  {#if !task.archived}
-    <div class="absolute top-1 right-1 flex gap-1">
-      <Important size={16} class={!task.important && "hidden"} />
-      <Urgent size={16} class={!task.urgent && "hidden"} />
-    </div>
-  {/if}
+  <div class="absolute top-1.5 right-1.5 flex gap-1">
+    {#if !task.archived}
+      <Important size={20} class={!task.important && "hidden"} />
+    {/if}
+    <Shared size={20} class={!task.room_id && "hidden"} />
+  </div>
 
   <InputCheckbox
     bind:tick_animation

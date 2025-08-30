@@ -3,3 +3,4 @@ export { default as ButtonMainSubmit } from "./ButtonMainSubmit.svelte";
 export { default as ButtonLanguage } from "./ButtonLanguage.svelte";
 export { default as ButtonNavbar } from "./ButtonNavbar.svelte";
 export { default as ButtonBack } from "./ButtonBack.svelte";
+export { default as Button } from "./Button.svelte";

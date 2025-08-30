@@ -103,11 +103,6 @@ public class TaskWidgetService extends RemoteViewsService {
                 views.setViewVisibility(R.id.important_icon, android.view.View.VISIBLE);
             }
 
-            if (task.urgent) {
-                views.setImageViewResource(R.id.urgent_icon, R.drawable.ic_urgent);
-                views.setViewVisibility(R.id.urgent_icon, android.view.View.VISIBLE);
-            }
-
             // Set up fill-in intent for COMPLETE_TASK (complete_button)
             Intent completeIntent = new Intent();
             completeIntent.setAction(TaskWidgetProvider.ACTION_COMPLETE_TASK);
@@ -175,7 +170,6 @@ public class TaskWidgetService extends RemoteViewsService {
                     String categoryId = taskJson.optString("category_id", "");
                     task.category = getCategoryName(categoryId, categories);
                     task.important = taskJson.optBoolean("important", false);
-                    task.urgent = taskJson.optBoolean("urgent", false);
 
                     tasks.add(task);
                 }
@@ -190,12 +184,11 @@ public class TaskWidgetService extends RemoteViewsService {
                             return dateComparison;
                         }
 
-                        // Secondary: Priority based on importance and urgency (Eisenhower Matrix)
-                        int aPriority = getPriorityLevel(a.important, a.urgent);
-                        int bPriority = getPriorityLevel(b.important, b.urgent);
-
-                        if (aPriority != bPriority) {
-                            return Integer.compare(aPriority, bPriority); // Lower number = higher priority
+                        // Secondary: Important tasks first
+                        if (a.important && !b.important) {
+                            return -1;
+                        } else if (!a.important && b.important) {
+                            return 1;
                         }
 
                         // Tertiary: Alphabetical by name
@@ -261,17 +254,6 @@ public class TaskWidgetService extends RemoteViewsService {
             }
         }
 
-        private int getPriorityLevel(boolean important, boolean urgent) {
-            // Eisenhower Matrix priority levels
-            if (important && urgent)
-                return 1; // Do First (Crisis)
-            if (important && !urgent)
-                return 2; // Schedule (Important, not urgent)
-            if (!important && urgent)
-                return 3; // Delegate (Urgent, not important)
-            return 4; // Don't Do (Neither important nor urgent)
-        }
-
         private int compareDueDates(String dateA, String dateB) {
             boolean aHasDate = dateA != null && !dateA.isEmpty();
             boolean bHasDate = dateB != null && !dateB.isEmpty();
@@ -302,6 +284,5 @@ public class TaskWidgetService extends RemoteViewsService {
         String dueDate;
         String category;
         boolean important;
-        boolean urgent;
     }
 }

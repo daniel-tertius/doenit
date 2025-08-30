@@ -13,7 +13,6 @@
  * @property {(0|1|2|3|4|5|6)[]} repeat_specific_days - Array of days of the week (0-6, where 0 is Sunday) for repeating the task.
  * @property {number} repeat_interval_number - Number representing the repeat interval.
  * @property {boolean} important - Indicates if the task is marked as important.
- * @property {boolean} urgent - Indicates if the task is marked as urgent.
  * @property {string} [category_id] - Optional category ID associated with the task.
  * @property {string|null} [room_id] - Optional room ID for shared tasks.
  */

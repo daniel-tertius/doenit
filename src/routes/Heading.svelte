@@ -10,6 +10,7 @@
     "/": t("task_list"),
     "/create": t("new_task"),
     "/[item_id]": t("edit_task"),
+    "/friends": t("friends"),
     "/complete": t("completed_tasks"),
     "/categories": t("categories"),
     "/settings": t("settings"),

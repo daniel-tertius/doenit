@@ -37,7 +37,6 @@ export interface Task {
   repeat_specific_days: (0 | 1 | 2 | 3 | 4 | 5 | 6)[]; // Array of days of the week (0-6, where 0 is Sunday)
   repeat_interval_number: number;
   important: boolean;
-  urgent: boolean;
   category_id?: string;
 }
 
