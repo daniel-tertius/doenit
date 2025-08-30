@@ -118,6 +118,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 Log.e(Const.LOG_TAG_TASK_WIDGET, "Failed to start MainActivity", e);
             }
         } else {
+            // Found unhandled action: android.appwidget.action.APPWIDGET_UPDATE
             Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Unhandled action: " + action);
         }
     }
