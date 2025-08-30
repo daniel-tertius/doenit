@@ -11,7 +11,6 @@ export async function load() {
   await migratePreferenceToRxDB();
 
   notifications.init();
-  SplashScreen.hide();
 }
 
 async function migratePreferenceToRxDB() {

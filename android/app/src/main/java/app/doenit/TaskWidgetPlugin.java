@@ -1,6 +1,7 @@
 package doenit.app;
 
 import android.appwidget.AppWidgetManager;
+import android.content.SharedPreferences;
 import android.content.ComponentName;
 import android.content.Context;
 import android.util.Log;
@@ -20,8 +21,10 @@ public class TaskWidgetPlugin extends Plugin {
     @PluginMethod
     public void updateWidget(PluginCall call) {
         try {
+            Context context = getContext();
+
+            // Tasks
             JSONArray tasks = call.getArray("tasks");
-            Log.d("Doenit - TaskWidgetPlugin", "Updating widget with tasks: " + tasks);
             if (tasks == null) {
                 JSObject ret = new JSObject();
                 ret.put("success", false);
@@ -30,8 +33,24 @@ public class TaskWidgetPlugin extends Plugin {
                 return;
             }
 
-            Context context = getContext();
-            TaskWidgetProvider.updateTasksData(context, tasks.toString());
+            // Categories
+            JSONArray categoriesArray = call.getArray("categories");
+            JSONObject categoriesObject = new JSONObject();
+            int categoriesCount = categoriesArray != null ? categoriesArray.length() : 0;
+            if (categoriesCount > 0) {
+                for (int i = 0; i < categoriesArray.length(); i++) {
+                    JSONObject category = categoriesArray.getJSONObject(i);
+                    String categoryId = category.optString("id", "");
+                    if (!categoryId.isEmpty()) {
+                        categoriesObject.put(categoryId, category);
+                    }
+                }
+            }
+            
+            Log.d(Const.LOG_TAG_DOENIT, "updateWidget called with " + tasks.length() + " tasks and " + categoriesCount + " categories");
+            Log.d(Const.LOG_TAG_DOENIT, "Tasks JSON: " + tasks.toString());
+            Log.d(Const.LOG_TAG_DOENIT, "Categories JSON: " + categoriesObject.toString());
+            TaskWidgetProvider.updateTasksData(context, tasks.toString(), categoriesObject.toString());
 
             JSObject ret = new JSObject();
             ret.put("success", true);

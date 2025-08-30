@@ -1,7 +1,8 @@
 import { DB } from "$lib/DB";
 import { error } from "@sveltejs/kit";
 
-export async function load({ params }) {
+export async function load({ params, parent }) {
+  await parent();
   const origin_task = await DB.Task.get(params.item_id);
   if (!origin_task) {
     error(404, "Task not found");

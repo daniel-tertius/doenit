@@ -1,3 +1,9 @@
 export interface TaskWidgetPlugin {
-  updateWidget({ tasks }: { tasks: Task[] }): Promise<{ success: boolean; message: string }>;
+  updateWidget({
+    tasks,
+    categories,
+  }: {
+    tasks: Task[];
+    categories: Category[];
+  }): Promise<{ success: boolean; message: string }>;
 }

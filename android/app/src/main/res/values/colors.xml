@@ -6,12 +6,12 @@
 
     <!-- Widget colors -->
     <color name="widget_background">#FFFFFF</color>
-    <color name="widget_heading_background">#3b4144</color>
+    <color name="widget_heading_background">#c8cdd0</color>
     <color name="widget_border">#E0E0E0</color>
     <color name="widget_text_primary">#212121</color>
     <color name="widget_text_secondary">#757575</color>
-    <color name="task_item_background">#F8F9FA</color>
-    <color name="primary_color">#3B4144</color>
-    <color name="pill_due_date_background">#3B4144</color>
-    <color name="pill_category_background">#3B4144</color>
+    <color name="task_item_background">#e4e6e7</color>
+    <color name="primary_color">#d6d9db</color>
+    <color name="pill_due_date_background">#c8cdd0</color>
+    <color name="pill_category_background">#c8cdd0</color>
 </resources>

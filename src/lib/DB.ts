@@ -73,6 +73,8 @@ class DBClass {
   #Category: CategoryTable | undefined;
 
   async init() {
+    if (!!this.#Task && !!this.#Category) return;
+
     const db = await initDB();
     this.#Task = new TaskTable(db.collections.Task);
     this.#Category = new CategoryTable(db.collections.Category);

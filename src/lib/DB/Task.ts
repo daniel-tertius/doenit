@@ -7,6 +7,13 @@ export class TaskTable extends Table<Task> {
     super(collection);
   }
 
+  async completeId(task_id: string) {
+    const task = await this.get(task_id);
+    if (!task) throw new Error("Task not found");
+    
+    return this.complete(task);
+  }
+
   complete(task: Task) {
     const is_repeat_task = task.repeat_interval && task.due_date;
     if (is_repeat_task) {

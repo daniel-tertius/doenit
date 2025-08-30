@@ -16,29 +16,39 @@ import doenit.app.R;
 import java.util.Set;
 import java.util.Locale;
 import java.util.Date;
+import java.util.Calendar;
 
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import org.json.JSONArray;
 
 public class TaskWidgetProvider extends AppWidgetProvider {
-    private static final String PREFS_NAME = "DoenitWidgetPrefs";
-    public static final String ACTION_ADD_TASK = "ADD_TASK";
-    public static final String ACTION_COMPLETE_TASK = "COMPLETE_TASK";
-    public static final String ACTION_OPEN_TASK = "OPEN_TASK";
-    public static final String EXTRA_TASK_ID = "task_id";
+    public static final String ACTION_ADD_TASK = Const.ACTION_ADD_TASK;
+    public static final String ACTION_COMPLETE_TASK = Const.ACTION_COMPLETE_TASK;
+    public static final String ACTION_OPEN_TASK = Const.ACTION_OPEN_TASK;
+    public static final String EXTRA_TASK_ID = Const.EXTRA_TASK_ID;
 
-    public static void updateTasksData(Context context, String tasksJson) {
-        Log.d("Doenit - updateTasksData", "Updating widget with tasksJson: " + tasksJson);
+    public static void updateTasksData(Context context, String tasksJson, String categoriesStr) {
+        DB.saveData(Const.WIDGET_TASKS, tasksJson);
+        DB.saveData(Const.WIDGET_CATEGORIES, categoriesStr);
 
         // Update all widgets
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
+
+        Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Found " + appWidgetIds.length + " widget instances");
+
         for (int i = 0; i < appWidgetIds.length; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
         }
+
+        // Notify that the data has changed so ListView refreshes
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+        Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Notified " + appWidgetIds.length + " widgets of data change");
     }
 
     @Override
@@ -51,69 +61,69 @@ public class TaskWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        
+
         String action = intent.getAction();
-        Log.d("Doenit", "onReceive called with action: " + action);
-        Log.d("Doenit", "Intent extras: " + intent.getExtras());
-        
+        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "onReceive called with action: " + action);
+        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Intent extras: " + intent.getExtras());
+
         if (ACTION_ADD_TASK.equals(action)) {
-            Log.d("Doenit", "Handling ADD_TASK action");
-            // Open the app to create a new task
-            Intent appIntent = new Intent(context, MainActivity.class);
-            appIntent.putExtra("route", "/create");
-            appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             try {
+                Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Handling ADD_TASK action");
+                // Open the app to create a new task
+                Intent appIntent = new Intent(context, MainActivity.class);
+                appIntent.putExtra("route", "/create");
+                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                 context.startActivity(appIntent);
-                Log.d("Doenit", "Started MainActivity with /create route");
             } catch (Exception e) {
-                Log.e("TaskWidget", "Failed to start MainActivity", e);
+                Log.e(Const.LOG_TAG_TASK_WIDGET, "Failed to start MainActivity", e);
             }
         } else if (ACTION_COMPLETE_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);
-            Log.d("Doenit", "Handling COMPLETE_TASK action for taskId: " + taskId);
-            
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Handling COMPLETE_TASK action for taskId: " + taskId);
+
             if (taskId != null) {
                 // Handle task completion
                 completeTask(context, taskId);
-                
+
                 // Update all widgets
                 AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
                 ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
                 int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
-             
+
                 // Notify data changed first
                 appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
-            
+
                 // Then update the widgets
                 for (int appWidgetId : appWidgetIds) {
                     updateAppWidget(context, appWidgetManager, appWidgetId);
                 }
             } else {
-                Log.e("TaskWidget", "COMPLETE_TASK action received but no task ID found");
+                Log.e(Const.LOG_TAG_TASK_WIDGET, "COMPLETE_TASK action received but no task ID found");
             }
         } else if (ACTION_OPEN_TASK.equals(action)) {
-            String taskId = intent.getStringExtra(EXTRA_TASK_ID);
-            Log.d("Doenit", "Handling OPEN_TASK action for taskId: " + taskId);
-            
-            if (taskId != null) {
-                // Open the app to view/edit the task
-                Intent appIntent = new Intent(context, MainActivity.class);
-                appIntent.putExtra("route", "/" + taskId);
-                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                try {
+            try {
+                String taskId = intent.getStringExtra(EXTRA_TASK_ID);
+                Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Handling OPEN_TASK action for taskId: " + taskId);
+
+                if (taskId != null) {
+                    // Open the app to view/edit the task
+                    Intent appIntent = new Intent(context, MainActivity.class);
+                    appIntent.putExtra("route", "/" + taskId);
+                    appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     context.startActivity(appIntent);
-                    Log.d("Doenit", "Started MainActivity to view task: " + taskId);
-                } catch (Exception e) {
-                    Log.e("TaskWidget", "Failed to start MainActivity", e);
+                    Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Started MainActivity to view task: " + taskId);
                 }
+            } catch (Exception e) {
+                Log.e(Const.LOG_TAG_TASK_WIDGET, "Failed to start MainActivity", e);
             }
         } else {
-            Log.d("Doenit", "Unhandled action: " + action);
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Unhandled action: " + action);
         }
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
-        Log.d("Doenit", "[updateAppWidget] " + appWidgetId);
+        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "[updateAppWidget] " + appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget);
 
         // Set up the list view
@@ -123,11 +133,10 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         // Set up PendingIntent template for COMPLETE_TASK actions
         Intent completeTemplateIntent = new Intent(context, TaskWidgetProvider.class);
         PendingIntent completeTemplatePendingIntent = PendingIntent.getBroadcast(
-            context, 
-            appWidgetId, 
-            completeTemplateIntent, 
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
-        );
+                context,
+                appWidgetId,
+                completeTemplateIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
         views.setPendingIntentTemplate(R.id.widget_list_view, completeTemplatePendingIntent);
 
         // Set up empty view
@@ -137,72 +146,218 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         Intent addTaskIntent = new Intent(context, TaskWidgetProvider.class);
         addTaskIntent.setAction(ACTION_ADD_TASK);
         PendingIntent addTaskPendingIntent = PendingIntent.getBroadcast(
-            context, 
-            appWidgetId + 1000,
-            addTaskIntent, 
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+                context,
+                appWidgetId + 1000,
+                addTaskIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.add_task_button, addTaskPendingIntent);
 
         // Set up click action for app name/logo to open main app
         Intent appIntent = new Intent(context, MainActivity.class);
         appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent mainAppPendingIntent = PendingIntent.getActivity(
-            context, 
-            appWidgetId + 2000, 
-            appIntent, 
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-        
+                context,
+                appWidgetId + 2000,
+                appIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
         views.setOnClickPendingIntent(R.id.app_name_text, mainAppPendingIntent);
         views.setOnClickPendingIntent(R.id.app_logo, mainAppPendingIntent);
 
         // Update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
-        
-        // Notify that the data has changed so ListView refreshes
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_list_view);
-        
-        Log.d("Doenit", "Updated widget " + appWidgetId + " with PendingIntent template");
+
+        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Updated widget " + appWidgetId + " with PendingIntent template");
     }
 
     public static void completeTask(Context context, String taskId) {
-        SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
-        String tasksJson = prefs.getString("Item", "{}");
-        
         try {
-            JSONObject tasks = new JSONObject(tasksJson);
-            if (!tasks.has(taskId)) return;
+            // Load current tasks and categories from SharedPreferences
+            String tasksStr = DB.getString(Const.WIDGET_TASKS);
+            String categoriesStr = DB.getString(Const.WIDGET_CATEGORIES);
 
-            JSONObject task = tasks.getJSONObject(taskId);
-            
-            // Check if it's a repeating task
-            String repeatInterval = task.optString("repeat_interval", "");
-            String dueDate = task.optString("due_date", "");
-            boolean isRepeatTask = !repeatInterval.isEmpty() && !dueDate.isEmpty();
-            
-            if (isRepeatTask) {
-                // For repeating tasks, increment completed count and update due date
-                int completed = task.optInt("completed", 0) + 1;
-                task.put("completed", completed);
-                // Note: Due date calculation would need to be implemented here
-                // to match the logic in your Data.svelte.js #getNextDueDate method
-            } else {
-                // For non-repeating tasks, mark as completed and archived
-                task.put("completed", 1);
-                task.put("archived", true);
-                task.put("completed_at", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", new Locale("af", "ZA")).format(new Date()));
+            if (tasksStr == null || tasksStr.isEmpty()) {
+                Log.e(Const.LOG_TAG_DOENIT, "No tasks data found in SharedPreferences");
+                return;
             }
-            
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("Item", tasks.toString());
-            editor.apply();
 
-            // Refresh the widget data
-            updateTasksData(context, tasks.toString());
-            Log.d("Doenit", "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
-        } catch (JSONException e) {
-            e.printStackTrace();
+            JSONArray tasks = new JSONArray(tasksStr);
+
+            // Find and update the task
+            boolean taskFound = false;
+            boolean isRepeatTask = false;
+
+            for (int i = 0; i < tasks.length(); i++) {
+                JSONObject task = tasks.getJSONObject(i);
+                String currentTaskId = task.optString("id", "");
+
+                if (currentTaskId.equals(taskId)) {
+                    taskFound = true;
+
+                    // Check if this is a repeat task
+                    String repeatInterval = task.optString("repeat_interval", "");
+                    isRepeatTask = repeatInterval != null && !repeatInterval.isEmpty() && task.has("due_date");
+
+                    if (isRepeatTask) {
+                        // For repeat tasks: increment completed counter and update dates
+                        int completedCount = task.optInt("completed", 0);
+                        task.put("completed", completedCount + 1);
+
+                        // Calculate next due date
+                        String nextDueDate = calculateNextDueDate(task);
+                        if (nextDueDate != null) {
+                            task.put("due_date", nextDueDate);
+                        }
+
+                        // Calculate next start date if it exists
+                        if (task.has("start_date")) {
+                            String nextStartDate = calculateNextStartDate(task);
+                            if (nextStartDate != null) {
+                                task.put("start_date", nextStartDate);
+                            }
+                        }
+                    } else {
+                        // For non-repeat tasks: mark as completed and archived
+                        task.put("completed", 1);
+                        task.put("archived", true);
+                        task.put("completed_at",
+                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+                    }
+
+                    break;
+                }
+            }
+
+            if (!taskFound) {
+                Log.e(Const.LOG_TAG_DOENIT, "Task with ID " + taskId + " not found");
+                return;
+            }
+
+            // Refresh the widget data with updated tasks and categories
+            updateTasksData(context, tasks.toString(), categoriesStr);
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
+
+            // Send broadcast to notify main app of task completion
+            Intent broadcastIntent = new Intent(Const.BROADCAST_TASK_COMPLETED);
+            broadcastIntent.putExtra("taskId", taskId);
+            broadcastIntent.putExtra("updatedTasksJson", tasks.toString());
+            context.sendBroadcast(broadcastIntent);
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Broadcast sent for task completion: " + taskId);
+
+            // Also store in SharedPreferences as backup
+            String taskIds = DB.getString(Const.TASK_ID);
+            if (taskIds == null) {
+                taskIds = taskId;
+            } else {
+                taskIds += "," + taskId;
+            }
+            DB.saveData(Const.TASK_ID, taskIds);
+
+            Utils.cancelNotification(context, taskId);
+        } catch (Exception e) {
+            Log.e(Const.LOG_TAG_DOENIT, "Error completing task", e);
+        }
+    }
+
+    private static String calculateNextDueDate(JSONObject task) throws JSONException {
+        String repeatInterval = task.optString("repeat_interval", "");
+        String currentDueDate = task.optString("due_date", "");
+        int repeatIntervalNumber = task.optInt("repeat_interval_number", 1);
+
+        if (repeatInterval.isEmpty() || currentDueDate.isEmpty()) {
+            return null;
+        }
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date currentDate = dateFormat.parse(currentDueDate);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+
+            switch (repeatInterval) {
+                case "daily":
+                    calendar.add(Calendar.DAY_OF_MONTH, 1 * repeatIntervalNumber);
+                    break;
+                case "workdaily":
+                    int daysToAdd = 1;
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    if (dayOfWeek == Calendar.FRIDAY) {
+                        daysToAdd = 3; // Skip weekend
+                    } else if (dayOfWeek == Calendar.SATURDAY) {
+                        daysToAdd = 2; // Skip Sunday
+                    }
+                    calendar.add(Calendar.DAY_OF_MONTH, daysToAdd);
+                    break;
+                case "weekly":
+                    calendar.add(Calendar.WEEK_OF_YEAR, 1 * repeatIntervalNumber);
+                    break;
+                case "monthly":
+                    calendar.add(Calendar.MONTH, 1 * repeatIntervalNumber);
+                    break;
+                case "yearly":
+                    calendar.add(Calendar.YEAR, 1 * repeatIntervalNumber);
+                    break;
+                default:
+                    Log.w(Const.LOG_TAG_DOENIT_SIMPLE, "Unknown repeat interval: " + repeatInterval);
+                    return null;
+            }
+
+            return dateFormat.format(calendar.getTime());
+        } catch (ParseException e) {
+            Log.e(Const.LOG_TAG_DOENIT_SIMPLE, "Error parsing due date: " + currentDueDate, e);
+            return null;
+        }
+    }
+
+    private static String calculateNextStartDate(JSONObject task) throws JSONException {
+        String repeatInterval = task.optString("repeat_interval", "");
+        String currentStartDate = task.optString("start_date", "");
+        int repeatIntervalNumber = task.optInt("repeat_interval_number", 1);
+
+        if (repeatInterval.isEmpty() || currentStartDate.isEmpty()) {
+            return null;
+        }
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date currentDate = dateFormat.parse(currentStartDate);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+
+            switch (repeatInterval) {
+                case "daily":
+                    calendar.add(Calendar.DAY_OF_MONTH, 1 * repeatIntervalNumber);
+                    break;
+                case "workdaily":
+                    int daysToAdd = 1;
+                    int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+                    if (dayOfWeek == Calendar.FRIDAY) {
+                        daysToAdd = 3; // Skip weekend
+                    } else if (dayOfWeek == Calendar.SATURDAY) {
+                        daysToAdd = 2; // Skip Sunday
+                    }
+                    calendar.add(Calendar.DAY_OF_MONTH, daysToAdd);
+                    break;
+                case "weekly":
+                    calendar.add(Calendar.WEEK_OF_YEAR, 1 * repeatIntervalNumber);
+                    break;
+                case "monthly":
+                    calendar.add(Calendar.MONTH, 1 * repeatIntervalNumber);
+                    break;
+                case "yearly":
+                    calendar.add(Calendar.YEAR, 1 * repeatIntervalNumber);
+                    break;
+                default:
+                    Log.w(Const.LOG_TAG_DOENIT_SIMPLE, "Unknown repeat interval: " + repeatInterval);
+                    return null;
+            }
+
+            return dateFormat.format(calendar.getTime());
+        } catch (ParseException e) {
+            Log.e(Const.LOG_TAG_DOENIT_SIMPLE, "Error parsing start date: " + currentStartDate, e);
+            return null;
         }
     }
 }

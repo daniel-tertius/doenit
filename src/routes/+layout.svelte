@@ -11,8 +11,11 @@
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
   import "../app.css";
+  import { SplashScreen } from "@capacitor/splash-screen";
 
   let { children } = $props();
+
+  SplashScreen.hide();
 
   const is_home = $derived(page.url.pathname === "/");
 
@@ -33,6 +36,16 @@
       } else {
         goto("/", { invalidateAll: false });
       }
+    });
+  });
+
+  onMount(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    // Listen for task completion events from native side
+    window.addEventListener("taskCompleted", async (event) => {
+      console.log("[💬 Doenit] Task completed event received");
+      Widget.finishTasks(event.detail.task_ids);
     });
   });
 

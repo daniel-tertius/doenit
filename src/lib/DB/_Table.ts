@@ -12,6 +12,7 @@ export class Table<T extends Task | Category> {
 
     const new_item = {
       ...item,
+      archived: false,
       created_at: new Date().toString(),
       id: crypto.randomUUID(),
     } as T;

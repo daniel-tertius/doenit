@@ -22,6 +22,9 @@ const config: CapacitorConfig = {
     },
     SplashScreen: {
       launchAutoHide: true,
+      androidScaleType: "FIT_CENTER",
+      backgroundColor: "#1f2326",
+      
       showSpinner: false,
     },
     FirebaseAuthentication: {

@@ -3,7 +3,6 @@ package doenit.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-
 import android.util.Log;
 
 import android.widget.RemoteViews;
@@ -13,7 +12,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
+import java.util.Locale;
+import java.util.Date;
+import java.util.Calendar;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import doenit.app.R;
@@ -22,25 +30,30 @@ public class TaskWidgetService extends RemoteViewsService {
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "TaskWidgetService.onGetViewFactory called");
         return new TaskRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 
     class TaskRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         private Context context;
-        private List<TaskItem> tasks;
+        private List<Task> tasks;
 
         TaskRemoteViewsFactory(Context context, Intent intent) {
             this.context = context;
             this.tasks = new ArrayList<>();
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "TaskRemoteViewsFactory created");
         }
 
         @Override
         public void onCreate() {
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "TaskRemoteViewsFactory.onCreate called");
+            DB.init(context);
             loadTasks();
         }
 
         @Override
         public void onDataSetChanged() {
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "onDataSetChanged called - refreshing widget data");
             loadTasks();
         }
 
@@ -51,18 +64,20 @@ public class TaskWidgetService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return Math.min(tasks.size(), 10); // Limit to 10 tasks for widget
+            return Math.min(tasks.size(), 20); // Limit to 20 tasks for widget
         }
 
         @Override
         public RemoteViews getViewAt(int position) {
-            if (position >= tasks.size()) return null;
+            if (position >= tasks.size()) {
+                return null;
+            }
 
-            TaskItem task = tasks.get(position);
-            Log.d("Doenit", "Creating view for task: " + task.name + " (ID: " + task.id + ")");
-            
+            Task task = tasks.get(position);
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Creating view for task: " + task.name + " (ID: " + task.id + ")");
+
             RemoteViews views = new RemoteViews(this.context.getPackageName(), R.layout.task_widget_item);
-            
+
             views.setTextViewText(R.id.task_name, task.name);
             views.setTextViewText(R.id.task_due_date, task.dueDate);
             if (task.dueDate != null && !task.dueDate.isEmpty()) {
@@ -81,13 +96,13 @@ public class TaskWidgetService extends RemoteViewsService {
             } else {
                 views.setViewVisibility(R.id.task_category, android.view.View.GONE);
             }
-            
+
             // Set priority indicators
             if (task.important) {
                 views.setImageViewResource(R.id.important_icon, R.drawable.ic_important);
                 views.setViewVisibility(R.id.important_icon, android.view.View.VISIBLE);
             }
-            
+
             if (task.urgent) {
                 views.setImageViewResource(R.id.urgent_icon, R.drawable.ic_urgent);
                 views.setViewVisibility(R.id.urgent_icon, android.view.View.VISIBLE);
@@ -130,72 +145,66 @@ public class TaskWidgetService extends RemoteViewsService {
 
         private void loadTasks() {
             tasks.clear();
-            Log.d("Doenit", "Loading tasks from SharedPreferences");
-            
-            // Read from Capacitor storage (SharedPreferences)
-            SharedPreferences prefs = context.getSharedPreferences("CapacitorStorage", Context.MODE_PRIVATE);
-            String tasksJson = prefs.getString("Item", "{}");
-            String categoriesJson = prefs.getString("Category", "{}");
-            
-            Log.d("Doenit", "Tasks JSON length: " + tasksJson.length());
-            Log.d("Doenit", "Tasks JSON preview: " + (tasksJson.length() > 100 ? tasksJson.substring(0, 100) + "..." : tasksJson));
-            
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Loading tasks from widget data");
+
+            String tasksJson = DB.getString(Const.WIDGET_TASKS);
+            String categoriesJson = DB.getString(Const.WIDGET_CATEGORIES);
+
             // Parse categories for name lookup
             try {
                 JSONObject categories = new JSONObject(categoriesJson);
-                JSONObject items = new JSONObject(tasksJson);
-                JSONArray names = items.names();
-                
-                Log.d("Doenit", "Found " + (names != null ? names.length() : 0) + " total tasks");
-                
-                if (names == null) return;
+                JSONArray tasksArray = new JSONArray(tasksJson);
 
-                for (int i = 0; i < names.length(); i++) {
-                    String key = names.getString(i);
-                    JSONObject taskJson = items.getJSONObject(key);
+                for (int i = 0; i < tasksArray.length(); i++) {
+                    JSONObject taskJson = tasksArray.getJSONObject(i);
 
-                    // Only include non-archived, non-completed tasks
+                    // Only include non-archived tasks
                     boolean isArchived = taskJson.optBoolean("archived", false);
-                    boolean isCompleted = taskJson.optInt("completed", 0) > 0;
-                    if (isArchived || isCompleted) continue;
 
-                    TaskItem task = new TaskItem();
-                    task.id = key;
+                    if (isArchived) {
+                        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Skipping task " + i + " (archived).");
+                        continue;
+                    }
+
+                    Task task = new Task();
+                    task.id = taskJson.optString("id", "");
                     task.name = taskJson.optString("name", "");
                     task.dueDate = formatDateToAfrikaans(taskJson.optString("due_date", ""));
-                    
+
                     // Get category name from category ID
                     String categoryId = taskJson.optString("category_id", "");
                     task.category = getCategoryName(categoryId, categories);
                     task.important = taskJson.optBoolean("important", false);
                     task.urgent = taskJson.optBoolean("urgent", false);
-                    
-                    tasks.add(task);    
+
+                    tasks.add(task);
                 }
 
                 // Replace the three separate sort calls with this single comprehensive sort
-                tasks.sort((a, b) -> {
-                    // Primary: Due date (tasks with due dates come first, then by date)
-                    int dateComparison = compareDueDates(a.dueDate, b.dueDate);
-                    if (dateComparison != 0) {
-                        return dateComparison;
-                    }
+                Collections.sort(tasks, new Comparator<Task>() {
+                    @Override
+                    public int compare(Task a, Task b) {
+                        // Primary: Due date (tasks with due dates come first, then by date)
+                        int dateComparison = compareDueDates(a.dueDate, b.dueDate);
+                        if (dateComparison != 0) {
+                            return dateComparison;
+                        }
 
-                    // Secondary: Priority based on importance and urgency (Eisenhower Matrix)
-                    int aPriority = getPriorityLevel(a.important, a.urgent);
-                    int bPriority = getPriorityLevel(b.important, b.urgent);
-                    
-                    if (aPriority != bPriority) {
-                        return Integer.compare(aPriority, bPriority); // Lower number = higher priority
+                        // Secondary: Priority based on importance and urgency (Eisenhower Matrix)
+                        int aPriority = getPriorityLevel(a.important, a.urgent);
+                        int bPriority = getPriorityLevel(b.important, b.urgent);
+
+                        if (aPriority != bPriority) {
+                            return Integer.compare(aPriority, bPriority); // Lower number = higher priority
+                        }
+
+                        // Tertiary: Alphabetical by name
+                        return a.name.compareToIgnoreCase(b.name);
                     }
-                    
-                    // Tertiary: Alphabetical by name
-                    return a.name.compareToIgnoreCase(b.name);
                 });
-                
-                Log.d("Doenit - TaskWidget", "Loaded " + tasks.size() + " active tasks for widget");
+                Log.d(Const.LOG_TAG_DOENIT_WIDGET, "Found " + tasksArray.length() + " total tasks, loaded " + tasks.size() + " active tasks for widget");
             } catch (JSONException e) {
-                Log.e("Doenit - TaskWidget", "Error parsing JSON", e);
+                Log.e(Const.LOG_TAG_DOENIT_WIDGET, "Error parsing JSON", e);
                 e.printStackTrace();
             }
         }
@@ -217,14 +226,14 @@ public class TaskWidgetService extends RemoteViewsService {
             if (dateString == null || dateString.isEmpty() || dateString.equals("null")) {
                 return "";
             }
-            
+
             try {
-                java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ENGLISH);
-                java.util.Date date = inputFormat.parse(dateString);
-                
-                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = inputFormat.parse(dateString);
+
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d MMM yyyy", new Locale("af", "ZA"));
                 return outputFormat.format(date);
-            } catch (java.text.ParseException e) {
+            } catch (ParseException e) {
                 return dateString; // Return original string if parsing fails
             }
         }
@@ -233,55 +242,61 @@ public class TaskWidgetService extends RemoteViewsService {
             if (formattedDate == null || formattedDate.isEmpty()) {
                 return false;
             }
-            
+
             try {
                 // Parse the formatted Afrikaans date back to compare with today
-                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
-                java.util.Date dueDate = outputFormat.parse(formattedDate);
-                
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d MMM yyyy", new Locale("af", "ZA"));
+                Date dueDate = outputFormat.parse(formattedDate);
+
                 // Get today's date at midnight for comparison
-                java.util.Calendar today = java.util.Calendar.getInstance();
-                today.set(java.util.Calendar.HOUR_OF_DAY, 0);
-                today.set(java.util.Calendar.MINUTE, 0);
-                today.set(java.util.Calendar.SECOND, 0);
-                today.set(java.util.Calendar.MILLISECOND, 0);
-                
+                Calendar today = Calendar.getInstance();
+                today.set(Calendar.HOUR_OF_DAY, 0);
+                today.set(Calendar.MINUTE, 0);
+                today.set(Calendar.SECOND, 0);
+                today.set(Calendar.MILLISECOND, 0);
+
                 return dueDate.before(today.getTime());
-            } catch (java.text.ParseException e) {
+            } catch (ParseException e) {
                 return false; // If we can't parse the date, assume it's not past
             }
         }
 
         private int getPriorityLevel(boolean important, boolean urgent) {
             // Eisenhower Matrix priority levels
-            if (important && urgent) return 1;     // Do First (Crisis)
-            if (important && !urgent) return 2;   // Schedule (Important, not urgent)
-            if (!important && urgent) return 3;   // Delegate (Urgent, not important)
-            return 4;                              // Don't Do (Neither important nor urgent)
+            if (important && urgent)
+                return 1; // Do First (Crisis)
+            if (important && !urgent)
+                return 2; // Schedule (Important, not urgent)
+            if (!important && urgent)
+                return 3; // Delegate (Urgent, not important)
+            return 4; // Don't Do (Neither important nor urgent)
         }
 
         private int compareDueDates(String dateA, String dateB) {
             boolean aHasDate = dateA != null && !dateA.isEmpty();
             boolean bHasDate = dateB != null && !dateB.isEmpty();
-            
+
             // Tasks with due dates come before tasks without due dates
-            if (aHasDate && !bHasDate) return -1;
-            if (!aHasDate && bHasDate) return 1;
-            if (!aHasDate && !bHasDate) return 0;
-            
+            if (aHasDate && !bHasDate)
+                return -1;
+            if (!aHasDate && bHasDate)
+                return 1;
+            if (!aHasDate && !bHasDate)
+                return 0;
+
             // Both have due dates - compare them
             try {
-                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("d MMM yyyy", new java.util.Locale("af", "ZA"));
-                java.util.Date parsedDateA = outputFormat.parse(dateA);
-                java.util.Date parsedDateB = outputFormat.parse(dateB);
+                SimpleDateFormat outputFormat = new SimpleDateFormat("d MMM yyyy", new Locale("af", "ZA"));
+                Date parsedDateA = outputFormat.parse(dateA);
+                Date parsedDateB = outputFormat.parse(dateB);
                 return parsedDateA.compareTo(parsedDateB);
-            } catch (java.text.ParseException e) {
+            } catch (ParseException e) {
                 return dateA.compareTo(dateB); // Fallback to string comparison
             }
         }
     }
 
-    static class TaskItem {
+    static class Task {
         String id;
         String name;
         String dueDate;

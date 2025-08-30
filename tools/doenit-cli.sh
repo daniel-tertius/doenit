@@ -333,11 +333,11 @@ widget_debug() {
         1)
             echo -e "${BLUE}Toets widget aksies vir ontwikkeling app...${NC}"
             local dev_package=$(get_package_name)
-            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "${dev_package}/doenit.app.TaskWidgetProvider"
+            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "${dev_package}/app.doenit.TaskWidgetProvider"
             ;;
         2)
             echo -e "${BLUE}Toets widget aksies vir produksie app...${NC}"
-            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "doenit.app/doenit.app.TaskWidgetProvider"
+            adb shell am broadcast -a "COMPLETE_TASK" -e "task_id" "test_task_123" -n "app.doenit.TaskWidgetProvider"
             ;;
         *)
             show_invalid_option

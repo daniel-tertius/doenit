@@ -6,6 +6,14 @@ import { DB } from "$lib/DB";
 import { sortTasksByDueDate } from "$lib";
 import { App } from "@capacitor/app";
 
+function javaHashCode(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (31 * hash + str.charCodeAt(i)) | 0;
+  }
+  return hash;
+}
+
 class Notification {
   #initiated: boolean = false;
   #time: string | null = $state(null);
@@ -115,7 +123,7 @@ class Notification {
     this.#time = time;
     this.#enabled = time !== null;
     this.#past_tasks_enabled = past_tasks;
-    
+
     const existing_permission = await LocalNotifications.checkPermissions();
     this.#status = existing_permission.display;
   }
@@ -160,7 +168,7 @@ class Notification {
   }
 
   async scheduleNotifications(all_tasks?: Task[]) {
-    console.debug("[Doenit]: Re-scheduling notifications");
+    console.debug("[😨 Doenit]: Re-scheduling notifications");
 
     if (all_tasks == null) {
       all_tasks = await DB.Task.getAll({ selector: { completed: 0, archived: { $ne: true } } });
@@ -242,7 +250,7 @@ class Notification {
         notifications.push({
           title: task.name,
           body: t("scheduled_for_now"),
-          id: +`${i + 1}${j + 1}`,
+          id: javaHashCode(task.id),
           schedule: { at: taskDate },
         });
       }

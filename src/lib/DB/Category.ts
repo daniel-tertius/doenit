@@ -7,13 +7,13 @@ export class CategoryTable extends Table<Category> {
   }
 
   async getDefault() {
-    let default_category = await this.getOne({
-      selector: { archived: { $ne: true }, is_default: { $eq: true } },
-    });
-    if (!default_category) {
-      default_category = await this.create({ name: "", is_default: true });
+    try {
+      return await this.getOne({
+        selector: { archived: { $ne: true }, is_default: { $eq: true } },
+      });
+    } catch (e) {
+      console.log("[💬 Doenit]: Creating a default category.");
+      return this.create({ name: "", is_default: true });
     }
-
-    return default_category;
   }
 }
