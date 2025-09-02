@@ -6,6 +6,14 @@
   import { Plus } from "$lib/icon";
   import { DB } from "$lib/DB";
 
+  /**
+   * @typedef {Object} Props
+   * @property {boolean} [open=false] - Whether the modal is open.
+   * @property {(name: string) => *} [oncreate] - Callback function to call when a category is created.
+   * @property {() => *} [onclose] - Callback function to call when the modal is closed.
+   */
+
+  /** @type {Props} */
   let { open = $bindable(), oncreate, onclose } = $props();
 
   let new_category_name = $state("");
@@ -24,12 +32,14 @@
 
     new_category_name = "";
     open = false;
-    oncreate(category?.id);
+    if (oncreate) {
+      oncreate(category.id);
+    }
   }
 
   function handleClose() {
     new_category_name = "";
-    onclose();
+    if (onclose) onclose();
   }
 </script>
 

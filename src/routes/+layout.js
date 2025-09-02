@@ -19,17 +19,17 @@ export async function load() {
 
 async function migratePreferenceToRxDB() {
   const db = old_DB.getInstance();
-  const tasks_obj = await db.Task.readAll();
-  if (tasks_obj) {
-    const tasks = Object.values(tasks_obj);
-    await DB.Task.createMany(tasks);
-    await db.Task.destroy();
-  }
-
   const categories_obj = await db.Category.readAll();
   if (categories_obj) {
     const categories = Object.values(categories_obj);
     await DB.Category.createMany(categories);
     await db.Category.destroy();
+  }
+
+  const tasks_obj = await db.Task.readAll();
+  if (tasks_obj) {
+    const tasks = Object.values(tasks_obj);
+    await DB.Task.createMany(tasks);
+    await db.Task.destroy();
   }
 }
