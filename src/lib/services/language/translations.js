@@ -44,6 +44,10 @@ export const translations = {
     edit: "Wysig",
     restore: "Herstel",
 
+    // Friends
+    edit_room: "Wysig Groep",
+    choose_room_name: "Wysig jou groepsnaam",
+
     // Date & Time
     no_date: "Geen datum",
     this_week: "Hierdie week",
@@ -233,6 +237,10 @@ export const translations = {
     save: "Save",
     edit: "Edit",
     restore: "Restore",
+
+    // Friends
+    edit_room: "Edit room",
+    choose_room_name: "Edit your room name",
 
     // Date & Time
     no_date: "No Date",

@@ -27,12 +27,7 @@
     type="text"
     use:init
     bind:value
-    class={[
-      {
-        "bg-t-primary-600 p-2 w-full rounded-lg placeholder:text-t-secondary/60": true,
-      },
-      rest.class ?? "",
-    ]}
+    class={["bg-t-primary-600 border border-dark-900 p-2 h-12 w-full rounded-lg placeholder:text-t-secondary/60", rest.class ?? ""]}
   />
 
   {#if can_clear && value}

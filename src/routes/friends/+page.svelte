@@ -16,6 +16,8 @@
   let selected_room = $state(null);
   let error_message = $state("");
 
+  const user_count = $derived(selected_room?.users.length);
+
   onMount(() => {
     rooms = [
       { id: "1", name: "Cynel", created_at: "", users: ["cynel.vanniekerk@protonmail.com"] },
@@ -91,9 +93,9 @@
 </div>
 
 <Modal bind:open {footer} title={t("edit_room")} onclose={handleClose}>
-  <div class="p-4 space-y-2">
+  <div class="p-4 space-y-4">
     <div>
-      <span>{t("choose_room_name")}</span>
+      <div class="pb-1">{t("choose_room_name")}</div>
       <InputText bind:value={room_name} focus_on_mount placeholder={t("choose_room_name")} />
 
       {#if !!error_message}
@@ -104,7 +106,7 @@
     </div>
 
     <Button class="border-red-200! bg-red-500/40! text-red-200!">
-      Verlaat Vriend{selected_room?.users.length > 1 ? "e" : ""}
+      Verlaat Vriend{user_count > 1 ? "e" : ""}
       <Leave class="h-full" size={20} />
     </Button>
   </div>
