@@ -9,7 +9,7 @@
   <!-- android/app/build.gradle – versionName -->
   <!-- package.json – "version" -->
 
-  <p>{t("version")} 1.2.1</p>
+  <p>{t("version")} 1.2.3</p>
   <p class="text-sm text-t-secondary/80">
     {t("contact_support")}
     <a href="mailto:support.tricky800@passmail.com" class="text-blue-400/80 hover:text-blue-500/80 underline">

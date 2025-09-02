@@ -98,6 +98,11 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 for (int appWidgetId : appWidgetIds) {
                     updateAppWidget(context, appWidgetManager, appWidgetId);
                 }
+
+                Intent appIntent = new Intent(context, MainActivity.class);
+                appIntent.putExtra("route", "/");
+                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                context.startActivity(appIntent);
             } else {
                 Log.e(Const.LOG_TAG_TASK_WIDGET, "COMPLETE_TASK action received but no task ID found");
             }
