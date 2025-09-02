@@ -1,5 +1,6 @@
 <script>
   import { notifications } from "$lib/services/notification.svelte";
+  import { SplashScreen } from "@capacitor/splash-screen";
   import { theme } from "$lib/services/theme.svelte";
   import { Widget } from "$lib/services/widget";
   import { Capacitor } from "@capacitor/core";
@@ -11,7 +12,6 @@
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
   import "../app.css";
-  import { SplashScreen } from "@capacitor/splash-screen";
 
   let { children } = $props();
 

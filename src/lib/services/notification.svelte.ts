@@ -171,7 +171,7 @@ class Notification {
     console.debug("[😨 Doenit]: Re-scheduling notifications");
 
     if (all_tasks == null) {
-      all_tasks = await DB.Task.getAll({ selector: { completed: 0, archived: { $ne: true } } });
+      all_tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
     }
 
     if (!this.#initiated) {
@@ -186,80 +186,101 @@ class Notification {
 
     await this.cancelAll();
 
-    // Schedule a notification for 30 days in advance.
-    const notifications = [];
+    try {
+      // Schedule a notification for 30 days in advance.
+      const notifications = [];
 
-    // Today at the specified time or default to 8:00 AM.
-    const date = new Date();
-    const [hours = 8, minutes = 0] = this.#time?.split(":").map(Number) ?? [];
-    date.setHours(hours, minutes, 0, 0);
+      // Today at the specified time or default to 8:00 AM.
+      const date = new Date();
+      const [hours = 8, minutes = 0] = this.#time?.split(":").map(Number) ?? [];
+      date.setHours(hours, minutes, 0, 0);
 
-    all_tasks = sortTasksByDueDate(all_tasks);
-    for (let i = 0; i < 30; i++) {
-      if (this.#past_tasks_enabled) {
-        const tasks = getTasksBeforeDate(all_tasks, date);
-        if (!!tasks.length) {
-          let body = tasks
-            .map(
-              (task, idx) =>
-                `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
-            )
-            .join("\n");
-          notifications.push({
-            title: tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
-            body: body,
-            id: +`${all_tasks.length}${i + 1}`,
-            schedule: { at: new Date(+date) /* Need to copy date */ },
-          });
+      all_tasks = sortTasksByDueDate(all_tasks);
+      for (let i = 0; i < 30; i++) {
+        if (this.#past_tasks_enabled) {
+          const tasks = getTasksBeforeDate(all_tasks, date);
+          if (!!tasks.length) {
+            let body = tasks
+              .map(
+                (task, idx) =>
+                  `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+              )
+              .join("\n");
+            
+            // Use a more reliable ID generation for past tasks
+            const pastTaskId = 1000000 + (i * 1000) + 1; // Ensures unique IDs for past task notifications
+            notifications.push({
+              title: tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
+              body: body,
+              id: pastTaskId,
+              schedule: { at: new Date(+date) /* Need to copy date */ },
+            });
+          }
         }
-      }
 
-      const tasks = getTasksOnDate(all_tasks, date);
-      if (!tasks.length) {
-        date.setDate(date.getDate() + 1);
-        continue;
-      }
+        const tasks = getTasksOnDate(all_tasks, date);
+        if (!tasks.length) {
+          date.setDate(date.getDate() + 1);
+          continue;
+        }
 
-      // Create a beautiful body for the tasks
-      let body = tasks
-        .map(
-          (task, idx) =>
-            `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
-        )
-        .join("\n");
-
-      notifications.push({
-        title:
-          tasks.length === 1
-            ? t("daily_reminder_title_singular")
-            : t("daily_reminder_title", { task_count: tasks.length }),
-        body: body,
-        id: i + 1,
-        schedule: { at: new Date(+date) /* Need to copy date */ },
-      });
-
-      // Schedule a notification for the tasks with time set in the due date.
-      for (let j = 0; j < tasks.length; j++) {
-        const task = tasks[j];
-        const has_due_time = task.due_date?.includes(" ");
-        if (!has_due_time) continue;
-
-        // YYYYY-MM-DD HH:mm
-        const taskDate = new Date(task.due_date!);
+        // Create a beautiful body for the tasks
+        let body = tasks
+          .map(
+            (task, idx) =>
+              `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+          )
+          .join("\n");
 
         notifications.push({
-          title: task.name,
-          body: t("scheduled_for_now"),
-          id: javaHashCode(task.id),
-          schedule: { at: taskDate },
+          title:
+            tasks.length === 1
+              ? t("daily_reminder_title_singular")
+              : t("daily_reminder_title", { task_count: tasks.length }),
+          body: body,
+          id: i + 1,
+          schedule: { at: new Date(+date) /* Need to copy date */ },
         });
+
+        // Schedule a notification for the tasks with time set in the due date.
+        for (let j = 0; j < tasks.length; j++) {
+          const task = tasks[j];
+          const has_due_time = task.due_date?.includes(" ");
+          if (!has_due_time) continue;
+
+          // YYYY-MM-DD HH:mm format validation
+          const taskDate = new Date(task.due_date!);
+          
+          // Validate that the date is valid and in the future
+          if (isNaN(taskDate.getTime())) {
+            console.warn(`Invalid task due date: ${task.due_date} for task: ${task.name}`);
+            continue;
+          }
+
+          // Only schedule if the notification time is in the future
+          if (taskDate <= new Date()) {
+            continue;
+          }
+
+          notifications.push({
+            title: task.name,
+            body: t("scheduled_for_now"),
+            id: Math.abs(javaHashCode(task.id)), // Ensure positive ID
+            schedule: { at: taskDate },
+          });
+        }
+
+        // Update to next day
+        date.setDate(date.getDate() + 1);
       }
 
-      // Update to next day
-      date.setDate(date.getDate() + 1);
+      if (notifications.length > 0) {
+        await LocalNotifications.schedule({ notifications });
+        console.debug(`[😨 Doenit]: Scheduled ${notifications.length} notifications`);
+      }
+    } catch (error) {
+      console.error("Error scheduling notifications:", error);
     }
-
-    await LocalNotifications.schedule({ notifications });
   }
 
   async cancelAll() {

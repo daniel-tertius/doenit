@@ -6,7 +6,11 @@ import { SplashScreen } from "@capacitor/splash-screen";
 export const ssr = false;
 
 export async function load() {
-  SplashScreen.show();
+  SplashScreen.show({
+    autoHide: true,
+    showDuration: 1000,
+  });
+
   await DB.init();
   await migratePreferenceToRxDB();
 
