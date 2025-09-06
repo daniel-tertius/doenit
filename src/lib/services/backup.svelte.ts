@@ -1,99 +1,62 @@
 import { t } from "$lib/services/language.svelte";
-import { DB } from "$lib/DB";
+import Files from "$lib/services/files.svelte";
 import * as env from "$env/static/public";
-import * as pako from "pako";
 import { OnlineDB } from "$lib/OnlineDB";
-import type Files from "$lib/services/files.svelte";
-import type { User } from "firebase/auth";
-import { getApp, initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth } from "./auth.svelte";
+import * as pako from "pako";
+import { DB } from "$lib/DB";
 
 export default class Backup {
-  private readonly file: Files;
-  private readonly user: User;
-
-  constructor(file: Files, user: User) {
-    this.file = file;
-    this.user = user;
-  }
-
-  private getFirebaseStorage() {
-    const firebaseConfig = {
-      apiKey: env.PUBLIC_FIREBASE_API_KEY,
-      authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
-      projectId: env.PUBLIC_FIREBASE_PROJECT_ID,
-      storageBucket: env.PUBLIC_FIREBASE_STORAGE_BUCKET,
-      messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-      appId: env.PUBLIC_FIREBASE_APP_ID,
-    };
-
-    const BACKUP_APP_NAME = "[DEFAULT]";
-    let app;
-
+  static async createBackup(): Promise<SimpleResult> {
     try {
-      app = getApp(BACKUP_APP_NAME);
-    } catch {
-      app = initializeApp(firebaseConfig, BACKUP_APP_NAME);
-    }
-
-    return getStorage(app);
-  }
-
-  async createBackup(): Promise<SimpleResult> {
-    try {
-      if (!this.user) throw new Error("User not signed in");
-
+      const user_id = Backup.getUserID();
       const tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
       const categories = await DB.Category.getAll({ selector: { archived: { $ne: true } } });
       const encrypted_data = await Backup.compressAndEncrypt({ tasks, categories });
-
-      // Create a Blob from the encrypted data
       const encrypted_blob = new Blob([encrypted_data], { type: "application/octet-stream" });
       const sha256 = await Backup.sha256FromBlob(encrypted_blob);
 
-      // Direct Firebase Storage upload
-      const storage = this.getFirebaseStorage();
-      const file_path = `users/${this.user.uid}/snapshots/${new Date().toISOString()}.bin`;
-      const storageRef = ref(storage, file_path);
+      const existing_backups = await OnlineDB.BackupManifest.getAll({
+        filters: [
+          { field: "user_id", operator: "==", value: user_id },
+          { field: "sha256", operator: "==", value: sha256 },
+        ],
+      });
+      if (existing_backups.length > 0) {
+        alert("No changes since last backup. Skipping upload.");
+        return { success: true };
+      }
 
-      console.log("Uploading to Firebase Storage:", file_path);
-      const uploadResult = await uploadBytes(storageRef, encrypted_blob);
-      console.log("Upload successful:", uploadResult);
+      const file_path = `users/${user_id}/snapshots/${new Date().toISOString()}.bin`;
+      const uploadResult = await Files.upload(file_path, encrypted_blob);
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error_message || "File upload failed");
+      }
 
-      const downloadURL = await getDownloadURL(uploadResult.ref);
-      console.log("Download URL:", downloadURL);
-
-      alert("Saving backup metadata...");
-      // Save backup metadata to OnlineDB
-      const onlineDb = OnlineDB.getInstance();
-      await onlineDb.BackupManifest.create({
+      await OnlineDB.BackupManifest.create({
+        sha256,
         file_path: file_path,
         timestamp: new Date().toISOString(),
-        user_id: this.user.uid,
+        user_id,
         size: encrypted_blob.size,
-        sha256: sha256,
-        device: navigator.userAgent,
       });
 
-      alert("Backup created successfully!");
       return { success: true };
     } catch (error) {
-      console.error("Backup failed:", error);
-      alert("Rugsteun het misluk: " + (error as Error).message || "Something went wrong");
+      alert("Backup failed: " + (error as Error).message || "Something went wrong");
       return { success: false, error_message: (error as Error).message || "Something went wrong" };
     }
   }
 
-  async restoreBackup(manifest: BackupManifest): Promise<SimpleResult> {
+  static async restoreBackup(manifest: BackupManifest): Promise<SimpleResult> {
     try {
-      if (!this.user) throw new Error("User not signed in");
       if (!manifest) throw new Error("No backup data found");
 
-      const blob = await this.file.download(manifest.file_path);
+      const blob = await Files.download(manifest.file_path);
       const encrypted_data = await blob.text();
       if (!encrypted_data) throw new Error("Failed to read backup data");
 
-      const data_string = await this.decryptAndDecompress(encrypted_data);
+      const data_string = await Backup.decryptAndDecompress(encrypted_data);
       const data = JSON.parse(data_string);
       if (!data.tasks || !data.categories) {
         throw new Error("Invalid backup data format");
@@ -114,13 +77,11 @@ export default class Backup {
     }
   }
 
-  async listBackups() {
+  static async listBackups() {
     try {
-      if (!this.user) throw new Error("User not signed in");
-
-      const onlineDb = OnlineDB.getInstance();
-      const backup_manifests = await onlineDb.BackupManifest.getAll({
-        filters: [{ field: "user_id", operator: "==", value: this.user.uid }],
+      const user_id = Backup.getUserID();
+      const backup_manifests = await OnlineDB.BackupManifest.getAll({
+        filters: [{ field: "user_id", operator: "==", value: user_id }],
         sort: [{ field: "created_at", direction: "desc" }],
       });
 
@@ -176,7 +137,7 @@ export default class Backup {
     }
   }
 
-  private async decryptAndDecompress(encryptedData: string): Promise<any> {
+  private static async decryptAndDecompress(encryptedData: string): Promise<any> {
     try {
       // Convert base64 back to buffer
       const combined = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
@@ -214,5 +175,12 @@ export default class Backup {
     const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
     return hashHex;
+  }
+
+  private static getUserID(): string {
+    const user = auth.getUser();
+    if (!user) throw new Error("User not signed in");
+
+    return user.uid;
   }
 }

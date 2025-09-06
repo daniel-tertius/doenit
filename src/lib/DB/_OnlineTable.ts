@@ -11,9 +11,11 @@ import {
   orderBy,
   limit,
   onSnapshot,
-  Firestore,
   type WhereFilterOp,
+  getFirestore,
 } from "firebase/firestore";
+import { getApp, initializeApp } from "firebase/app";
+import { FIREBASE_CONFIG } from "$lib";
 
 interface QueryOptions {
   filters?: { field: string; operator: WhereFilterOp; value: any }[];
@@ -24,27 +26,37 @@ interface QueryOptions {
 type SnapshotCallback<T> = (docs: T[]) => void;
 
 export class Table<T extends Task | Room | Category | BackupManifest> {
-  private db: Firestore;
-  private collectionName: string;
+  private readonly name: string;
 
-  constructor(db: Firestore, collectionName: string) {
-    this.db = db;
-    this.collectionName = collectionName;
+  constructor(name: string) {
+    this.name = name;
   }
 
-  async create(data: Omit<T, "id" | "created_at">): Promise<T> {
-    if (!data) throw new Error("Data is required");
+  async create(data: Omit<T, "id" | "created_at">): Promise<SimpleResult> {
+    try {
+      if (!data) throw new Error("Data is required");
 
-    const id = crypto.randomUUID();
-    const created_at = new Date().toISOString();
+      const created_at = new Date().toISOString();
+      const db = this.getFirestore();
+      const colRef = collection(db, this.name);
 
-    const colRef = collection(this.db, this.collectionName);
-    const docRef = await addDoc(colRef, { ...data, id, created_at } as T);
-    return { ...data, id: docRef.id, created_at } as T;
+      // Convert to plain object and ensure all values are serializable
+      const doc_data = JSON.parse(JSON.stringify({ ...data, created_at }));
+      await addDoc(colRef, doc_data);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error creating document in " + this.name + ":", error);
+      return {
+        success: false,
+        error_message: (error as Error).message || "Failed to create document",
+      };
+    }
   }
 
   async read(id: string): Promise<T | null> {
-    const docRef = doc(this.db, this.collectionName, id);
+    const db = this.getFirestore();
+    const docRef = doc(db, this.name, id);
     const snapshot = await getDoc(docRef);
     if (!snapshot.exists()) return null;
 
@@ -57,18 +69,21 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
   }
 
   async update(id: string, data: T) {
-    const docRef = doc(this.db, this.collectionName, id);
+    const db = this.getFirestore();
+    const docRef = doc(db, this.name, id);
     await updateDoc(docRef, data);
     return { ...data, id };
   }
 
   async delete(id: string) {
-    const docRef = doc(this.db, this.collectionName, id);
+    const db = this.getFirestore();
+    const docRef = doc(db, this.name, id);
     await deleteDoc(docRef);
   }
 
   private buildQuery(options?: QueryOptions) {
-    let colRef = collection(this.db, this.collectionName);
+    const db = this.getFirestore();
+    let colRef = collection(db, this.name);
     let q = query(colRef);
 
     if (options?.filters) {
@@ -94,17 +109,17 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
     try {
       const q = this.buildQuery(options);
 
-      console.log("Attempting to subscribe to", this.collectionName);
+      console.log("Attempting to subscribe to", this.name);
 
       return onSnapshot(
         q,
         (snapshot) => {
-          console.log("Successfully received snapshot for", this.collectionName, "- docs count:", snapshot.docs.length);
+          console.log("Successfully received snapshot for", this.name, "- docs count:", snapshot.docs.length);
           const docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id })) as T[];
           callback(docs);
         },
         (error) => {
-          console.error("Firestore subscription error for", this.collectionName, ":");
+          console.error("Firestore subscription error for", this.name, ":");
           console.error("Error code:", error.code);
           console.error("Error message:", error.message);
           console.error("Full error:", error);
@@ -118,8 +133,20 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
         }
       );
     } catch (error) {
-      console.error("Error setting up subscription for", this.collectionName, ":", error);
+      console.error("Error setting up subscription for", this.name, ":", error);
       throw error;
     }
+  }
+
+  private getFirestore() {
+    let app;
+
+    try {
+      app = getApp();
+    } catch {
+      app = initializeApp(FIREBASE_CONFIG);
+    }
+
+    return getFirestore(app, "doenitdb");
   }
 }

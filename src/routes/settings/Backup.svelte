@@ -4,32 +4,23 @@
   import { auth } from "$lib/services/auth.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
   import { ButtonBackup } from "$lib/components/element/button";
+  import Backup from "$lib/services/backup.svelte";
 
   let is_creating_backup = $state(false);
   let is_restoring = $state(false);
   let is_loading = $state(false);
 
-  const backup = $derived(auth.backup);
-
   async function createBackup() {
-    if (!backup) return;
-
     is_creating_backup = true;
-    try {
-      const result = await backup.createBackup();
-      if (result.success) {
-        alert(t("backup_success"));
-      }
-    } catch (error) {
-      console.error("Backup error:", error);
-      alert(t("backup_error") + " " + error.message);
-    } finally {
-      is_creating_backup = false;
+    const result = await Backup.createBackup();
+    if (result.success) {
+      alert(t("backup_success"));
     }
+
+    is_creating_backup = false;
   }
 
   async function restoreBackup() {
-    if (!backup) return;
     if (is_restoring) return;
 
     const confirmed = confirm(t("restore_confirmation"));

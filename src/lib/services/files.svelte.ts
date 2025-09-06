@@ -1,101 +1,61 @@
-import { ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from "firebase/storage";
-import type { User } from "firebase/auth";
-import { FirebaseStorage } from "@capacitor-firebase/storage";
+import { deleteObject, getBlob, getStorage, ref, uploadBytes } from "firebase/storage";
+import { BACKUP_APP_NAME, FIREBASE_CONFIG } from "$lib";
+import { getApp, initializeApp } from "firebase/app";
 
 class Files {
-  private user: User;
-  // private storage: FirebaseStorage;
+  static async upload(path: string, blob: Blob): Promise<SimpleResult> {
+    try {
+      const storage = Files.getFirebaseStorage();
+      const storageRef = ref(storage, path);
 
-  constructor(/* storage: FirebaseStorage, */ user: User) {
-    this.user = user;
-    // this.storage = storage;
+      await uploadBytes(storageRef, blob);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Upload failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "Upload failed";
+      alert(`Upload failed: ${errorMessage}`);
+      return { success: false, error_message: errorMessage };
+    }
   }
 
-  async upload(path: string, blob: Blob): Promise<SimpleResult> {
-    const uri = await this.blobToUri(blob);
-    const result = await new Promise(async (resolve, reject) => {
-      await FirebaseStorage.uploadFile({ path, blob, uri }, (event, error) => {
-        if (error) {
-          alert(`Upload error: ${typeof error === "string" ? error : error.message || JSON.stringify(error)}`);
-          reject(error);
-        } else if (event?.completed) {
-          resolve({ success: true });
-        }
-      });
-    });
+  static async download(path: string): Promise<Blob> {
+    try {
+      const storage = Files.getFirebaseStorage();
+      const storageRef = ref(storage, path);
 
-    alert(result);
-    return { success: true };
-    // try {
-    //   const storageRef = ref(this.storage, path);
-
-    //   const uploadMetadata = {
-    //     contentType: blob.type || "application/octet-stream",
-    //   };
-
-    //   console.log(`Starting upload of ${blob.size.toFixed(2)} bytes...`);
-    //   alert(`Uploading file (${blob.size.toFixed(2)} bytes)...`);
-
-    //   // Add timeout to prevent hanging indefinitely
-    //   const uploadPromise = uploadBytes(storageRef, blob, uploadMetadata);
-    //   const timeoutPromise = new Promise<never>((_, reject) =>
-    //     setTimeout(() => reject(new Error("Upload timeout after 10 minutes")), 600000)
-    //   );
-
-    //   await Promise.race([uploadPromise, timeoutPromise]);
-
-    //   console.log("Upload successful! Download URL obtained.");
-    //   alert("Upload successful!");
-    //   return { success: true };
-    // } catch (error) {
-    //   console.error("Upload failed:", error);
-    //   const errorMessage = error instanceof Error ? error.message : "Upload failed";
-    //   alert(`Upload failed: ${errorMessage}`);
-    //   return { success: false, error_message: errorMessage };
-    // }
+      const blob = await getBlob(storageRef);
+      return blob;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Download failed";
+      throw new Error(`Download failed: ${errorMessage}`);
+    }
   }
 
-  // async download(path: string): Promise<Blob> {
-  //   try {
-  //     const fullPath = `users/${this.user.uid}/snapshots/${path}`;
-  //     const storageRef = ref(this.storage, fullPath);
+  static async delete(path: string): Promise<boolean> {
+    try {
+      const storage = Files.getFirebaseStorage();
+      const storageRef = ref(storage, path);
 
-  //     const blob = await getBlob(storageRef);
-  //     return blob;
-  //   } catch (error) {
-  //     const errorMessage = error instanceof Error ? error.message : "Download failed";
-  //     throw new Error(`Download failed: ${errorMessage}`);
-  //   }
-  // }
+      await deleteObject(storageRef);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Delete failed";
+      console.error(`Delete failed: ${errorMessage}`);
+      return false;
+    }
+  }
 
-  // async delete(path: string): Promise<boolean> {
-  //   try {
-  //     const fullPath = `users/${this.user.uid}/snapshots/${path}`;
-  //     const storageRef = ref(this.storage, fullPath);
+  private static getFirebaseStorage() {
+    let app;
 
-  //     await deleteObject(storageRef);
-  //     return true;
-  //   } catch (error) {
-  //     const errorMessage = error instanceof Error ? error.message : "Delete failed";
-  //     console.error(`Delete failed: ${errorMessage}`);
-  //     return false;
-  //   }
-  // }
+    try {
+      app = getApp(BACKUP_APP_NAME);
+    } catch {
+      app = initializeApp(FIREBASE_CONFIG, BACKUP_APP_NAME);
+    }
 
-  private async blobToUri(blob: Blob): Promise<string> {
-    // Create a temporary file URL that Capacitor can work with
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          resolve(reader.result);
-        } else {
-          reject(new Error("Failed to convert blob to data URI"));
-        }
-      };
-      reader.onerror = () => reject(new Error("Failed to read blob"));
-      reader.readAsDataURL(blob);
-    });
+    return getStorage(app);
   }
 }
 

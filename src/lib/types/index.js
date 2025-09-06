@@ -45,7 +45,6 @@
  * @typedef {Object} BackupManifest
  * @property {string} timestamp - ISO string timestamp of when the backup was created.
  * @property {string} user_id - User identifier.
- * @property {string} device - Device identifier.
  * @property {string} file_path - Path to the backup file.
  * @property {string} sha256 - SHA-256 hash of the backup file (used to verify integrity and avoid duplicate backups).
  * @property {number} size - Size of the backup file in bytes.

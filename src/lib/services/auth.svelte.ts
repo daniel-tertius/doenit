@@ -6,28 +6,12 @@ import { initializeApp, type FirebaseApp } from "firebase/app";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
 import { t } from "$lib/services/language.svelte";
 import { Capacitor } from "@capacitor/core";
-import {
-  PUBLIC_FIREBASE_API_KEY,
-  PUBLIC_FIREBASE_AUTH_DOMAIN,
-  PUBLIC_FIREBASE_PROJECT_ID,
-  PUBLIC_FIREBASE_STORAGE_BUCKET,
-  PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  PUBLIC_FIREBASE_APP_ID,
-} from "$env/static/public";
 import Backup from "./backup.svelte";
 import Files from "./files.svelte";
 import { getStorage } from "firebase/storage";
+import { FIREBASE_CONFIG } from "$lib";
 
 class Auth {
-  private readonly CONFIG = {
-    apiKey: PUBLIC_FIREBASE_API_KEY,
-    authDomain: PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: PUBLIC_FIREBASE_APP_ID,
-  };
-
   readonly app: FirebaseApp;
   readonly auth: FirebaseAuth;
   user: User | null = $state(null);
@@ -37,16 +21,12 @@ class Auth {
 
   constructor() {
     try {
-      this.app = initializeApp(this.CONFIG);
+      this.app = initializeApp(FIREBASE_CONFIG);
       this.auth = getAuth(this.app);
       if (Capacitor.isNativePlatform()) {
         this.auth.onAuthStateChanged((user) => {
           if (!user) return;
-
           this.user = user;
-          const storage = getStorage(this.app);
-          this.files = new Files(storage, this.user);
-          this.backup = new Backup(this.files, this.user);
         });
       } else {
         this.user = {
@@ -68,6 +48,10 @@ class Auth {
       this.is_loaded = true;
       throw error;
     }
+  }
+
+  getUser(): User | null {
+    return this.user;
   }
 
   async getAuthToken(): Promise<string> {
