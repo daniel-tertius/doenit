@@ -1,7 +1,7 @@
 <script>
   import { displayDateTime } from "$lib";
   import { onMount } from "svelte";
-  import { Selected } from "$lib/Data.svelte";
+  import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
   import { InputCheckbox } from "../element/input";
   import { Categories, Important, Shared } from "$lib/icon";
@@ -60,10 +60,11 @@
 <TaskContainer
   {tick_animation}
   class={{
-    "bg-error/60": is_past && !is_selected,
-    "bg-active/60": is_ongoing && !is_selected,
-    "bg-black/20 dark:bg-white/20 border": is_selected,
-    "bg-white dark:bg-dark-400 ": !is_selected && !is_past && !is_ongoing,
+    border: true,
+    "bg-error/20 border-error": is_past && !is_selected,
+    "bg-success/20 border-success": is_ongoing && !is_selected,
+    "bg-primary/20 border-primary": is_selected,
+    "bg-card border-card": !is_selected && !is_past && !is_ongoing,
   }}
   {onclick}
   {onlongpress}

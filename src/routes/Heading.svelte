@@ -19,21 +19,20 @@
   const title = $derived(TITLES[page.route.id ?? "/"] || t("task_list"));
 </script>
 
-<div class="relative bg-t-primary shadow-md">
-  <div class="w-full h-12 relative mx-auto p-2">
-    {#key title}
-      <div
-        transition:fade={{ duration: 100 }}
-        class="absolute inset-0 w-fit mx-auto flex items-center justify-center gap-1"
-      >
-        <img alt="logo" src="logo.png" height="35px" width="35px" />
-        <h1 class="text-3xl font-bold text-tertiary text-center h-10 mx-auto">
+<div class="flex p-1 bg-surface border-default border-b">
+  <ButtonBack />
+
+  <div class="w-fit mx-auto flex items-center justify-center gap-1 py-2">
+    <img alt="logo" src="logo.png" class="w-3xl" />
+    <div class="relative">
+      <span class="text-transparent text-3xl font-bold px-2">{title}</span>
+      {#key title}
+        <h1 transition:fade={{ duration: 100 }} class="absolute inset-0 text-3xl font-bold line-clamp-1">
           {title}
         </h1>
-      </div>
-    {/key}
+      {/key}
+    </div>
   </div>
 
-  <ButtonBack />
   <DeleteAll />
 </div>

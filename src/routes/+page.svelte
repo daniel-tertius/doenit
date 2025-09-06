@@ -4,7 +4,7 @@
   import { Plus } from "$lib/icon";
   import { goto, pushState } from "$app/navigation";
   import { fade } from "svelte/transition";
-  import { Selected } from "$lib/Data.svelte";
+  import { Selected } from "$lib/selected";
   import { navigating, page } from "$app/state";
   import { onMount, tick } from "svelte";
   import { Haptics } from "@capacitor/haptics";
@@ -72,21 +72,21 @@
   }
 </script>
 
-<div class="space-y-1.5 overflow-x-hidden">
+<div class="space-y-1.5">
   {#if filtered_tasks.length === 0}
     <div class="flex flex-col items-center gap-4 py-12">
       {#if Selected.categories.size === 0}
-        <div class="text-lg text-t-secondary">{t("empty_list")}</div>
+        <div class="text-lg">{t("empty_list")}</div>
       {:else}
-        <div class="text-lg text-t-secondary">{t("no_tasks_found")}</div>
+        <div class="text-lg">{t("no_tasks_found")}</div>
       {/if}
       <button
         type="button"
-        class="rounded-md bg-primary-20l px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-t-secondary transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
+        class="rounded-md bg-card px-12 py-6 flex justify-center items-center gap-2 text-sm font-medium text-t-secondary transition-colors hover:bg-primary-10l focus:outline-none focus:ring-2 focus:ring-primary-20l focus:ring-offset-2"
         onclick={() => goto("/create")}
       >
         <Plus size={40} />
-        <span class="text-[20px]">{t("create_new_task")}</span>
+        <span class="text-lg">{t("create_new_task")}</span>
       </button>
     </div>
   {/if}

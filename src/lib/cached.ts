@@ -37,3 +37,4 @@ export const cached_notification_past_tasks = new Cached<boolean>("past_tasks");
 export const cached_email_address = new Cached<string | null>("email_address");
 export const cached_backup_token = new Cached<string | null>("backup_token");
 export const cached_language = new Cached<"af" | "en" | null>("language");
+export const cached_text_settings = new Cached<{ size: 16 | 20 | 24 }>("text_settings");

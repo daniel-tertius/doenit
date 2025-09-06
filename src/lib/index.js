@@ -3,7 +3,7 @@ import { t, language } from "./services/language.svelte";
 export const AFRIKAANS = Symbol("af");
 export const ENGLISH = Symbol("en");
 
-export const DEFAULT_HEX_COLOR = "#242729";
+export const DEFAULT_HEX_COLOR = "#2b2f31";
 
 /**
  * Get the current locale for date formatting

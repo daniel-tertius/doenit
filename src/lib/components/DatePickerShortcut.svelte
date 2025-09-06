@@ -21,7 +21,7 @@
       }}
     >
       <span>{t("today")}</span>
-      <div class="text-t-secondary/60 text-[12px]">{displayDateShort(today)}</div>
+      <div class="text-t-secondary/60 text-xs">{displayDateShort(today)}</div>
     </button>
     <button
       type="button"
@@ -31,7 +31,7 @@
       }}
     >
       {t("tomorrow")}
-      <div class="text-t-secondary/60 text-[12px]">{displayDateShort(tomorrow)}</div>
+      <div class="text-t-secondary/60 text-xs">{displayDateShort(tomorrow)}</div>
     </button>
     <button
       type="button"
@@ -41,7 +41,7 @@
       }}
     >
       {t("in_a_week")}
-      <div class="text-t-secondary/60 text-[12px]">{displayDateShort(in_a_week)}</div>
+      <div class="text-t-secondary/60 text-xs">{displayDateShort(in_a_week)}</div>
     </button>
     <button
       type="button"
@@ -51,7 +51,7 @@
       }}
     >
       {t("in_a_month")}
-      <div class="text-t-secondary/60 text-[12px]">{displayDateShort(in_a_month)}</div>
+      <div class="text-t-secondary/60 text-xs">{displayDateShort(in_a_month)}</div>
     </button>
   </div>
 {/if}

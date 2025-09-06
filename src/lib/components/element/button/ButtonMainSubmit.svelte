@@ -10,6 +10,7 @@
     "/complete": Home,
     "/categories": Home,
     "/settings": Home,
+    "/friends": Home,
     "/[item_id]": Check,
   };
 
@@ -25,13 +26,14 @@
   <button
     {type}
     {form}
-    class="flex justify-center items-center aspect-square rounded-full h-15 w-15 bg-t-primary-700 p-3 font-semibold text-t-secondary *:transition-all *:duration-300 hover:bg-t-primary-800"
+    class="flex justify-center bg-card items-center aspect-square rounded-full h-15 w-15 p-3"
     {onclick}
+    aria-label={is_form_page ? "Submit form" : page_id === "/" ? "Create new item" : "Go to home"}
   >
     {#if navigating.to}
-      <Loading size={24} class="text-t-secondary" />
+      <Loading class="text-2xl" />
     {:else}
-      <Icon size={24} class="text-t-secondary" />
+      <Icon class="text-2xl" />
     {/if}
   </button>
 {/if}

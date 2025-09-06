@@ -3,11 +3,13 @@
   import Backup from "./Backup.svelte";
   import Notifications from "./Notifications.svelte";
   import Support from "./Support.svelte";
-  import ThemeAndLanguage from "./ThemeAndLanguage.svelte";
+  import Appearance from "./Appearance.svelte";
+  import UserDisplay from "./UserDisplay.svelte";
 </script>
 
 <div class="space-y-4">
-  <ThemeAndLanguage />
+  <UserDisplay />
+  <Appearance />
   <Notifications />
   <Backup />
   <Support />

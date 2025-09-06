@@ -24,40 +24,61 @@
 
   onMount(async () => {
     rooms = [
-      { id: "1", name: "Cynel", created_at: "", users: ["cynel.vanniekerk@protonmail.com"] },
-      {
-        id: "2",
-        name: "UNAFFI Devs",
-        created_at: "",
-        users: ["tertius@unaffi.com", "ivan@unaffi.com", "dean@unaffi.com"],
-      },
+      // { id: "1", name: "Cynel", created_at: "", users: [{ email: "cynel.vanniekerk@protonmail.com", pending: true }] },
+      // {
+      //   id: "2",
+      //   name: "UNAFFI Devs Something very long that overflows",
+      //   created_at: "",
+      //   users: [
+      //     { email: "tertius@unaffi.com", pending: false },
+      //     { email: "ivan@unaffi.com", pending: false },
+      //     { email: "dean@unaffi.com", pending: true },
+      //   ],
+      // },
       {
         id: "3",
         name: "van Niekerks",
         created_at: "",
         users: [
-          "cynel.vanniekerk@protonmail.com",
-          "danie.vanniekerk@protonmail.com",
-          "heike.vanniekerk@protonmail.com",
+          { email: "cynel.vanniekerk@protonmail.com", pending: false },
+          { email: "danie.vanniekerk@protonmail.com", pending: false },
+          { email: "heike.vanniekerk@protonmail.com", pending: false },
         ],
       },
-      { id: "4", name: "Room 4", created_at: "", users: ["131415@example.com"] },
+      { id: "4", name: "Room 4", created_at: "", users: [{ email: "131415@example.com", pending: false }] },
       {
         id: "5",
         name: "Room 5",
         created_at: "",
-        users: ["161718@example.com", "192021@example.com", "222324@example.com"],
+        users: [
+          { email: "161718@example.com", pending: false },
+          { email: "192021@example.com", pending: false },
+          { email: "222324@example.com", pending: false },
+        ],
       },
-      { id: "6", name: "Room 6", created_at: "", users: ["252627@example.com", "282930@example.com"] },
+      {
+        id: "6",
+        name: "Room 6",
+        created_at: "",
+        users: [
+          { email: "252627@example.com", pending: false },
+          { email: "282930@example.com", pending: false },
+        ],
+      },
       {
         id: "7",
         name: "Room 7",
         created_at: "",
-        users: ["313233@example.com", "343536@example.com", "373839@example.com", "404142@example.com"],
+        users: [
+          { email: "313233@example.com", pending: false },
+          { email: "343536@example.com", pending: false },
+          { email: "373839@example.com", pending: false },
+          { email: "404142@example.com", pending: false },
+        ],
       },
-      { id: "8", name: "Room 8", created_at: "", users: ["434445@example.com"] },
+      { id: "8", name: "Room 8", created_at: "", users: [{ email: "434445@example.com", pending: false }] },
     ];
-
+    console.log("room_id", room_id);
     selected_room = rooms.find((r) => r.id === room_id) || null;
   });
 
@@ -114,17 +135,14 @@
             type="button"
             class="w-full text-start group"
             bind:this={roomRefs[room.id]}
+            onclick={async () => {
+              selected_room = room;
+              room_id = room.id;
+              await tick();
+              show = false;
+            }}
           >
-            <CardRoom
-              {...room}
-              selected={room.id === room_id}
-              onclick={async () => {
-                selected_room = room;
-                room_id = room.id;
-                await tick();
-                show = false;
-              }}
-            />
+            <CardRoom {...room} selected={room.id === room_id} />
           </button>
         {/each}
       </div>

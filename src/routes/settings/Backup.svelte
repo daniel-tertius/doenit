@@ -1,24 +1,18 @@
 <script>
-  import { ContainerDetails } from "$lib/components/element/container";
-  import { backup } from "$lib/services/backup/backup.svelte";
-  import { Google, Loading } from "$lib/icon";
-  import { onMount } from "svelte";
+  import { Download, Google, Loading, Upload } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
-  import { DB } from "$lib/DB";
+  import { auth } from "$lib/services/auth.svelte";
+  import Accordion from "$lib/components/element/Accordion.svelte";
+  import { ButtonBackup } from "$lib/components/element/button";
 
   let is_creating_backup = $state(false);
   let is_restoring = $state(false);
   let is_loading = $state(false);
 
-  onMount(async () => {
-    await backup.init();
-  });
+  const backup = $derived(auth.backup);
 
   async function createBackup() {
-    if (is_creating_backup) return;
-
-    const confirmed = confirm(t("backup_confirmation"));
-    if (!confirmed) return;
+    if (!backup) return;
 
     is_creating_backup = true;
     try {
@@ -35,6 +29,7 @@
   }
 
   async function restoreBackup() {
+    if (!backup) return;
     if (is_restoring) return;
 
     const confirmed = confirm(t("restore_confirmation"));
@@ -42,12 +37,10 @@
 
     is_restoring = true;
     try {
-      const result = await backup.restoreBackup();
-      if (result.success) {
-        await DB.Task.createMany(result.data.tasks);
-        await DB.Category.createMany(result.data.categories);
-        alert(t("restore_success"));
-      }
+      // const result = await backup.restoreBackup();
+      // if (result.success) {
+      //   alert(t("restore_success"));
+      // }
     } catch (error) {
       console.error("Restore error:", error);
       alert(t("restore_error") + " " + error.message);
@@ -58,83 +51,57 @@
 
   async function handleGoogleVerification() {
     is_loading = true;
-    try {
-      await backup.verifyEmail();
-    } catch (error) {
-      console.error("Email verification failed:", error);
-      alert(t("email_verification_error") + " " + error.message);
-    } finally {
-      is_loading = false;
-    }
+    await auth.signInWithGoogle();
+    is_loading = false;
   }
 </script>
 
-<ContainerDetails label={t("backup_label")}>
-  {#if !backup.email_address}
-    <p class="text-sm text-t-secondary/80">{t("backup_description")}</p>
+<Accordion label={t("backup_label")}>
+  {#if !auth.user}
+    <div class="flex flex-col items-center justify-center text-center space-y-6 px-4 py-8">
+      <!-- Illustration SVG -->
+      <Download class="text-[120px] text-blue-500" />
 
-    <button
-      onclick={handleGoogleVerification}
-      disabled={is_loading}
-      class="w-full bg-t-primary-700 text-t-secondary flex items-center justify-center px-4 py-3 rounded-md shadow-sm text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-    >
-      {#if is_loading}
-        <Loading />
-        {t("verifying")}
-      {:else}
-        <Google size={18} class="mr-3" />
-        {t("verify_email_with_google")}
-      {/if}
-    </button>
-  {:else}
-    <button
-      type="button"
-      disabled={is_restoring || is_creating_backup}
-      class="w-full p-2 bg-blue-600 text-white rounded-lg transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      onclick={createBackup}
-    >
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-          ></path>
-        </svg>
-        {is_creating_backup ? t("backup_in_progress") : t("backup_now")}
+      <!-- Friendly heading -->
+      <!-- TODO: Translation -->
+      <div class="space-y-2">
+        <h3 class="text-xl font-semibold text-t-secondary">Hou jou data veilig!</h3>
+        <p class="text-sm text-t-secondary/70 max-w-sm leading-relaxed">
+          Teken met Google in om jou take en kategorieë te rugsteun. So kan jy jou data herstel as jy van toestel
+          verander.
+        </p>
       </div>
-    </button>
 
-    <button
+      <!-- Call to action button -->
+      <button
+        onclick={() => handleGoogleVerification()}
+        disabled={is_loading}
+        class="w-full bg-blue-600 hover:bg-blue-700 h-12 text-white flex items-center justify-center px-6 py-3 rounded-lg shadow-sm text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors space-x-3"
+      >
+        {#if is_loading}
+          <Loading />
+          <span>Besig om te verifieer...</span>
+        {:else}
+          <Google size={18} />
+          <span>Teken in met Google</span>
+        {/if}
+      </button>
+
+      <!-- Optional note -->
+      <p class="text-xs text-t-secondary/50 max-w-xs">
+        Hierdie is heeltemal opsioneel. Jy kan die app sonder intekening gebruik.
+      </p>
+    </div>
+  {:else}
+    <ButtonBackup bind:is_loading={is_creating_backup} onclick={createBackup} />
+    <!-- <button
       type="button"
       disabled={is_restoring || is_creating_backup}
-      class="w-full p-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full h-12 p-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
       onclick={restoreBackup}
     >
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-          ></path>
-        </svg>
-        {is_restoring ? t("restore_in_progress") : t("restore_from_backup")}
-      </div>
-    </button>
-
-    <!-- Geverifieer as, verander? -->
-    {#if backup.email_address}
-      <div class="mt-2 p-3 bg-t-primary rounded-md">
-        <p class="text-sm text-t-secondary-700 mb-1">{t("verified_email")}:</p>
-        <p class="font-medium text-t-secondary-700">{backup.email_address}</p>
-        <!-- Verander epos adres? -->
-        <button type="button" class="mt-2 text-blue-600 hover:underline" onclick={handleGoogleVerification}>
-          {t("change_email")}
-        </button>
-      </div>
-    {/if}
+      <Upload class="text-xl" />
+      {is_restoring ? t("restore_in_progress") : t("restore_from_backup")}
+    </button> -->
   {/if}
-</ContainerDetails>
+</Accordion>

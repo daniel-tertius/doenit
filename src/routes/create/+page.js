@@ -1,6 +1,6 @@
 export async function load() {
   return {
-    /** @type {Omit<Task, 'id' | 'created_at'>} */
+    /** @type {Omit<Task, 'id' | 'created_at' | 'updated_at'>} */
     task: {
       name: "",
       description: "",
@@ -10,6 +10,7 @@ export async function load() {
       repeat_specific_days: [],
       completed_at: null,
       important: false,
+      room_id: undefined,
       repeat_interval: "",
       repeat_interval_number: 1,
       archived: false,

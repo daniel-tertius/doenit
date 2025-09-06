@@ -1,7 +1,7 @@
 <script>
   import { Check } from "$lib/icon";
-  import { longpress } from "../../long";
   import { t } from "$lib/services/language.svelte";
+  import { LongPress } from "$lib/services/long_press.svelte";
 
   let {
     tick_animation = $bindable(false),
@@ -25,7 +25,7 @@
 
 <button
   {...rest}
-  use:longpress
+  use:LongPress.create
   type="button"
   aria-label={t("check")}
   {onlongpress}

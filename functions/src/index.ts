@@ -242,3 +242,4 @@ export const restoreBackup = functions.https.onRequest(async (req, res) => {
     }
   });
 });
+

@@ -61,11 +61,11 @@
   });
 </script>
 
-<div class="bg-t-primary rounded-lg p-4">
-  <h2 class="font-semibold text-t-secondary mb-3">{t("support")}</h2>
+<div class="bg-surface rounded-lg p-4">
+  <h2 class="font-semibold text-lg mb-3">{t("support")}</h2>
 
   <div class="space-y-3">
-    <p class="text-sm text-t-secondary/80">{t("support_message")}</p>
+    <p>{t("support_message")}</p>
 
     <div class="space-y-2">
       <button
@@ -95,10 +95,10 @@
   <!-- Thank you message -->
   {#if show_thank_you}
     <div transition:fade={{ duration: 300 }} class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div class="bg-t-primary-400 p-6 rounded-lg border border-t-primary-600 max-w-sm mx-4 text-center">
+      <div class="bg-page p-6 rounded-lg border-card max-w-sm mx-4 text-center">
         <div class="text-4xl mb-4">🎉</div>
-        <h3 class="text-xl font-bold mb-2">{t("thank_you")}</h3>
-        <p class="text-t-secondary/80">{t("support_appreciation")}</p>
+        <h3 class="text-lg font-bold mb-2">{t("thank_you")}</h3>
+        <p>{t("support_appreciation")}</p>
       </div>
     </div>
   {/if}

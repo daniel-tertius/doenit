@@ -6,14 +6,6 @@ import { DB } from "$lib/DB";
 import { sortTasksByDueDate } from "$lib";
 import { App } from "@capacitor/app";
 
-function javaHashCode(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = (31 * hash + str.charCodeAt(i)) | 0;
-  }
-  return hash;
-}
-
 class Notification {
   #initiated: boolean = false;
   #time: string | null = $state(null);
@@ -206,13 +198,12 @@ class Notification {
                   `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
               )
               .join("\n");
-            
-            // Use a more reliable ID generation for past tasks
-            const pastTaskId = 1000000 + (i * 1000) + 1; // Ensures unique IDs for past task notifications
+
             notifications.push({
-              title: tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
+              title:
+                tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
               body: body,
-              id: pastTaskId,
+              id: all_tasks.length + i + 1,
               schedule: { at: new Date(+date) /* Need to copy date */ },
             });
           }
@@ -250,7 +241,7 @@ class Notification {
 
           // YYYY-MM-DD HH:mm format validation
           const taskDate = new Date(task.due_date!);
-          
+
           // Validate that the date is valid and in the future
           if (isNaN(taskDate.getTime())) {
             console.warn(`Invalid task due date: ${task.due_date} for task: ${task.name}`);
@@ -265,7 +256,7 @@ class Notification {
           notifications.push({
             title: task.name,
             body: t("scheduled_for_now"),
-            id: Math.abs(javaHashCode(task.id)), // Ensure positive ID
+            id: +`${all_tasks.length * 2}${i + 1}${j + 1}`,
             schedule: { at: taskDate },
           });
         }
@@ -281,6 +272,19 @@ class Notification {
     } catch (error) {
       console.error("Error scheduling notifications:", error);
     }
+  }
+
+  send(title: string, body: string) {
+    LocalNotifications.schedule({
+      notifications: [
+        {
+          title,
+          body,
+          id: new Date().getTime(), // Unique ID based on timestamp
+          schedule: { at: new Date(new Date().getTime() + 1000) }, // Schedule for 1 second later
+        },
+      ],
+    });
   }
 
   async cancelAll() {

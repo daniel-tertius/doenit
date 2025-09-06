@@ -178,7 +178,7 @@
   {/if}
 </div>
 
-<Modal bind:open={is_dialog_open} title="{t('repeat')}{temp_display_other || ` ${t('every')}…`}" {footer}>
+<Modal bind:is_open={is_dialog_open} title="{t('repeat')}{temp_display_other || ` ${t('every')}…`}" {footer}>
   <div class="p-4 space-y-4">
     <div class="flex sm:flex-row gap-4">
       <div class="flex-1">

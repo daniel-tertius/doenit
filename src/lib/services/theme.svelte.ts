@@ -3,10 +3,9 @@ import { DEFAULT_HEX_COLOR } from "$lib";
 import { cached_theme } from "$lib/cached";
 import { Capacitor } from "@capacitor/core";
 
-export type ThemeValue = "dark" | "light";
 class Theme {
   #value: ThemeValue = $state("dark");
-  #edge_to_edge_bg_colour: string = $derived(this.#value === "dark" ? DEFAULT_HEX_COLOR : "#ffffff");
+  #edge_to_edge_bg_colour: string = $derived(this.#value === "dark" ? DEFAULT_HEX_COLOR : "#F5F5F5");
 
   constructor() {
     this.init();
@@ -38,15 +37,15 @@ class Theme {
     const root = document.documentElement;
 
     // Remove existing theme classes
-    root.classList.remove("theme-dark", "theme-light");
 
-    let actualTheme = theme_value;
-
-    // Apply theme class
-    root.classList.add(`theme-${actualTheme}`);
     cached_theme.set(theme_value);
     this.#value = theme_value;
+
     this.updateEdgeToEdgeColour();
+    root.classList.remove("theme-dark", "theme-light");
+    root.classList.add(`theme-${theme_value}`);
+    console.log(`Theme set to ${theme_value}`);
+    document.documentElement.setAttribute("data-theme", theme_value);
   }
 
   toggle() {

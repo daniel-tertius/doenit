@@ -139,7 +139,8 @@
   </div>
 </div>
 
-<Modal bind:open={is_editing} {footer} title={t("edit_category_name")}>
+<!-- TODO: Convert all modals -->
+<Modal bind:is_open={is_editing} {footer} title={t("edit_category_name")}>
   {#if category}
     <div class="p-4">
       <InputText

@@ -8,6 +8,8 @@ import Check from "./Check.svelte";
 import CheckCircle from "./CheckCircle.svelte";
 import Clock from "./Clock.svelte";
 import DownChevron from "./DownChevron.svelte";
+import Download from "./Download.svelte";
+import DownloadCloud from "./DownloadCloud.svelte";
 import Edit from "./Edit.svelte";
 import Google from "./Google.svelte";
 import Home from "./Home.svelte";
@@ -28,6 +30,7 @@ import Sun from "./Sun.svelte";
 import TestTube from "./TestTube.svelte";
 import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
+import Upload from "./Upload.svelte";
 import XCircle from "./XCircle.svelte";
 
 export {
@@ -41,6 +44,8 @@ export {
   CheckCircle,
   Clock,
   DownChevron,
+  Download,
+  DownloadCloud,
   Edit,
   Google,
   Home,
@@ -61,5 +66,6 @@ export {
   TestTube,
   Times,
   Trash,
+  Upload,
   XCircle,
 };

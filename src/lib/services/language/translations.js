@@ -19,7 +19,7 @@ export const translations = {
     friends: "Vriende",
     menu: "Kieslys",
     home: "Tuis",
-    completed_tasks: "Voltooide take",
+    completed_tasks: "Gedoen",
     categories: "Kategorieë",
     settings: "Instellings",
 
@@ -47,6 +47,17 @@ export const translations = {
     // Friends
     edit_room: "Wysig Groep",
     choose_room_name: "Wysig jou groepsnaam",
+    connect_with_friend: "Verbind met 'n vriend",
+    enter_friend_email: "Voer vriend se e-posadres in",
+    send_invite: "Stuur uitnodiging",
+    sending: "Stuur...",
+    invite_sent_to: "Uitnodiging gestuur na {{email}}",
+    add_friend_error: "Kon nie vriend byvoeg nie",
+    friend_already_added: "Hierdie vriend is reeds bygevoeg",
+    friend_added_offline: "Vriend bygevoeg (sal sinkroniseer wanneer aanlyn)",
+    friends_with: "Vriende met",
+    sync_success: "Take gesinkroniseer",
+    sync_error: "Sinkronisasie fout",
 
     // Date & Time
     no_date: "Geen datum",
@@ -161,7 +172,7 @@ export const translations = {
     start_date_before_end: "Begin datum moet voor die einde datum wees",
 
     // Backup additional messages
-    backup_error: "Fout met rugsteun:",
+    backup_error: "Rugsteun het misluk:",
     restore_error: "Fout met herstel:",
     email_verification_error: "Fout met e-pos verifikasie:",
     restore_confirmation: "Is jy seker jy wil vanaf rugsteun herstel?",
@@ -213,7 +224,7 @@ export const translations = {
     friends: "Friends",
     menu: "Menu",
     home: "Home",
-    completed_tasks: "Completed Tasks",
+    completed_tasks: "Completed",
     categories: "Categories",
     settings: "Settings",
 
@@ -241,6 +252,17 @@ export const translations = {
     // Friends
     edit_room: "Edit room",
     choose_room_name: "Edit your room name",
+    connect_with_friend: "Connect with a friend",
+    enter_friend_email: "Enter friend's email address",
+    send_invite: "Send invite",
+    sending: "Sending...",
+    invite_sent_to: "Invite sent to {{email}}",
+    add_friend_error: "Could not add friend",
+    friend_already_added: "This friend has already been added",
+    friend_added_offline: "Friend added (will sync when online)",
+    friends_with: "Friends with",
+    sync_success: "Tasks synchronized",
+    sync_error: "Synchronization error",
 
     // Date & Time
     no_date: "No Date",

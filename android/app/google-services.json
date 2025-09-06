@@ -23,10 +23,39 @@
           }
         },
         {
-          "client_id": "546887238633-9mi7or2emtoovughm07ovgo325r6g9sb.apps.googleusercontent.com",
+          "client_id": "546887238633-ke85anm6ka70ik3endt31pkq7fh570ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH5uvUSpZ-mkhHw9EK0QnZ_c01hE5ERzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546887238633-ke85anm6ka70ik3endt31pkq7fh570ag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546887238633:android:628b9b65f3d72dae73c178",
+        "android_client_info": {
+          "package_name": "doenit.app.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546887238633-c08unc4hru6mokmjl90s3ltpg1tmm6be.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "doenit.app",
+            "package_name": "doenit.app.dev",
             "certificate_hash": "4942d275027b32623aa836214f104324899d1b16"
           }
         },

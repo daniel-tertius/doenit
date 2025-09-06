@@ -1,17 +1,16 @@
 <script>
-  let { size = 24, color = "currentColor", ...rest } = $props();
+  const { color: stroke = "currentColor", ...rest } = $props();
 </script>
 
 <svg
-  width={size}
-  height={size}
+  {...rest}
   viewBox="0 0 24 24"
   fill="none"
-  stroke={color}
+  {stroke}
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  {...rest}
+  style="width: 1em; height: 1em;"
 >
   <circle cx="12" cy="12" r="3" />
   <path

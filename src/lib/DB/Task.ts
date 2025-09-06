@@ -10,9 +10,10 @@ export class TaskTable extends Table<Task> {
   async completeId(task_id: string) {
     const task = await this.get(task_id);
     if (!task) throw new Error("Task not found");
-    
+
     return this.complete(task);
   }
+  
 
   complete(task: Task) {
     const is_repeat_task = task.repeat_interval && task.due_date;
@@ -35,6 +36,16 @@ export class TaskTable extends Table<Task> {
     task.completed = 0;
     task.archived = false;
     return this.update(task.id, task);
+  }
+
+  // Get tasks for a specific room
+  async getByRoom(roomId: string): Promise<Task[]> {
+    return this.getAll({
+      selector: {
+        room_id: roomId,
+        archived: false,
+      },
+    });
   }
 }
 

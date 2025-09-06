@@ -228,12 +228,14 @@ build_and_install() {
     
     echo -e "${BLUE}📱 Bou Android debug APK...${NC}"
     export NODE_ENV=development
-    cd android
-    if ./gradlew assembleDebug; then
+    # cd android
+    if npx cap build android --androidreleasetype "APK" --signing-type "apksigner"; then
+    # if ./gradlew assembleDebug; then
         echo -e "${GREEN}✅ Debug APK gebou${NC}"
         
-        # Find the APK file
-        APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+        # # Find the APK file
+        APK_PATH="android/app/build/outputs/apk/release/app-release-signed.apk"
+        # APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
         if [ -f "$APK_PATH" ]; then
             echo -e "${BLUE}📲 Installeer op toestel...${NC}"
             if adb install -r "$APK_PATH"; then
@@ -242,20 +244,20 @@ build_and_install() {
                 echo -e "${CYAN}App Naam: Doenit Dev${NC}"
             else
                 echo -e "${RED}❌ Installasie gefaal${NC}"
-                cd ..
+                # cd ..
                 return 1
             fi
         else
             echo -e "${RED}❌ APK lêer nie gevind nie: $APK_PATH${NC}"
-            cd ..
+        #     cd ..
             return 1
         fi
     else
         echo -e "${RED}❌ APK bou gefaal${NC}"
-        cd ..
+    #     cd ..
         return 1
     fi
-    cd ..
+    # cd ..
     unset NODE_ENV
     
     # Copy to app-output for convenience

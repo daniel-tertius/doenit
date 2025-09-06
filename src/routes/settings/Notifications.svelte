@@ -3,8 +3,8 @@
   import { notifications } from "$lib/services/notification.svelte";
   import { CheckCircle, XCircle, Clock } from "$lib/icon";
   import { InputSwitch, InputTime } from "$lib/components/element/input";
-  import { ContainerDetails } from "$lib/components/element/container";
   import { t } from "$lib/services/language.svelte";
+  import Accordion from "$lib/components/element/Accordion.svelte";
 
   let is_loading = $state(false);
 
@@ -28,7 +28,7 @@
   }
 </script>
 
-<ContainerDetails label={t("notifications")}>
+<Accordion label={t("notifications")}>
   <!-- Main toggle with better explanation -->
   <div class="space-y-4">
     <div class="flex items-start gap-4">
@@ -105,4 +105,4 @@
       </div>
     {/if}
   </div>
-</ContainerDetails>
+</Accordion>

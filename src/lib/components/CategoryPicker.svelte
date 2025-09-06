@@ -1,7 +1,7 @@
 <script>
-  import { DownChevron, Times } from "$lib/icon";
-  import CategoryCreateModal from "./CategoryCreateModal.svelte";
+  import ModalCreateCategory from "$lib/components/modal/ModalCreateCategory.svelte";
   import { t } from "$lib/services/language.svelte";
+  import { DownChevron, Times } from "$lib/icon";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
 
@@ -52,7 +52,7 @@
   {/if}
 </div>
 
-<CategoryCreateModal
+<ModalCreateCategory
   bind:open={is_adding}
   oncreate={(new_category_id) => {
     category_id = new_category_id;

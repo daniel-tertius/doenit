@@ -27,25 +27,26 @@
   }}
 />
 
-<aside transition:fly={{ x: -100 }} class="fixed top-0 left-0 w-64 h-full bg-t-primary shadow-lg z-50">
-  <div class="flex flex-col items-center justify-center h-full">
-    <h2 class="text-lg font-semibold text-t-secondary">{t("menu")}</h2>
-    <ul class="mt-4 space-y-0">
-      {#each NAVIGATION_TIMES as { Icon, label, href }}
-        {@const is_active = page.url.pathname === href}
-        <li class="text-t-secondary">
-          <a
-            {href}
-            draggable="false"
-            class="grid grid-cols-[32px_auto] gap-1 py-4 px-8 rounded transition-colors duration-300 hover:bg-t-primary-600"
-            class:bg-t-primary-700={is_active}
-            class:font-semibold={is_active}
-          >
-            <Icon />
-            <p>{label}</p>
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </div>
+<aside
+  transition:fly={{ x: -100 }}
+  class="fixed top-0 left-0 w-64 h-full flex flex-col items-center justify-center bg-page shadow-r-lg z-50"
+>
+  <h2 class="text-lg font-semibold">{t("menu")}</h2>
+  <ul class="mt-4 space-y-0">
+    {#each NAVIGATION_TIMES as { Icon, label, href }}
+      {@const is_active = page.url.pathname === href}
+      <li>
+        <a
+          {href}
+          draggable="false"
+          class="grid grid-cols-[32px_auto] gap-1 py-4 px-8 rounded-lg"
+          class:bg-card={is_active}
+          class:font-semibold={is_active}
+        >
+          <Icon class="text-xl my-auto" />
+          <p class="my-auto">{label}</p>
+        </a>
+      </li>
+    {/each}
+  </ul>
 </aside>

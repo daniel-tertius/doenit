@@ -1,9 +1,9 @@
 <script>
   import { notifications } from "$lib/services/notification.svelte";
   import { SplashScreen } from "@capacitor/splash-screen";
-  import { theme } from "$lib/services/theme.svelte";
   import { Widget } from "$lib/services/widget";
   import { Capacitor } from "@capacitor/core";
+  // import { OnlineDB } from "$lib/OnlineDB";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
   import Footer from "./Footer.svelte";
@@ -15,56 +15,57 @@
 
   let { children } = $props();
 
-  SplashScreen.hide();
-
-  const is_home = $derived(page.url.pathname === "/");
-
   onMount(() => {
-    const sub = DB.Task.subscribe((tasks) => handleTasksUpdate(tasks), {
-      selector: { archived: { $ne: true } },
-    });
+    // Subscribe to auth state changes and only access Firestore when properly authenticated
+    // const unsubscribeAuth = user.subscribe((currentUser) => {
+    //   if (!!currentUser && !currentUser?.isAnonymous) {
+    //     console.log("Authenticated user:", currentUser.email, "- subscribing to Firestore");
+    //     try {
+    //       OnlineDB.Task.subscribe((tasks) => {
+    //         console.log("Received", tasks.length, "tasks from Firestore");
+    //         if (!tasks.length) return;
+    //         DB.Task.overwriteMany(tasks);
+    //       });
+    //     } catch (error) {
+    //       console.error("Failed to subscribe to Firestore:", error);
+    //     }
+    //   } else {
+    //     console.log("User not properly authenticated (anonymous or null), skipping Firestore subscription");
+    //   }
+    // });
 
-    return () => sub.unsubscribe();
-  });
+    DB.Task.subscribe(handleTasksUpdate, { selector: { archived: { $ne: true } } });
 
-  onMount(() => {
-    if (!Capacitor.isNativePlatform()) return;
+    /**
+     * @param {Task[]} tasks
+     */
+    function handleTasksUpdate(tasks) {
+      notifications.scheduleNotifications(tasks);
+      Widget.updateWidget(tasks);
+    }
 
     App.addListener("backButton", (event) => {
-      if (is_home) {
+      if (page.url.pathname === "/") {
         App.exitApp();
       } else {
         goto("/", { invalidateAll: false });
       }
     });
-  });
-
-  onMount(() => {
-    if (!Capacitor.isNativePlatform()) return;
 
     // Listen for task completion events from native side
     window.addEventListener("taskCompleted", async (event) => {
       console.log("[💬 Doenit] Task completed event received");
       Widget.finishTasks(event.detail.task_ids);
     });
-  });
 
-  /**
-   * @param {Task[]} tasks
-   */
-  function handleTasksUpdate(tasks) {
-    notifications.scheduleNotifications(tasks);
-    Widget.updateWidget(tasks);
-  }
+    SplashScreen.hide();
+  });
 </script>
 
-<div
-  data-theme={theme.value}
-  class="h-dvh flex flex-col bg-t-primary-400 text-t-secondary **:select-none **:transition-all **:duration-300"
->
+<div class="text-md h-dvh flex flex-col text-normal **:select-none **:transition-all **:duration-300">
   <Heading />
 
-  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2 bg-t-primary-400">
+  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto bg-page p-2">
     {@render children()}
   </main>
 

@@ -1,20 +1,29 @@
-import { DB as old_DB } from "$lib/DB_old/DB";
-import { DB } from "$lib/DB";
 import { notifications } from "$lib/services/notification.svelte";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { DB as old_DB } from "$lib/DB_old/DB";
+import { DB } from "$lib/DB";
+import { theme } from "$lib/services/theme.svelte";
+import { text } from "$lib/services/text.svelte";
 
 export const ssr = false;
 
 export async function load() {
-  SplashScreen.show({
-    autoHide: true,
-    showDuration: 1000,
-  });
+  try {
+    SplashScreen.show({
+      autoHide: true,
+      showDuration: 1000,
+    });
 
-  await DB.init();
-  await migratePreferenceToRxDB();
+    await DB.init();
+    await migratePreferenceToRxDB();
 
-  notifications.init();
+    theme.init();
+    text.init();
+    notifications.init();
+  } catch (error) {
+    console.error("Initialization error:", error);
+    notifications.send("Failed", "Failed to initialize the app. Please try again.");
+  }
 }
 
 async function migratePreferenceToRxDB() {

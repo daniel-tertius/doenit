@@ -1,7 +1,7 @@
 <script>
   import { displayDateTime } from "$lib";
   import { onMount } from "svelte";
-  import { Selected } from "$lib/Data.svelte";
+  import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
   import { InputCheckbox } from "../element/input";
   import TaskDueDate from "./TaskDueDate.svelte";

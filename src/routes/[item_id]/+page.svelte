@@ -16,17 +16,17 @@
   let other_interval = $state(data.task.repeat_interval_number > 1 ? data.task.repeat_interval : "");
 
   $effect(() => {
-    if (!task.due_date) {
-      task.repeat_interval = "";
-      task.repeat_interval_number = 1;
-      task.start_date = null;
-    }
+    if (!!task.due_date) return;
+
+    task.repeat_interval = "";
+    task.repeat_interval_number = 1;
+    task.start_date = null;
   });
 
   $effect(() => {
-    if (task.repeat_interval === "weekly_custom_days") {
-      task.start_date = task.due_date;
-    }
+    if (task.repeat_interval !== "weekly_custom_days") return;
+
+    task.start_date = task.due_date;
   });
 
   /**
@@ -95,7 +95,7 @@
   </div>
 </form>
 
-<Modal bind:open={is_deleting} {footer} title={t("delete_task")}>
+<Modal bind:is_open={is_deleting} {footer} title={t("delete_task")}>
   <p class="p-4">{t("delete_task_confirmation")}</p>
 </Modal>
 

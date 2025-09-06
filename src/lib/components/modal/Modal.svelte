@@ -1,119 +1,47 @@
 <script>
+  import { fade } from "svelte/transition";
+  import { quadInOut } from "svelte/easing";
   import { Times } from "$lib/icon";
-  import { fade, scale } from "svelte/transition";
-  import { t } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props
-   * @property {boolean} [open=false] - Whether the modal is open.
-   * @property {string} [title=""] - The title of the modal.
-   * @property {boolean} [closeOnEscape=true] - Whether to close the modal on Escape key press.
-   * @property {boolean} [closeOnOutsideClick=true] - Whether to close the modal when clicking outside.
-   * @property {() => *} [children] - The content of the modal.
-   * @property {() => *} [footer] - The footer content of the modal.
-   * @property {() => *} [onclose] - Callback function to call when the modal is closed.
+   * @property {boolean} [close_button=true]
+   * @property {boolean} [is_open=true]
+   * @property {function(Event=): void} [onclose]
+   *
    */
 
-  /** @type {Props} */
-  let {
-    open = $bindable(false),
-    title = "",
-    closeOnEscape = true,
-    closeOnOutsideClick = true,
-    children,
-    onclose,
-    footer,
-  } = $props();
-
-  function close() {
-    if (onclose) onclose();
-    open = false;
-  }
-
-  /**
-   * @param {KeyboardEvent} e
-   */
-  function handleKeydown(e) {
-    if (closeOnEscape && e.key === "Escape" && open) {
-      close();
-    }
-  }
-
-  /**
-   * @param {Event} e
-   */
-  function handleOutsideClick(e) {
-    if (closeOnOutsideClick && e.target === e.currentTarget && open) {
-      close();
-    }
-  }
+  /** @type {Props & { [key: string]: any }} */
+  let { is_open = $bindable(true), children, close_button = true, onclose = () => {}, ...rest } = $props();
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
-
-{#if open}
-  <button
-    type="button"
-    class="modal-backdrop"
-    aria-label="backdrop"
-    onclick={handleOutsideClick}
-    transition:fade={{ duration: 200 }}
-  >
-  </button>
-
+{#if is_open}
   <div
-    class="modal-content rounded-lg bg-t-primary border border-primary-30l"
-    transition:scale={{ start: 0.95, duration: 200 }}
+    class="fixed top-0 left-0 z-50 flex h-dvh w-dvw items-center justify-center bg-black/40"
+    transition:fade={{ duration: 125, easing: quadInOut }}
+    onclick={onclose}
+    role="none"
   >
-    <div class="p-4 border-b border-primary-30l justify-between items-center gap-0.5 flex">
-      <h2 class="font-semibold text-tertiary">{title}</h2>
-      <button type="button" class="close-button" onclick={close} aria-label={t("close_modal")}>
-        <Times class="text-tertiary" size={18} />
-      </button>
-    </div>
-    <div class="text-tertiary">
-      {@render children?.()}
-    </div>
-    <div class="p-4 border-t border-primary-30l justify-end items-center gap-0.5 flex">
-      {@render footer?.()}
+    <div
+      class={[
+        "relative shadow-lg max-h-[90dvh] w-[500px] max-w-[90dvw] overflow-y-auto rounded-lg bg-surface p-4",
+        close_button && "pt-5",
+        rest.class || "",
+      ]}
+      onclick={(e) => e.stopPropagation()}
+      role="none"
+    >
+      {#if close_button}
+        <button
+          class="absolute top-0 right-0 p-2 rounded-full aspect-square"
+          aria-label="Close modal"
+          title="Close"
+          onclick={onclose}
+        >
+          <Times class="text-lg" />
+        </button>
+      {/if}
+      {@render children()}
     </div>
   </div>
 {/if}
-
-<style>
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-  }
-
-  .modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 101;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .close-button {
-    background: none;
-    border: none;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    color: #6c757d;
-  }
-</style>

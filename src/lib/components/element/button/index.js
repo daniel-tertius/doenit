@@ -1,6 +1,8 @@
-export { default as ButtonClear } from "./ButtonClear.svelte";
 export { default as ButtonMainSubmit } from "./ButtonMainSubmit.svelte";
+export { default as ButtonTextSize } from "./ButtonTextSize.svelte";
 export { default as ButtonLanguage } from "./ButtonLanguage.svelte";
 export { default as ButtonNavbar } from "./ButtonNavbar.svelte";
+export { default as ButtonClear } from "./ButtonClear.svelte";
 export { default as ButtonBack } from "./ButtonBack.svelte";
 export { default as Button } from "./Button.svelte";
+export { default as ButtonBackup } from "./ButtonBackup.svelte";

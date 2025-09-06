@@ -1,14 +1,13 @@
 <script>
-  let { size = 24, color = "currentColor", ...rest } = $props();
+  const { color: stroke = "currentColor", ...rest } = $props();
 </script>
 
 <svg
-  class={rest.class}
-  width={size}
-  height={size}
+  {...rest}
   viewBox="0 0 24 24"
   fill="none"
-  stroke={color}
+  style="width: 1em; height: 1em;"
+  {stroke}
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
@@ -17,10 +16,3 @@
   <line x1="3" y1="12" x2="21" y2="12"></line>
   <line x1="3" y1="18" x2="21" y2="18"></line>
 </svg>
-
-<style>
-  svg {
-    display: inline-block;
-    vertical-align: middle;
-  }
-</style>
