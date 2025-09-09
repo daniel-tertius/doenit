@@ -79,19 +79,19 @@
       type="text"
       value={display_value}
       onfocus={() => (is_focused = true)}
-      class="bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d {classes}"
+      class="bg-card p-2 w-full rounded-lg h-12 border border-default placeholder:text-muted {classes}"
     />
     {#if can_clear && value}
       <button
         type="button"
-        class="absolute right-2 top-1/2 transform -translate-y-1/2 text-primary-30d hover:text-primary-50l"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2"
         onclick={(e) => {
           e.stopPropagation();
           value = "";
           is_focused = false;
         }}
       >
-        <Times size={18} class="text-tertiary" />
+        <Times size={18} />
       </button>
     {/if}
   </div>
@@ -115,6 +115,6 @@
     onchange={(e) => {
       if (!!value) is_focused = false;
     }}
-    class="bg-primary-20l p-2 w-full rounded-lg border border-dark-400 placeholder:text-tertiary-30d appearance-none {classes}"
+    class="bg-card p-2 w-full h-12 rounded-lg border border-default text-muted appearance-none {classes}"
   />
 {/if}

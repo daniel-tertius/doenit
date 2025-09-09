@@ -14,6 +14,7 @@ import Edit from "./Edit.svelte";
 import Google from "./Google.svelte";
 import Home from "./Home.svelte";
 import Important from "./Important.svelte";
+import Info from "./Info.svelte";
 import Leave from "./Leave.svelte";
 import Loading from "./Loading.svelte";
 import Moon from "./Moon.svelte";
@@ -50,6 +51,7 @@ export {
   Google,
   Home,
   Important,
+  Info,
   Leave,
   Loading,
   Moon,

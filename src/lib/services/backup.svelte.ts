@@ -5,16 +5,108 @@ import { OnlineDB } from "$lib/OnlineDB";
 import { auth } from "./auth.svelte";
 import * as pako from "pako";
 import { DB } from "$lib/DB";
+import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
+import DateUtil from "$lib/DateUtil";
 
-export default class Backup {
-  static async createBackup(): Promise<SimpleResult> {
+class BackupClass {
+  last_backup_at: string = $state("Never");
+  is_loading: boolean = $state(false);
+  #automatic_backup: boolean = $state(false);
+
+  constructor() {
+    cached_automatic_backup.get().then((value) => {
+      if (value === null) {
+        cached_automatic_backup.set(false);
+      }
+
+      this.#automatic_backup = value ?? false;
+    });
+  }
+
+  set automatic_backup(value: boolean) {
+    this.#automatic_backup = value;
+    cached_automatic_backup.set(value);
+    if (value) {
+      this.checkLastBackup();
+    }
+  }
+
+  get automatic_backup(): boolean {
+    return this.#automatic_backup;
+  }
+
+  init() {
+    this.checkLastBackup();
+    window.addEventListener("online", async () => {
+      this.checkLastBackup();
+    });
+  }
+
+  async checkLastBackup() {
+    this.is_loading = true;
+
     try {
-      const user_id = Backup.getUserID();
-      const tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
-      const categories = await DB.Category.getAll({ selector: { archived: { $ne: true } } });
-      const encrypted_data = await Backup.compressAndEncrypt({ tasks, categories });
+      const BACKUP_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+      let last_backup_str = await cached_last_backup.get();
+      if (!last_backup_str) {
+        last_backup_str = await this.getLastBackupTime();
+      }
+
+      const last_backup_at = last_backup_str ? new Date(last_backup_str) : null;
+      this.last_backup_at = last_backup_at ? DateUtil.format(last_backup_at, "ddd, DD MMM YYYY, HH:mm") : "Never";
+      // If more than a day ago, create a backup
+      const time_diff_ms = last_backup_at ? Date.now() - +last_backup_at : Infinity;
+      if (time_diff_ms > BACKUP_INTERVAL) {
+        await Backup.createBackup();
+      }
+    } catch (error) {
+      console.error("Error checking last backup:", error);
+    }
+    this.is_loading = false;
+  }
+
+  private async getLastBackupTime(): Promise<string | null> {
+    try {
+      const user_id = auth.getUserID();
+      if (!user_id) return null;
+
+      const [backup] = await OnlineDB.BackupManifest.getAll({
+        filters: [{ field: "user_id", operator: "==", value: user_id }],
+        sort: [{ field: "timestamp", direction: "desc" }],
+        limit: 1,
+      });
+
+      if (!backup) {
+        await cached_last_backup.set(null);
+        return null;
+      }
+
+      await cached_last_backup.set(backup.timestamp);
+      return backup.timestamp;
+    } catch (error) {
+      // TODO: Translation
+      console.error("Error fetching last backup time:", error);
+      return null;
+    }
+  }
+
+  async createBackup(): Promise<SimpleResult> {
+    try {
+      const user_id = auth.getUserID();
+      if (!user_id) return { success: false, error_message: "User not signed in" };
+
+      const tasks = await DB.Task.getAll({
+        selector: { archived: { $ne: true } },
+        sort: [{ created_at: "desc" }],
+      });
+      const categories = await DB.Category.getAll({
+        selector: { archived: { $ne: true } },
+        sort: [{ created_at: "desc" }],
+      });
+
+      const encrypted_data = await this.compressAndEncrypt({ tasks, categories });
       const encrypted_blob = new Blob([encrypted_data], { type: "application/octet-stream" });
-      const sha256 = await Backup.sha256FromBlob(encrypted_blob);
+      const sha256 = await this.sha256FromJson({ tasks, categories });
 
       const existing_backups = await OnlineDB.BackupManifest.getAll({
         filters: [
@@ -23,8 +115,19 @@ export default class Backup {
         ],
       });
       if (existing_backups.length > 0) {
-        alert("No changes since last backup. Skipping upload.");
-        return { success: true };
+        // TODO: Translation
+        return { success: false, error_message: "Geen veranderinge sedert verlede rugsteun." };
+      }
+
+      // Max 5 backups per user
+      const user_backups = await OnlineDB.BackupManifest.getAll({
+        filters: [{ field: "user_id", operator: "==", value: user_id }],
+        sort: [{ field: "timestamp", direction: "desc" }],
+      });
+      for (let i = 4; i < user_backups.length; i++) {
+        const backup_to_delete = user_backups[i];
+        await OnlineDB.BackupManifest.delete(backup_to_delete.id);
+        await Files.delete(backup_to_delete.file_path);
       }
 
       const file_path = `users/${user_id}/snapshots/${new Date().toISOString()}.bin`;
@@ -41,6 +144,7 @@ export default class Backup {
         size: encrypted_blob.size,
       });
 
+      await cached_last_backup.set(new Date().toISOString());
       return { success: true };
     } catch (error) {
       alert("Backup failed: " + (error as Error).message || "Something went wrong");
@@ -48,16 +152,21 @@ export default class Backup {
     }
   }
 
-  static async restoreBackup(manifest: BackupManifest): Promise<SimpleResult> {
+  async restoreBackup(manifest: BackupManifest): Promise<SimpleResult> {
+    this.is_loading = true;
+
     try {
-      if (!manifest) throw new Error("No backup data found");
+      if (!manifest) {
+        throw new Error("No backup data found");
+      }
 
       const blob = await Files.download(manifest.file_path);
       const encrypted_data = await blob.text();
-      if (!encrypted_data) throw new Error("Failed to read backup data");
+      if (!encrypted_data) {
+        throw new Error("Failed to read backup data");
+      }
 
-      const data_string = await Backup.decryptAndDecompress(encrypted_data);
-      const data = JSON.parse(data_string);
+      const data = await this.decryptAndDecompress(encrypted_data);
       if (!data.tasks || !data.categories) {
         throw new Error("Invalid backup data format");
       }
@@ -70,19 +179,24 @@ export default class Backup {
       await DB.Task.createMany(data.tasks);
       await DB.Category.createMany(data.categories);
 
+      this.is_loading = false;
+
       return { success: true };
     } catch (error) {
-      console.error("Backup restoration failed:", error);
+      this.is_loading = false;
+      alert("Backup restoration failed: " + (error as Error).message);
       return { success: false, error_message: (error as Error).message || "Something went wrong" };
     }
   }
 
-  static async listBackups() {
+  async listBackups(): Promise<Result<BackupManifest[]>> {
     try {
-      const user_id = Backup.getUserID();
+      const user_id = auth.getUserID();
+      if (!user_id) return { success: false, error_message: "User not signed in" };
+
       const backup_manifests = await OnlineDB.BackupManifest.getAll({
         filters: [{ field: "user_id", operator: "==", value: user_id }],
-        sort: [{ field: "created_at", direction: "desc" }],
+        sort: [{ field: "timestamp", direction: "desc" }],
       });
 
       return { success: true, data: backup_manifests };
@@ -92,16 +206,7 @@ export default class Backup {
     }
   }
 
-  /**
-   * Helper function to derive a crypto key from string
-   */
-  private static async deriveKey(): Promise<CryptoKey> {
-    const keyString = `${env.PUBLIC_ENCRYPTION_KEY || ""}`.padEnd(32, "0").substring(0, 32);
-    const keyData = new TextEncoder().encode(keyString);
-    return crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
-  }
-
-  private static async compressAndEncrypt(data: any): Promise<string> {
+  private async compressAndEncrypt(data: any): Promise<string> {
     try {
       // Convert data to JSON string
       const jsonString = JSON.stringify(data);
@@ -114,7 +219,7 @@ export default class Backup {
       const data_to_encrypt = new TextEncoder().encode(compressedBase64);
 
       // Encrypt the compressed data using Web Crypto API
-      const key = await Backup.deriveKey();
+      const key = await this.deriveKey();
 
       // Generate a random IV (Initialization Vector)
       const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -137,7 +242,7 @@ export default class Backup {
     }
   }
 
-  private static async decryptAndDecompress(encryptedData: string): Promise<any> {
+  private async decryptAndDecompress(encryptedData: string): Promise<any> {
     try {
       // Convert base64 back to buffer
       const combined = Uint8Array.from(atob(encryptedData), (c) => c.charCodeAt(0));
@@ -147,7 +252,7 @@ export default class Backup {
       const encrypted = combined.slice(12);
 
       // Decrypt the data
-      const key = await Backup.deriveKey();
+      const key = await this.deriveKey();
       const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, encrypted);
 
       // Convert decrypted data back to string
@@ -161,14 +266,31 @@ export default class Backup {
       const decompressed = pako.ungzip(compressed, { to: "string" });
 
       // Parse JSON and return
-      return JSON.parse(decompressed);
+      const result = JSON.parse(decompressed);
+      return result;
     } catch (error) {
+      // TODO: Translation
       console.error("Error decrypting and decompressing data:", error);
-      throw new Error("Failed to decrypt and decompress data");
+      throw new Error("Error during decryption/decompression: " + (error as Error).message);
     }
   }
 
-  private static async sha256FromBlob(blob: Blob): Promise<string> {
+  /**
+   * Helper function to derive a crypto key from string
+   */
+  private async deriveKey(): Promise<CryptoKey> {
+    const keyString = `${env.PUBLIC_ENCRYPTION_KEY || ""}`.padEnd(32, "0").substring(0, 32);
+    const keyData = new TextEncoder().encode(keyString);
+    return crypto.subtle.importKey("raw", keyData, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
+  }
+
+  private async sha256FromJson(data: any): Promise<string> {
+    const jsonString = JSON.stringify(data);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    return this.sha256FromBlob(blob);
+  }
+
+  private async sha256FromBlob(blob: Blob): Promise<string> {
     const buffer = await blob.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
@@ -176,11 +298,7 @@ export default class Backup {
 
     return hashHex;
   }
-
-  private static getUserID(): string {
-    const user = auth.getUser();
-    if (!user) throw new Error("User not signed in");
-
-    return user.uid;
-  }
 }
+
+const Backup = new BackupClass();
+export default Backup;

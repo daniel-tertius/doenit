@@ -27,7 +27,7 @@
     type="text"
     use:init
     bind:value
-    class={["bg-t-primary-600 border border-dark-900 p-2 h-12 w-full rounded-lg placeholder:text-t-secondary/60", rest.class ?? ""]}
+    class={["bg-card border border-default p-2 h-12 w-full rounded-lg placeholder:text-muted", rest.class ?? ""]}
   />
 
   {#if can_clear && value}

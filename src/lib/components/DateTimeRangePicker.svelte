@@ -110,9 +110,9 @@
       type="button"
       onclick={toggle}
       class={{
-        "px-3 py-2 w-full text-left bg-t-primary-700 rounded-lg border border-dark-400": true,
+        "px-3 py-2 w-full text-left bg-card rounded-lg border border-default": true,
         "border-error text-error": !!error_message,
-        "text-t-secondary/60": !start_date && !end_date,
+        "text-muted": !start_date && !end_date,
       }}
     >
       {#if start_date || end_date}
@@ -153,10 +153,10 @@
   {/if}
 
   {#if show_picker}
-    <div class="absolute z-50 bg-primary-10l border rounded shadow-lg p-4 w-full mt-2" transition:slide>
+    <div class="absolute z-50 bg-surface border border-default rounded-lg shadow-lg p-4 w-full mt-2" transition:slide>
       <div class="flex flex-col space-y-2">
         <div>
-          <label for="start-date" class="block font-medium">{t('from_date')}</label>
+          <label for="start-date" class="block font-medium">{t("from_date")}</label>
           <div class="flex gap-2 w-full">
             <InputDate
               id="start-date"
@@ -189,7 +189,7 @@
         {/if}
 
         <div>
-          <label for="end-date" class="block font-medium">{t('to_date')}</label>
+          <label for="end-date" class="block font-medium">{t("to_date")}</label>
 
           <div class="flex gap-2">
             <InputDate
@@ -217,7 +217,11 @@
       </div>
 
       <div class="mt-4 flex justify-end gap-2">
-        <button type="button" onclick={done} class="px-6 py-1 bg-blue-600 text-white rounded">
+        <button
+          type="button"
+          onclick={done}
+          class="w-24 flex items-center justify-center h-12 bg-primary text-white rounded-lg"
+        >
           <Check />
         </button>
       </div>

@@ -5,7 +5,7 @@
 
   /**
    * @typedef {Object} Props
-   * @property {string} [value] - The time value in HH:MM format.
+   * @property {string | null} [value] - The time value in HH:MM format.
    * @property {boolean} [can_clear=true] - Whether the time input can be cleared.
    * @property {Function} [onchange] - Callback function when the time changes.
    */
@@ -18,7 +18,7 @@
   /** @type {HTMLInputElement?} */
   let time_input = $state(null);
 
-  const display_value = $derived(displayTime(value));
+  const display_value = $derived(value ? displayTime(value) : null);
 
   $effect(() => {
     if (!is_focused) return;
@@ -33,7 +33,7 @@
         }
       } catch (error) {
         time_input.blur();
-        console.error("InputTime2: Error focusing time input", error);
+        console.error("InputTime: Error focusing time input", error);
       }
     });
   });
@@ -101,7 +101,7 @@
       onfocus={() => (is_focused = true)}
       class={[
         {
-          "bg-t-primary-600 p-2 w-full h-12 rounded-lg placeholder:text-t-secondary/60": true,
+          "bg-card p-2 w-full h-12 rounded-lg placeholder:text-muted border border-default": true,
         },
         rest.class ?? "",
       ]}
@@ -136,7 +136,7 @@
       }}
       class={[
         {
-          "bg-t-primary-600 p-2 w-full h-12  rounded-lg placeholder:text-t-secondary/60 appearance-none": true,
+          "bg-card border border-default p-2 w-full h-12 rounded-lg text-muted appearance-none outline-none": true,
         },
         rest.class ?? "",
       ]}

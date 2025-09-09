@@ -1,18 +1,20 @@
 <script>
   import Modal from "$lib/components/modal/Modal.svelte";
-  import { Check, DownloadCloud } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
+  import { Check, DownloadCloud } from "$lib/icon";
+  import Backup from "$lib/services/backup.svelte";
 
   /**
    * @typedef {Object} Props
    * @property {boolean} [is_loading=false] - Indicates if the button is in a loading state.
-   * @property {() => Promise<void>} [onclick] - Function to
+   * @property {() => Promise<void>} [onclick] - Function to be called when the button is clicked.
    */
 
-  /** @type {Props} */
-  let { is_loading = $bindable(false), onclick } = $props();
+  /** @type {Props & Record<string, any>} */
+  let { is_loading = $bindable(false), onclick, ...rest } = $props();
 
   let is_open = $state(false);
+
   async function handleClick() {
     is_loading = true;
     is_open = false;
@@ -22,13 +24,21 @@
 </script>
 
 <button
+  {...rest}
+  class={[
+    "p-2 bg-primary text-white rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
+
+    rest.class || "",
+  ]}
   type="button"
   disabled={is_loading}
-  class="w-full h-12 mt-4 p-2 bg-primary text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
   onclick={() => (is_open = true)}
 >
-  <DownloadCloud class="text-xl" />
-  {is_loading ? t("backup_in_progress") : t("backup_now")}
+  <DownloadCloud class="text-3xl mx-1 my-auto" />
+  <div>
+    <p class="font-medium">Rugsteun Nou</p>
+    <p class="text-sm">Laas: {Backup.last_backup_at}</p>
+  </div>
 </button>
 
 <Modal class="p-6" bind:is_open onclose={() => (is_open = false)}>

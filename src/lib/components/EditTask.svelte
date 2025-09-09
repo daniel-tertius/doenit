@@ -2,7 +2,7 @@
   import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
   import { Important } from "$lib/icon";
-  import InputName from "$lib/components/InputName.svelte";
+  import { InputTaskName } from "$lib/components/element/input";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
   import { t } from "$lib/services/language.svelte";
@@ -14,7 +14,7 @@
   const title = $derived(!!task.start_date ? t("date") : t("due_date"));
 </script>
 
-<InputName bind:name={task.name} bind:description={task.description} bind:error_message={error.name} />
+<InputTaskName bind:name={task.name} bind:description={task.description} bind:error_message={error.name} />
 
 <div class="w-full">
   <label class="font-bold" for="date">{title}</label>

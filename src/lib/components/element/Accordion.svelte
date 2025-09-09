@@ -1,5 +1,5 @@
 <script>
-  import { DownChevron } from "$lib/icon";
+  import { DownChevron, Info } from "$lib/icon";
   import { slide } from "svelte/transition";
 
   /**
@@ -10,7 +10,7 @@
    */
 
   /** @type {Props} */
-  let { children, label, show = $bindable(true) } = $props();
+  let { children, label, show = $bindable(false) } = $props();
 </script>
 
 <div class="bg-surface rounded-lg">

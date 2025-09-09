@@ -33,8 +33,7 @@ export const selectedCategories = new Cached<string[]>("selected_categories");
 export const cached_theme = new Cached<"light" | "dark" | null>("theme");
 export const cached_notification_time = new Cached<string | null>("time");
 export const cached_notification_past_tasks = new Cached<boolean>("past_tasks");
-/** The email address that has been verified. */
-export const cached_email_address = new Cached<string | null>("email_address");
-export const cached_backup_token = new Cached<string | null>("backup_token");
 export const cached_language = new Cached<"af" | "en" | null>("language");
 export const cached_text_settings = new Cached<{ size: 16 | 20 | 24 }>("text_settings");
+export const cached_last_backup = new Cached<string | null>("last_backup");
+export const cached_automatic_backup = new Cached<boolean>("automatic_backup");

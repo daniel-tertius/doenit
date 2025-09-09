@@ -71,16 +71,16 @@
 
 <button
   type="button"
-  class="fixed top-3 right-3"
+  class="fixed top-5 right-5 flex justify-center items-center"
   onclick={() => {
     is_deleting = true;
   }}
   aria-label={t("close")}
 >
-  <Trash class="w-6 h-6 text-error" />
+  <Trash class="text-2xl text-error" />
 </button>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 relative">
   <EditTask bind:error bind:task bind:other_interval />
 
   <div class="h-12 flex">
@@ -95,17 +95,15 @@
   </div>
 </form>
 
-<Modal bind:is_open={is_deleting} {footer} title={t("delete_task")}>
-  <p class="p-4">{t("delete_task_confirmation")}</p>
-</Modal>
-
-{#snippet footer()}
+<Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">
+  <h2 class="font-bold text-lg">{t("delete_task")}</h2>
+  <p>{t("delete_task_confirmation")}</p>
   <button
-    class="bg-error flex gap-1 items-center text-tertiary px-4 py-2 rounded-md"
+    class="bg-error flex gap-1 items-center text-white ml-auto px-4 py-2 rounded-md"
     type="button"
     onclick={deleteTask}
   >
     <Trash class="h-full" size={18} />
     <span>{t("delete")}</span>
   </button>
-{/snippet}
+</Modal>

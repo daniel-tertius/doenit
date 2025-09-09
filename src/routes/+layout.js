@@ -4,6 +4,8 @@ import { DB as old_DB } from "$lib/DB_old/DB";
 import { DB } from "$lib/DB";
 import { theme } from "$lib/services/theme.svelte";
 import { text } from "$lib/services/text.svelte";
+import Backup from "$lib/services/backup.svelte";
+import { auth } from "$lib/services/auth.svelte";
 
 export const ssr = false;
 
@@ -17,6 +19,9 @@ export async function load() {
     await DB.init();
     await migratePreferenceToRxDB();
 
+    auth.init().then(() => {
+      Backup.init();
+    });
     theme.init();
     text.init();
     notifications.init();

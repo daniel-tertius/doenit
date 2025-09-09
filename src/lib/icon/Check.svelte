@@ -3,7 +3,6 @@
 </script>
 
 <svg
-  {...rest}
   viewBox="0 0 24 24"
   fill="none"
   {stroke}
@@ -11,6 +10,7 @@
   stroke-linecap="round"
   stroke-linejoin="round"
   style="width: 1em; height: 1em;"
+  {...rest}
 >
   <polyline points="20 6 9 17 4 12"></polyline>
 </svg>

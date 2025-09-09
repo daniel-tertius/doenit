@@ -25,7 +25,7 @@
   <div class="w-fit mx-auto flex items-center justify-center gap-1 py-2">
     <img alt="logo" src="logo.png" class="w-3xl" />
     <div class="relative">
-      <span class="text-transparent text-3xl font-bold px-2">{title}</span>
+      <span class="text-transparent text-3xl font-bold px-2 line-clamp-1">{title}</span>
       {#key title}
         <h1 transition:fade={{ duration: 100 }} class="absolute inset-0 text-3xl font-bold line-clamp-1">
           {title}

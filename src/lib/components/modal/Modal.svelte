@@ -33,7 +33,7 @@
     >
       {#if close_button}
         <button
-          class="absolute top-0 right-0 p-2 rounded-full aspect-square"
+          class="absolute top-2 right-2 p-2 rounded-full aspect-square"
           aria-label="Close modal"
           title="Close"
           onclick={onclose}

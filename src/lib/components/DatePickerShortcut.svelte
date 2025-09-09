@@ -15,43 +15,43 @@
   <div class="flex gap-2 mt-2" transition:slide>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
       onclick={() => {
         date = today.toLocaleDateString("en-CA");
       }}
     >
       <span>{t("today")}</span>
-      <div class="text-t-secondary/60 text-xs">{displayDateShort(today)}</div>
+      <div class="text-muted text-xs">{displayDateShort(today)}</div>
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
       onclick={() => {
         date = tomorrow.toLocaleDateString("en-CA");
       }}
     >
       {t("tomorrow")}
-      <div class="text-t-secondary/60 text-xs">{displayDateShort(tomorrow)}</div>
+      <div class="text-muted text-xs">{displayDateShort(tomorrow)}</div>
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_week.toLocaleDateString("en-CA");
       }}
     >
       {t("in_a_week")}
-      <div class="text-t-secondary/60 text-xs">{displayDateShort(in_a_week)}</div>
+      <div class="text-muted text-xs">{displayDateShort(in_a_week)}</div>
     </button>
     <button
       type="button"
-      class="bg-t-primary-700 p-1 rounded-lg border border-dark-400 w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
       onclick={() => {
         date = in_a_month.toLocaleDateString("en-CA");
       }}
     >
       {t("in_a_month")}
-      <div class="text-t-secondary/60 text-xs">{displayDateShort(in_a_month)}</div>
+      <div class="text-muted text-xs">{displayDateShort(in_a_month)}</div>
     </button>
   </div>
 {/if}

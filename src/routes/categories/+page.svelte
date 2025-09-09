@@ -2,8 +2,8 @@
   import InputText from "$lib/components/element/input/InputText.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { Trash, Plus, Edit, Check } from "$lib/icon";
-  import { fly, slide } from "svelte/transition";
   import { t } from "$lib/services/language.svelte";
+  import { fly, slide } from "svelte/transition";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
 
@@ -85,32 +85,30 @@
   }
 </script>
 
-<div class="flex flex-col space-y-2 text-t-secondary overflow-x-hidden">
+<div class="flex flex-col space-y-4 pt-2 overflow-x-hidden">
   <div>
     <form onsubmit={createCategory} class="flex gap-2 items-center h-12">
       <InputText
         bind:value={new_category_name}
         placeholder={t("enter_new_category_name")}
-        class="w-full h-12 rounded-md dark:bg-dark-300 dark:border-dark-700 bg-white border border-light-500 px-4 py-2 text-sm font-medium transition-colors focus:outline-none"
+        class="w-full h-12! rounded-lg bg-card border border-default px-4 py-2 text-sm font-medium focus:outline-none"
         oninput={() => (error_message = "")}
       />
 
-      <button
-        class="h-full rounded-md dark:bg-dark-300 dark:border-dark-700 bg-light-200 border border-light-300 px-4 py-2 font-medium transition-colors hover:bg-t-primary-800 focus:outline-none"
-      >
+      <button class="h-full rounded-lg bg-card border border-default px-4 py-2 font-medium focus:outline-none">
         <Plus />
       </button>
     </form>
 
     {#if error_message}
-      <div class="text-error-20l text-sm mt-1 flex justify-end">
+      <div class="text-error text-sm mt-1 flex justify-end">
         {error_message}
       </div>
     {/if}
   </div>
 
   <div class="flex flex-col space-y-2">
-    <div class="flex items-center justify-between p-2 bg-t-primary-600 rounded-md">
+    <div class="flex items-center justify-between px-4 py-2 bg-surface rounded-md">
       <div class="text-lg font-semibold">{t("DEFAULT_NAME")}</div>
     </div>
 
@@ -118,20 +116,17 @@
       <div
         in:slide
         out:fly={{ x: 100 }}
-        class="grid grid-cols-[52px_1fr_48px] items-center justify-between bg-t-primary-600 rounded-md"
+        class="grid grid-cols-[52px_1fr_48px] items-center justify-between bg-surface rounded-lg"
       >
         <button class="h-full w-full flex justify-center items-center" onclick={() => openEditModal(category)}>
-          <div class="rounded-full p-2 w-fit flex justify-center items-center bg-dark-700">
+          <div class="rounded-full p-2 w-fit flex justify-center items-center bg-card">
             <Edit />
           </div>
         </button>
 
-        <div class="py-3 w-full! text-lg font-semibold">{category.name}</div>
+        <div class="py-3 w-full text-lg font-semibold">{category.name}</div>
 
-        <button
-          class="h-full text-error hover:text-error-20d flex items-center justify-center"
-          onclick={() => deleteCategory(category.id)}
-        >
+        <button class="h-full text-error flex items-center justify-center" onclick={() => deleteCategory(category.id)}>
           <Trash />
         </button>
       </div>
@@ -139,10 +134,10 @@
   </div>
 </div>
 
-<!-- TODO: Convert all modals -->
-<Modal bind:is_open={is_editing} {footer} title={t("edit_category_name")}>
+<Modal bind:is_open={is_editing} onclose={() => (is_editing = false)}>
   {#if category}
-    <div class="p-4">
+    <div class="space-y-4">
+      <div class="text-lg font-semibold">{t("edit_category_name")}</div>
       <InputText
         bind:value={category.name}
         focus_on_mount
@@ -155,17 +150,15 @@
           <span>{error_message}</span>
         </div>
       {/if}
+
+      <button
+        class="bg-primary flex gap-1 items-center text-white px-4 py-2 rounded-lg ml-auto"
+        type="button"
+        onclick={editCategory}
+      >
+        <Check class="h-full" size={18} />
+        <span>{t("save")}</span>
+      </button>
     </div>
   {/if}
 </Modal>
-
-{#snippet footer()}
-  <button
-    class="bg-lime-600 flex gap-1 items-center text-black px-4 py-2 rounded-md"
-    type="button"
-    onclick={editCategory}
-  >
-    <Check class="h-full" size={18} />
-    <span>{t("save")}</span>
-  </button>
-{/snippet}

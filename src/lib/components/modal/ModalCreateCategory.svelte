@@ -57,7 +57,7 @@
   {/if}
 
   <button
-    class="bg-success/60 flex gap-1 items-center text-default px-4 py-2 rounded-md ml-auto mt-4"
+    class="bg-primary flex gap-1 items-center text-white px-4 py-2 rounded-md ml-auto mt-4"
     type="button"
     onclick={addCategory}
   >

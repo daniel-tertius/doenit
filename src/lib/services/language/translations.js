@@ -112,7 +112,7 @@ export const translations = {
     // Categories
     category: "Kategorie",
     enter_category_name: "Benoem jou kategorie",
-    edit_category_name: "Wysig jou kategorie naam",
+    edit_category_name: "Wysig naam",
     enter_new_category_name: "Voer nuwe kategorienaam in…",
     create_category: "Skep Kategorie",
     choose_category_name: "Kies 'n naam vir jou kategorie",
@@ -185,8 +185,10 @@ export const translations = {
     backup_in_progress: "Besig met rugsteun…",
     backup_now: "Rugsteun nou",
     restore_in_progress: "Besig met herstel…",
+    confirm_restore: "Bevestig Herstel",
     restore_from_backup: "Herstel vanaf rugsteun",
     backup_label: "Rugsteun",
+    automatic_backup: "Rugsteun outomaties",
 
     // Notification service messages
     notification_permission_denied: "Kennisgewing toestemming is nie toegestaan nie.",
@@ -317,7 +319,7 @@ export const translations = {
     // Categories
     category: "Category",
     enter_category_name: "Enter category name",
-    edit_category_name: "Edit your category name",
+    edit_category_name: "Edit name",
     enter_new_category_name: "Enter new category name…",
     create_category: "Create Category",
     choose_category_name: "Choose a name for your category",
@@ -390,8 +392,10 @@ export const translations = {
     backup_in_progress: "Creating backup…",
     backup_now: "Backup now",
     restore_in_progress: "Restoring…",
+    confirm_restore: "Confirm Restore",
     restore_from_backup: "Restore from backup",
     backup_label: "Backup",
+    automatic_backup: "Do Automatic Backups",
 
     // Notification service messages
     notification_permission_denied: "Notification permission is not granted.",

@@ -43,6 +43,7 @@
 
 /**
  * @typedef {Object} BackupManifest
+ * @property {string} id - Primary key (UUID).
  * @property {string} timestamp - ISO string timestamp of when the backup was created.
  * @property {string} user_id - User identifier.
  * @property {string} file_path - Path to the backup file.

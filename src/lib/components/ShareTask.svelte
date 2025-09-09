@@ -90,7 +90,7 @@
   });
 </script>
 
-<div class="grid grid-cols-[40px_auto_128px] py-2 border-y border-dark-800">
+<div class="grid grid-cols-[40px_auto_128px] py-2 bg-surface border-y border-default">
   <Shared size={32} class="m-auto" />
   <div class="flex flex-col my-auto">
     <span class="font-bold">Deel met vriende?</span>
@@ -123,9 +123,7 @@
     in:fade={{ duration: 150 }}
     out:fade={{ duration: 150, delay: 200 }}
   >
-    <div
-      class="max-w-[90%] w-[600px] h-[66.66%] bg-dark-500 border border-dark-700 rounded-lg p-4 m-auto flex flex-col"
-    >
+    <div class="max-w-[90%] w-[600px] h-[66.66%] bg-surface border border-default rounded-lg p-4 m-auto flex flex-col">
       <h1 class="text-xl font-bold">Deel met vriende</h1>
 
       <div class="flex-1 overflow-y-auto mb-4 mt-2 rounded-lg space-y-4">
@@ -133,7 +131,7 @@
           <button
             aria-label="{room.name} room"
             type="button"
-            class="w-full text-start group"
+            class="w-full bg-card border border-default rounded-lg text-start group"
             bind:this={roomRefs[room.id]}
             onclick={async () => {
               selected_room = room;

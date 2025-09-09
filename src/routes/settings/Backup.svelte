@@ -3,47 +3,51 @@
   import { t } from "$lib/services/language.svelte";
   import { auth } from "$lib/services/auth.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
-  import { ButtonBackup } from "$lib/components/element/button";
+  import { ButtonBackup, ButtonRestore } from "$lib/components/element/button";
   import Backup from "$lib/services/backup.svelte";
+  import { InputSwitch } from "$lib/components/element/input";
 
-  let is_creating_backup = $state(false);
-  let is_restoring = $state(false);
   let is_loading = $state(false);
 
   async function createBackup() {
-    is_creating_backup = true;
     const result = await Backup.createBackup();
-    if (result.success) {
-      alert(t("backup_success"));
+    if (!result.success) {
+      alert(t("backup_error") + " " + result.error_message);
+      return;
     }
 
-    is_creating_backup = false;
+    alert(t("backup_success"));
   }
 
-  async function restoreBackup() {
-    if (is_restoring) return;
-
-    const confirmed = confirm(t("restore_confirmation"));
-    if (!confirmed) return;
-
-    is_restoring = true;
-    try {
-      // const result = await backup.restoreBackup();
-      // if (result.success) {
-      //   alert(t("restore_success"));
-      // }
-    } catch (error) {
-      console.error("Restore error:", error);
-      alert(t("restore_error") + " " + error.message);
-    } finally {
-      is_restoring = false;
+  /**
+   *
+   * @param {BackupManifest} manifest
+   */
+  async function restoreBackup(manifest) {
+    const result = await Backup.restoreBackup(manifest);
+    if (!result.success) {
+      alert(t("restore_error") + " " + result.error_message);
+      return;
     }
+
+    alert(t("restore_success"));
   }
 
   async function handleGoogleVerification() {
     is_loading = true;
     await auth.signInWithGoogle();
     is_loading = false;
+  }
+
+  /**
+   * Fetches the list of available backups.
+   * @returns {Promise<BackupManifest[]>} - A promise that resolves to an array of BackupManifest objects.
+   */
+  async function handleGetBackups() {
+    const result = await Backup.listBackups();
+    if (!result.success) return [];
+
+    return result.data;
   }
 </script>
 
@@ -77,22 +81,17 @@
           <span>Teken in met Google</span>
         {/if}
       </button>
-
-      <!-- Optional note -->
-      <p class="text-xs text-t-secondary/50 max-w-xs">
-        Hierdie is heeltemal opsioneel. Jy kan die app sonder intekening gebruik.
-      </p>
     </div>
   {:else}
-    <ButtonBackup bind:is_loading={is_creating_backup} onclick={createBackup} />
-    <!-- <button
-      type="button"
-      disabled={is_restoring || is_creating_backup}
-      class="w-full h-12 p-2 bg-green-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-      onclick={restoreBackup}
-    >
-      <Upload class="text-xl" />
-      {is_restoring ? t("restore_in_progress") : t("restore_from_backup")}
-    </button> -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="space-y-1">
+          <p class="font-medium text-t-secondary">{t("automatic_backup")}</p>
+        </div>
+        <InputSwitch bind:value={Backup.automatic_backup} />
+      </div>
+      <ButtonBackup bind:is_loading={Backup.is_loading} onclick={createBackup} />
+      <ButtonRestore bind:is_loading={Backup.is_loading} onclick={restoreBackup} getBackups={handleGetBackups} />
+    </div>
   {/if}
 </Accordion>

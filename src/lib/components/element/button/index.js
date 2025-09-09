@@ -6,3 +6,4 @@ export { default as ButtonClear } from "./ButtonClear.svelte";
 export { default as ButtonBack } from "./ButtonBack.svelte";
 export { default as Button } from "./Button.svelte";
 export { default as ButtonBackup } from "./ButtonBackup.svelte";
+export { default as ButtonRestore } from "./ButtonRestore.svelte";

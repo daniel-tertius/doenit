@@ -42,8 +42,9 @@
   {/if}
 </div>
 
-<Modal bind:is_open={is_deleting} title={t("delete_permanently")}>
-  <p class="p-4">
+<Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">
+  <h2 class="font-bold text-lg">{t("delete")}</h2>
+  <p>
     {Selected.tasks.size > 1 ? t("delete_confirmation_multiple") : t("delete_confirmation_single")}
   </p>
   <button

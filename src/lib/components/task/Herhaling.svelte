@@ -33,14 +33,14 @@
     yearly: t("years"),
   });
 
-  /** @type {WEEKDAY[]} */
+  /** @type {string[]} */
   const DAYS_OF_WEEK = $derived([t("sun"), t("mon"), t("tue"), t("wed"), t("thu"), t("fri"), t("sat")]);
 
   let is_mounting = $state(true);
   let temp_repeat_interval_number = $state(Math.max(2, repeat_interval_number));
   let temp_other_interval = $state(other_interval);
   let temp_repeat_interval = $state(repeat_interval_number > 1 ? "other" : repeat_interval);
-  /** @type {Set<(0 | 1 | 2 | 3 | 4 | 5 | 6)>}*/
+  /** @type {Set<number>}*/
   let temp_specific_days = $state(new SvelteSet(specific_days));
   let is_dialog_open = $state(false);
   let error_message = $state("");
@@ -135,8 +135,10 @@
     <select
       id="repeat"
       bind:value={temp_repeat_interval}
-      class="bg-t-primary-700 p-2 w-full rounded-lg border-dark-500 border open:text-t-secondary appearance-none {!temp_repeat_interval &&
-        'text-t-secondary/60'}"
+      class={[
+        "bg-card border border-default p-2 w-full rounded-lg placeholder:text-muted appearance-none outline-none",
+        temp_repeat_interval ? "text-normal" : "text-muted",
+      ]}
     >
       <option value="">{t("no_repeat")}</option>
       <option value="daily">{t("daily")}</option>
@@ -156,13 +158,14 @@
   {#if temp_repeat_interval === "weekly_custom_days"}
     <div transition:slide class="flex justify-between items-center mt-2 gap-1">
       {#each DAYS_OF_WEEK as day, i}
+        {@const is_selected = temp_specific_days.has(i)}
         <button
           type="button"
-          class="w-full h-8 rounded-lg border border-primary transition-colors duration-300"
-          class:bg-tertiary={temp_specific_days.has(i)}
-          class:text-primary={temp_specific_days.has(i)}
-          class:bg-primary-20l={!temp_specific_days.has(i)}
-          class:text-t-secondary={!temp_specific_days.has(i)}
+          class={[
+            "w-full h-12 rounded-lg border",
+            !is_selected && "bg-card border-default",
+            is_selected && "border-primary bg-primary/20 text-primary",
+          ]}
           onclick={() => {
             if (temp_specific_days.has(i)) {
               temp_specific_days.delete(i);
@@ -178,57 +181,54 @@
   {/if}
 </div>
 
-<Modal bind:is_open={is_dialog_open} title="{t('repeat')}{temp_display_other || ` ${t('every')}…`}" {footer}>
-  <div class="p-4 space-y-4">
-    <div class="flex sm:flex-row gap-4">
-      <div class="flex-1">
-        <label for="repeat_interval_number" class="block text-sm font-semibold text-tertiary mb-1">{t("every")}</label>
-        <input
-          id="repeat_interval_number"
-          type="number"
-          min="2"
-          bind:value={temp_repeat_interval_number}
-          oninput={() => {
-            error_message = "";
-          }}
-          class="bg-primary-20l p-2 w-full rounded-lg border border-primary"
-        />
-      </div>
-      <div class="flex-1">
-        <label for="custom_interval" class="block text-sm font-semibold text-teriary mb-1">{t("period")}</label>
-        <select
-          id="custom_interval"
-          bind:value={temp_other_interval}
-          onchange={() => {
-            error_message = "";
-          }}
-          class="bg-primary-20l p-2 w-full rounded-lg border border-primary appearance-none"
-        >
-          <option value="daily">{t("days")}</option>
-          <option value="weekly">{t("weeks")}</option>
-          <option value="monthly">{t("months")}</option>
-          <option value="yearly">{t("years")}</option>
-        </select>
-      </div>
+<!-- TODO: Migrate Modal -->
+<Modal bind:is_open={is_dialog_open} onclose={() => (is_dialog_open = false)} class="space-y-4">
+  <h2 class="text-lg font-bold">{t("repeat")}{temp_display_other || ` ${t("every")}…`}</h2>
+
+  <div class="flex flex-col sm:flex-row gap-4">
+    <div class="w-full">
+      <span class="font-semibold mb-1">{t("every")}</span>
+      <input
+        type="number"
+        min="2"
+        bind:value={temp_repeat_interval_number}
+        oninput={() => {
+          error_message = "";
+        }}
+        class="bg-card p-2 w-full rounded-lg border border-default outline-none"
+      />
     </div>
-
-    {#if error_message}
-      <div class="text-error text-sm mt-1 flex justify-end" transition:slide>
-        {error_message}
-      </div>
-    {/if}
+    <div class="w-full">
+      <span class="font-semibold mb-1">{t("period")}</span>
+      <select
+        bind:value={temp_other_interval}
+        onchange={() => {
+          error_message = "";
+        }}
+        class="bg-card p-2 w-full rounded-lg border border-default appearance-none"
+      >
+        <option value="daily">{t("days")}</option>
+        <option value="weekly">{t("weeks")}</option>
+        <option value="monthly">{t("months")}</option>
+        <option value="yearly">{t("years")}</option>
+      </select>
+    </div>
   </div>
-</Modal>
 
-{#snippet footer()}
+  {#if error_message}
+    <div class="text-error text-sm mt-1 flex justify-end" transition:slide>
+      {error_message}
+    </div>
+  {/if}
+
   <button
-    class="bg-blue-600 hover:bg-blue-700 text-tertiary px-4 py-2 rounded-md flex gap-1 items-center"
+    class="bg-primary text-white rounded-lg h-12 w-40 ml-auto flex gap-1 items-center justify-center"
     type="button"
     onclick={() => {
       save();
     }}
-    >
-      <Check size={18} />
-      <span>{t("confirm")}</span>
-    </button>
-  {/snippet}
+  >
+    <Check size={18} />
+    <span>{t("confirm")}</span>
+  </button>
+</Modal>

@@ -80,6 +80,6 @@
   }
 </script>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 text-tertiary grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative">
   <EditTask bind:error bind:task bind:other_interval />
 </form>

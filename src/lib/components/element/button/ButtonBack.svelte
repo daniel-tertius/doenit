@@ -11,14 +11,14 @@
   }
 </script>
 
-<div class="h-full aspect-square flex items-start justify-center">
+<div class="h-full mr-2 flex items-center justify-start">
   {#if show}
-    <button type="button" aria-label="Go back button" class="rounded-full bg-card mx-1 my-auto font-semibold" {onclick}>
-      <div class="h-4xl w-4xl p-1 flex justify-center items-center">
+    <button type="button" aria-label="Go back button" class="font-semibold h-full aspect-square p-1 max-h-12" {onclick}>
+      <div class="flex justify-center items-center rounded-full bg-card aspect-square h-full">
         {#if navigating.to}
           <Loading />
         {:else if !is_home}
-          <Back class="text-5xl" />
+          <Back class="text-2xl" />
         {/if}
       </div>
     </button>

@@ -1,7 +1,7 @@
 <script>
   import { DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
-  import InputText from "./element/input/InputText.svelte";
+  import InputText from "./InputText.svelte";
   import { t } from "$lib/services/language.svelte";
 
   let { name = $bindable(), description = $bindable(), error_message = $bindable() } = $props();
@@ -11,7 +11,7 @@
 
 <div>
   <label class="font-bold" for="name">{t("what_needs_to_be_done")}</label>
-  <div class="flex gap-1">
+  <div class="grid grid-cols-[auto_48px] gap-2">
     <InputText
       id="name"
       bind:value={name}
@@ -19,18 +19,18 @@
       oninput={() => (error_message = "")}
       placeholder={t("what_needs_to_be_done")}
       class={{
-        "bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 pr-7": true,
+        "p-2 w-full rounded-lg border": true,
         "border-error": !!error_message,
-        "placeholder:text-error-20l": !!error_message,
+        "placeholder:text-error": !!error_message,
       }}
     />
 
     <button
       type="button"
-      class="rounded-full my-auto aspect-square flex justify-center items-center h-[42px] w-[42px] bg-t-primary-700"
+      class="rounded-full border border-default my-auto aspect-square flex justify-center items-center bg-card"
       onclick={() => (show_description = !show_description)}
     >
-      <DownChevron class="text-t-secondary {show_description ? '-rotate-180' : ''}" size={18} />
+      <DownChevron class={show_description ? "-rotate-180" : ""} size={18} />
     </button>
   </div>
 
@@ -49,7 +49,7 @@
       bind:value={description}
       placeholder={t("description_placeholder")}
       rows="3"
-      class="bg-t-primary-700 p-2 w-full rounded-lg border border-dark-400 resize-none min-h-18 max-h-40"
+      class="bg-card p-2 w-full rounded-lg border border-default resize-none max-h-36"
       style="field-sizing: content;"
     ></textarea>
   </div>

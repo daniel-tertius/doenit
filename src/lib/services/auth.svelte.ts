@@ -2,29 +2,41 @@ import { GoogleAuthProvider, signInWithCredential, signOut, getAuth } from "fire
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import type { Auth as FirebaseAuth, User } from "firebase/auth";
-import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getApp, initializeApp } from "firebase/app";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
 import { t } from "$lib/services/language.svelte";
 import { Capacitor } from "@capacitor/core";
+import { FIREBASE_CONFIG } from "$lib";
 import Backup from "./backup.svelte";
 import Files from "./files.svelte";
-import { getStorage } from "firebase/storage";
-import { FIREBASE_CONFIG } from "$lib";
 
 class Auth {
-  readonly app: FirebaseApp;
-  readonly auth: FirebaseAuth;
   user: User | null = $state(null);
   is_loaded = $state(false);
   backup: Backup | null = $state(null);
   files: Files | null = $state(null);
 
+  async init() {
+    const app = initializeApp(FIREBASE_CONFIG);
+
+    const auth = getAuth(app);
+
+    return new Promise<void>((resolve) => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        this.user = user;
+        unsubscribe();
+        resolve();
+      });
+    });
+  }
+
   constructor() {
     try {
-      this.app = initializeApp(FIREBASE_CONFIG);
-      this.auth = getAuth(this.app);
+      const app = initializeApp(FIREBASE_CONFIG);
+
       if (Capacitor.isNativePlatform()) {
-        this.auth.onAuthStateChanged((user) => {
+        const auth = getAuth(app);
+        auth.onAuthStateChanged((user) => {
           if (!user) return;
           this.user = user;
         });
@@ -76,12 +88,9 @@ class Auth {
       }
 
       const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
-      const result = await signInWithCredential(this.auth, credential);
+      const auth = getAuth(getApp());
+      const result = await signInWithCredential(auth, credential);
       this.user = result.user;
-
-      const storage = getStorage(this.app);
-      this.files = new Files(storage, this.user);
-      this.backup = new Backup(this.files, this.user);
 
       return { success: true };
     } catch (error: any) {
@@ -94,7 +103,8 @@ class Auth {
   async signOut() {
     try {
       if (Capacitor.isNativePlatform()) {
-        await signOut(this.auth);
+        const auth = getAuth(getApp());
+        await signOut(auth);
         await GoogleAuth.signOut();
       }
       this.user = null;
@@ -106,6 +116,13 @@ class Auth {
       alert(`Sign-out error: ${error || JSON.stringify(error)}`);
       return { success: false, error_message: error || "Unknown error" };
     }
+  }
+
+  getUserID(): string | null {
+    const user = this.getUser();
+    if (!user) return null;
+
+    return user.uid;
   }
 }
 

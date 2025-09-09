@@ -12,7 +12,7 @@
 <button
   {...rest}
   type="button"
-  class="relative w-14 h-8 rounded-full transition-colors {value ? 'bg-blue-600' : 'bg-primary-30l'}"
+  class="relative w-14 h-8 rounded-full transition-colors {value ? 'bg-primary' : 'bg-card'}"
   onclick={() => (value = !value)}
 >
   <div
