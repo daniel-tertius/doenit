@@ -70,7 +70,7 @@
     <div class="space-y-2">
       <button
         type="button"
-        class="w-full p-3 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+        class="w-full p-3 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-alt font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm"
         onclick={() => handlePayment("buymeacoffee")}
       >
         <div class="w-5 h-5 bg-white rounded flex items-center justify-center">
@@ -81,7 +81,7 @@
 
       <button
         type="button"
-        class="w-full p-3 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+        class="w-full p-3 rounded-lg bg-red-500 hover:bg-red-600 text-alt font-medium transition-all duration-200 flex items-center justify-center gap-2 text-sm"
         onclick={() => handlePayment("kofi")}
       >
         <div class="w-5 h-5 bg-white rounded flex items-center justify-center">

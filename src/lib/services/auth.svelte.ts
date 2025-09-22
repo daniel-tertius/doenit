@@ -1,20 +1,17 @@
 import { GoogleAuthProvider, signInWithCredential, signOut, getAuth } from "firebase/auth";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
-import type { Auth as FirebaseAuth, User } from "firebase/auth";
+import type { User } from "firebase/auth";
 import { getApp, initializeApp } from "firebase/app";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
 import { t } from "$lib/services/language.svelte";
 import { Capacitor } from "@capacitor/core";
 import { FIREBASE_CONFIG } from "$lib";
-import Backup from "./backup.svelte";
-import Files from "./files.svelte";
 
 class Auth {
   user: User | null = $state(null);
   is_loaded = $state(false);
-  backup: Backup | null = $state(null);
-  files: Files | null = $state(null);
+  is_logged_in = $derived(this.is_loaded && !!this.user);
 
   async init() {
     const app = initializeApp(FIREBASE_CONFIG);
@@ -41,6 +38,7 @@ class Auth {
           this.user = user;
         });
       } else {
+        // @ts-ignore
         this.user = {
           displayName: "John Doe",
           email: "john.doe@example.com",
@@ -74,6 +72,15 @@ class Auth {
 
   async signInWithGoogle(): Promise<SimpleResult> {
     try {
+      if (!Capacitor.isNativePlatform()) {
+        // @ts-ignore
+        this.user = {
+          displayName: "John Doe",
+          email: "john.doe@example.com",
+          photoURL: "https://i.pravatar.cc/300",
+        };
+        return { success: true };
+      }
       const googleUser = await GoogleAuth.signIn();
       if (!googleUser) {
         throw new Error("No user returned from Google sign-in");
@@ -108,8 +115,6 @@ class Auth {
         await GoogleAuth.signOut();
       }
       this.user = null;
-      this.files = null;
-      this.backup = null;
       return { success: true };
     } catch (error) {
       console.error("[Doenit]: Sign-out error:", error);

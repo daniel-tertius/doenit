@@ -52,6 +52,58 @@
  */
 
 /**
+ * @typedef {ChangelogMetaData & Change} Changelog
+ */
+
+/**
+ * @typedef {Object} ChangelogMetaData
+ * @property {string} id - Primary key (UUID).
+ * @property {boolean} archived - Indicates if the changelog entry is archived.
+ * @property {string} created_at - ISO string timestamp of when the change was made.
+ * @property {string} room_id
+ * @property {number} total_reads_needed
+ * @property {string[]} user_reads_list - Array of user IDs who have read this changelog entry
+ */
+
+/**
+ * @typedef {LeftRoomChange | CreateChange | CompleteChange | ChangeChange | DeleteChange | InviteAcceptedChange} Change
+ */
+
+/**
+ * @typedef {Object} InviteAcceptedChange
+ * @property {'invite_accepted' | 'invite_declined'} type
+ */
+
+/**
+ * @typedef {Object} LeftRoomChange
+ * @property {'left_room'} type
+ */
+
+/**
+ * @typedef {Object} CreateChange
+ * @property {'create'} type
+ * @property {string} data - Encrypted and compressed task data.
+ */
+
+/**
+ * @typedef {Object} CompleteChange
+ * @property {'complete'} type
+ * @property {string} task_id - ID of the task to be marked as complete.
+ */
+
+/**
+ * @typedef {Object} ChangeChange
+ * @property {'change'} type
+ * @property {string} data - Encrypted and compressed task data.
+ */
+
+/**
+ * @typedef {Object} DeleteChange
+ * @property {'delete'} type
+ * @property {string} task_id - ID of the task to be deleted.
+ */
+
+/**
  * @template T
  * @typedef {{ success: true, data: T } | { success: false, error_message: string, data?: * }} Result<T>
  */
@@ -62,4 +114,20 @@
 
 /**
  * @typedef {{ success: true } | { success: false, error_message: string }} SimpleResult
+ */
+
+/**
+ * Represents an invitation sent between users.
+ * @typedef {Object} Invite
+ * @property {string} id - Optional invite ID.
+ * @property {string} created_at - Timestamp when the invite was created (format: "YYYY-MM-DD HH:mm" or "YYYY-MM-DD"), or null.
+ * @property {boolean} archived - Indicates if the invite is archived.
+ * @property {string} room_id - ID of the room associated with the invite.
+ * @property {string} sender_email_address - Email address of the user sending the invite.
+ * @property {string} sender_name - Name of the user sending the invite.
+ * @property {string} recipient_email_address - Email address of the user receiving the invite.
+ * @property {"pending"|"accepted"|"declined"|"cancelled"|"expired"} status - Current status of the invite.
+ * @property {string} expires_at - Timestamp when the invite expires (format: "YYYY-MM-DD HH:mm" or "YYYY-MM-DD"), or null.
+ * @property {string | null} [acceptedAt] - Optional timestamp when the invite was accepted (format: "YYYY-MM-DD HH:mm" or "YYYY-MM-DD"), or null.
+ * @property {string} [message] - Optional message attached to the invite.
  */

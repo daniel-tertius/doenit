@@ -1,3 +1,4 @@
+import DateUtil from "$lib/DateUtil";
 import type { MangoQuery, RxCollection } from "rxdb";
 
 export class Table<T extends Task | Category | Room> {
@@ -7,15 +8,15 @@ export class Table<T extends Task | Category | Room> {
     this.collection = collection;
   }
 
-  async create(item: Omit<T, "id" | "created_at" | "archived" | "updated_at">): Promise<T> {
+  async create(item: Omit<T, "id" | "created_at" | "archived" | "updated_at"> & { id?: string }): Promise<T> {
     if (!item) throw new Error("Item is required");
 
     const new_item = {
       ...item,
       archived: false,
-      created_at: new Date().toString(),
-      updated_at: new Date().toString(),
-      id: crypto.randomUUID(),
+      created_at: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+      updated_at: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+      id: item.id || crypto.randomUUID(),
     } as T;
 
     return this.collection.insert(new_item);
@@ -24,8 +25,8 @@ export class Table<T extends Task | Category | Room> {
   async createMany(items: Omit<T, "id" | "created_at" | "archived" | "updated_at">[]): Promise<{ success: T[] }> {
     if (!items || !items.length) throw new Error("Items are required");
 
-    const created_at = new Date().toString();
-    const updated_at = new Date().toString();
+    const created_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
+    const updated_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
     const new_items = items.map((item) => ({ ...item, created_at, updated_at, id: crypto.randomUUID() }) as T);
 
     return this.collection.bulkInsert(new_items);
@@ -57,25 +58,36 @@ export class Table<T extends Task | Category | Room> {
     const doc = await this.collection.findOne(id).exec();
     if (!doc) throw new Error(`${this.collection.name} with id ${id} not found`);
 
-    updates.updated_at = new Date().toString();
+    updates.updated_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
 
     await doc.patch(updates);
     return doc.toJSON() as T;
   }
 
-  async delete(id: string | string[]): Promise<void> {
-    const ids = Array.isArray(id) ? id : [id];
-    await this.collection.find({ selector: { id: { $in: ids } } }).remove();
+  async delete(ids: string | string[]): Promise<void> {
+    try {
+      if (!Array.isArray(ids)) ids = [ids];
+      if (!ids.length) return;
+
+      await this.collection.find({ selector: { id: { $in: ids } } }).remove();
+    } catch (e) {
+      alert(`Failed to delete from ${this.collection.name}: ` + e);
+    }
   }
 
   async archive(id: string): Promise<void> {
     const doc = await this.collection.findOne(id).exec();
-    if (doc) await doc.patch({ archived: true, updated_at: new Date().toString() } as Partial<T>);
+    if (doc)
+      await doc.patch({ archived: true, updated_at: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss") } as Partial<T>);
   }
 
   async unarchive(id: string): Promise<void> {
     const doc = await this.collection.findOne(id).exec();
-    if (doc) await doc.patch({ archived: false, updated_at: new Date().toString() } as Partial<T>);
+    if (doc)
+      await doc.patch({
+        archived: false,
+        updated_at: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
+      } as Partial<T>);
   }
 
   async overwriteMany(items: T[]): Promise<{ success: T[]; error: any[] }> {

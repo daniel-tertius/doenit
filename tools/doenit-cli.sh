@@ -82,13 +82,13 @@ main() {
 
 # Web development
 start_web_dev() {
-    echo -e "${BLUE}🌐 Begin web ontwikkeling server...${NC}"
+    echo -e "${BLUE} 🌐 Begin web ontwikkeling server...${NC}"
     npm run dev
 }
 
 # Functions management
 manage_functions() {
-    echo -e "${PURPLE}🔥 Firebase Functions Bestuur${NC}"
+    echo -e "${PURPLE} 🔥 Firebase Functions Bestuur${NC}"
     echo "1. Start functions emulator"
     echo "2. Deploy functions"
     echo "3. View functions logs"
@@ -104,7 +104,7 @@ manage_functions() {
 
 # Install dependencies
 install_deps() {
-    echo -e "${YELLOW}📦 Installeer alle dependencies...${NC}"
+    echo -e "${YELLOW} 📦 Installeer alle dependencies...${NC}"
     
     local dirs=("." "functions" "packages/capacitor-google-auth")
     local names=("Root" "Functions" "Google Auth plugin")
@@ -112,35 +112,35 @@ install_deps() {
     for i in "${!dirs[@]}"; do
         echo -e "${BLUE}${names[i]} dependencies...${NC}"
         (cd "${dirs[i]}" && npm install) || {
-            echo -e "${RED}❌ ${names[i]} dependencies failed${NC}"
+            echo -e "${RED} ❌ ${names[i]} dependencies failed${NC}"
             return 1
         }
     done
     
-    echo -e "${GREEN}✅ Alle dependencies geïnstalleer${NC}"
+    echo -e "${GREEN} ✅ Alle dependencies geïnstalleer${NC}"
 }
 
 # Helper function: Common build steps
 do_build() {
-    echo -e "${BLUE}🏗️ Bou app...${NC}"
+    echo -e "${BLUE} 🏗️ Bou app...${NC}"
     npm run build || {
-        echo -e "${RED}❌ Build failed${NC}"
+        echo -e "${RED} ❌ Build failed${NC}"
         return 1
     }
     npx cap sync || {
-        echo -e "${RED}❌ Capacitor sync failed${NC}"
+        echo -e "${RED} ❌ Capacitor sync failed${NC}"
         return 1
     }
-    echo -e "${GREEN}✅ App gebou${NC}"
+    echo -e "${GREEN} ✅ App gebou${NC}"
 }
 
 # Bou app (produksie)
 build_app() {
-    echo -e "${PURPLE}🏗️ Bou produksie app...${NC}"
+    echo -e "${PURPLE} 🏗️ Bou produksie app...${NC}"
     
     # Load production environment
     if [ ! -f ".env.production" ]; then
-        echo -e "${RED}❌ .env.production file nie gevind nie${NC}"
+        echo -e "${RED} ❌ .env.production file nie gevind nie${NC}"
         echo -e "${YELLOW}Eerste keer produksie bou? Volg hierdie stappe:${NC}"
         echo "1. Skep produksie keystore: ${CYAN}./tools/generate-production-keystore.sh${NC}"
         echo "2. Redigeer .env.production met jou produksie waardes"
@@ -151,53 +151,53 @@ build_app() {
     
     # Check if production keystore exists
     if [ ! -f "android/app.keystore" ]; then
-        echo -e "${RED}❌ Produksie keystore nie gevind nie${NC}"
+        echo -e "${RED} ❌ Produksie keystore nie gevind nie${NC}"
         echo -e "Skep dit met: ${CYAN}./tools/generate-production-keystore.sh${NC}"
         return 1
     fi
     
-    echo -e "${BLUE}📦 Installeer dependencies...${NC}"
+    echo -e "${BLUE} 📦 Installeer dependencies...${NC}"
     npm install || {
-        echo -e "${RED}❌ npm install failed${NC}"
+        echo -e "${RED} ❌ npm install failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}🏗️ Bou Svelte vir produksie...${NC}"
+    echo -e "${BLUE} 🏗️ Bou Svelte vir produksie...${NC}"
     NODE_ENV=production npm run build:prod || {
-        echo -e "${RED}❌ Production build failed${NC}"
+        echo -e "${RED} ❌ Production build failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}🔄 Sync Capacitor...${NC}"
+    echo -e "${BLUE} 🔄 Sync Capacitor...${NC}"
     NODE_ENV=production npx cap sync || {
-        echo -e "${RED}❌ Capacitor sync failed${NC}"
+        echo -e "${RED} ❌ Capacitor sync failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}📱 Bou Android produksie AAB...${NC}"
+    echo -e "${BLUE} 📱 Bou Android produksie AAB...${NC}"
     NODE_ENV=production npx cap build android || {
-        echo -e "${RED}❌ Android build failed${NC}"
+        echo -e "${RED} ❌ Android build failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}📁 Kopieer uitset lêers...${NC}"
+    echo -e "${BLUE} 📁 Kopieer uitset lêers...${NC}"
     mkdir -p app-output
     rm -f app-output/doenit.aab app-output/doenit.apk
     
     # Copy AAB file
     if [ -f "android/app/build/outputs/bundle/release/app-release-signed.aab" ]; then
         cp android/app/build/outputs/bundle/release/app-release-signed.aab app-output/doenit.aab
-        echo -e "${GREEN}✅ doenit.aab geskep${NC}"
+        echo -e "${GREEN} ✅ doenit.aab geskep${NC}"
     fi
     
     # Copy APK file if it exists
     if [ -f "android/app/build/outputs/apk/release/app-release-signed.apk" ]; then
         cp android/app/build/outputs/apk/release/app-release-signed.apk app-output/doenit.apk
-        echo -e "${GREEN}✅ doenit.apk geskep${NC}"
+        echo -e "${GREEN} ✅ doenit.apk geskep${NC}"
     fi
     
-    echo -e "${GREEN}🎉 Produksie app gebou! Lêers in app-output/ gids.${NC}"
-    echo -e "${CYAN}📤 Laai doenit.aab op na Google Play Console${NC}"
+    echo -e "${GREEN} 🎉 Produksie app gebou! Lêers in app-output/ gids.${NC}"
+    echo -e "${CYAN} 📤 Laai doenit.aab op na Google Play Console${NC}"
 }
 
 # Bou en installeer ontwikkeling weergawe
@@ -206,23 +206,23 @@ build_and_install() {
         return 1
     fi
     
-    echo -e "${BLUE}🏗️ Bou en installeer ontwikkeling weergawe...${NC}"
+    echo -e "${BLUE} 🏗️ Bou en installeer ontwikkeling weergawe...${NC}"
     
-    echo -e "${BLUE}📦 Installeer dependencies...${NC}"
+    echo -e "${BLUE} 📦 Installeer dependencies...${NC}"
     npm install || {
-        echo -e "${RED}❌ npm install failed${NC}"
+        echo -e "${RED} ❌ npm install failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}🏗️ Bou Svelte vir ontwikkeling...${NC}"
+    echo -e "${BLUE} 🏗️ Bou Svelte vir ontwikkeling...${NC}"
     NODE_ENV=development npm run build:dev || {
-        echo -e "${RED}❌ Development build failed${NC}"
+        echo -e "${RED} ❌ Development build failed${NC}"
         return 1
     }
     
-    echo -e "${BLUE}🔄 Sync Capacitor...${NC}"
+    echo -e "${BLUE} 🔄 Sync Capacitor...${NC}"
     NODE_ENV=development npx cap sync || {
-        echo -e "${RED}❌ Capacitor sync failed${NC}"
+        echo -e "${RED} ❌ Capacitor sync failed${NC}"
         return 1
     }
     
@@ -231,7 +231,7 @@ build_and_install() {
     # cd android
     if npx cap build android --androidreleasetype "APK" --signing-type "apksigner"; then
     # if ./gradlew assembleDebug; then
-        echo -e "${GREEN}✅ Debug APK gebou${NC}"
+        echo -e "${GREEN} ✅ Debug APK gebou${NC}"
         
         # # Find the APK file
         APK_PATH="android/app/build/outputs/apk/release/app-release-signed.apk"
@@ -239,21 +239,21 @@ build_and_install() {
         if [ -f "$APK_PATH" ]; then
             echo -e "${BLUE}📲 Installeer op toestel...${NC}"
             if adb install -r "$APK_PATH"; then
-                echo -e "${GREEN}✅ Ontwikkeling app geïnstalleer${NC}"
+                echo -e "${GREEN} ✅ Ontwikkeling app geïnstalleer${NC}"
                 echo -e "${CYAN}App ID: doenit.app.dev${NC}"
                 echo -e "${CYAN}App Naam: Doenit Dev${NC}"
             else
-                echo -e "${RED}❌ Installasie gefaal${NC}"
+                echo -e "${RED} ❌ Installasie gefaal${NC}"
                 # cd ..
                 return 1
             fi
         else
-            echo -e "${RED}❌ APK lêer nie gevind nie: $APK_PATH${NC}"
+            echo -e "${RED} ❌ APK lêer nie gevind nie: $APK_PATH${NC}"
         #     cd ..
             return 1
         fi
     else
-        echo -e "${RED}❌ APK bou gefaal${NC}"
+        echo -e "${RED} ❌ APK bou gefaal${NC}"
     #     cd ..
         return 1
     fi
@@ -263,23 +263,23 @@ build_and_install() {
     # Copy to app-output for convenience
     mkdir -p app-output
     cp android/app/build/outputs/apk/debug/app-debug.apk app-output/doenit-dev.apk 2>/dev/null || true
-    echo -e "${GREEN}🎉 Ontwikkeling app gereed!${NC}"
+    echo -e "${GREEN} 🎉 Ontwikkeling app gereed!${NC}"
 }
 
 # Check of toestel gekoppel is
 check_device_connected() {
     if ! command -v adb &> /dev/null; then
-        echo -e "${RED}❌ ADB nie geïnstalleer nie${NC}"
+        echo -e "${RED} ❌ ADB nie geïnstalleer nie${NC}"
         return 1
     fi
     
     if ! adb devices | grep -q "device$"; then
-        echo -e "${YELLOW}⚠️ Geen Android toestel opgespoor nie${NC}"
+        echo -e "${YELLOW} ⚠️ Geen Android toestel opgespoor nie${NC}"
         echo "Koppel 'n toestel en probeer weer"
         return 1
     fi
     
-    echo -e "${GREEN}✅ Toestel gekoppel${NC}"
+    echo -e "${GREEN} ✅ Toestel gekoppel${NC}"
     return 0
 }
 
@@ -287,7 +287,7 @@ check_device_connected() {
 run_firebase_command() {
     local command=$1
     local description=$2
-    echo -e "${PURPLE}🔥 ${description}...${NC}"
+    echo -e "${PURPLE} 🔥 ${description}...${NC}"
     (cd functions && npm run "$command")
 }
 
@@ -304,25 +304,25 @@ device_management() {
         
         # Check for production app
         if adb shell pm list packages | grep -q "doenit.app$"; then
-            echo -e "${GREEN}✅ Produksie app geïnstalleer (doenit.app)${NC}"
+            echo -e "${GREEN} ✅ Produksie app geïnstalleer (doenit.app)${NC}"
             adb shell dumpsys package "doenit.app" | grep versionName || echo "Kan nie versie kry nie"
         else
-            echo -e "${RED}❌ Produksie app nie geïnstalleer nie${NC}"
+            echo -e "${RED} ❌ Produksie app nie geïnstalleer nie${NC}"
         fi
         
         # Check for development app
         if adb shell pm list packages | grep -q "doenit.app.dev"; then
-            echo -e "${GREEN}✅ Ontwikkeling app geïnstalleer (doenit.app.dev)${NC}"
+            echo -e "${GREEN} ✅ Ontwikkeling app geïnstalleer (doenit.app.dev)${NC}"
             adb shell dumpsys package "doenit.app.dev" | grep versionName || echo "Kan nie versie kry nie"
         else
-            echo -e "${RED}❌ Ontwikkeling app nie geïnstalleer nie${NC}"
+            echo -e "${RED} ❌ Ontwikkeling app nie geïnstalleer nie${NC}"
         fi
     fi  
 }
 
 # Widget debug (oorspronklike funksionaliteit)
 widget_debug() {
-    echo -e "${YELLOW}🔧 Widget Debug Mode${NC}"
+    echo -e "${YELLOW} 🔧 Widget Debug Mode${NC}"
     if ! check_device_connected; then
         return
     fi
@@ -353,10 +353,11 @@ view_app_logs() {
         return
     fi
     
-    echo -e "${BLUE}📋 Kyk app logs (Ctrl+C om te stop)...${NC}"
+    echo -e "${BLUE} 📋 Kyk app logs (Ctrl+C om te stop)...${NC}"
     echo -e "${CYAN}Monitoring beide produksie (doenit.app) en ontwikkeling (doenit.app.dev) apps${NC}"
     adb logcat -c
-    adb logcat | grep -E "(Doenit|Console)"
+    adb logcat
+    #  | grep -E "(Doenit|Console)"
 }
 
 # Begin CLI

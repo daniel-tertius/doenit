@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   where,
+  or,
   orderBy,
   limit,
   onSnapshot,
@@ -16,32 +17,37 @@ import {
 } from "firebase/firestore";
 import { getApp, initializeApp } from "firebase/app";
 import { FIREBASE_CONFIG } from "$lib";
+import DateUtil from "$lib/DateUtil";
+import type { Unsubscribe } from "firebase/auth";
 
 interface QueryOptions {
-  filters?: { field: string; operator: WhereFilterOp; value: any }[];
+  filters?: (
+    | { field: string; operator: WhereFilterOp; value: any }
+    | { or: { field: string; operator: WhereFilterOp; value: any }[] }
+  )[];
   sort?: { field: string; direction: "asc" | "desc" }[];
   limit?: number;
 }
 
 type SnapshotCallback<T> = (docs: T[]) => void;
 
-export class Table<T extends Task | Room | Category | BackupManifest> {
+export class Table<T extends BackupManifest | Invite | Changelog> {
   private readonly name: string;
 
   constructor(name: string) {
     this.name = name;
   }
 
-  async create(data: Omit<T, "id" | "created_at">): Promise<SimpleResult> {
+  async create(data: Omit<T, "id" | "archived" | "created_at">): Promise<SimpleResult> {
     try {
       if (!data) throw new Error("Data is required");
 
-      const created_at = new Date().toISOString();
+      const created_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
       const db = this.getFirestore();
       const colRef = collection(db, this.name);
 
       // Convert to plain object and ensure all values are serializable
-      const doc_data = JSON.parse(JSON.stringify({ ...data, created_at }));
+      const doc_data = JSON.parse(JSON.stringify({ ...data, created_at, archived: false }));
       await addDoc(colRef, doc_data);
 
       return { success: true };
@@ -62,10 +68,16 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
 
     return { id: snapshot.id, ...snapshot.data() } as T;
   }
+
   async getAll(options?: QueryOptions): Promise<T[]> {
-    const q = this.buildQuery(options);
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ ...d.data(), id: d.id })) as T[];
+    try {
+      const q = this.buildQuery(options);
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) => ({ ...d.data(), id: d.id })) as T[];
+    } catch (e) {
+      alert(`Failed to fetch documents from ${this.name}: ${(e as Error).stack || "Unknown error occurred"}`);
+      return [];
+    }
   }
 
   async update(id: string, data: T) {
@@ -81,6 +93,11 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
     await deleteDoc(docRef);
   }
 
+  protected getDoc(id: string) {
+    const db = this.getFirestore();
+    return doc(db, this.name, id);
+  }
+
   private buildQuery(options?: QueryOptions) {
     const db = this.getFirestore();
     let colRef = collection(db, this.name);
@@ -88,7 +105,14 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
 
     if (options?.filters) {
       for (const f of options.filters) {
-        q = query(q, where(f.field, f.operator, f.value));
+        if ("or" in f) {
+          // Handle OR condition
+          const orConditions = f.or.map((condition) => where(condition.field, condition.operator, condition.value));
+          q = query(q, or(...orConditions));
+        } else {
+          // Handle regular filter
+          q = query(q, where(f.field, f.operator, f.value));
+        }
       }
     }
 
@@ -105,16 +129,13 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
     return q;
   }
 
-  subscribe(callback: SnapshotCallback<T>, options?: QueryOptions) {
+  subscribe(callback: SnapshotCallback<T>, options?: QueryOptions): Unsubscribe | null {
     try {
       const q = this.buildQuery(options);
-
-      console.log("Attempting to subscribe to", this.name);
 
       return onSnapshot(
         q,
         (snapshot) => {
-          console.log("Successfully received snapshot for", this.name, "- docs count:", snapshot.docs.length);
           const docs = snapshot.docs.map((d) => ({ ...d.data(), id: d.id })) as T[];
           callback(docs);
         },
@@ -133,8 +154,8 @@ export class Table<T extends Task | Room | Category | BackupManifest> {
         }
       );
     } catch (error) {
-      console.error("Error setting up subscription for", this.name, ":", error);
-      throw error;
+      alert("Error setting up subscription for " + this.name + ": " + error);
+      return null;
     }
   }
 

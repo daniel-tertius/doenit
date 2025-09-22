@@ -2,6 +2,7 @@ import { browser } from "$app/environment";
 import { DEFAULT_HEX_COLOR } from "$lib";
 import { cached_theme } from "$lib/cached";
 import { Capacitor } from "@capacitor/core";
+import { Device } from "@capacitor/device";
 
 class Theme {
   #value: ThemeValue = $state("dark");
@@ -16,6 +17,12 @@ class Theme {
     if (!theme) {
       cached_theme.set("dark");
       theme = "dark";
+    }
+
+    const info = await Device.getInfo();
+    if (+info.osVersion < 15) {
+      const { EdgeToEdge } = await import("@capawesome/capacitor-android-edge-to-edge-support");
+      await EdgeToEdge.disable();
     }
 
     this.value = theme;
@@ -63,9 +70,13 @@ class Theme {
   private async updateEdgeToEdgeColour() {
     if (!Capacitor.isNativePlatform()) return;
 
-    const { EdgeToEdge } = await import("@capawesome/capacitor-android-edge-to-edge-support");
+    const info = await Device.getInfo();
 
-    await EdgeToEdge.setBackgroundColor({ color: this.#edge_to_edge_bg_colour });
+    if (+info.osVersion > 14) {
+      const { EdgeToEdge } = await import("@capawesome/capacitor-android-edge-to-edge-support");
+
+      await EdgeToEdge.setBackgroundColor({ color: this.#edge_to_edge_bg_colour });
+    }
   }
 }
 

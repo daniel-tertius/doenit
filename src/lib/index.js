@@ -6,6 +6,8 @@ export const ENGLISH = Symbol("en");
 
 export const DEFAULT_HEX_COLOR = "#2b2f31";
 export const BACKUP_APP_NAME = "[DEFAULT]";
+export const INVITE_EXPIRATION_DAYS = 7;
+export const MAX_INVITES_PER_DAY = 3;
 export const FIREBASE_CONFIG = {
   apiKey: env.PUBLIC_FIREBASE_API_KEY,
   authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -466,4 +468,27 @@ function sortTasksByPriority(data) {
   }
 
   return [...important, ...not_important];
+}
+
+/**
+ * Normalize a string by trimming whitespace and converting to lowercase.
+ * @param {string} str - The string to normalize.
+ * @returns {string} - The normalized string.
+ */
+export function normalize(str) {
+  if (typeof str !== "string") {
+    throw new TypeError("Input must be a string");
+  }
+
+  return str.trim().toLowerCase().replace(/\s+/g, "_");
+}
+
+/**
+ * Validates email format
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }

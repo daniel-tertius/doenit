@@ -27,7 +27,10 @@
     type="text"
     use:init
     bind:value
-    class={["bg-card border border-default p-2 h-12 w-full rounded-lg placeholder:text-muted", rest.class ?? ""]}
+    class={[
+      "bg-card border border-default p-2 h-12 w-full rounded-lg placeholder:text-muted outline-none focus:ring-1 ring-primary",
+      rest.class ?? "",
+    ]}
   />
 
   {#if can_clear && value}

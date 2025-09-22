@@ -15,22 +15,19 @@
 
 <div
   class={{
-    "text-left rounded-full px-1 w-fit flex items-center h-fit gap-1 opacity-80": true,
+    "text-left rounded-full px-2 w-fit flex items-center h-fit gap-1 opacity-80": true,
     "bg-error/80": is_past && !is_complete && !is_selected,
-    "bg-active/80": is_ongoing && !is_complete && !is_selected,
-    "bg-t-primary-700": is_selected,
-    "bg-t-primary-400": !is_past && !is_ongoing && !is_complete && !is_selected,
-    "opacity-50! bg-t-primary-300": is_complete,
+    "bg-success/80": is_ongoing && !is_complete && !is_selected,
+    "bg-primary": is_selected,
+    "bg-surface": is_complete || (!is_past && !is_ongoing && !is_complete && !is_selected),
   }}
 >
   <span class="flex gap-1 items-center">
-    <div class="w-4 h-4">
-      <Clock size={16} />
-    </div>
+    <Clock class="w-sm h-sm" />
     {@render children?.()}
   </span>
 
   {#if is_repeating && !is_complete}
-    <Sync size={12} />
+    <Sync class="w-xs h-xs" />
   {/if}
 </div>

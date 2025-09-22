@@ -48,7 +48,10 @@
       <CategoryButton {id} {name} />
     {/each}
 
-    <button class="relative w-full bg-success/60 h-12 flex items-center gap-1 px-4" onclick={() => (is_adding = true)}>
+    <button
+      class="relative w-full bg-primary text-alt h-12 flex items-center gap-1 px-4"
+      onclick={() => (is_adding = true)}
+    >
       <Plus class="m-auto text-xl" />
       <span class="w-full flex p-2 cursor-pointer text-left font-semibold">{t("create_new_category")}</span>
     </button>

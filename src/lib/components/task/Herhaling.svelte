@@ -195,7 +195,7 @@
         oninput={() => {
           error_message = "";
         }}
-        class="bg-card p-2 w-full rounded-lg border border-default outline-none"
+        class="bg-card p-2 w-full rounded-lg border border-default outline-none focus:ring-1 ring-primary"
       />
     </div>
     <div class="w-full">
@@ -222,7 +222,7 @@
   {/if}
 
   <button
-    class="bg-primary text-white rounded-lg h-12 w-40 ml-auto flex gap-1 items-center justify-center"
+    class="bg-primary text-alt rounded-lg h-12 w-40 ml-auto flex gap-1 items-center justify-center"
     type="button"
     onclick={() => {
       save();

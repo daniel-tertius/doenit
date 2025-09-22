@@ -25,4 +25,24 @@ export default class DateUtil {
 
     return format.replace(/YYYY|YY|MMMM|MMM|MM|M|dddd|ddd|DD|D|HH|H|mm|m|ss|s/g, (match) => tokens[match]);
   }
+
+  static addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  /**
+   * Returns a Date object representing the start or end of the day based on the provided date string.
+   * @param {string | null} date Date in the format "YYYY-MM-DD HH:mm"
+   * @param {'end' | 'start'} type
+   * @return {Date | null} Returns a Date object representing the start or end of the day.
+   */
+  static parseWithTimeBoundary(date: string | null, type: "end" | "start"): Date | null {
+    if (!date) return null;
+
+    const [day, time] = date.split(" ");
+
+    return new Date(`${day} ${time || type === "start" ? "00:00" : "23:59"}`);
+  }
 }

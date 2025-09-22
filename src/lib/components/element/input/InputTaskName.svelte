@@ -10,18 +10,16 @@
 </script>
 
 <div>
-  <label class="font-bold" for="name">{t("what_needs_to_be_done")}</label>
+  <span class="font-bold">{t("what_needs_to_be_done")}</span>
   <div class="grid grid-cols-[auto_48px] gap-2">
     <InputText
-      id="name"
       bind:value={name}
       focus_on_mount
       oninput={() => (error_message = "")}
       placeholder={t("what_needs_to_be_done")}
       class={{
         "p-2 w-full rounded-lg border": true,
-        "border-error": !!error_message,
-        "placeholder:text-error": !!error_message,
+        "placeholder:text-error! border-error! bg-error/20!": !!error_message,
       }}
     />
 
@@ -33,12 +31,6 @@
       <DownChevron class={show_description ? "-rotate-180" : ""} size={18} />
     </button>
   </div>
-
-  {#if error_message}
-    <div class="text-error text-sm mt-1 flex justify-end">
-      {error_message}
-    </div>
-  {/if}
 </div>
 
 {#if show_description}
@@ -49,7 +41,7 @@
       bind:value={description}
       placeholder={t("description_placeholder")}
       rows="3"
-      class="bg-card p-2 w-full rounded-lg border border-default resize-none max-h-36"
+      class="bg-card p-2 w-full rounded-lg border border-default resize-none min-h-20 max-h-36 outline-none focus:ring-1 focus:ring-primary"
       style="field-sizing: content;"
     ></textarea>
   </div>

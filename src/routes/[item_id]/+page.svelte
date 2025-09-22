@@ -7,6 +7,9 @@
   import EditTask from "$lib/components/EditTask.svelte";
   import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
+  import { OnlineDB } from "$lib/OnlineDB.js";
+  import { auth } from "$lib/services/auth.svelte.js";
+  import { normalize } from "$lib";
 
   let { data } = $props();
 
@@ -45,6 +48,23 @@
       return;
     }
 
+    if (task.room_id) {
+      const user = auth.getUser();
+      if (!user || !user.email) return;
+
+      const user_email = normalize(user.email || "");
+      const room = await DB.Room.get(task.room_id);
+      if (!room) return;
+
+      OnlineDB.Changelog.create({
+        type: "change",
+        data: JSON.stringify(task),
+        room_id: task.room_id,
+        total_reads_needed: room.users.length,
+        user_reads_list: [user_email],
+      });
+    }
+
     goto("/");
   }
 
@@ -66,6 +86,22 @@
     }
 
     await DB.Task.update(task.id, task);
+    if (task.room_id) {
+      const user = auth.getUser();
+      if (!user || !user.uid) return;
+
+      const user_email = normalize(user.email || "");
+      const room = await DB.Room.get(task.room_id);
+      if (!room) return;
+
+      OnlineDB.Changelog.create({
+        type: "complete",
+        task_id: task.id,
+        room_id: task.room_id || "",
+        total_reads_needed: room.users.length,
+        user_reads_list: [user_email],
+      });
+    }
   }
 </script>
 
@@ -99,7 +135,7 @@
   <h2 class="font-bold text-lg">{t("delete_task")}</h2>
   <p>{t("delete_task_confirmation")}</p>
   <button
-    class="bg-error flex gap-1 items-center text-white ml-auto px-4 py-2 rounded-md"
+    class="bg-error flex gap-1 items-center text-alt ml-auto px-4 py-2 rounded-md"
     type="button"
     onclick={deleteTask}
   >

@@ -17,6 +17,7 @@ import Important from "./Important.svelte";
 import Info from "./Info.svelte";
 import Leave from "./Leave.svelte";
 import Loading from "./Loading.svelte";
+import Lock from "./Lock.svelte";
 import Moon from "./Moon.svelte";
 import More from "./More.svelte";
 import New from "./New.svelte";
@@ -54,6 +55,7 @@ export {
   Info,
   Leave,
   Loading,
+  Lock,
   Moon,
   More,
   New,

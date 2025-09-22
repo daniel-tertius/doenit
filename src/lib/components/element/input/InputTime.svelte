@@ -101,7 +101,7 @@
       onfocus={() => (is_focused = true)}
       class={[
         {
-          "bg-card p-2 w-full h-12 rounded-lg placeholder:text-muted border border-default": true,
+          "bg-card p-2 w-full h-12 rounded-lg placeholder:text-muted border border-default outline-none focus:ring-1 ring-primary": true,
         },
         rest.class ?? "",
       ]}
@@ -136,7 +136,7 @@
       }}
       class={[
         {
-          "bg-card border border-default p-2 w-full h-12 rounded-lg text-muted appearance-none outline-none": true,
+          "bg-card border border-default p-2 w-full h-12 rounded-lg text-muted appearance-none outline-none focus:ring-1 ring-primary": true,
         },
         rest.class ?? "",
       ]}

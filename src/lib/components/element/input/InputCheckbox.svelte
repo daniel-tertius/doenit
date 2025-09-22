@@ -1,7 +1,7 @@
 <script>
-  import { Check } from "$lib/icon";
-  import { t } from "$lib/services/language.svelte";
   import { LongPress } from "$lib/services/long_press.svelte";
+  import { t } from "$lib/services/language.svelte";
+  import { Check } from "$lib/icon";
 
   let {
     tick_animation = $bindable(false),
@@ -15,11 +15,11 @@
 
   /**
    * Handles the click event on the checkbox.
-   * @param {Event} e
+   * @param {Event} event
    */
-  async function onclick(e) {
+  async function onclick(event) {
     tick_animation = !tick_animation;
-    onselect(e);
+    onselect(event);
   }
 </script>
 
@@ -30,16 +30,17 @@
   aria-label={t("check")}
   {onlongpress}
   {onclick}
-  class="absolute top-1/2 -translate-y-1/2 left-0 hover:bg-t-primary-700 hover:opacity-50 p-4 rounded-full {rest.class}"
+  class="absolute top-1/2 -translate-y-1/2 left-0 p-4 rounded-full {rest.class}"
 >
   <div
-    class="rounded-md border shadow-inner shadow-dark-600 transition-all duration-300 bg-slate-100 border-dark-700 h-6 w-6 flex items-center justify-center"
-    class:shadow-inner={!is_checked}
-    class:bg-blue-600!={is_checked}
-    class:border-blue-700!={is_checked}
+    class={{
+      "rounded border  h-6 w-6 flex items-center justify-center": true,
+      "border-primary shadow-none bg-primary": is_checked,
+      "bg-white shadow-inner shadow-black border-default": !is_checked,
+    }}
   >
     {#if is_checked}
-      <Check class="text-white" />
+      <Check class="text-alt text-lg" />
     {/if}
   </div>
 </button>

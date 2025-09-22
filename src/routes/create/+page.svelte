@@ -4,6 +4,11 @@
   import EditTask from "$lib/components/EditTask.svelte";
   import { t, language } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
+  import { OnlineDB } from "$lib/OnlineDB.js";
+  import { auth } from "$lib/services/auth.svelte.js";
+  import { navigating } from "$app/state";
+  import { Check, Loading } from "$lib/icon";
+  import { normalize } from "$lib";
 
   let { data } = $props();
 
@@ -49,6 +54,23 @@
     }
 
     const new_task = await DB.Task.create(task);
+
+    if (task.room_id) {
+      const user = auth.getUser();
+      if (!user || !user.email) return { success: true, task: new_task };
+
+      const user_email = normalize(user.email);
+      const room = await DB.Room.get(task.room_id);
+      if (!room) throw new Error("Room not found");
+
+      await OnlineDB.Changelog.create({
+        type: "create",
+        data: JSON.stringify(new_task),
+        room_id: task.room_id || "",
+        total_reads_needed: room.users.length,
+        user_reads_list: [user_email],
+      });
+    }
     return { success: true, task: new_task };
   }
 
@@ -83,3 +105,16 @@
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative">
   <EditTask bind:error bind:task bind:other_interval />
 </form>
+
+<button
+  type="submit"
+  form="form"
+  class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
+  aria-label="Create new item"
+>
+  {#if navigating.to}
+    <Loading class="text-2xl" />
+  {:else}
+    <Check class="text-2xl" />
+  {/if}
+</button>

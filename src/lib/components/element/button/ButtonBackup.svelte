@@ -26,7 +26,7 @@
 <button
   {...rest}
   class={[
-    "p-2 bg-primary text-white rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
+    "p-2 bg-primary text-alt rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
 
     rest.class || "",
   ]}
@@ -49,7 +49,7 @@
     <button
       type="button"
       aria-label="Rugsteun"
-      class="text-md items-center justify-center text-white px-4 py-2 flex gap-1 bg-primary rounded-lg"
+      class="text-md items-center justify-center text-alt px-4 py-2 flex gap-1 bg-primary rounded-lg"
       onclick={handleClick}
     >
       <Check />

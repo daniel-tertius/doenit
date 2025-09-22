@@ -51,7 +51,7 @@
 <button
   {...rest}
   class={[
-    "p-2 bg-primary text-white rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
+    "p-2 bg-primary text-alt rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
     rest.class || "",
   ]}
   type="button"
@@ -119,7 +119,7 @@
     <button
       type="button"
       disabled={is_loading}
-      class="w-full mt-4 h-12 p-2 bg-primary text-white rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+      class="w-full mt-4 h-12 p-2 bg-primary text-alt rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
       transition:slide
       onclick={handleClick}
     >

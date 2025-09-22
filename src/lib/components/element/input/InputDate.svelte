@@ -79,7 +79,7 @@
       type="text"
       value={display_value}
       onfocus={() => (is_focused = true)}
-      class="bg-card p-2 w-full rounded-lg h-12 border border-default placeholder:text-muted {classes}"
+      class="bg-card p-2 w-full rounded-lg h-12 border border-default placeholder:text-muted outline-none focus:ring-1 ring-primary {classes}"
     />
     {#if can_clear && value}
       <button
@@ -115,6 +115,6 @@
     onchange={(e) => {
       if (!!value) is_focused = false;
     }}
-    class="bg-card p-2 w-full h-12 rounded-lg border border-default text-muted appearance-none {classes}"
+    class="bg-card p-2 w-full h-12 rounded-lg border border-default text-muted appearance-none outline-none focus:ring-1 ring-primary {classes}"
   />
 {/if}

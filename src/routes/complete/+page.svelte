@@ -1,10 +1,10 @@
 <script>
-  import { goto } from "$app/navigation";
   import TaskCompleted from "$lib/components/task/TaskCompleted.svelte";
-  import { Selected } from "$lib/selected";
-  import { DB } from "$lib/DB";
   import { Haptics } from "@capacitor/haptics";
+  import { Selected } from "$lib/selected";
+  import { goto } from "$app/navigation";
   import { onMount } from "svelte";
+  import { DB } from "$lib/DB";
 
   Selected.tasks.clear();
 
@@ -12,10 +12,13 @@
   let tasks = $state([]);
 
   onMount(() => {
-    const sub = DB.Task.subscribe((result) => (tasks = result), { selector: { $or: [{ archived: { $eq: true } }, { completed: { $gt: 0 } }] } });
+    const sub = DB.Task.subscribe((result) => (tasks = result), {
+      selector: { $or: [{ archived: { $eq: true } }, { completed: { $gt: 0 } }] },
+    });
 
     return () => sub.unsubscribe();
   });
+
   /**
    * Handles long press on a task to toggle its selection state.
    * @param {Task} task
@@ -48,25 +51,22 @@
    * Handles the selection of a completed task.
    * @param {Task} task
    */
-  function handleSelect(task) {
-    DB.Task.uncomplete(task);
-    Selected.tasks.delete(task.id);
+  async function handleSelect(task) {
+    await DB.Task.uncomplete(task);
   }
 </script>
 
-<div class="space-y-1.5 overflow-x-hidden">
-  {#if tasks.length === 0}
-    <div class="flex flex-col items-center gap-4 py-12">
-      <div class="text-lg text-t-secondary">Nog geen voltooide take</div>
-    </div>
-  {/if}
-
+<div class="space-y-1.5">
   {#each tasks as task (task.id)}
     <TaskCompleted
       {task}
+      onclick={() => handleClick(task)}
       onselect={() => handleSelect(task)}
       onlongpress={() => handleLongPress(task)}
-      onclick={() => handleClick(task)}
     />
+  {:else}
+    <div class="flex flex-col items-center gap-4 py-12">
+      <div class="text-lg text-t-secondary">Nog geen voltooide take</div>
+    </div>
   {/each}
 </div>

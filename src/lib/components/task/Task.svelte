@@ -7,6 +7,7 @@
   import { Categories, Important, Shared } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
   import TaskContainer from "./TaskContainer.svelte";
+  import DateUtil from "$lib/DateUtil";
   import { DB } from "$lib/DB";
 
   /**
@@ -18,13 +19,11 @@
    */
 
   /** @type {Props & Record<string, any>} */
-  const { task: original_task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
-
-  const task = $state({ ...original_task });
+  const { task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const today = new Date();
-  const due_date = getDate(task.due_date, "end");
-  const start_date = getDate(task.start_date || task.due_date, "start");
+  const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
+  const start_date = DateUtil.parseWithTimeBoundary(task.start_date || task.due_date, "start");
 
   /** @type {Category?} */
   let category = $state(null);
@@ -37,23 +36,16 @@
   onMount(async () => {
     if (!task.category_id) return;
 
-    try {
-      category = await DB.Category.get(task.category_id);
-    } catch (e) {}
+    category = await DB.Category.get(task.category_id);
   });
 
   /**
-   * Returns a Date object representing the start or end of the day based on the provided date string.
-   * @param {string} date Date in the format "YYYY-MM-DD HH:mm"
-   * @param {'end' | 'start'} type
-   * @return {Date | null} Returns a Date object representing the start or end of the day.
+   * Handles the selection of a completed task.
+   * @param {Event} event
    */
-  function getDate(date, type) {
-    if (!date) return null;
-
-    const [day, time] = date.split(" ");
-
-    return new Date(`${day} ${time || type === "start" ? "00:00" : "23:59"}`);
+  function handleSelect(event) {
+    event.stopPropagation();
+    setTimeout(() => onselect(task), 500);
   }
 </script>
 
@@ -61,17 +53,17 @@
   {tick_animation}
   class={{
     border: true,
-    "bg-error/20 border-error": is_past && !is_selected,
-    "bg-success/20 border-success": is_ongoing && !is_selected,
-    "bg-primary/20 border-primary": is_selected,
-    "bg-card border-card": !is_selected && !is_past && !is_ongoing,
+    "bg-error/20 border-error text-alt": is_past && !is_selected,
+    "bg-success/20 border-success text-alt": is_ongoing && !is_selected,
+    "bg-primary/20 border-primary text-alt": is_selected,
+    "bg-card border-default": !is_selected && !is_past && !is_ongoing,
   }}
   {onclick}
   {onlongpress}
 >
   <ItemName name={task.name} {tick_animation} description={task.description} />
 
-  <div class="flex flex-wrap gap-2 pl-10 text-t-secondary font-normal">
+  <div class="flex flex-wrap gap-2 pl-10 font-normal">
     {#if task.due_date}
       <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
         {displayDateTime({ due_date, start_date })}
@@ -82,15 +74,14 @@
       <div
         class={{
           "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
-          "bg-t-primary-400": !is_past && !is_ongoing,
+          "bg-surface": !is_past && !is_ongoing,
           "bg-error/80": is_past && !is_selected,
-          "bg-active/80": is_ongoing && !is_selected,
-          "bg-t-primary-700": is_selected,
+          "bg-success/80": is_ongoing && !is_selected,
+          "bg-primary": is_selected,
         }}
       >
-        <div class="w-4 h-4">
-          <Categories size={16} />
-        </div>
+        <Categories class="w-sm h-sm" />
+
         <span>{category.name}</span>
       </div>
     {/if}
@@ -98,20 +89,10 @@
 
   <div class="absolute top-1.5 right-1.5 flex gap-1">
     {#if !task.archived}
-      <Important size={20} class={!task.important && "hidden"} />
+      <Important class={!task.important && "hidden"} />
     {/if}
-    <Shared size={20} class={!task.room_id && "hidden"} />
+    <Shared class={!task.room_id && "hidden"} />
   </div>
 
-  <InputCheckbox
-    bind:tick_animation
-    {is_selected}
-    onselect={(e) => {
-      e.stopPropagation();
-      setTimeout(() => {
-        onselect(task);
-      }, 500);
-    }}
-    {onlongpress}
-  />
+  <InputCheckbox bind:tick_animation {is_selected} {onlongpress} onselect={handleSelect} />
 </TaskContainer>

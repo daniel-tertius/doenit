@@ -5,6 +5,7 @@
   import { theme } from "$lib/services/theme.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
   import { text } from "$lib/services/text.svelte";
+  import { auth } from "$lib/services/auth.svelte";
 
   /**
    * Handle language change

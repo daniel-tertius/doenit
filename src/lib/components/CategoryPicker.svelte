@@ -31,7 +31,7 @@
   <select
     id="category"
     bind:value={category_id}
-    class="bg-card p-2 w-full border border-default rounded-lg open:text-normal appearance-none pr-6 truncate {!category_id &&
+    class="bg-card p-2 w-full border border-default rounded-lg open:text-normal appearance-none outline-none focus:ring ring-primary pr-6 truncate {!category_id &&
       'text-normal'}"
   >
     <option value="">{t("choose_category")}</option>

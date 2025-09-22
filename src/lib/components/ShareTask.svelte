@@ -4,6 +4,8 @@
   import Button from "$lib/components/element/button/Button.svelte";
   import { CardRoom } from "$lib/components/element/card";
   import { onMount, tick } from "svelte";
+  import { auth } from "$lib/services/auth.svelte";
+  import { DB } from "$lib/DB";
 
   /**
    * @typedef {Object} Props
@@ -23,62 +25,7 @@
   let hasScrolled = $state(false);
 
   onMount(async () => {
-    rooms = [
-      // { id: "1", name: "Cynel", created_at: "", users: [{ email: "cynel.vanniekerk@protonmail.com", pending: true }] },
-      // {
-      //   id: "2",
-      //   name: "UNAFFI Devs Something very long that overflows",
-      //   created_at: "",
-      //   users: [
-      //     { email: "tertius@unaffi.com", pending: false },
-      //     { email: "ivan@unaffi.com", pending: false },
-      //     { email: "dean@unaffi.com", pending: true },
-      //   ],
-      // },
-      {
-        id: "3",
-        name: "van Niekerks",
-        created_at: "",
-        users: [
-          { email: "cynel.vanniekerk@protonmail.com", pending: false },
-          { email: "danie.vanniekerk@protonmail.com", pending: false },
-          { email: "heike.vanniekerk@protonmail.com", pending: false },
-        ],
-      },
-      { id: "4", name: "Room 4", created_at: "", users: [{ email: "131415@example.com", pending: false }] },
-      {
-        id: "5",
-        name: "Room 5",
-        created_at: "",
-        users: [
-          { email: "161718@example.com", pending: false },
-          { email: "192021@example.com", pending: false },
-          { email: "222324@example.com", pending: false },
-        ],
-      },
-      {
-        id: "6",
-        name: "Room 6",
-        created_at: "",
-        users: [
-          { email: "252627@example.com", pending: false },
-          { email: "282930@example.com", pending: false },
-        ],
-      },
-      {
-        id: "7",
-        name: "Room 7",
-        created_at: "",
-        users: [
-          { email: "313233@example.com", pending: false },
-          { email: "343536@example.com", pending: false },
-          { email: "373839@example.com", pending: false },
-          { email: "404142@example.com", pending: false },
-        ],
-      },
-      { id: "8", name: "Room 8", created_at: "", users: [{ email: "434445@example.com", pending: false }] },
-    ];
-    console.log("room_id", room_id);
+    rooms = await DB.Room.getAll();
     selected_room = rooms.find((r) => r.id === room_id) || null;
   });
 
@@ -90,32 +37,35 @@
   });
 </script>
 
-<div class="grid grid-cols-[40px_auto_128px] py-2 bg-surface border-y border-default">
-  <Shared size={32} class="m-auto" />
-  <div class="flex flex-col my-auto">
-    <span class="font-bold">Deel met vriende?</span>
-    {#if !!selected_room}
-      <span class="space-x-0.5">
-        <span class="italic">Gedeel met:</span><span class="font-medium">{selected_room.name}</span>
-      </span>
-    {/if}
-  </div>
+{#if auth.is_logged_in}
+  <div class="grid grid-cols-[40px_auto_128px] py-2 bg-page border-y border-default">
+    <Shared class="m-auto" />
+    <div class="flex flex-col my-auto truncate">
+      <span class="font-bold">Deel met vriende?</span>
+      {#if !!selected_room}
+        <span class="space-x-0.5 flex flex-wrap truncate">
+          <span class="italic">Gedeel met:</span>
+          <span class="font-medium truncate">{selected_room.name}</span>
+        </span>
+      {/if}
+    </div>
 
-  <Button
-    type="button"
-    aria-label="Share"
-    onclick={() => {
-      show = true;
-      hasScrolled = false;
-    }}
-    class={{
-      "bg-green-300! border-green-800! text-green-800!": !!room_id,
-    }}
-  >
-    <Shared size={16} />
-    <span>{!!room_id ? "Gedeel" : "Deel"}</span>
-  </Button>
-</div>
+    <Button
+      type="button"
+      aria-label="Share"
+      onclick={() => {
+        show = true;
+        hasScrolled = false;
+      }}
+      class={{
+        "bg-success/10! border-success! text-success!": !!room_id,
+      }}
+    >
+      <Shared />
+      <span>{!!room_id ? "Gedeel" : "Deel"}</span>
+    </Button>
+  </div>
+{/if}
 
 {#if show}
   <div

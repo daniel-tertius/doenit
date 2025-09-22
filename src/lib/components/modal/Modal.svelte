@@ -2,6 +2,11 @@
   import { fade } from "svelte/transition";
   import { quadInOut } from "svelte/easing";
   import { Times } from "$lib/icon";
+  import { untrack } from "svelte";
+  import { Device } from "@capacitor/device";
+  // import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
+  // import { theme } from "$lib/services/theme.svelte";
+  // import { DEFAULT_HEX_COLOR } from "$lib";
 
   /**
    * @typedef {Object} Props
@@ -13,6 +18,21 @@
 
   /** @type {Props & { [key: string]: any }} */
   let { is_open = $bindable(true), children, close_button = true, onclose = () => {}, ...rest } = $props();
+
+  $effect(() => {
+    is_open;
+
+    untrack(async () => {
+      const info = await Device.getInfo();
+      if (+info.osVersion <= 14) return;
+
+      // TODO Get the colour of the white over black/50 and (dark theme).
+      //   EdgeToEdge.setBackgroundColor({
+      //     color: theme.value === "dark" ? DEFAULT_HEX_COLOR + is_open ? "44" : "" : "#F5F5F5",
+      //   });
+      // }
+    });
+  });
 </script>
 
 {#if is_open}

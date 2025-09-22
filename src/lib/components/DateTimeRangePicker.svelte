@@ -220,7 +220,7 @@
         <button
           type="button"
           onclick={done}
-          class="w-24 flex items-center justify-center h-12 bg-primary text-white rounded-lg"
+          class="w-24 flex items-center justify-center h-12 bg-primary text-alt rounded-lg"
         >
           <Check />
         </button>

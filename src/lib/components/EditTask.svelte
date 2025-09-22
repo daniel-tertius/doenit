@@ -1,13 +1,13 @@
 <script>
-  import Herhaling from "$lib/components/task/Herhaling.svelte";
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
-  import { Important } from "$lib/icon";
-  import { InputTaskName } from "$lib/components/element/input";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
+  import Herhaling from "$lib/components/task/Herhaling.svelte";
+  import { InputTaskName } from "$lib/components/element/input";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { Button } from "./element/button";
   import ShareTask from "./ShareTask.svelte";
+  import { Button } from "./element/button";
+  import { Important } from "$lib/icon";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
@@ -46,15 +46,16 @@
 </div>
 
 <div>
-  <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-dark-800">
-    <Important size={32} class="m-auto" />
+  <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-default">
+    <Important class="m-auto" />
     <div class="flex flex-col">
       <span class="font-bold">Is dit belangrik?</span>
       <span class="italic">Dit sal hoër in lys verskyn</span>
     </div>
     <Button
       class={{
-        "bg-yellow-100! border-yellow-700! text-yellow-700!": task.important,
+        "text-muted": !task.important,
+        "bg-warning/10! border-warning! text-warning!": task.important,
       }}
       type="button"
       aria-label="Belangrik"
@@ -62,7 +63,7 @@
         task.important = !task.important;
       }}
     >
-      <Important size={16} />
+      <Important />
       <span>Belangrik</span>
     </Button>
   </div>

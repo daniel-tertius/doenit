@@ -79,16 +79,16 @@ function compressAndEncrypt(data: any): string {
   try {
     // Convert data to JSON string
     const jsonString = JSON.stringify(data);
-    
+
     // Compress the data
     const compressed = pako.gzip(jsonString);
-    
+
     // Convert compressed data to base64
-    const compressedBase64 = Buffer.from(compressed).toString('base64');
-    
+    const compressedBase64 = Buffer.from(compressed).toString("base64");
+
     // Encrypt the compressed data
     const encrypted = CryptoJS.AES.encrypt(compressedBase64, getEncryptionKey()).toString();
-    
+
     return encrypted;
   } catch (error) {
     console.error("Error compressing and encrypting data:", error);
@@ -101,13 +101,13 @@ function decryptAndDecompress(encryptedData: string): any {
     // Decrypt the data
     const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, getEncryptionKey());
     const compressedBase64 = decryptedBytes.toString(CryptoJS.enc.Utf8);
-    
+
     // Convert base64 back to buffer
-    const compressed = Buffer.from(compressedBase64, 'base64');
-    
+    const compressed = Buffer.from(compressedBase64, "base64");
+
     // Decompress the data
-    const decompressed = pako.ungzip(compressed, { to: 'string' });
-    
+    const decompressed = pako.ungzip(compressed, { to: "string" });
+
     // Parse JSON
     return JSON.parse(decompressed);
   } catch (error) {
@@ -148,7 +148,7 @@ export const createBackup = functions.https.onRequest(async (req, res) => {
       const backup = {
         userId,
         data: encryptedData,
-        createdAt: new Date(),
+        created_at: new Date(),
         version: "2.0", // Updated version to indicate encrypted format
       };
 
@@ -160,7 +160,7 @@ export const createBackup = functions.https.onRequest(async (req, res) => {
           .collection("backups")
           .updateOne(
             { userId },
-            { $set: { data: backup.data, createdAt: backup.createdAt, version: backup.version } }
+            { $set: { data: backup.data, created_at: backup.created_at, version: backup.version } }
           );
 
         // For updateOne, check if the operation was successful
@@ -242,4 +242,3 @@ export const restoreBackup = functions.https.onRequest(async (req, res) => {
     }
   });
 });
-

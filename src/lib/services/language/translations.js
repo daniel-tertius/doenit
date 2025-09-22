@@ -59,6 +59,41 @@ export const translations = {
     sync_success: "Take gesinkroniseer",
     sync_error: "Sinkronisasie fout",
 
+    // Invites & Friend Requests
+    pending_invites: "Hangende Uitnodigings",
+    friend_requests: "Vriend Versoeke",
+    current_friends: "Huidige Vriende",
+    cannot_invite_yourself: "Jy kan nie jouself uitnooi nie",
+    failed_to_load_invites: "Kon nie uitnodigings laai nie",
+    failed_to_cancel_invite: "Kon nie uitnodiging kanselleer nie",
+    failed_to_accept_invite: "Kon nie uitnodiging aanvaar nie",
+    failed_to_decline_invite: "Kon nie uitnodiging weier nie",
+    cancel_invite: "Kanselleer Uitnodiging",
+    accept_invite: "Aanvaar Uitnodiging",
+    decline_invite: "Weier Uitnodiging",
+    expires_in_days: "Verval oor {{days}} dae",
+    expires_in_hours: "Verval oor {{hours}} ure",
+    expires_soon: "Verval binnekort",
+    sent_to: "Gestuur na",
+    from: "Van",
+    pending: "Hangende",
+    new_request: "Nuwe Versoek",
+    sent_on: "Gestuur op",
+    received_on: "Ontvang op",
+    no_pending_invites: "Geen hangende uitnodigings",
+    no_friend_requests: "Geen vriend versoeke",
+    no_friends_yet: "Nog geen vriende nie",
+    invites_you_send_appear_here: "Uitnodigings wat jy stuur sal hier verskyn",
+    friend_requests_appear_here: "Vriend versoeke sal hier verskyn",
+    accepted_friends_appear_here: "Aanvaarde vriende sal hier verskyn",
+    log_in_to_see_invites: "Teken in om uitnodigings te sien",
+    log_in_to_use_friends: "Verifieer jou epos adres by instellings om die vriende funksie te aktiveer",
+    go_to_settings: "Gaan na instellings",
+    leave_friend: "Verlaat",
+    s: "e", // plural suffix
+    invite_help_text: "Uitnodigings verval outomaties na 7 dae",
+    friend_request_help_text: "Kies om vriend versoeke te aanvaar of te weier",
+
     // Date & Time
     no_date: "Geen datum",
     this_week: "Hierdie week",
@@ -108,6 +143,8 @@ export const translations = {
     thu: "Do",
     fri: "Vr",
     sat: "Sa",
+
+    log_in_first: "teken eers in",
 
     // Categories
     category: "Kategorie",
@@ -266,6 +303,41 @@ export const translations = {
     sync_success: "Tasks synchronized",
     sync_error: "Synchronization error",
 
+    // Invites & Friend Requests
+    pending_invites: "Pending Invites",
+    friend_requests: "Friend Requests",
+    current_friends: "Current Friends",
+    cannot_invite_yourself: "You cannot invite yourself",
+    failed_to_load_invites: "Failed to load invites",
+    failed_to_cancel_invite: "Failed to cancel invite",
+    failed_to_accept_invite: "Failed to accept invite",
+    failed_to_decline_invite: "Failed to decline invite",
+    cancel_invite: "Cancel Invite",
+    accept_invite: "Accept Invite",
+    decline_invite: "Decline Invite",
+    expires_in_days: "Expires in {{days}} days",
+    expires_in_hours: "Expires in {{hours}} hours",
+    expires_soon: "Expires soon",
+    sent_to: "Sent to",
+    from: "From",
+    pending: "Pending",
+    new_request: "New Request",
+    sent_on: "Sent on",
+    received_on: "Received on",
+    no_pending_invites: "No pending invites",
+    no_friend_requests: "No friend requests",
+    no_friends_yet: "No friends yet",
+    invites_you_send_appear_here: "Invites you send will appear here",
+    friend_requests_appear_here: "Friend requests will appear here",
+    accepted_friends_appear_here: "Accepted friends will appear here",
+    log_in_to_see_invites: "Log in to see invites",
+    log_in_to_use_friends: "Verify your email address in settings to activate the friends feature",
+    go_to_settings: "Go to settings",
+    leave_friend: "Leave",
+    s: "s", // plural suffix
+    invite_help_text: "Invites automatically expire after 7 days",
+    friend_request_help_text: "Choose to accept or decline friend requests",
+
     // Date & Time
     no_date: "No Date",
     this_week: "This Week",
@@ -315,6 +387,8 @@ export const translations = {
     thu: "Thu",
     fri: "Fri",
     sat: "Sat",
+
+    log_in_first: "please log in first",
 
     // Categories
     category: "Category",

@@ -1,10 +1,16 @@
 import type { RxCollection } from "rxdb";
+import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
-import { language } from "$lib/services/language.svelte";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
     super(collection);
+  }
+
+  async create(task: Omit<Task, "id" | "created_at" | "archived">): Promise<Task> {
+    const result = await super.create(task);
+
+    return result;
   }
 
   async completeId(task_id: string) {
@@ -13,23 +19,20 @@ export class TaskTable extends Table<Task> {
 
     return this.complete(task);
   }
-  
 
-  complete(task: Task) {
+  async complete(task: Task) {
     const is_repeat_task = task.repeat_interval && task.due_date;
     if (is_repeat_task) {
       task.completed++;
       task.due_date = getNextDueDate(task);
       task.start_date = getNextStartDate(task);
-
-      return this.update(task.id, task);
     } else {
       task.completed = 1;
       task.archived = true;
-      task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
-
-      return this.update(task.id, task);
+      task.completed_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
     }
+
+    return this.update(task.id, task);
   }
 
   uncomplete(task: Task) {
@@ -46,6 +49,26 @@ export class TaskTable extends Table<Task> {
         archived: false,
       },
     });
+  }
+
+  async implementChange(change: Changelog) {
+    switch (change.type) {
+      case "create":
+        const task = JSON.parse(change.data); // TODO Encrypt/Decrypt
+        await this.create(task);
+        break;
+      case "change":
+        const updated_task = JSON.parse(change.data); // TODO Encrypt/Decrypt
+        await this.update(updated_task.id, updated_task);
+        break;
+      case "delete":
+        await this.delete(change.task_id);
+        break;
+      case "complete":
+        await this.completeId(change.task_id);
+      default:
+        break;
+    }
   }
 }
 

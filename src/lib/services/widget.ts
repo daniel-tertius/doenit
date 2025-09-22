@@ -1,5 +1,8 @@
 import { DB } from "$lib/DB";
 import { Capacitor } from "@capacitor/core";
+import { auth } from "./auth.svelte";
+import { OnlineDB } from "$lib/OnlineDB";
+import { normalize } from "$lib";
 
 export interface TaskWidgetPlugin {
   updateWidget({
@@ -53,7 +56,25 @@ export class Widget {
       console.warn("[⚠️ Doenit] Task already archived: " + task.id);
     }
 
-    const updates = tasks.map((t) => DB.Task.complete(t));
+    const updates = tasks.map(async (task) => {
+      await DB.Task.complete(task);
+      if (!task.room_id) return;
+
+      const room = await DB.Room.get(task.room_id);
+      if (!room) throw new Error("Room not found");
+
+      const user = auth.getUser();
+      if (!user || !user.email) return;
+
+      const user_email = normalize(user.email || "");
+      await OnlineDB.Changelog.create({
+        type: "complete",
+        task_id: task.id,
+        room_id: task.room_id || "",
+        total_reads_needed: room.users.length,
+        user_reads_list: [user_email],
+      });
+    });
     await Promise.all(updates);
 
     console.log("[💬 Doenit] Tasks updated successfully");
