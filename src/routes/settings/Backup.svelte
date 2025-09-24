@@ -38,7 +38,7 @@
   async function handleBackup() {
     const result = await Backup.getBackup();
     if (!result.success) {
-      alert("Probleem met herstel: " + result.error_message);
+      alert(t("backup_problem") + " " + result.error_message);
       return null;
     }
 

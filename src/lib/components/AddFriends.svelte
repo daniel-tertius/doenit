@@ -50,7 +50,7 @@
         return;
       }
 
-      AppNotification.showSimple("Uitnodiging gestuur");
+      AppNotification.showSimple(t("invitation_sent"));
     } catch (error) {
       console.error("Error sending invite:", error);
       error_message = t("add_friend_error");

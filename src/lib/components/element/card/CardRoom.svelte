@@ -1,6 +1,7 @@
 <script>
   import { Edit, Clock, Check, Trash } from "$lib/icon";
   import { auth } from "$lib/services/auth.svelte";
+  import { t } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props
@@ -43,7 +44,7 @@
     </div>
 
     {#if !!onedit}
-      <button type="button" class="p-1 -mr-1 -mt-1" aria-label="Edit Room">
+      <button type="button" class="p-1 -mr-1 -mt-1" aria-label={t("edit_room")}>
         <Edit
           onclick={onedit}
           class={[
@@ -53,14 +54,14 @@
         />
       </button>
     {:else if !!onremove && pending}
-      <button type="button" class="p-1 -mr-1 -mt-1" aria-label="Remove Room">
+      <button type="button" class="p-1 -mr-1 -mt-1" aria-label={t("remove_room")}>
         <Trash onclick={onremove} class={["p-1 text-2xl rounded-lg text-alt bg-error group-active:text-muted!"]} />
       </button>
     {/if}
   </div>
   <div>
     {#if pending}
-      <span class="text-yellow-500 text-sm font-normal">Pending</span>
+      <span class="text-yellow-500 text-sm font-normal">{t("pending")}</span>
     {/if}
 
     <div class="flex gap-2 overflow-x-auto scrollbar-none">

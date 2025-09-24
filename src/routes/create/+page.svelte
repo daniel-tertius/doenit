@@ -41,7 +41,7 @@
    * @returns {Promise<{ success: true, task: Task} | { success: false, error: { [x: string]: string } }>}
    */
   async function createTask(task) {
-    if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
+    if (!task) return { success: false, error: { message: t("no_task_found") } };
 
     task.completed = 0;
     task.archived = false;
@@ -80,8 +80,8 @@
    * @returns {{ success: true, task: Task} | { success: false, error: { [x: string]: string } }}
    */
   function validateTask(task) {
-    if (!task) return { success: false, error: { message: "Geen Taak gevind" } };
-    if (!task.name?.trim()) return { success: false, error: { name: "Wat moet gedoen word?" } };
+    if (!task) return { success: false, error: { message: t("no_task_found") } };
+    if (!task.name?.trim()) return { success: false, error: { name: t("what_must_be_done") } };
 
     if (!!task.start_date && !!task.due_date && !!task.due_date && task.start_date > task.due_date) {
       return { success: false, error: { date: t("start_date_before_end") } };
@@ -110,7 +110,7 @@
   type="submit"
   form="form"
   class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
-  aria-label="Create new item"
+  aria-label={t("create_new_item")}
 >
   {#if navigating.to}
     <Loading class="text-2xl" />

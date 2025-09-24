@@ -67,17 +67,16 @@
 
   <!-- Text size selector -->
   <div>
-    <!-- TODO: Translation -->
-    <h3 class="mb-1">Teksgrootte</h3>
+    <h3 class="mb-1">{t("text_size")}</h3>
     <div class="flex gap-2">
       <ButtonTextSize class="text-[16px]" onclick={() => (text.size = 16)} selected={text.size === 16}>
-        Klein
+        {t("small")}
       </ButtonTextSize>
       <ButtonTextSize class="text-[20px]" onclick={() => (text.size = 20)} selected={text.size === 20}>
-        Medium
+        {t("medium")}
       </ButtonTextSize>
       <ButtonTextSize class="text-[24px]" onclick={() => (text.size = 24)} selected={text.size === 24}>
-        Groot
+        {t("large")}
       </ButtonTextSize>
     </div>
   </div>

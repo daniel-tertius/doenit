@@ -6,6 +6,7 @@
   import { onMount, tick } from "svelte";
   import { auth } from "$lib/services/auth.svelte";
   import { DB } from "$lib/DB";
+  import { t } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props
@@ -42,10 +43,10 @@
   <div class="grid grid-cols-[40px_auto_128px] py-2 bg-page border-y border-default">
     <Shared class="m-auto" />
     <div class="flex flex-col my-auto truncate">
-      <span class="font-bold">Deel met vriende?</span>
+      <span class="font-bold">{t("share_with_friends_question")}</span>
       {#if !!selected_room}
         <span class="space-x-0.5 flex flex-wrap truncate">
-          <span class="italic">Gedeel met:</span>
+          <span class="italic">{t("shared_with")}</span>
           <span class="font-medium truncate">{selected_room.name}</span>
         </span>
       {/if}
@@ -53,7 +54,7 @@
 
     <Button
       type="button"
-      aria-label="Share"
+      aria-label={t("share")}
       onclick={() => {
         show = true;
         hasScrolled = false;
@@ -63,7 +64,7 @@
       }}
     >
       <Shared />
-      <span>{!!room_id ? "Gedeel" : "Deel"}</span>
+      <span>{!!room_id ? t("shared") : t("share")}</span>
     </Button>
   </div>
 {/if}
@@ -75,7 +76,7 @@
     out:fade={{ duration: 150, delay: 200 }}
   >
     <div class="max-w-[90%] w-[600px] h-[66.66%] bg-surface border border-default rounded-lg p-4 m-auto flex flex-col">
-      <h1 class="text-xl font-bold">Deel met vriende</h1>
+      <h1 class="text-xl font-bold">{t("share_with_friends")}</h1>
 
       <div class="flex-1 overflow-y-auto mb-4 mt-2 rounded-lg space-y-4">
         {#each rooms as room (room.id)}
@@ -97,13 +98,13 @@
       </div>
       <Button
         type="button"
-        aria-label="Close"
+        aria-label={t("close")}
         onclick={() => {
           show = false;
         }}
       >
         <Times size={20} />
-        <span>Close</span>
+        <span>{t("close")}</span>
       </Button>
     </div>
   </div>

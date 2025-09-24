@@ -1,6 +1,7 @@
 <script>
   import { DownChevron, Lock } from "$lib/icon";
   import { slide } from "svelte/transition";
+  import { t } from "$lib/services/language.svelte";
 
   /**
    * @typedef {Object} Props
@@ -18,7 +19,7 @@
 <div class="bg-surface rounded-lg {disabled ? 'opacity-60' : ''}">
   <button
     type="button"
-    aria-label="Accordion toggle"
+    aria-label={t("accordion_toggle")}
     aria-expanded={show}
     {disabled}
     class="focus:outline-none w-full p-4 flex items-center justify-between rounded-lg transition-colors {disabled

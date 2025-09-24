@@ -4,6 +4,7 @@
   import { Times } from "$lib/icon";
   import { untrack } from "svelte";
   import { Device } from "@capacitor/device";
+  import { t } from "$lib/services/language.svelte";
   // import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
   // import { theme } from "$lib/services/theme.svelte";
   // import { DEFAULT_HEX_COLOR } from "$lib";
@@ -54,8 +55,8 @@
       {#if close_button}
         <button
           class="absolute top-2 right-2 p-2 rounded-full aspect-square"
-          aria-label="Close modal"
-          title="Close"
+          aria-label={t("close_modal")}
+          title={t("close")}
           onclick={onclose}
         >
           <Times class="text-lg" />

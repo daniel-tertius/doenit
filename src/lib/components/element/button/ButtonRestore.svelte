@@ -68,9 +68,9 @@
   {#if selected_backup}
     <!-- TODO: Translation -->
     <div class="mb-4">
-      <h2 class="text-lg font-semibold">Herstel Data</h2>
+      <h2 class="text-lg font-semibold">{t("restore_data")}</h2>
       <p class="text-muted">
-        Die onlangste rugsteun is op {DateUtil.format(new Date(selected_backup.timestamp), "DD MMM YYYY, HH:mm")} gemaak.
+        {t("latest_backup_made_on", { timestamp: DateUtil.format(new Date(selected_backup.timestamp), "DD MMM YYYY, HH:mm") })}
       </p>
     </div>
 
@@ -78,10 +78,10 @@
       <span class="text-sm flex flex-col gap-1">
         <span class="flex items-center gap-2">
           <Trash class="text-error text-xl" />
-          <p class="font-semibold text-lg text-error">Waarskuwing</p>
+          <p class="font-semibold text-lg text-error">{t("warning")}</p>
         </span>
 
-        <p class="font-medium">Bestaande data sal vervang word met die rugsteun se data.</p>
+        <p class="font-medium">{t("existing_data_will_be_replaced")}</p>
       </span>
     </div>
 

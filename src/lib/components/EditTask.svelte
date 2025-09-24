@@ -49,8 +49,8 @@
   <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-default">
     <Important class="m-auto" />
     <div class="flex flex-col">
-      <span class="font-bold">Is dit belangrik?</span>
-      <span class="italic">Dit sal hoër in lys verskyn</span>
+      <span class="font-bold">{t("is_this_important")}</span>
+      <span class="italic">{t("this_will_appear_higher")}</span>
     </div>
     <Button
       class={{
@@ -58,13 +58,13 @@
         "bg-warning/10! border-warning! text-warning!": task.important,
       }}
       type="button"
-      aria-label="Belangrik"
+      aria-label={t("important")}
       onclick={() => {
         task.important = !task.important;
       }}
     >
       <Important />
-      <span>Belangrik</span>
+      <span>{t("important")}</span>
     </Button>
   </div>
 

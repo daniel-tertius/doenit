@@ -50,18 +50,17 @@
 </button>
 
 <Modal class="p-6" bind:is_open onclose={() => (is_open = false)}>
-  <!-- TODO: Translation -->
-  <h2 class="text-lg font-semibold mb-4">Wil u 'n rugsteun skep?</h2>
+  <h2 class="text-lg font-semibold mb-4">{t("backup_question")}</h2>
   <!-- TODO: Wys wanneer dit laas gedoen is (as dit voorheen gedoen was). -->
   <div class="flex justify-end space-x-4">
     <button
       type="button"
-      aria-label="Rugsteun"
+      aria-label={t("backup_aria")}
       class="text-md items-center justify-center text-alt px-4 py-2 flex gap-1 bg-primary rounded-lg"
       onclick={handleClick}
     >
       <Check />
-      <span>Bevestig</span>
+      <span>{t("confirm")}</span>
     </button>
   </div>
 </Modal>

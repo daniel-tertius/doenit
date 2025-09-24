@@ -5,6 +5,7 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
+  import { t } from "$lib/services/language.svelte";
 
   Selected.tasks.clear();
 
@@ -66,7 +67,7 @@
     />
   {:else}
     <div class="flex flex-col items-center gap-4 py-12">
-      <div class="text-lg text-t-secondary">Nog geen voltooide take</div>
+      <div class="text-lg text-t-secondary">{t("no_completed_tasks")}</div>
     </div>
   {/each}
 </div>
