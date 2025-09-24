@@ -25,7 +25,8 @@
   let hasScrolled = $state(false);
 
   onMount(async () => {
-    rooms = await DB.Room.getAll();
+    const all_rooms = await DB.Room.getAll();
+    rooms = all_rooms.filter((r) => r.users?.every((u) => !u.pending));
     selected_room = rooms.find((r) => r.id === room_id) || null;
   });
 

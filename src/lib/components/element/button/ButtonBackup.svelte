@@ -1,7 +1,7 @@
 <script>
   import Modal from "$lib/components/modal/Modal.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { Check, DownloadCloud } from "$lib/icon";
+  import { Check, DownloadCloud, Loading } from "$lib/icon";
   import Backup from "$lib/services/backup.svelte";
 
   /**
@@ -14,29 +14,37 @@
   let { is_loading = $bindable(false), onclick, ...rest } = $props();
 
   let is_open = $state(false);
+  let is_backing_up = $state(false);
 
   async function handleClick() {
     is_loading = true;
+    is_backing_up = true;
     is_open = false;
     if (onclick) await onclick();
     is_loading = false;
+    is_backing_up = false;
   }
 </script>
 
 <button
   {...rest}
   class={[
-    "p-2 bg-primary text-alt rounded-lg grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
-
+    "p-2 rounded-lg text-alt grid grid-cols-[min-content_auto] gap-2 items-center min-h-12 w-full text-start",
+    is_loading && "bg-primary/80",
+    !is_loading && "bg-primary text-alt",
     rest.class || "",
   ]}
   type="button"
   disabled={is_loading}
   onclick={() => (is_open = true)}
 >
-  <DownloadCloud class="text-3xl mx-1 my-auto" />
+  {#if is_backing_up}
+    <Loading class="text-3xl mx-1 my-auto" />
+  {:else}
+    <DownloadCloud class="text-3xl mx-1 my-auto" />
+  {/if}
   <div>
-    <p class="font-medium">Rugsteun Nou</p>
+    <p class="font-medium">{is_backing_up ? t("backup_in_progress") : t("backup_now")}</p>
     <p class="text-sm">Laas: {Backup.last_backup_at}</p>
   </div>
 </button>

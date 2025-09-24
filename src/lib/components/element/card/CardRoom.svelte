@@ -39,9 +39,6 @@
 
       <h2 class="text-lg font-semibold truncate">
         {name}
-        {#if pending}
-          <span class="text-yellow-500 text-sm font-normal">- Pending</span>
-        {/if}
       </h2>
     </div>
 
@@ -61,27 +58,32 @@
       </button>
     {/if}
   </div>
+  <div>
+    {#if pending}
+      <span class="text-yellow-500 text-sm font-normal">Pending</span>
+    {/if}
 
-  <div class="flex gap-2 overflow-x-auto scrollbar-none">
-    {#each users as user}
-      {#if user.email !== auth.user?.email}
-        <span
-          class={[
-            "px-3 py-1 rounded-full h-fit text-sm flex border items-center gap-1.5",
-            selected && !user.pending && "bg-success/30 border-success",
-            selected && user.pending && "bg-yellow-600/70 ",
-            !selected && !user.pending && "bg-card text-muted border-default",
-            !selected && user.pending && "bg-yellow-800/50 text-yellow-300/80",
-          ]}
-        >
-          {#if user.pending}
-            <Clock class="text-lg flex-shrink-0" />
-          {:else}
-            <Check class="text-lg flex-shrink-0 text-alt" />
-          {/if}
-          <span class="truncate">{user.email}</span>
-        </span>
-      {/if}
-    {/each}
+    <div class="flex gap-2 overflow-x-auto scrollbar-none">
+      {#each users as user}
+        {#if user.email !== auth.user?.email}
+          <span
+            class={[
+              "px-3 py-1 rounded-full h-fit text-sm flex border items-center gap-1.5",
+              selected && !user.pending && "bg-success/30 border-success",
+              selected && user.pending && "bg-yellow-600/70 ",
+              !selected && !user.pending && "bg-card text-muted border-default",
+              !selected && user.pending && "bg-yellow-800/50 text-yellow-300/80",
+            ]}
+          >
+            {#if user.pending}
+              <Clock class="text-lg flex-shrink-0" />
+            {:else}
+              <Check class="text-lg flex-shrink-0 text-alt" />
+            {/if}
+            <span class="truncate">{user.email}</span>
+          </span>
+        {/if}
+      {/each}
+    </div>
   </div>
 </div>

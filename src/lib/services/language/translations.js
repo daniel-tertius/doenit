@@ -221,7 +221,7 @@ export const translations = {
     google_verification_failed: "Google verifikasie het misluk:",
     backup_in_progress: "Besig met rugsteun…",
     backup_now: "Rugsteun nou",
-    restore_in_progress: "Besig met herstel…",
+    restore_in_progress: "Herstel tans…",
     confirm_restore: "Bevestig Herstel",
     restore_from_backup: "Herstel vanaf rugsteun",
     backup_label: "Rugsteun",

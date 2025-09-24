@@ -28,10 +28,15 @@
   const user_count = $derived(selected_room?.users?.length || 0);
 
   onMount(() => {
-    const sub = DB.Room.subscribe((result) => (rooms = result), {
-      selector: {},
-      sort: [{ name: "asc" }],
-    });
+    const sub = DB.Room.subscribe(
+      (result) => {
+        rooms = result.sort(sortByPendingAndAlphabetical);
+      },
+      {
+        selector: {},
+        sort: [{ name: "asc" }],
+      }
+    );
 
     return () => sub.unsubscribe();
   });
@@ -50,6 +55,17 @@
     open = false;
   }
 
+  /**
+   * @param {Room} a
+   * @param {Room} b
+   */
+  function sortByPendingAndAlphabetical(a, b) {
+    const a_pending = a.users.some((user) => user.pending);
+    const b_pending = b.users.some((user) => user.pending);
+    if (a_pending && !b_pending) return -1;
+    if (!a_pending && b_pending) return 1;
+    return a.name.localeCompare(b.name);
+  }
   /**
    * @param {Room} room
    */

@@ -54,10 +54,15 @@ class BackupClass {
 
       const last_backup_at = last_backup_str ? new Date(last_backup_str) : null;
       this.last_backup_at = last_backup_at ? DateUtil.format(last_backup_at, "ddd, DD MMM YYYY, HH:mm") : "Never";
+
       // If more than a day ago, create a backup
       const time_diff_ms = last_backup_at ? Date.now() - +last_backup_at : Infinity;
       if (time_diff_ms > BACKUP_INTERVAL) {
-        await Backup.createBackup();
+        const result = await Backup.createBackup();
+        if (!result.success && result.error_message === t("no_changes_since_last_backup")) {
+          // If no changes since last backup, just update the last_backup_at
+          this.last_backup_at = DateUtil.format(new Date(), "ddd, DD MMM YYYY, HH:mm");
+        }
       }
     } catch (error) {
       console.error("Error checking last backup:", error);
@@ -103,10 +108,13 @@ class BackupClass {
         selector: { archived: { $ne: true } },
         sort: [{ created_at: "desc" }],
       });
+      const rooms = await DB.Room.getAll({
+        sort: [{ created_at: "desc" }],
+      });
 
-      const encrypted_data = await this.compressAndEncrypt({ tasks, categories });
+      const encrypted_data = await this.compressAndEncrypt({ tasks, categories, rooms });
       const encrypted_blob = new Blob([encrypted_data], { type: "application/octet-stream" });
-      const sha256 = await this.sha256FromJson({ tasks, categories });
+      const sha256 = await this.sha256FromJson({ tasks, categories, rooms });
 
       const existing_backups = await OnlineDB.BackupManifest.getAll({
         filters: [
@@ -119,12 +127,12 @@ class BackupClass {
         return { success: false, error_message: "Geen veranderinge sedert verlede rugsteun." };
       }
 
-      // Max 5 backups per user
+      // Max 3 backups per user
       const user_backups = await OnlineDB.BackupManifest.getAll({
         filters: [{ field: "user_id", operator: "==", value: user_id }],
         sort: [{ field: "timestamp", direction: "desc" }],
       });
-      for (let i = 4; i < user_backups.length; i++) {
+      for (let i = 2; i < user_backups.length; i++) {
         const backup_to_delete = user_backups[i];
         await OnlineDB.BackupManifest.delete(backup_to_delete.id);
         await Files.delete(backup_to_delete.file_path);
@@ -145,6 +153,7 @@ class BackupClass {
       });
 
       await cached_last_backup.set(new Date().toISOString());
+      this.last_backup_at = DateUtil.format(new Date(), "ddd, DD MMM YYYY, HH:mm");
       return { success: true };
     } catch (error) {
       alert("Backup failed: " + (error as Error).message || "Something went wrong");
@@ -174,10 +183,12 @@ class BackupClass {
       // Clear data.
       await DB.Task.clear();
       await DB.Category.clear();
+      await DB.Room.clear();
 
       // Restore data.
       await DB.Task.createMany(data.tasks);
       await DB.Category.createMany(data.categories);
+      await DB.Room.createMany(data.rooms);
 
       this.is_loading = false;
 
@@ -189,7 +200,7 @@ class BackupClass {
     }
   }
 
-  async listBackups(): Promise<Result<BackupManifest[]>> {
+  async getBackup(): Promise<Result<BackupManifest>> {
     try {
       const user_id = auth.getUserID();
       if (!user_id) return { success: false, error_message: "User not signed in" };
@@ -199,7 +210,7 @@ class BackupClass {
         sort: [{ field: "timestamp", direction: "desc" }],
       });
 
-      return { success: true, data: backup_manifests };
+      return { success: true, data: backup_manifests[0] };
     } catch (error) {
       console.error("Listing backups failed:", error);
       return { success: false, error_message: (error as Error).message || "Something went wrong" };

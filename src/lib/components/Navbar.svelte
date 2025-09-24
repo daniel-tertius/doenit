@@ -1,6 +1,7 @@
 <script>
   import { page } from "$app/state";
   import { Categories, Home, Check, Settings, Shared } from "$lib/icon";
+  import { auth } from "$lib/services/auth.svelte";
   import { t } from "$lib/services/language.svelte";
   import { fly } from "svelte/transition";
 
@@ -16,7 +17,7 @@
     { Icon: Home, label: t("home"), href: "/" },
     { Icon: Check, label: t("completed_tasks"), href: "/complete" },
     { Icon: Categories, label: t("categories"), href: "/categories" },
-    { Icon: Shared, label: t("friends"), href: "/friends" },
+    { Icon: Shared, label: t("friends"), href: "/friends", show: auth.is_logged_in },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
 </script>
@@ -33,20 +34,22 @@
 >
   <h2 class="text-lg font-semibold">{t("menu")}</h2>
   <ul class="mt-4 space-y-0">
-    {#each NAVIGATION_TIMES as { Icon, label, href }}
-      {@const is_active = page.url.pathname === href}
-      <li>
-        <a
-          {href}
-          draggable="false"
-          class="grid grid-cols-[32px_auto] gap-1 py-4 px-8 rounded-lg"
-          class:bg-card={is_active}
-          class:font-semibold={is_active}
-        >
-          <Icon class="text-xl my-auto" />
-          <p class="my-auto">{label}</p>
-        </a>
-      </li>
+    {#each NAVIGATION_TIMES as { Icon, label, href, show }}
+      {#if show === undefined || show}
+        {@const is_active = page.url.pathname === href}
+        <li>
+          <a
+            {href}
+            draggable="false"
+            class="grid grid-cols-[32px_auto] gap-1 py-4 px-8 rounded-lg"
+            class:bg-card={is_active}
+            class:font-semibold={is_active}
+          >
+            <Icon class="text-xl my-auto" />
+            <p class="my-auto">{label}</p>
+          </a>
+        </li>
+      {/if}
     {/each}
   </ul>
 </aside>
