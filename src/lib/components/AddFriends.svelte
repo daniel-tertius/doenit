@@ -1,13 +1,12 @@
 <script>
   import { inviteService } from "$lib/services/invites.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { auth } from "$lib/services/auth.svelte";
   import { InputText } from "./element/input";
   import { slide } from "svelte/transition";
   import { Button } from "./element/button";
   import { Plus } from "$lib/icon";
   import { isValidEmail, normalize } from "$lib";
-  import { AppNotification } from "$lib/services/appNotifications.svelte";
+  import user from "$lib/core/user.svelte";
 
   let open = $state(false);
   let friend_email = $state("");
@@ -16,8 +15,7 @@
   let is_loading = $state(false);
 
   async function sendInvite() {
-    const user = auth.getUser();
-    if (!user) {
+    if (!user.value) {
       error_message = t("log_in_first");
       return;
     }
@@ -34,10 +32,10 @@
     }
 
     // Check if user is trying to invite themselves
-    if (normalize(user.email) === friend_email) {
-      error_message = t("cannot_invite_yourself");
-      return;
-    }
+    // if (user.value.email === friend_email) {
+    //   error_message = t("cannot_invite_yourself");
+    //   return;
+    // }
 
     is_loading = true;
     error_message = "";
@@ -50,7 +48,7 @@
         return;
       }
 
-      AppNotification.showSimple(t("invitation_sent"));
+      // AppNotification.showSimple(t("invitation_sent"));
     } catch (error) {
       console.error("Error sending invite:", error);
       error_message = t("add_friend_error");
@@ -80,7 +78,7 @@
   }
 </script>
 
-{#if auth.is_logged_in}
+{#if !!user}
   <button
     class="bg-primary text-alt flex gap-1 w-15 rounded-full h-15 justify-center items-center px-4 py-2"
     type="button"
@@ -138,7 +136,7 @@
         class="bg-primary text-alt"
         type="button"
         onclick={sendInvite}
-        disabled={is_loading || !friend_email.trim() || !auth.is_logged_in}
+        disabled={is_loading || !friend_email.trim() || !user}
       >
         {#if is_loading}
           <span>{t("sending")}</span>
@@ -147,7 +145,7 @@
         {/if}
       </Button>
 
-      {#if !auth.is_logged_in}
+      {#if !user}
         <div class="text-orange-500 text-xs text-center">
           {t("log_in_first")}
         </div>

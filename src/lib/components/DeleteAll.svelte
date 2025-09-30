@@ -4,23 +4,15 @@
   import { Selected } from "$lib/selected";
   import Modal from "./modal/Modal.svelte";
   import { Trash } from "$lib/icon";
-  import { page } from "$app/state";
-  import { untrack } from "svelte";
   import { DB } from "$lib/DB";
   import { OnlineDB } from "$lib/OnlineDB";
-  import { auth } from "$lib/services/auth.svelte";
-  import { normalize } from "$lib";
+  import user from "$lib/core/user.svelte";
+  import { onNavigate } from "$app/navigation";
 
   let is_deleting = $state(false);
 
-  const page_route = $derived(page.route.id);
-
-  $effect(() => {
-    page_route;
-
-    untrack(() => {
-      Selected.tasks.clear();
-    });
+  onNavigate(() => {
+    Selected.tasks.clear();
   });
 
   function deleteAll() {
@@ -38,9 +30,7 @@
    * @param {string[]} ids
    */
   async function updateChangelog(ids) {
-    const user = auth.getUser();
-    if (!user || !user.email) return;
-    const user_email = normalize(user.email);
+    if (!user.value) return;
 
     const tasks = await DB.Task.getAll({ selector: { id: { $in: ids } } });
     /** @type {string[]} */
@@ -62,13 +52,13 @@
       const room = rooms.find((r) => r.id === task.room_id);
       if (!room) continue;
 
-      await OnlineDB.Changelog.create({
+      OnlineDB.Changelog.create({
         type: "delete",
         task_id: task.id,
         room_id: task.room_id || "",
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
-        user_id: user.uid,
+        user_reads_list: [user.value.email],
+        user_id: user.value.uid,
       });
     }
   }

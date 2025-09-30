@@ -1,6 +1,7 @@
 import type { RxCollection } from "rxdb";
 import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
+import { DB } from "$lib/DB";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
@@ -58,8 +59,16 @@ export class TaskTable extends Table<Task> {
         await this.create(task);
         break;
       case "change":
-        const updated_task = JSON.parse(change.data); // TODO Encrypt/Decrypt
-        await this.update(updated_task.id, updated_task);
+        if (true) {
+          const updated_task = JSON.parse(change.data); // TODO Encrypt/Decrypt
+          const task = await DB.Task.get(updated_task.id).catch(() => null);
+          if (!task) {
+            await this.create(updated_task);
+            break;
+          } else {
+            await this.update(updated_task.id, updated_task);
+          }
+        }
         break;
       case "delete":
         await this.delete(change.task_id);

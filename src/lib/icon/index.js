@@ -24,6 +24,7 @@ import New from "./New.svelte";
 import Plus from "./Plus.svelte";
 import Restore from "./Restore.svelte";
 import Save from "./Save.svelte";
+import Search from "./Search.svelte";
 import Settings from "./Settings.svelte";
 import Shared from "./Shared.svelte";
 import Star from "./Star.svelte";
@@ -62,6 +63,7 @@ export {
   Plus,
   Restore,
   Save,
+  Search,
   Settings,
   Shared,
   Star,

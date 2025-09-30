@@ -31,7 +31,7 @@ interface QueryOptions {
 
 type SnapshotCallback<T> = (docs: T[]) => void;
 
-export class Table<T extends BackupManifest | Invite | Changelog> {
+export class Table<T extends BackupManifest | Invite | Changelog | Users> {
   private readonly name: string;
 
   constructor(name: string) {

@@ -1,7 +1,7 @@
 import type { RxCollection } from "rxdb";
 import { Table } from "./_Table";
 import { OnlineDB } from "$lib/OnlineDB";
-import { auth } from "$lib/services/auth.svelte";
+import user from "$lib/core/user.svelte";
 
 export class RoomTable extends Table<Room> {
   constructor(collection: RxCollection<Room>) {
@@ -80,7 +80,9 @@ export class RoomTable extends Table<Room> {
         OnlineDB.Invite.update(invite.id, invite);
       }
 
-      await OnlineDB.Changelog.leaveRooms(ids, auth.user?.email || "");
+      if (!user.value) return;
+
+      await OnlineDB.Changelog.leaveRooms(ids, user.value.email);
     } catch (e) {
       alert(e.stack);
     }

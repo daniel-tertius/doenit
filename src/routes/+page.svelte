@@ -1,17 +1,19 @@
 <script>
   import { displayPrettyDate, normalize, sortTasksByDueDate } from "$lib";
+  import { Notify } from "$lib/services/notifications/notifications";
   import TaskComponent from "$lib/components/task/Task.svelte";
-  import { t } from "$lib/services/language.svelte";
+  import { getContext, onMount, tick } from "svelte";
   import { goto, pushState } from "$app/navigation";
+  import { t } from "$lib/services/language.svelte";
+  import { fade, slide } from "svelte/transition";
   import { navigating, page } from "$app/state";
   import { Haptics } from "@capacitor/haptics";
-  import { fade } from "svelte/transition";
   import { Selected } from "$lib/selected";
-  import { onMount, tick } from "svelte";
+  import { OnlineDB } from "$lib/OnlineDB";
+  import user from "$lib/core/user.svelte";
   import { Plus } from "$lib/icon";
   import { DB } from "$lib/DB";
-  import { auth } from "$lib/services/auth.svelte";
-  import { OnlineDB } from "$lib/OnlineDB";
+  import { SvelteDate } from "svelte/reactivity";
 
   Selected.tasks.clear();
 
@@ -19,9 +21,36 @@
   let tasks = $state([]);
   /** @type {Category[]} */
   let categories = $state([]);
+  let current_time = new SvelteDate();
 
-  const filtered_tasks = $derived(filterTasksByCategory(tasks));
+  const search_text = getContext("search_text");
+  const filtered_tasks = $derived(filterTasksByCategory(tasks, search_text.value));
   const default_category = $derived(categories.find(({ is_default }) => is_default));
+
+  onMount(() => {
+    // Calculate ms until next minute (00 seconds)
+    const now = new Date();
+    const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+
+    /** @type {NodeJS.Timeout} */
+    let interval;
+    const startInterval = () => {
+      interval = setInterval(() => {
+        current_time.setTime(Date.now());
+      }, 60 * 1000);
+    };
+
+    // Set initial timeout to align with next minute
+    const timeout = setTimeout(() => {
+      current_time.setTime(Date.now());
+      startInterval();
+    }, msToNextMinute);
+
+    return () => {
+      clearTimeout(timeout);
+      if (interval) clearInterval(interval);
+    };
+  });
 
   onMount(() => {
     const sub = DB.Task.subscribe((result) => (tasks = sortTasksByDueDate(result)), {
@@ -55,14 +84,20 @@
 
   /**
    * @param {Task[]} tasks
+   * @param {string} search_text
    * @returns {Task[]}
    */
-  function filterTasksByCategory(tasks) {
-    if (!Selected.categories.size) {
-      return tasks;
-    }
+  function filterTasksByCategory(tasks, search_text) {
+    return tasks.filter((task) => {
+      if (!!search_text?.trim().length) {
+        const normalized_search = normalize(search_text);
+        const in_name = normalize(task.name).includes(normalized_search);
+        const in_description = normalize(task.description || "").includes(normalized_search);
+        if (!in_name && !in_description) return false;
+      }
 
-    return tasks.filter(({ category_id = "" }) => {
+      if (!Selected.categories.size) return true;
+      const category_id = task.category_id;
       if (!category_id && default_category) {
         return Selected.categories.has(default_category.id);
       }
@@ -90,6 +125,7 @@
    * @param {Task} task
    */
   function handleLongPress(task) {
+    console.log("HERE", task);
     Haptics.vibrate({ duration: 100 });
     if (Selected.tasks.has(task.id)) {
       Selected.tasks.delete(task.id);
@@ -107,17 +143,28 @@
     if (task.room_id) {
       const room = await DB.Room.get(task.room_id);
       if (!room) throw new Error("Room not found");
+      if (!user.value) return;
 
-      const user = auth.getUser();
-      if (!user || !user.email) return;
-
-      const user_email = normalize(user.email || "");
+      const email_address = user.value.email;
       OnlineDB.Changelog.create({
         type: "complete",
         task_id: task.id,
         room_id: task.room_id || "",
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
+        user_reads_list: [email_address],
+      });
+
+      const email_addresses = [];
+      for (const { email, pending } of room.users) {
+        if (email && email !== email_address && !pending) {
+          email_addresses.push(email);
+        }
+      }
+
+      await Notify.Push.send({
+        title: "Task Completed",
+        body: `"${task.name}" was completed`,
+        email_address: email_addresses,
       });
     }
     await tick();
@@ -154,16 +201,17 @@
       {/key}
     {/if}
 
-    <div id={task.id}>
-      {#key task.id + task.due_date}
-        <TaskComponent
-          {task}
-          onclick={() => handleClick(task)}
-          onselect={() => handleSelect(task)}
-          onlongpress={() => handleLongPress(task)}
-        />
-      {/key}
-    </div>
+    <!-- <div id={task.id} transition:slide={{ delay: 20 * i }}> -->
+    <!-- {#key task.id + task.due_date} -->
+    <TaskComponent
+      {current_time}
+      {task}
+      onclick={() => handleClick(task)}
+      onselect={() => handleSelect(task)}
+      onlongpress={() => handleLongPress(task)}
+    />
+    <!-- {/key} -->
+    <!-- </div> -->
   {:else}
     <div class="flex flex-col items-center gap-4 py-12">
       {#if !Selected.categories.size}

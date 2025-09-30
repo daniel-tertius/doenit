@@ -5,10 +5,14 @@
   import { t, language } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
-  import { auth } from "$lib/services/auth.svelte.js";
   import { navigating } from "$app/state";
   import { Check, Loading } from "$lib/icon";
   import { normalize } from "$lib";
+  import user from "$lib/core/user.svelte.js";
+  import { Notify } from "$lib/services/notifications/notifications.js";
+  import { onMount } from "svelte";
+  import { InAppReview } from "@capacitor-community/in-app-review";
+  import { Alert } from "$lib/core/alert.js";
 
   let { data } = $props();
 
@@ -56,19 +60,31 @@
     const new_task = await DB.Task.create(task);
 
     if (task.room_id) {
-      const user = auth.getUser();
-      if (!user || !user.email) return { success: true, task: new_task };
+      if (!user.value) return { success: true, task: new_task };
 
-      const user_email = normalize(user.email);
       const room = await DB.Room.get(task.room_id);
       if (!room) throw new Error("Room not found");
 
+      const email_address = user.value.email;
       await OnlineDB.Changelog.create({
         type: "create",
         data: JSON.stringify(new_task),
         room_id: task.room_id || "",
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
+        user_reads_list: [email_address],
+      });
+
+      const email_addresses = [];
+      for (const { email, pending } of room.users) {
+        if (email && email !== email_address && !pending) {
+          email_addresses.push(email);
+        }
+      }
+
+      await Notify.Push.send({
+        title: "Task Created",
+        body: `"${task.name}" was created`,
+        email_address: email_addresses,
       });
     }
     return { success: true, task: new_task };
@@ -100,9 +116,17 @@
     // @ts-ignore
     return { success: true, task };
   }
+
+  onMount(async () => {
+    try {
+      await InAppReview.requestReview();
+    } catch (e) {
+      Alert.error(JSON.stringify(e));
+    }
+  });
 </script>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative pb-16">
   <EditTask bind:error bind:task bind:other_interval />
 </form>
 

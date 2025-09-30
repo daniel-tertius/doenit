@@ -1,17 +1,17 @@
 <script>
-  import { AppNotification } from "$lib/services/appNotifications.svelte";
   import InputText from "$lib/components/element/input/InputText.svelte";
   import { CardInvite, CardRoom } from "$lib/components/element/card";
   import { inviteService } from "$lib/services/invites.svelte";
   import { Button } from "$lib/components/element/button";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { auth } from "$lib/services/auth.svelte";
   import { OnlineDB } from "$lib/OnlineDB";
   import { Check, Leave, Loading } from "$lib/icon";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
-  import { normalize } from "$lib";
+  import user from "$lib/core/user.svelte";
+  import { Alert } from "$lib/core";
+  import { Notify } from "$lib/services/notifications/notifications";
 
   /** @type {Room[]} */
   let rooms = $state([]);
@@ -28,15 +28,10 @@
   const user_count = $derived(selected_room?.users?.length || 0);
 
   onMount(() => {
-    const sub = DB.Room.subscribe(
-      (result) => {
-        rooms = result.sort(sortByPendingAndAlphabetical);
-      },
-      {
-        selector: {},
-        sort: [{ name: "asc" }],
-      }
-    );
+    const sub = DB.Room.subscribe((result) => (rooms = result.sort(sortByPendingAndAlphabetical)), {
+      selector: {},
+      sort: [{ name: "asc" }],
+    });
 
     return () => sub.unsubscribe();
   });
@@ -87,19 +82,17 @@
    * @param {Room?} room
    */
   async function handleLeaveRoom(room) {
-    const user = auth.getUser();
-    if (!user || !user.email) return;
+    if (!user.value) return;
 
     if (!room) return;
     edit_room_loading = true;
 
     try {
-      const user_email = normalize(user.email);
       const invites = await OnlineDB.Invite.getAll({
         filters: [
           { field: "room_id", operator: "==", value: room.id },
           { field: "status", operator: "==", value: "pending" },
-          { field: "sender_email_address", operator: "==", value: user_email },
+          { field: "sender_email_address", operator: "==", value: user.value.email },
         ],
       });
 
@@ -108,12 +101,34 @@
         OnlineDB.Invite.update(invite.id, invite);
       }
 
+      // Remove tasks assigned to this room
+      const tasks = await DB.Task.getAll({ selector: { room_id: room.id } });
+      for (const task of tasks) {
+        task.room_id = null;
+        DB.Task.update(task.id, task);
+      }
+
       await DB.Room.delete(room.id);
+
+      const email_address = user.value.email;
       await OnlineDB.Changelog.create({
         room_id: room.id,
         type: "left_room",
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
+        user_reads_list: [email_address],
+      });
+
+      const email_addresses = [];
+      for (const { email, pending } of room.users) {
+        if (email && email !== email_address && !pending) {
+          email_addresses.push(email);
+        }
+      }
+
+      await Notify.Push.send({
+        title: "Left Group",
+        body: `${user.value.name} have left the group "${room.name}"`,
+        email_address: email_addresses,
       });
 
       handleClose();
@@ -130,14 +145,13 @@
     try {
       const result = await inviteService.acceptInvite(invite_id);
       if (!result.success) {
-        AppNotification.showError(result.message);
+        Alert.error(result.message);
         return;
       }
 
       inviteService.invites = invites.filter(({ id }) => id !== invite_id);
-      AppNotification.showSimple(result.message);
     } catch (error) {
-      AppNotification.showError("Error accepting invite: " + error);
+      Alert.error("Error accepting invite: " + error);
     }
   }
 
@@ -151,29 +165,31 @@
 
       inviteService.invites = invites.filter(({ id }) => id !== invite_id);
     } catch (error) {
-      AppNotification.showError("Error declining invite: " + error);
+      Alert.error("Error declining invite: " + error);
     }
   }
 </script>
 
-<div class="space-y-2">
-  {#each invites as invite (invite.id)}
-    {#if invite.recipient_email_address === normalize(auth.user?.email || "")}
-      <CardInvite {invite} onaccept={() => acceptInvite(invite.id)} ondecline={() => declineInvite(invite.id)} />
-    {/if}
-  {/each}
+{#if !!user.value}
+  <div class="space-y-2">
+    {#each invites as invite (invite.id)}
+      {#if invite.recipient_email_address === user.value.email}
+        <CardInvite {invite} onaccept={() => acceptInvite(invite.id)} ondecline={() => declineInvite(invite.id)} />
+      {/if}
+    {/each}
 
-  <!-- Current Friends (Rooms) -->
-  {#each rooms as room}
-    <CardRoom {...room} onedit={() => handleEdit(room)} />
-  {:else}
-    <div class="text-center py-8">
-      <Check class="text-4xl mx-auto mb-2 opacity-50" />
-      <p>{t("no_friends_yet")}</p>
-      <p class="text-sm mt-1">{t("accepted_friends_appear_here")}</p>
-    </div>
-  {/each}
-</div>
+    <!-- Current Friends (Rooms) -->
+    {#each rooms as room}
+      <CardRoom {...room} onedit={() => handleEdit(room)} />
+    {:else}
+      <div class="text-center py-8">
+        <Check class="text-4xl mx-auto mb-2 opacity-50" />
+        <p>{t("no_friends_yet")}</p>
+        <p class="text-sm mt-1">{t("accepted_friends_appear_here")}</p>
+      </div>
+    {/each}
+  </div>
+{/if}
 
 <!-- Edit Room Modal -->
 <Modal bind:is_open={open} title={t("edit_room")} onclose={handleClose}>

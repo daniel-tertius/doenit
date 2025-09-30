@@ -1,15 +1,18 @@
 <script>
   import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
-  import { Trash } from "$lib/icon";
+  import { Check, Loading, Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { InputCheckbox } from "$lib/components/element/input";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
-  import { auth } from "$lib/services/auth.svelte.js";
   import { normalize } from "$lib";
+  import user from "$lib/core/user.svelte.js";
+  import { Notify } from "$lib/services/notifications/notifications.js";
+  import { navigating } from "$app/state";
+  import { Alert } from "$lib/core/alert.js";
 
   let { data } = $props();
 
@@ -36,36 +39,37 @@
    * @param {Event} event
    */
   async function onsubmit(event) {
-    event.preventDefault();
+    try {
+      event.preventDefault();
 
-    if (task.repeat_interval_number > 1) {
-      task.repeat_interval = other_interval;
+      if (task.repeat_interval_number > 1) {
+        task.repeat_interval = other_interval;
+      }
+
+      const result = await DB.Task.update(task.id, task);
+      if (!result) {
+        error = { message: t("error_updating_task") };
+        return;
+      }
+
+      if (user.value && task.room_id) {
+
+        const room = await DB.Room.get(task.room_id);
+        if (room) {
+          await OnlineDB.Changelog.create({
+            type: "change",
+            data: JSON.stringify(task),
+            room_id: task.room_id,
+            total_reads_needed: room.users.length,
+            user_reads_list: [user.value.email],
+          });
+        }
+      }
+
+      await goto("/");
+    } catch (error) {
+      Alert.error(`${t("error_updating_task")}: ${error}`);
     }
-
-    const result = await DB.Task.update(task.id, task);
-    if (!result) {
-      error = { message: t("error_updating_task") };
-      return;
-    }
-
-    if (task.room_id) {
-      const user = auth.getUser();
-      if (!user || !user.email) return;
-
-      const user_email = normalize(user.email || "");
-      const room = await DB.Room.get(task.room_id);
-      if (!room) return;
-
-      OnlineDB.Changelog.create({
-        type: "change",
-        data: JSON.stringify(task),
-        room_id: task.room_id,
-        total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
-      });
-    }
-
-    goto("/");
   }
 
   async function deleteTask() {
@@ -77,30 +81,46 @@
    * @param {Event} event
    */
   async function handleSelectTask(event) {
-    event.stopPropagation();
-    if (task.archived) {
-      task.completed = 0;
-      task.archived = false;
-    } else {
-      task.completed++;
-    }
+    try {
+      event.stopPropagation();
+      if (task.archived) {
+        task.completed = 0;
+        task.archived = false;
+      } else {
+        task.completed++;
+      }
 
-    await DB.Task.update(task.id, task);
-    if (task.room_id) {
-      const user = auth.getUser();
-      if (!user || !user.uid) return;
+      await DB.Task.update(task.id, task);
+      if (task.room_id) {
+        if (!user.value) return;
 
-      const user_email = normalize(user.email || "");
-      const room = await DB.Room.get(task.room_id);
-      if (!room) return;
+        const room = await DB.Room.get(task.room_id);
+        if (!room) return;
 
-      OnlineDB.Changelog.create({
-        type: "complete",
-        task_id: task.id,
-        room_id: task.room_id || "",
-        total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
-      });
+        const email_address = user.value.email;
+        OnlineDB.Changelog.create({
+          type: "complete",
+          task_id: task.id,
+          room_id: task.room_id || "",
+          total_reads_needed: room.users.length,
+          user_reads_list: [email_address],
+        });
+
+        const email_addresses = [];
+        for (const { email, pending } of room.users) {
+          if (email && email !== email_address && !pending) {
+            email_addresses.push(email);
+          }
+        }
+
+        await Notify.Push.send({
+          title: "Task Completed",
+          body: `"${task.name}" was completed`,
+          email_address: email_addresses,
+        });
+      }
+    } catch (error) {
+      Alert.error(`${t("error_updating_task")}: ${error}`);
     }
   }
 </script>
@@ -116,7 +136,7 @@
   <Trash class="text-2xl text-error" />
 </button>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 relative">
+<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 relative pb-16">
   <EditTask bind:error bind:task bind:other_interval />
 
   <div class="h-12 flex">
@@ -130,6 +150,19 @@
     />
   </div>
 </form>
+
+<button
+  type="submit"
+  form="form"
+  class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
+  aria-label={t("create_new_item")}
+>
+  {#if navigating.to}
+    <Loading class="text-2xl" />
+  {:else}
+    <Check class="text-2xl" />
+  {/if}
+</button>
 
 <Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">
   <h2 class="font-bold text-lg">{t("delete_task")}</h2>

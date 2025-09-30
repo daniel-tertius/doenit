@@ -1,3 +1,7 @@
+/**
+ * This file may only import files, that does not import any other files in src.
+ */
+
 import { t, language } from "./services/language.svelte";
 import * as env from "$env/static/public";
 

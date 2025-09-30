@@ -6,10 +6,10 @@
 
   const is_home = $derived(page.url.pathname === "/");
   const is_friends = $derived(page.url.pathname === "/friends");
-  const is_create = $derived(page.url.pathname === "/create");
+  const hide_footer = $derived(page.url.pathname === "/create" || page.params.item_id);
 </script>
 
-{#if !is_create}
+{#if !hide_footer}
   <nav class="relative bg-surface shadow-t-sm flex gap-2 p-4 z-10 border-t border-default justify-between">
     <ButtonNavbar />
 

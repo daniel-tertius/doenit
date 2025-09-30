@@ -1,7 +1,7 @@
 <script>
   import { page } from "$app/state";
+  import user from "$lib/core/user.svelte";
   import { Categories, Home, Check, Settings, Shared } from "$lib/icon";
-  import { auth } from "$lib/services/auth.svelte";
   import { t } from "$lib/services/language.svelte";
   import { fly } from "svelte/transition";
 
@@ -17,7 +17,7 @@
     { Icon: Home, label: t("home"), href: "/" },
     { Icon: Check, label: t("completed_tasks"), href: "/complete" },
     { Icon: Categories, label: t("categories"), href: "/categories" },
-    { Icon: Shared, label: t("friends"), href: "/friends", show: auth.is_logged_in },
+    // { Icon: Shared, label: t("friends"), href: "/friends", show: !!user.value },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
 </script>

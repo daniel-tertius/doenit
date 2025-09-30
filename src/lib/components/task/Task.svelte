@@ -12,6 +12,7 @@
 
   /**
    * @typedef {Object} Props
+   * @property {import("svelte/reactivity").SvelteDate} current_time
    * @property {Task} task
    * @property {(_: Task) => *} [onselect]
    * @property {() => *} [onclick]
@@ -19,24 +20,25 @@
    */
 
   /** @type {Props & Record<string, any>} */
-  const { task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
+  const { current_time, task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const today = new Date();
   const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
   const start_date = DateUtil.parseWithTimeBoundary(task.start_date || task.due_date, "start");
-
   /** @type {Category?} */
   let category = $state(null);
   let tick_animation = $state(false);
 
-  const is_past = $derived(!!due_date && due_date < today);
+  const is_past = $derived(!!due_date && due_date < current_time);
   const is_selected = $derived(Selected.tasks.has(task.id));
-  const is_ongoing = $derived(!!due_date && !!start_date && today >= start_date && today <= due_date);
+  const is_ongoing = $derived(isOngoing(due_date, start_date, today));
 
   onMount(async () => {
     if (!task.category_id) return;
 
-    category = await DB.Category.get(task.category_id);
+    try {
+      category = await DB.Category.getOne({ selector: { id: task.category_id, archived: { $ne: true } } });
+    } catch (error) {}
   });
 
   /**
@@ -47,14 +49,30 @@
     event.stopPropagation();
     setTimeout(() => onselect(task), 500);
   }
+
+  /**
+   * Determines if a task is ongoing.
+   * @param {Date | null} due_date
+   * @param {Date | null} start_date
+   * @param {Date} today
+   */
+  function isOngoing(due_date, start_date, today) {
+    if (!due_date) return false;
+
+    if (!start_date || +due_date === +start_date) {
+      return DateUtil.format(today, "YYYY-MM-DD") === DateUtil.format(due_date, "YYYY-MM-DD");
+    }
+
+    return today >= start_date && today <= due_date;
+  }
 </script>
 
 <TaskContainer
   {tick_animation}
   class={{
     border: true,
+    "bg-success/20 border-success text-alt": is_ongoing && !is_selected && !is_past,
     "bg-error/20 border-error text-alt": is_past && !is_selected,
-    "bg-success/20 border-success text-alt": is_ongoing && !is_selected,
     "bg-primary/20 border-primary text-alt": is_selected,
     "bg-card border-default": !is_selected && !is_past && !is_ongoing,
   }}
@@ -74,9 +92,9 @@
       <div
         class={{
           "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
-          "bg-surface": !is_past && !is_ongoing,
+          "bg-surface": !is_past && !is_ongoing && !is_selected,
           "bg-error/80": is_past && !is_selected,
-          "bg-success/80": is_ongoing && !is_selected,
+          "bg-success/80": is_ongoing && !is_selected && !is_past,
           "bg-primary": is_selected,
         }}
       >

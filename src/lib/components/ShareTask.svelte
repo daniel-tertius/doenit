@@ -4,9 +4,9 @@
   import Button from "$lib/components/element/button/Button.svelte";
   import { CardRoom } from "$lib/components/element/card";
   import { onMount, tick } from "svelte";
-  import { auth } from "$lib/services/auth.svelte";
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
+  import user from "$lib/core/user.svelte";
 
   /**
    * @typedef {Object} Props
@@ -39,7 +39,7 @@
   });
 </script>
 
-{#if auth.is_logged_in}
+{#if !!user.value}
   <div class="grid grid-cols-[40px_auto_128px] py-2 bg-page border-y border-default">
     <Shared class="m-auto" />
     <div class="flex flex-col my-auto truncate">

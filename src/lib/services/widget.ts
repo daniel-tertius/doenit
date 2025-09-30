@@ -1,8 +1,8 @@
-import { DB } from "$lib/DB";
 import { Capacitor } from "@capacitor/core";
-import { auth } from "./auth.svelte";
 import { OnlineDB } from "$lib/OnlineDB";
-import { normalize } from "$lib";
+import user from "$lib/core/user.svelte";
+import { DB } from "$lib/DB";
+import { Notify } from "./notifications/notifications";
 
 export interface TaskWidgetPlugin {
   updateWidget({
@@ -63,16 +63,28 @@ export class Widget {
       const room = await DB.Room.get(task.room_id);
       if (!room) throw new Error("Room not found");
 
-      const user = auth.getUser();
-      if (!user || !user.email) return;
+      if (!user.value) return;
 
-      const user_email = normalize(user.email || "");
+      const email_address = user.value.email;
       await OnlineDB.Changelog.create({
         type: "complete",
         task_id: task.id,
         room_id: task.room_id || "",
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
+        user_reads_list: [email_address],
+      });
+
+      const email_addresses = [];
+      for (const { email, pending } of room.users) {
+        if (email && email !== email_address && !pending) {
+          email_addresses.push(email);
+        }
+      }
+
+      await Notify.Push.send({
+        title: "Task Completed",
+        body: `"${task.name}" was completed`,
+        email_address: email_addresses,
       });
     });
     await Promise.all(updates);

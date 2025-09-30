@@ -3,6 +3,10 @@ export const translations = {
   af: {
     // System defaults
     DEFAULT_NAME: "Standaard",
+    something_went_wrong: "Iets het verkeerd gegaan",
+
+    // Search
+    search: "Soek",
 
     // Theme & Appearance
     appearance: "Voorkoms",
@@ -214,6 +218,7 @@ export const translations = {
     // Authentication & User
     you_are_not_logged_in: "Jy is nie ingeteken nie",
     log_in_with_google: "Teken in met Google",
+    sign_out: "Teken uit",
     log_in_first: "teken eers in",
     log_in_to_see_invites: "Teken in om uitnodigings te sien",
     log_in_to_use_friends: "Verifieer jou epos adres by instellings om die vriende funksie te aktiveer",
@@ -227,6 +232,10 @@ export const translations = {
     email_verification_success: "E-posadres verifikasie suksesvol as",
     email_verification_error: "Fout met e-pos verifikasie:",
     google_verification_failed: "Google verifikasie het misluk:",
+    sign_in_success: "Teken in suksesvol!",
+    sign_in_error_no_user: "Geen gebruiker van Google teruggestuur nie.",
+    sign_in_error_no_auth: "Geen verifikasie inligting van Google teruggestuur nie.",
+    sign_in_error_no_idtoken: "Geen ID van Google teruggestuur nie.",
 
     // Backup & Data
     backup_label: "Rugsteun",
@@ -280,6 +289,8 @@ export const translations = {
   en: {
     // System defaults
     DEFAULT_NAME: "Default",
+    something_went_wrong: "Something went wrong",
+    search: "Search",
 
     // Theme & Appearance
     appearance: "Appearance",
@@ -491,6 +502,7 @@ export const translations = {
     // Authentication & User
     you_are_not_logged_in: "You are not logged in",
     log_in_with_google: "Log in with Google",
+    sign_out: "Sign out",
     log_in_first: "please log in first",
     log_in_to_see_invites: "Log in to see invites",
     log_in_to_use_friends: "Verify your email address in settings to activate the friends feature",
@@ -504,6 +516,10 @@ export const translations = {
     email_verification_success: "Email verification successful as",
     email_verification_error: "Email verification error:",
     google_verification_failed: "Google verification failed:",
+    sign_in_success: "Sign in successful!",
+    sign_in_error_no_user: "No user returned from Google sign-in.",
+    sign_in_error_no_auth: "No authentication object returned from Google sign-in.",
+    sign_in_error_no_idtoken: "No ID token returned from Google sign-in.",
 
     // Backup & Data
     backup_label: "Backup",

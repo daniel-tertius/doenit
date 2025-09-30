@@ -1,105 +1,113 @@
 import { FirebaseMessaging } from "@capacitor-firebase/messaging";
 import { Capacitor } from "@capacitor/core";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { auth } from "./auth.svelte";
+import { Alert } from "$lib/core/alert";
+import { OnlineDB } from "$lib/OnlineDB";
+import { Notify } from "./notifications/notifications";
+import user from "$lib/core/user.svelte";
 
 class PushNotificationService {
   private token: string | null = null;
 
   async init() {
-    if (!Capacitor.isNativePlatform()) {
-      console.log("🔧 [DEV] Push notifications only work on native platforms");
-      return;
-    }
+    if (!Capacitor.isNativePlatform()) return;
 
     try {
       // Request permission
       const permission = await FirebaseMessaging.requestPermissions();
-      
-      if (permission.receive === 'granted') {
-        // Get FCM token
-        const result = await FirebaseMessaging.getToken();
-        this.token = result.token;
-        
-        console.log("FCM Token:", this.token);
-        
-        // Save token to user profile (you'll need to implement this)
-        await this.saveTokenToProfile(this.token);
-        
-        // Listen for incoming messages
-        this.setupMessageListener();
+      if (permission.receive !== "granted") {
+        Alert.error("Push notification permission not granted");
+        return;
       }
+
+      // Get FCM token
+      const result = await FirebaseMessaging.getToken();
+      this.token = result.token;
+
+      // Save token to user profile (you'll need to implement this)
+      await this.saveTokenToProfile(this.token);
+
+      // Listen for incoming messages
+      this.setupMessageListener();
     } catch (error) {
-      console.error("Error initializing push notifications:", error);
+      Alert.error("Error initializing push notifications: " + error);
     }
   }
 
   private async saveTokenToProfile(token: string) {
-    const user = auth.getUser();
-    if (!user?.email) return;
+    if (!user.value) return;
 
-    // TODO: Save FCM token to user's profile in Firestore
-    // This allows the backend to send targeted notifications
-    console.log("TODO: Save FCM token to user profile:", { 
-      email: user.email, 
-      fcmToken: token 
+    const [db_user] = await OnlineDB.User.getAll({
+      filters: [{ field: "email_address", operator: "==", value: user.value.email }],
+      limit: 1,
     });
+
+    if (db_user) {
+      db_user.fcm_token = token;
+      await OnlineDB.User.update(db_user.id, db_user);
+    } else {
+      await OnlineDB.User.create({ email_address: user.value.email, fcm_token: token });
+    }
   }
 
   private setupMessageListener() {
     // Listen for messages when app is in foreground
-    FirebaseMessaging.addListener('notificationReceived', (notification) => {
-      console.log('Received notification:', notification);
-      
+    FirebaseMessaging.addListener("notificationReceived", (notification) => {
+      Alert.success("Received notification: " + JSON.stringify(notification));
+
       // Check if it's an invite notification
       const notificationData = (notification as any).data;
-      if (notificationData?.type === 'friend_invite') {
-        this.handleInviteNotification(notification);
+      if (notificationData?.type === "friend_invite") {
       }
+      this.handleInviteNotification(notification);
     });
 
     // Listen for notification taps (when app is in background)
-    FirebaseMessaging.addListener('notificationActionPerformed', (action) => {
-      console.log('Notification action performed:', action);
-      
+    FirebaseMessaging.addListener("notificationActionPerformed", (action) => {
+      // Alert.success("Notification action performed: " + JSON.stringify(action));
+
       const actionData = (action.notification as any).data;
-      if (actionData?.type === 'friend_invite') {
-        // Navigate to friends page
-        window.location.hash = '/friends';
-      }
+      // if (actionData?.type === "friend_invite") {
+      // Navigate to friends page
+      window.location.pathname = "/friends";
+      // }
     });
   }
 
   private handleInviteNotification(notification: any) {
-    // Show local notification with custom actions
-    LocalNotifications.schedule({
-      notifications: [{
-        id: Date.now(),
-        title: notification.title || 'New Friend Invite',
-        body: notification.body || 'You have a new friend request',
-        largeBody: notification.body,
-        actionTypeId: 'FRIEND_INVITE',
-        extra: notification.data,
-        schedule: { 
-          at: new Date(Date.now() + 1000) // Show immediately
-        }
-      }]
-    });
+    try {
+      // Show local notification with custom actions
+      LocalNotifications.schedule({
+        notifications: [
+          {
+            id: Date.now(),
+            title: notification.title || "New Friend Invite",
+            body: notification.body || "You have a new friend request",
+            largeBody: notification.body,
+            actionTypeId: "FRIEND_INVITE",
+            extra: notification.data,
+            schedule: {
+              at: new Date(Date.now() + 1000), // Show immediately
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      Alert.error("Error showing invite notification: " + error);
+    }
   }
 
   // Method to send push notification (would be called from your backend)
-  async sendInviteNotification(recipientFCMToken: string, sender_name: string) {
-    // This would typically be done from your Firebase Functions backend
-    console.log("TODO: Send push notification via Firebase Functions:", {
-      to: recipientFCMToken,
-      data: {
-        type: 'friend_invite',
-        sender_name: sender_name
-      },
-      notification: {
-        title: 'New Friend Invite',
-        body: `${sender_name} sent you a friend request`
-      }
+  async sendInviteNotification(email_address: string) {
+    const [user] = await OnlineDB.User.getAll({
+      filters: [{ field: "email_address", operator: "==", value: email_address }],
+      limit: 1,
+    });
+
+    await Notify.Push.send({
+      title: "New Friend Invite",
+      body: `Someone sent you a friend request`,
+      email_address: [email_address],
     });
   }
 

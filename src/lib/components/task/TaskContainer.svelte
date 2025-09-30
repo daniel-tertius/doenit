@@ -11,6 +11,7 @@
   in:slide={{ delay: 200 }}
 >
   <button
+    type="button"
     {...rest}
     {onlongpress}
     use:LongPress.create

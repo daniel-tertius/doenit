@@ -4,7 +4,7 @@ import { translations } from "./language/translations";
 type LanguageValue = "af" | "en";
 class LanguageService {
   private _value = $state<LanguageValue>("af");
-  private translations: Record<string | symbol, string> = $derived(translations[this._value]);
+  private readonly translations: Record<string | symbol, string> = $derived(translations[this._value]);
 
   constructor() {
     this.init();

@@ -104,6 +104,13 @@
  */
 
 /**
+ * @typedef {Object} Users
+ * @property {string} id - Primary key (UUID).
+ * @property {string} email_address - Email address of the user.
+ * @property {string} fcm_token - Firebase Cloud Messaging token for push notifications.
+ */
+
+/**
  * @template T
  * @typedef {{ success: true, data: T } | { success: false, error_message: string, data?: * }} Result<T>
  */

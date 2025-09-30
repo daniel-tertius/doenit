@@ -78,7 +78,7 @@ export class LongPress {
    */
   static create(node: Node, options: LongPressOptions = {}): LongPressAction {
     const instance = new LongPress(node, options);
-    
+
     return {
       destroy: () => instance.destroy(),
       update: (newOptions?: LongPressOptions) => instance.update(newOptions),

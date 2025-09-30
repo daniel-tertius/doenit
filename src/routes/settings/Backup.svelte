@@ -1,11 +1,10 @@
 <script>
-  import { Download, Google, Loading, Upload } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
-  import { auth } from "$lib/services/auth.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
   import { ButtonBackup, ButtonRestore } from "$lib/components/element/button";
   import Backup from "$lib/services/backup.svelte";
   import { InputSwitch } from "$lib/components/element/input";
+  import user from "$lib/core/user.svelte";
 
   async function createBackup() {
     const result = await Backup.createBackup();
@@ -46,7 +45,7 @@
   }
 </script>
 
-<Accordion label={t("backup_label")} disabled={!auth.is_logged_in} disabled_message={t("log_in_first")}>
+<Accordion label={t("backup_label")} disabled={!user.value} disabled_message={t("log_in_first")}>
   <div>
     <div class="flex items-center justify-between mb-4">
       <div>

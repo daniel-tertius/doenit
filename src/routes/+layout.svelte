@@ -1,24 +1,30 @@
 <script>
+  import { pushNotificationService } from "$lib/services/pushNotifications.svelte";
   import { notifications } from "$lib/services/notification.svelte";
   import { inviteService } from "$lib/services/invites.svelte";
   import { SplashScreen } from "@capacitor/splash-screen";
-  import { onDestroy, onMount, untrack } from "svelte";
-  import { auth } from "$lib/services/auth.svelte";
+  import { onDestroy, onMount, setContext, untrack } from "svelte";
+  import Backup from "$lib/services/backup.svelte";
   import { Widget } from "$lib/services/widget";
+  import user from "$lib/core/user.svelte";
   import { OnlineDB } from "$lib/OnlineDB";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
   import Footer from "./Footer.svelte";
   import { App } from "@capacitor/app";
   import { page } from "$app/state";
-  import { normalize } from "$lib";
   import { DB } from "$lib/DB";
   import "../app.css";
+  import { Value } from "$lib/utils.svelte";
 
   let { children } = $props();
 
   /** @type {string[]} */
   let room_ids = $state([]);
+  const search_text = new Value("");
+
+  $inspect(search_text.value);
+  setContext("search_text", search_text);
 
   /** @type {import('firebase/auth').Unsubscribe?} */
   let unsubscribeChangelog = null;
@@ -26,7 +32,16 @@
   let unsubscribeInvites = null;
 
   $effect(() => {
-    if (!auth.is_logged_in) return;
+    if (!user.value) return;
+
+    untrack(async () => {
+      Backup.init();
+      await pushNotificationService.init();
+    });
+  });
+
+  $effect(() => {
+    if (!user.value) return;
     if (!room_ids.length) return;
 
     // Clean up existing subscription before creating a new one
@@ -41,14 +56,16 @@
   });
 
   $effect(() => {
-    if (!auth.is_logged_in) return;
+    if (!user.value) return;
 
     untrack(() => {
+      if (!user.value) return;
+
       if (unsubscribeInvites) unsubscribeInvites();
       unsubscribeInvites = OnlineDB.Invite.subscribe((i) => inviteService.handleNewInvites(i), {
         filters: [
           { field: "status", operator: "==", value: "pending" },
-          { field: "recipient_email_address", operator: "==", value: normalize(auth.user?.email || "") },
+          { field: "recipient_email_address", operator: "==", value: user.value.email },
         ],
         sort: [{ field: "created_at", direction: "desc" }],
       });
@@ -106,13 +123,11 @@
     try {
       if (!changes.length) return;
 
-      const user = auth.getUser();
-      if (!user || !user.email) return;
-      const user_email = normalize(user.email || "");
+      if (!user.value) return;
 
       for (const change of changes) {
         if (!room_ids.includes(change.room_id)) continue;
-        if (change.user_reads_list.includes(user_email)) continue;
+        if (change.user_reads_list.includes(user.value.email)) continue;
 
         await DB.Task.implementChange(change);
         await DB.Room.implementChange(change);
@@ -120,7 +135,7 @@
         if (change.user_reads_list.length >= change.total_reads_needed) {
           await OnlineDB.Changelog.delete(change.id);
         } else {
-          await OnlineDB.Changelog.incrementUserReads(change.id, user_email);
+          await OnlineDB.Changelog.incrementUserReads(change.id, user.value.email);
         }
       }
     } catch (error) {

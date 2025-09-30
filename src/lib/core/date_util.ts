@@ -1,4 +1,4 @@
-export default class DateUtil {
+export class DateUtil {
   static format(date: Date, format: string) {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
       return "";
@@ -43,6 +43,6 @@ export default class DateUtil {
 
     const [day, time] = date.split(" ");
 
-    return new Date(`${day} ${time ? time : type === "start" ? "00:00" : "23:59"}`);
+    return new Date(`${day} ${time || type === "start" ? "00:00" : "23:59"}`);
   }
 }

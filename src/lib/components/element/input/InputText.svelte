@@ -1,10 +1,29 @@
 <script>
+  import { untrack } from "svelte";
   import { ButtonClear } from "../button";
 
-  let { value = $bindable(), focus_on_mount = false, can_clear = false, ...rest } = $props();
+  let { value = $bindable(), focus_on_mount = false, debounce = 0, can_clear = false, ...rest } = $props();
+
+  let internal_value = $state(value);
+  /** @type {NodeJS.Timeout | null}*/
+  let timeout = null;
+
+  $effect(() => {
+    internal_value;
+
+    untrack(() => {
+      if (debounce > 0) {
+        if (timeout) clearTimeout(timeout);
+
+        timeout = setTimeout(() => (value = internal_value), debounce);
+      } else {
+        value = internal_value;
+      }
+    });
+  });
 
   function clearValue() {
-    value = "";
+    internal_value = "";
   }
 
   /**
@@ -26,7 +45,7 @@
     {...rest}
     type="text"
     use:init
-    bind:value
+    bind:value={internal_value}
     class={[
       "bg-card border border-default p-2 h-12 w-full rounded-lg placeholder:text-muted outline-none focus:ring-1 ring-primary",
       rest.class ?? "",

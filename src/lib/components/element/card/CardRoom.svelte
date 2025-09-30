@@ -1,7 +1,7 @@
 <script>
   import { Edit, Clock, Check, Trash } from "$lib/icon";
-  import { auth } from "$lib/services/auth.svelte";
   import { t } from "$lib/services/language.svelte";
+  import user from "$lib/core/user.svelte";
 
   /**
    * @typedef {Object} Props
@@ -65,23 +65,23 @@
     {/if}
 
     <div class="flex gap-2 overflow-x-auto scrollbar-none">
-      {#each users as user}
-        {#if user.email !== auth.user?.email}
+      {#each users as room_user}
+        {#if room_user.email !== user.value?.email}
           <span
             class={[
               "px-3 py-1 rounded-full h-fit text-sm flex border items-center gap-1.5",
-              selected && !user.pending && "bg-success/30 border-success",
-              selected && user.pending && "bg-yellow-600/70 ",
-              !selected && !user.pending && "bg-card text-muted border-default",
-              !selected && user.pending && "bg-yellow-800/50 text-yellow-300/80",
+              selected && !room_user.pending && "bg-success/30 border-success",
+              selected && room_user.pending && "bg-yellow-600/70 ",
+              !selected && !room_user.pending && "bg-card text-muted border-default",
+              !selected && room_user.pending && "bg-yellow-800/50 text-yellow-300/80",
             ]}
           >
-            {#if user.pending}
+            {#if room_user.pending}
               <Clock class="text-lg flex-shrink-0" />
             {:else}
               <Check class="text-lg flex-shrink-0 text-alt" />
             {/if}
-            <span class="truncate">{user.email}</span>
+            <span class="truncate">{room_user.email}</span>
           </span>
         {/if}
       {/each}

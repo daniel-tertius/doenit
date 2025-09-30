@@ -17,13 +17,16 @@
     }
   });
 
-  onMount(() => {
-    const sub = DB.Category.subscribe((result) => (categories = result), {
+  onMount(async () => {
+    categories = await DB.Category.getAll({
       selector: { archived: { $ne: true }, is_default: { $ne: true } },
       sort: [{ name: "asc" }],
     });
 
-    return () => sub.unsubscribe();
+    const cate_exists = categories.some((c) => c.id === category_id);
+    if (!cate_exists) {
+      category_id = "";
+    }
   });
 </script>
 

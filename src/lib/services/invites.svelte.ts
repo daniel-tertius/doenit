@@ -1,28 +1,30 @@
-import { notificationService } from "./notifications.svelte";
+import { Notify } from "./notifications/notifications";
 import { INVITE_EXPIRATION_DAYS, normalize } from "$lib";
-import { auth } from "$lib/services/auth.svelte";
 import DateUtil from "$lib/DateUtil";
 import { OnlineDB } from "$lib/OnlineDB";
 import { DB } from "$lib/DB";
-import { AppNotification } from "./appNotifications.svelte";
+import user from "$lib/core/user.svelte";
+import { Alert } from "$lib/core";
 
 class InviteService {
   invites: Invite[] = $state([]);
 
   handleNewInvites(invites: Invite[]) {
+    if (!user.value) return;
+
     this.invites = invites;
     if (!invites.length) return;
 
     try {
       for (const invite of invites) {
-        if (invite.recipient_email_address !== normalize(auth.user?.email ?? "")) continue;
+        if (invite.recipient_email_address !== user.value.email) continue;
         if (invite.status !== "pending") return;
 
-        AppNotification.showSimple(`You have a pending invite from ${invite.sender_email_address}.`);
+        Alert.success(`You have a pending invite from ${invite.sender_email_address}.`);
       }
     } catch (error) {
       console.error("❌ Error processing invite changes:", error);
-      alert("Error processing invite changes: " + error.message);
+      Alert.error("Error processing invite changes: " + error.message);
     }
   }
   /**
@@ -30,12 +32,11 @@ class InviteService {
    */
   async sendInvite(recipient_email_address: string): Promise<SimpleResult> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) {
+      if (!user.value) {
         return { success: false, error_message: "User not authenticated" };
       }
 
-      const existing_invites = await this.getExistingInvite(user.email, recipient_email_address);
+      const existing_invites = await this.getExistingInvite(user.value.email, recipient_email_address);
       if (existing_invites.length) {
         return { success: false, error_message: "Invite already sent to this email address" };
       }
@@ -48,16 +49,24 @@ class InviteService {
       // Create the invite
       const expires_at = DateUtil.addDays(new Date(), INVITE_EXPIRATION_DAYS);
       await OnlineDB.Invite.create({
-        sender_email_address: normalize(user.email),
-        sender_name: user.displayName || normalize(user.email),
+        sender_email_address: user.value.email,
+        sender_name: user.value.name || user.value.email,
         recipient_email_address: normalize(recipient_email_address),
         room_id: room.id,
         status: "pending",
         expires_at: DateUtil.format(expires_at, "YYYY-MM-DD HH:mm:ss"),
       });
 
-      // TODO: Send push notification when notifications service is ready
+      // const [recipient_user] = await OnlineDB.User.getAll({
+      //   filters: [{ field: "email_address", operator: "==", value: normalize(recipient_email_address) }],
+      //   limit: 1,
+      // });
 
+      await Notify.Push.send({
+        body: `${user.value.name || user.value.email} sent you a friend request`,
+        title: "New Friend Invite",
+        email_address: [normalize(recipient_email_address)],
+      });
       return { success: true };
     } catch (error) {
       console.error("Error sending invite:", error);
@@ -70,8 +79,7 @@ class InviteService {
    */
   async acceptInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) {
+      if (!user.value) {
         return { success: false, message: "User not authenticated" };
       }
 
@@ -81,7 +89,7 @@ class InviteService {
       }
 
       // Verify this invite is for the current user
-      if (invite.recipient_email_address !== normalize(user.email)) {
+      if (invite.recipient_email_address !== user.value.email) {
         return { success: false, message: "This invite is not for you" };
       }
 
@@ -105,19 +113,21 @@ class InviteService {
       const room = await DB.Room.create({
         id: invite.room_id,
         name: invite.sender_name,
-        users: [{ email: normalize(invite.sender_email_address), pending: false }],
+        users: [{ email: invite.sender_email_address, pending: false }],
       });
 
-      const user_email = normalize(user.email);
       await OnlineDB.Changelog.create({
         total_reads_needed: room.users.length,
-        user_reads_list: [user_email],
+        user_reads_list: [user.value.email],
         type: "invite_accepted",
         room_id: room.id,
       });
 
-      // TODO: Send push notification when notifications service is ready
-      console.log(`Notify ${invite.sender_email_address}: Friend request accepted by ${user.email}`);
+      await Notify.Push.send({
+        body: `${user.value.name || user.value.email} accepted your friend request`,
+        title: "Friend Request Accepted",
+        email_address: [invite.sender_email_address],
+      });
 
       return { success: true, message: "Friend request accepted!" };
     } catch (error) {
@@ -131,8 +141,7 @@ class InviteService {
    */
   async declineInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) {
+      if (!user.value) {
         return { success: false, message: "User not authenticated" };
       }
 
@@ -142,7 +151,7 @@ class InviteService {
       }
 
       // Verify this invite is for the current user
-      if (invite.recipient_email_address !== normalize(user.email)) {
+      if (invite.recipient_email_address !== user.value.email) {
         return { success: false, message: "This invite is not for you" };
       }
 
@@ -165,7 +174,7 @@ class InviteService {
       await OnlineDB.Changelog.create({
         room_id: invite.room_id,
         type: "invite_declined",
-        user_reads_list: [normalize(user.email)],
+        user_reads_list: [user.value.email],
         total_reads_needed: 2, // TODO: This still needs to be fixed
       });
 
@@ -181,8 +190,7 @@ class InviteService {
    */
   async cancelInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) {
+      if (!user.value) {
         return { success: false, message: "User not authenticated" };
       }
 
@@ -192,7 +200,7 @@ class InviteService {
       }
 
       // Verify this is the sender's invite
-      if (invite.sender_email_address !== normalize(user.email)) {
+      if (invite.sender_email_address !== user.value.email) {
         return { success: false, message: "You can only cancel your own invites" };
       }
 
@@ -212,12 +220,11 @@ class InviteService {
    */
   async getSentInvites(): Promise<Invite[]> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) return [];
+      if (!user.value) return [];
 
       const invites = await OnlineDB.Invite.getAll({
         filters: [
-          { field: "sender_email_address", operator: "==", value: normalize(user.email) },
+          { field: "sender_email_address", operator: "==", value: user.value.email },
           { field: "status", operator: "==", value: "pending" },
         ],
         sort: [{ field: "created_at", direction: "desc" }],
@@ -235,12 +242,11 @@ class InviteService {
    */
   async getReceivedInvites(): Promise<Invite[]> {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) return [];
+      if (!user.value) return [];
 
       const invites = await OnlineDB.Invite.getAll({
         filters: [
-          { field: "recipient_email_address", operator: "==", value: normalize(user.email) },
+          { field: "recipient_email_address", operator: "==", value: user.value.email },
           { field: "status", operator: "==", value: "pending" },
         ],
         sort: [{ field: "created_at", direction: "desc" }],
@@ -272,8 +278,7 @@ class InviteService {
    */
   subscribeSentInvites(callback: (invites: Invite[]) => void): (() => void) | null {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) return null;
+      if (!user.value) return null;
 
       // Set up real-time Firestore subscription
       return OnlineDB.Invite.subscribe(
@@ -293,7 +298,7 @@ class InviteService {
         },
         {
           filters: [
-            { field: "sender_email_address", operator: "==", value: normalize(user.email) },
+            { field: "sender_email_address", operator: "==", value: user.value.email },
             { field: "status", operator: "==", value: "pending" },
           ],
           sort: [{ field: "created_at", direction: "desc" }],
@@ -310,8 +315,7 @@ class InviteService {
    */
   subscribeReceivedInvites(callback: (invites: Invite[]) => void): (() => void) | null {
     try {
-      const user = auth.getUser();
-      if (!user || !user.email) return null;
+      if (!user.value) return null;
 
       // Set up real-time Firestore subscription
       return OnlineDB.Invite.subscribe(
@@ -331,7 +335,7 @@ class InviteService {
         },
         {
           filters: [
-            { field: "recipient_email_address", operator: "==", value: normalize(user.email) },
+            { field: "recipient_email_address", operator: "==", value: user.value.email },
             { field: "status", operator: "==", value: "pending" },
           ],
           sort: [{ field: "created_at", direction: "desc" }],

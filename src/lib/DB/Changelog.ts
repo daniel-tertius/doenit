@@ -1,9 +1,14 @@
 import { arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
 import { Table } from "./_OnlineTable";
+import { Notify } from "$lib/services/notifications/notifications";
 
 export class ChangeLogTable extends Table<Changelog> {
   constructor() {
     super("changelog");
+  }
+
+  async create(data: Omit<Changelog, "id" | "archived" | "created_at">): Promise<SimpleResult> {
+    return super.create(data);
   }
 
   async incrementUserReads(id: string, user_email: string) {

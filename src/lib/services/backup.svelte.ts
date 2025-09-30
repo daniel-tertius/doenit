@@ -2,11 +2,11 @@ import { t } from "$lib/services/language.svelte";
 import Files from "$lib/services/files.svelte";
 import * as env from "$env/static/public";
 import { OnlineDB } from "$lib/OnlineDB";
-import { auth } from "./auth.svelte";
 import * as pako from "pako";
 import { DB } from "$lib/DB";
 import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
 import DateUtil from "$lib/DateUtil";
+import { Cached } from "$lib/core";
 
 class BackupClass {
   last_backup_at: string = $state("Never");
@@ -72,7 +72,7 @@ class BackupClass {
 
   private async getLastBackupTime(): Promise<string | null> {
     try {
-      const user_id = auth.getUserID();
+      const user_id = Cached.user.value?.uid;
       if (!user_id) return null;
 
       const [backup] = await OnlineDB.BackupManifest.getAll({
@@ -97,7 +97,7 @@ class BackupClass {
 
   async createBackup(): Promise<SimpleResult> {
     try {
-      const user_id = auth.getUserID();
+      const user_id = Cached.user.value?.uid;
       if (!user_id) return { success: false, error_message: "User not signed in" };
 
       const tasks = await DB.Task.getAll({
@@ -202,7 +202,7 @@ class BackupClass {
 
   async getBackup(): Promise<Result<BackupManifest>> {
     try {
-      const user_id = auth.getUserID();
+      const user_id = Cached.user.value?.uid;
       if (!user_id) return { success: false, error_message: "User not signed in" };
 
       const backup_manifests = await OnlineDB.BackupManifest.getAll({
