@@ -1,6 +1,6 @@
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
-import { getApp, initializeApp } from "firebase/app";
+import { getApp, initializeApp } from "$lib/chunk/firebase-app";
 import { t } from "$lib/services/language.svelte";
 import { FIREBASE_CONFIG, normalize } from "$lib";
 import { Capacitor } from "@capacitor/core";

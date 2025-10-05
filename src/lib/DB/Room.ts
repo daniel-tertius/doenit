@@ -1,4 +1,4 @@
-import type { RxCollection } from "rxdb";
+import type { RxCollection } from "$lib/chunk/rxdb";
 import { Table } from "./_Table";
 import { OnlineDB } from "$lib/OnlineDB";
 import user from "$lib/core/user.svelte";

@@ -125,7 +125,6 @@
    * @param {Task} task
    */
   function handleLongPress(task) {
-    console.log("HERE", task);
     Haptics.vibrate({ duration: 100 });
     if (Selected.tasks.has(task.id)) {
       Selected.tasks.delete(task.id);
@@ -201,17 +200,15 @@
       {/key}
     {/if}
 
-    <!-- <div id={task.id} transition:slide={{ delay: 20 * i }}> -->
-    <!-- {#key task.id + task.due_date} -->
-    <TaskComponent
-      {current_time}
-      {task}
-      onclick={() => handleClick(task)}
-      onselect={() => handleSelect(task)}
-      onlongpress={() => handleLongPress(task)}
-    />
-    <!-- {/key} -->
-    <!-- </div> -->
+    {#key task.id + task.due_date}
+      <TaskComponent
+        {current_time}
+        {task}
+        onclick={() => handleClick(task)}
+        onselect={() => handleSelect(task)}
+        onlongpress={() => handleLongPress(task)}
+      />
+    {/key}
   {:else}
     <div class="flex flex-col items-center gap-4 py-12">
       {#if !Selected.categories.size}

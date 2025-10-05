@@ -10,14 +10,11 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':capacitor-community-in-app-review')
-    implementation project(':capacitor-firebase-app')
-    implementation project(':capacitor-firebase-authentication')
     implementation project(':capacitor-firebase-messaging')
     implementation project(':capacitor-firebase-storage')
     implementation project(':capacitor-app')
     implementation project(':capacitor-browser')
     implementation project(':capacitor-device')
-    implementation project(':capacitor-file-transfer')
     implementation project(':capacitor-filesystem')
     implementation project(':capacitor-haptics')
     implementation project(':capacitor-local-notifications')

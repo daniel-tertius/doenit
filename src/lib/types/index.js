@@ -111,6 +111,14 @@
  */
 
 /**
+ * @typedef {Object} RateUsSetting
+ * @property {number} task_completions - Number of tasks completed by the user.
+ * @property {string} first_use_date - YYYY-MM-DD HH:mm:ss
+ * @property {string|null} last_dismissed_date - YYYY-MM-DD HH:mm:ss or null
+ * @property {boolean} has_rated - Whether the user has rated the app.
+ */
+
+/**
  * @template T
  * @typedef {{ success: true, data: T } | { success: false, error_message: string, data?: * }} Result<T>
  */

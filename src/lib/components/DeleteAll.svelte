@@ -15,11 +15,11 @@
     Selected.tasks.clear();
   });
 
-  function deleteAll() {
+  async function deleteAll() {
     const ids = [...Selected.tasks.values()];
     Selected.tasks.clear();
 
-    DB.Task.delete(ids);
+    await DB.Task.delete(ids);
 
     updateChangelog(ids);
 

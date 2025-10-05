@@ -16,6 +16,8 @@
   import { DB } from "$lib/DB";
   import "../app.css";
   import { Value } from "$lib/utils.svelte";
+  import { cached_rate_us_setting } from "$lib/cached";
+  import { Cached } from "$lib/core/cache.svelte";
 
   let { children } = $props();
 
@@ -23,7 +25,6 @@
   let room_ids = $state([]);
   const search_text = new Value("");
 
-  $inspect(search_text.value);
   setContext("search_text", search_text);
 
   /** @type {import('firebase/auth').Unsubscribe?} */
@@ -111,9 +112,9 @@
   /**
    * @param {Task[]} tasks
    */
-  function handleTasksUpdate(tasks) {
-    notifications.scheduleNotifications(tasks);
-    Widget.updateWidget(tasks);
+  async function handleTasksUpdate(tasks) {
+    await notifications.scheduleNotifications(tasks);
+    await Widget.updateWidget(tasks);
   }
 
   /**
@@ -148,7 +149,20 @@
 <div class="text-md h-dvh relative flex flex-col text-normal bg-page **:select-none **:transition-all **:duration-300">
   <Heading />
 
-  <main class="max-w-[1000px] w-full md:mx-auto grow overflow-y-auto p-2">
+  <main class="max-w-[1000px] overflow-x-hidden w-full md:mx-auto grow overflow-y-auto p-2">
+    <!-- {JSON.stringify(Cached.rateUs.value, null, 2)}
+    <button
+      type="button"
+      class="px-2 py-1"
+      onclick={() => {
+        if (Cached.rateUs.value) {
+          Cached.rateUs.value.last_dismissed_date = null;
+          Cached.rateUs.value.task_completions = 0;
+        }
+      }}
+    >
+      Clear
+    </button> -->
     {@render children()}
   </main>
 

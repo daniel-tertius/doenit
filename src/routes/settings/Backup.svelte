@@ -1,9 +1,10 @@
 <script>
   import { t } from "$lib/services/language.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
-  import { ButtonBackup, ButtonRestore } from "$lib/components/element/button";
+  import ButtonBackup from "$lib/components/element/button/ButtonBackup.svelte";
+  import ButtonRestore from "$lib/components/element/button/ButtonRestore.svelte";
   import Backup from "$lib/services/backup.svelte";
-  import { InputSwitch } from "$lib/components/element/input";
+  import InputSwitch from "$lib/components/element/input/InputSwitch.svelte";
   import user from "$lib/core/user.svelte";
 
   async function createBackup() {

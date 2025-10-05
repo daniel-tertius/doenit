@@ -1,6 +1,6 @@
 <script>
   import { selectedCategories } from "$lib/cached";
-  import { InputCheckbox } from "./element/input";
+  import InputCheckbox from "./element/input/InputCheckbox.svelte";
   import { Selected } from "$lib/selected";
 
   const { id, name } = $props();

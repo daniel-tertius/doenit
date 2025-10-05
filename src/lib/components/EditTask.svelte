@@ -2,11 +2,11 @@
   import CategoryPicker from "$lib/components/CategoryPicker.svelte";
   import DateTimeRangePicker from "./DateTimeRangePicker.svelte";
   import Herhaling from "$lib/components/task/Herhaling.svelte";
-  import { InputTaskName } from "$lib/components/element/input";
+  import InputTaskName from "$lib/components/element/input/InputTaskName.svelte";
   import DatePickerShortcut from "./DatePickerShortcut.svelte";
   import { t } from "$lib/services/language.svelte";
   import ShareTask from "./ShareTask.svelte";
-  import { Button } from "./element/button";
+  import Button from "./element/button/Button.svelte";
   import { Important } from "$lib/icon";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
@@ -54,7 +54,7 @@
     </div>
     <Button
       class={{
-        "text-muted": !task.important,
+        "bg-card border border-default": !task.important,
         "bg-warning/10! border-warning! text-warning!": task.important,
       }}
       type="button"

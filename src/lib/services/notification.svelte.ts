@@ -160,34 +160,53 @@ class Notification {
   }
 
   async scheduleNotifications(all_tasks?: Task[]) {
-    console.debug("[😨 Doenit]: Re-scheduling notifications");
-
-    if (all_tasks == null) {
-      all_tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
-    }
-
-    if (!this.#initiated) {
-      await this.init();
-      this.#initiated = true;
-    }
-
-    if (!this.#enabled || !this.#time) {
-      console.warn("Notifications are disabled or time is not set.");
-      return;
-    }
-
-    await this.cancelAll();
+    console.debug("[😨 Doenit]: Herskeduleer kennisgewings");
 
     try {
+      if (all_tasks == null) {
+        all_tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
+      }
+
+      if (!this.#initiated) {
+        await this.init();
+        this.#initiated = true;
+      }
+
+      if (!this.#enabled || !this.#time) {
+        console.warn("Notifications are disabled or time is not set.");
+        return;
+      }
+
+      // Validate time format
+      if (!/^\d{2}:\d{2}$/.test(this.#time)) {
+        console.error(`Invalid time format: ${this.#time}. Expected HH:mm format.`);
+        return;
+      }
+
+      await this.cancelAll();
+
       // Schedule a notification for 30 days in advance.
       const notifications = [];
 
       // Today at the specified time or default to 8:00 AM.
       const date = new Date();
       const [hours = 8, minutes = 0] = this.#time?.split(":").map(Number) ?? [];
+
+      // Validate parsed time values
+      if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+        console.error(`Invalid time values: ${hours}:${minutes}. Hours must be 0-23, minutes 0-59.`);
+        return;
+      }
+
       date.setHours(hours, minutes, 0, 0);
 
       all_tasks = sortTasksByDueDate(all_tasks);
+
+      // ID generation constants to avoid collisions
+      const PAST_TASKS_ID_BASE = 100000;
+      const DAILY_REMINDER_ID_BASE = 200000;
+      const TIME_SPECIFIC_ID_BASE = 300000;
+
       for (let i = 0; i < 30; i++) {
         if (this.#past_tasks_enabled) {
           const tasks = getTasksBeforeDate(all_tasks, date);
@@ -203,62 +222,62 @@ class Notification {
               title:
                 tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
               body: body,
-              id: all_tasks.length + i + 1,
+              id: PAST_TASKS_ID_BASE + i,
               schedule: { at: new Date(+date) /* Need to copy date */ },
             });
           }
         }
 
         const tasks = getTasksOnDate(all_tasks, date);
-        if (!tasks.length) {
-          date.setDate(date.getDate() + 1);
-          continue;
-        }
-
-        // Create a beautiful body for the tasks
-        let body = tasks
-          .map(
-            (task, idx) =>
-              `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
-          )
-          .join("\n");
-
-        notifications.push({
-          title:
-            tasks.length === 1
-              ? t("daily_reminder_title_singular")
-              : t("daily_reminder_title", { task_count: tasks.length }),
-          body: body,
-          id: i + 1,
-          schedule: { at: new Date(+date) /* Need to copy date */ },
-        });
-
-        // Schedule a notification for the tasks with time set in the due date.
-        for (let j = 0; j < tasks.length; j++) {
-          const task = tasks[j];
-          const has_due_time = task.due_date?.includes(" ");
-          if (!has_due_time) continue;
-
-          // YYYY-MM-DD HH:mm format validation
-          const taskDate = new Date(task.due_date!);
-
-          // Validate that the date is valid and in the future
-          if (isNaN(taskDate.getTime())) {
-            console.warn(`Invalid task due date: ${task.due_date} for task: ${task.name}`);
-            continue;
-          }
-
-          // Only schedule if the notification time is in the future
-          if (taskDate <= new Date()) {
-            continue;
-          }
+        if (tasks.length > 0) {
+          // Create a beautiful body for the tasks
+          let body = tasks
+            .map(
+              (task, idx) =>
+                `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+            )
+            .join("\n");
 
           notifications.push({
-            title: task.name,
-            body: t("scheduled_for_now"),
-            id: +`${all_tasks.length * 2}${i + 1}${j + 1}`,
-            schedule: { at: taskDate },
+            title:
+              tasks.length === 1
+                ? t("daily_reminder_title_singular")
+                : t("daily_reminder_title", { task_count: tasks.length }),
+            body: body,
+            id: DAILY_REMINDER_ID_BASE + i,
+            schedule: { at: new Date(+date) /* Need to copy date */ },
           });
+
+          // Schedule a notification for the tasks with time set in the due date.
+          for (let j = 0; j < tasks.length; j++) {
+            const task = tasks[j];
+            const has_due_time = task.due_date?.includes(" ");
+            if (!has_due_time) continue;
+
+            // Validate YYYY-MM-DD HH:mm format
+            const date_time_regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+            if (!date_time_regex.test(task.due_date!)) {
+              console.warn(
+                `Invalid task due date format: ${task.due_date} for task: ${task.name}. Expected YYYY-MM-DD HH:mm format.`
+              );
+              continue;
+            }
+
+            const task_date = new Date(task.due_date!);
+
+            // Validate that the date is valid
+            if (isNaN(task_date.getTime())) {
+              console.warn(`Invalid task due date: ${task.due_date} for task: ${task.name}`);
+              continue;
+            }
+
+            notifications.push({
+              title: task.name,
+              body: t("scheduled_for_now"),
+              id: TIME_SPECIFIC_ID_BASE + i * 1000 + j,
+              schedule: { at: task_date },
+            });
+          }
         }
 
         // Update to next day
@@ -268,9 +287,12 @@ class Notification {
       if (notifications.length > 0) {
         await LocalNotifications.schedule({ notifications });
         console.debug(`[😨 Doenit]: Scheduled ${notifications.length} notifications`);
+      } else {
+        console.debug("[😨 Doenit]: No notifications to schedule");
       }
     } catch (error) {
       console.error("Error scheduling notifications:", error);
+      throw error; // Re-throw to allow caller to handle
     }
   }
 

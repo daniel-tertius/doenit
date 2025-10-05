@@ -1,7 +1,8 @@
-import type { RxCollection } from "rxdb";
+import type { RxCollection } from "$lib/chunk/rxdb";
 import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
 import { DB } from "$lib/DB";
+import { RateApp } from "$lib/services/rateApp";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
@@ -33,6 +34,7 @@ export class TaskTable extends Table<Task> {
       task.completed_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
     }
 
+    // await RateApp.onTaskCompleted();
     return this.update(task.id, task);
   }
 

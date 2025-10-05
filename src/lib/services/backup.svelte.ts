@@ -2,11 +2,10 @@ import { t } from "$lib/services/language.svelte";
 import Files from "$lib/services/files.svelte";
 import * as env from "$env/static/public";
 import { OnlineDB } from "$lib/OnlineDB";
-import * as pako from "pako";
 import { DB } from "$lib/DB";
 import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
 import DateUtil from "$lib/DateUtil";
-import { Cached } from "$lib/core";
+import { Cached } from "$lib/core/cache.svelte";
 
 class BackupClass {
   last_backup_at: string = $state("Never");
@@ -219,11 +218,13 @@ class BackupClass {
 
   private async compressAndEncrypt(data: any): Promise<string> {
     try {
+      const { gzip } = await import("pako"); 
+
       // Convert data to JSON string
       const jsonString = JSON.stringify(data);
 
       // Compress the data
-      const compressed = pako.gzip(jsonString);
+      const compressed = gzip(jsonString);
 
       // Convert compressed data to base64
       const compressedBase64 = btoa(String.fromCharCode(...compressed));
@@ -274,7 +275,8 @@ class BackupClass {
       const compressed = Uint8Array.from(atob(compressedBase64), (c) => c.charCodeAt(0));
 
       // Decompress the data
-      const decompressed = pako.ungzip(compressed, { to: "string" });
+      const { ungzip } = await import("pako"); 
+      const decompressed = ungzip(compressed, { to: "string" });
 
       // Parse JSON and return
       const result = JSON.parse(decompressed);

@@ -1,3 +1,4 @@
+import { getApp, initializeApp, type Unsubscribe } from "$lib/chunk/firebase-app";
 import {
   collection,
   doc,
@@ -14,11 +15,9 @@ import {
   onSnapshot,
   type WhereFilterOp,
   getFirestore,
-} from "firebase/firestore";
-import { getApp, initializeApp } from "firebase/app";
+} from "$lib/chunk/firebase-firestore";
 import { FIREBASE_CONFIG } from "$lib";
 import DateUtil from "$lib/DateUtil";
-import type { Unsubscribe } from "firebase/auth";
 
 interface QueryOptions {
   filters?: (

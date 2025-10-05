@@ -1,5 +1,6 @@
 <script>
-  import { ButtonLanguage, ButtonTextSize } from "$lib/components/element/button";
+  import ButtonLanguage from "$lib/components/element/button/ButtonLanguage.svelte";
+  import ButtonTextSize from "$lib/components/element/button/ButtonTextSize.svelte";
   import { Moon, Sun } from "$lib/icon";
   import { t, language } from "$lib/services/language.svelte";
   import { theme } from "$lib/services/theme.svelte";

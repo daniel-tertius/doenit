@@ -1,4 +1,4 @@
-import { Cached } from "./cache";
+import { Cached } from "./cache.svelte";
 
 // this types and interfaces
 export type ToastType = "success" | "error" | "info";
@@ -84,5 +84,80 @@ export class Alert {
 
   static error(message: string, duration?: number, position?: "top" | "bottom") {
     Alert.show({ message, type: "error", duration, position });
+  }
+
+  static confirm(options: {
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+  }): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (!Alert.container) {
+        Alert.container = document.createElement("div");
+        Alert.container.className = "fixed z-50 inset-0 w-full flex flex-col items-center pointer-events-none";
+        document.body.appendChild(Alert.container);
+      }
+
+      // Create backdrop
+      const backdrop = document.createElement("div");
+      backdrop.className = "fixed inset-0 bg-black/50 pointer-events-auto";
+
+      // Create modal
+      const modal = document.createElement("div");
+      modal.className =
+        "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-page rounded-lg p-6 max-w-[90%] w-full pointer-events-auto";
+
+      // Title
+      const title = document.createElement("h3");
+      title.className = "text-lg font-semibold mb-2 text-strong";
+      title.textContent = options.title;
+      modal.appendChild(title);
+
+      // Message
+      const message = document.createElement("p");
+      message.className = "text-normal mb-6";
+      message.textContent = options.message;
+      modal.appendChild(message);
+
+      // Button container
+      const buttonContainer = document.createElement("div");
+      buttonContainer.className = "flex justify-end gap-3";
+
+      // Cancel button
+      const cancelButton = document.createElement("button");
+      cancelButton.textContent = options.cancelText || (Cached.language.value === "af" ? "Kanselleer" : "Cancel");
+      cancelButton.className = "px-4 py-2 bg-card text-normal rounded-lg";
+      cancelButton.onclick = () => {
+        backdrop.remove();
+        modal.remove();
+        resolve(false);
+      };
+      buttonContainer.appendChild(cancelButton);
+
+      // Confirm button
+      const confirmButton = document.createElement("button");
+      confirmButton.textContent = options.confirmText || (Cached.language.value === "af" ? "Bevestig" : "Confirm");
+      confirmButton.className = "px-4 py-2 bg-primary text-white rounded-lg ml-auto";
+      confirmButton.onclick = () => {
+        backdrop.remove();
+        modal.remove();
+        resolve(true);
+      };
+      buttonContainer.appendChild(confirmButton);
+
+      modal.appendChild(buttonContainer);
+
+      // Add to container
+      Alert.container.appendChild(backdrop);
+      Alert.container.appendChild(modal);
+
+      // Close on backdrop click
+      backdrop.onclick = () => {
+        backdrop.remove();
+        modal.remove();
+        resolve(false);
+      };
+    });
   }
 }

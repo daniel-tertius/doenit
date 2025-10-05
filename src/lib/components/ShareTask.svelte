@@ -60,6 +60,7 @@
         hasScrolled = false;
       }}
       class={{
+        "bg-card border border-default": !room_id,
         "bg-success/10! border-success! text-success!": !!room_id,
       }}
     >

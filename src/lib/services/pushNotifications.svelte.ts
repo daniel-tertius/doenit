@@ -5,6 +5,7 @@ import { Alert } from "$lib/core/alert";
 import { OnlineDB } from "$lib/OnlineDB";
 import { Notify } from "./notifications/notifications";
 import user from "$lib/core/user.svelte";
+import { t } from "./language.svelte";
 
 class PushNotificationService {
   private token: string | null = null;
@@ -16,7 +17,7 @@ class PushNotificationService {
       // Request permission
       const permission = await FirebaseMessaging.requestPermissions();
       if (permission.receive !== "granted") {
-        Alert.error("Push notification permission not granted");
+        Alert.error(t("push_notification_permission_not_granted"));
         return;
       }
 
@@ -30,7 +31,7 @@ class PushNotificationService {
       // Listen for incoming messages
       this.setupMessageListener();
     } catch (error) {
-      Alert.error("Error initializing push notifications: " + error);
+      Alert.error(t("error_initializing_push_notifications") + ": " + error);
     }
   }
 
@@ -53,13 +54,16 @@ class PushNotificationService {
   private setupMessageListener() {
     // Listen for messages when app is in foreground
     FirebaseMessaging.addListener("notificationReceived", (notification) => {
-      Alert.success("Received notification: " + JSON.stringify(notification));
-
       // Check if it's an invite notification
       const notificationData = (notification as any).data;
-      if (notificationData?.type === "friend_invite") {
+      const notificationType = notificationData?.type || "unknown";
+      
+      if (notificationType === "friend_invite") {
+        Alert.success(t("received_friend_invite_notification"));
+        this.handleInviteNotification(notification);
+      } else {
+        Alert.success(t("received_notification", { type: notificationType }));
       }
-      this.handleInviteNotification(notification);
     });
 
     // Listen for notification taps (when app is in background)
@@ -81,8 +85,8 @@ class PushNotificationService {
         notifications: [
           {
             id: Date.now(),
-            title: notification.title || "New Friend Invite",
-            body: notification.body || "You have a new friend request",
+            title: notification.title || t("new_friend_invite"),
+            body: notification.body || t("you_have_new_friend_request"),
             largeBody: notification.body,
             actionTypeId: "FRIEND_INVITE",
             extra: notification.data,
@@ -93,7 +97,7 @@ class PushNotificationService {
         ],
       });
     } catch (error) {
-      Alert.error("Error showing invite notification: " + error);
+      Alert.error(t("error_showing_invite_notification") + ": " + error);
     }
   }
 
@@ -105,8 +109,8 @@ class PushNotificationService {
     });
 
     await Notify.Push.send({
-      title: "New Friend Invite",
-      body: `Someone sent you a friend request`,
+      title: t("new_friend_invite"),
+      body: t("someone_sent_friend_request"),
       email_address: [email_address],
     });
   }

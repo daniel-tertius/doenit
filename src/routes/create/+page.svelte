@@ -1,18 +1,15 @@
 <script>
   import { fly } from "svelte/transition";
-  import { goto } from "$app/navigation";
+  import { goto, onNavigate } from "$app/navigation";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t, language } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
   import { navigating } from "$app/state";
   import { Check, Loading } from "$lib/icon";
-  import { normalize } from "$lib";
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
-  import { onMount } from "svelte";
-  import { InAppReview } from "@capacitor-community/in-app-review";
-  import { Alert } from "$lib/core/alert.js";
+  import { RateApp } from "$lib/services/rateApp.js";
 
   let { data } = $props();
 
@@ -117,12 +114,9 @@
     return { success: true, task };
   }
 
-  onMount(async () => {
-    try {
-      await InAppReview.requestReview();
-    } catch (e) {
-      Alert.error(JSON.stringify(e));
-    }
+  onNavigate(async () => {
+    // Check daily usage for rating prompt
+    await RateApp.checkDailyUsage();
   });
 </script>
 

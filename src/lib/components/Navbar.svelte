@@ -13,11 +13,12 @@
 
   let { onclose } = $props();
 
+  const is_van_niekerks = ["tertiusvniekerk@gmail.com", "cynel.gildenhuys@gmail.com"].includes(user.value?.email ?? "");
   const NAVIGATION_TIMES = $derived([
     { Icon: Home, label: t("home"), href: "/" },
     { Icon: Check, label: t("completed_tasks"), href: "/complete" },
     { Icon: Categories, label: t("categories"), href: "/categories" },
-    // { Icon: Shared, label: t("friends"), href: "/friends", show: !!user.value },
+    { Icon: Shared, label: t("friends"), href: "/friends", show: /* !!user.value */ is_van_niekerks },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
 </script>

@@ -1,8 +1,11 @@
 import { notifications } from "$lib/services/notification.svelte";
 import { SplashScreen } from "@capacitor/splash-screen";
-import { theme } from "$lib/services/theme.svelte";
 import { text } from "$lib/services/text.svelte";
+import { theme } from "$lib/services/theme.svelte";
 import { DB } from "$lib/DB";
+
+// Keep this
+import { Cached } from "$lib/core/cache.svelte";
 
 export const ssr = false;
 

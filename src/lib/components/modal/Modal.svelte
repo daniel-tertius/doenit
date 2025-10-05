@@ -28,10 +28,9 @@
       if (+info.osVersion <= 14) return;
 
       // TODO Get the colour of the white over black/50 and (dark theme).
-      //   EdgeToEdge.setBackgroundColor({
-      //     color: theme.value === "dark" ? DEFAULT_HEX_COLOR + is_open ? "44" : "" : "#F5F5F5",
-      //   });
-      // }
+      // EdgeToEdge.setBackgroundColor({
+      //   color: theme.value === "dark" ? (DEFAULT_HEX_COLOR + is_open ? "44" : "") : "#F5F5F5",
+      // });
     });
   });
 </script>

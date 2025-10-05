@@ -17,17 +17,26 @@
     }
   });
 
-  onMount(async () => {
-    categories = await DB.Category.getAll({
+  onMount(() => {
+    const sub = DB.Category.subscribe(assignCategories, {
       selector: { archived: { $ne: true }, is_default: { $ne: true } },
       sort: [{ name: "asc" }],
     });
 
-    const cate_exists = categories.some((c) => c.id === category_id);
-    if (!cate_exists) {
-      category_id = "";
-    }
+    return () => sub.unsubscribe();
   });
+
+  /**
+   * @param {Category[]} new_categories
+   */
+  function assignCategories(new_categories) {
+    const is_mounted = !categories.length;
+    categories = new_categories;
+
+    if (is_mounted) return;
+    const category_exists = categories.some((c) => c.id === category_id);
+    if (!category_exists) category_id = "";
+  }
 </script>
 
 <div class="relative">

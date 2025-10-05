@@ -1,10 +1,11 @@
-import { Notify } from "./notifications/notifications";
 import { INVITE_EXPIRATION_DAYS, normalize } from "$lib";
-import DateUtil from "$lib/DateUtil";
-import { OnlineDB } from "$lib/OnlineDB";
-import { DB } from "$lib/DB";
+import { Notify } from "./notifications/notifications";
 import user from "$lib/core/user.svelte";
-import { Alert } from "$lib/core";
+import { OnlineDB } from "$lib/OnlineDB";
+import { Alert } from "$lib/core/alert";
+import { t } from "./language.svelte";
+import DateUtil from "$lib/DateUtil";
+import { DB } from "$lib/DB";
 
 class InviteService {
   invites: Invite[] = $state([]);
@@ -20,11 +21,11 @@ class InviteService {
         if (invite.recipient_email_address !== user.value.email) continue;
         if (invite.status !== "pending") return;
 
-        Alert.success(`You have a pending invite from ${invite.sender_email_address}.`);
+        Alert.success(t("you_have_pending_invite_from", { email: invite.sender_email_address }));
       }
     } catch (error) {
       console.error("❌ Error processing invite changes:", error);
-      Alert.error("Error processing invite changes: " + error.message);
+      Alert.error(t("error_processing_invite_changes") + ": " + (error as Error).message);
     }
   }
   /**
@@ -33,12 +34,12 @@ class InviteService {
   async sendInvite(recipient_email_address: string): Promise<SimpleResult> {
     try {
       if (!user.value) {
-        return { success: false, error_message: "User not authenticated" };
+        return { success: false, error_message: t("user_not_authenticated") };
       }
 
       const existing_invites = await this.getExistingInvite(user.value.email, recipient_email_address);
       if (existing_invites.length) {
-        return { success: false, error_message: "Invite already sent to this email address" };
+        return { success: false, error_message: t("invite_already_sent") };
       }
 
       const room = await DB.Room.create({
@@ -63,14 +64,14 @@ class InviteService {
       // });
 
       await Notify.Push.send({
-        body: `${user.value.name || user.value.email} sent you a friend request`,
-        title: "New Friend Invite",
+        body: t("sent_you_friend_request", { name: user.value.name || user.value.email }),
+        title: t("new_friend_invite"),
         email_address: [normalize(recipient_email_address)],
       });
       return { success: true };
     } catch (error) {
       console.error("Error sending invite:", error);
-      return { success: false, error_message: "Failed to send invite. Please try again." };
+      return { success: false, error_message: t("failed_to_send_invite_try_again") };
     }
   }
 
@@ -80,29 +81,29 @@ class InviteService {
   async acceptInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
       if (!user.value) {
-        return { success: false, message: "User not authenticated" };
+        return { success: false, message: t("user_not_authenticated") };
       }
 
       const invite = await OnlineDB.Invite.read(inviteId);
       if (!invite) {
-        return { success: false, message: "Invite not found" };
+        return { success: false, message: t("invite_not_found") };
       }
 
       // Verify this invite is for the current user
       if (invite.recipient_email_address !== user.value.email) {
-        return { success: false, message: "This invite is not for you" };
+        return { success: false, message: t("invite_not_for_you") };
       }
 
       // Check if invite is still valid
       if (invite.status !== "pending") {
-        return { success: false, message: "This invite is no longer valid" };
+        return { success: false, message: t("invite_no_longer_valid") };
       }
 
       if (new Date(invite.expires_at) < new Date()) {
         invite.status = "expired";
         await OnlineDB.Invite.update(inviteId, invite);
 
-        return { success: false, message: "This invite has expired" };
+        return { success: false, message: t("invite_has_expired") };
       }
 
       // Update invite status
@@ -124,15 +125,15 @@ class InviteService {
       });
 
       await Notify.Push.send({
-        body: `${user.value.name || user.value.email} accepted your friend request`,
-        title: "Friend Request Accepted",
+        body: t("accepted_your_friend_request", { name: user.value.name || user.value.email }),
+        title: t("friend_request_accepted"),
         email_address: [invite.sender_email_address],
       });
 
-      return { success: true, message: "Friend request accepted!" };
+      return { success: true, message: t("friend_request_accepted_success") };
     } catch (error) {
       console.error("Error accepting invite:", error);
-      return { success: false, message: "Failed to accept invite. Please try again." };
+      return { success: false, message: t("failed_to_accept_invite_try_again") };
     }
   }
 
@@ -142,29 +143,29 @@ class InviteService {
   async declineInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
       if (!user.value) {
-        return { success: false, message: "User not authenticated" };
+        return { success: false, message: t("user_not_authenticated") };
       }
 
       const invite = await OnlineDB.Invite.read(inviteId);
       if (!invite) {
-        return { success: false, message: "Invite not found" };
+        return { success: false, message: t("invite_not_found") };
       }
 
       // Verify this invite is for the current user
       if (invite.recipient_email_address !== user.value.email) {
-        return { success: false, message: "This invite is not for you" };
+        return { success: false, message: t("invite_not_for_you") };
       }
 
       // Check if invite is still valid
       if (invite.status !== "pending") {
-        return { success: false, message: "This invite is no longer valid" };
+        return { success: false, message: t("invite_no_longer_valid") };
       }
 
       if (new Date(invite.expires_at) < new Date()) {
         invite.status = "expired";
         await OnlineDB.Invite.update(inviteId, invite);
 
-        return { success: false, message: "This invite has expired" };
+        return { success: false, message: t("invite_has_expired") };
       }
 
       // Update invite status
@@ -178,10 +179,10 @@ class InviteService {
         total_reads_needed: 2, // TODO: This still needs to be fixed
       });
 
-      return { success: true, message: "Invite declined" };
+      return { success: true, message: t("invite_declined") };
     } catch (error) {
       console.error("Error declining invite:", error);
-      return { success: false, message: "Failed to decline invite. Please try again." };
+      return { success: false, message: t("failed_to_decline_invite_try_again") };
     }
   }
 
@@ -191,27 +192,27 @@ class InviteService {
   async cancelInvite(inviteId: string): Promise<{ success: boolean; message: string }> {
     try {
       if (!user.value) {
-        return { success: false, message: "User not authenticated" };
+        return { success: false, message: t("user_not_authenticated") };
       }
 
       const invite = await OnlineDB.Invite.read(inviteId);
       if (!invite) {
-        return { success: false, message: "Invite not found" };
+        return { success: false, message: t("invite_not_found") };
       }
 
       // Verify this is the sender's invite
       if (invite.sender_email_address !== user.value.email) {
-        return { success: false, message: "You can only cancel your own invites" };
+        return { success: false, message: t("you_can_only_cancel_own_invites") };
       }
 
       // Update invite status
       invite.status = "cancelled";
       await OnlineDB.Invite.update(inviteId, invite);
 
-      return { success: true, message: "Invite cancelled" };
+      return { success: true, message: t("invite_cancelled") };
     } catch (error) {
       console.error("Error cancelling invite:", error);
-      return { success: false, message: "Failed to cancel invite. Please try again." };
+      return { success: false, message: t("failed_to_cancel_invite_try_again") };
     }
   }
 
@@ -232,7 +233,7 @@ class InviteService {
 
       return invites;
     } catch (error) {
-      console.error("Error getting sent invites:", error);
+      Alert.error(t("error_getting_sent_invites") + ": " + error);
       return [];
     }
   }
@@ -267,8 +268,7 @@ class InviteService {
 
       return valid_invites;
     } catch (error) {
-      alert("ERROR: " + error);
-      console.error("Error getting received invites:", error);
+      Alert.error(t("error_getting_received_invites") + ": " + error);
       return [];
     }
   }
@@ -305,7 +305,7 @@ class InviteService {
         }
       );
     } catch (error) {
-      console.error("Error setting up sent invites subscription:", error);
+      Alert.error(t("error_setting_up_sent_invites_subscription") + ": " + error);
       return null;
     }
   }
@@ -342,7 +342,7 @@ class InviteService {
         }
       );
     } catch (error) {
-      console.error("Error setting up received invites subscription:", error);
+      Alert.error(t("error_setting_up_received_invites_subscription") + ": " + error);
       return null;
     }
   }

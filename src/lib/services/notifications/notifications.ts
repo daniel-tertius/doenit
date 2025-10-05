@@ -4,9 +4,9 @@
  */
 import { getMessaging, onMessage, type Messaging } from "firebase/messaging";
 import { LocalNotifications } from "@capacitor/local-notifications";
-import { initializeApp } from "firebase/app";
+import { initializeApp } from "$lib/chunk/firebase-app";
 import { FIREBASE_CONFIG } from "$lib";
-import { Alert } from "$lib/core";
+import { Alert } from "$lib/core/alert";
 import { PUBLIC_FIREBASE_FUNCTIONS_URL } from "$env/static/public";
 import user from "$lib/core/user.svelte";
 import { OnlineDB } from "$lib/OnlineDB";
@@ -88,7 +88,7 @@ export class Notify {
         Notify.Push.messaging = getMessaging(app);
         Notify.Push.is_initialized = true;
         onMessage(Notify.Push.messaging, (payload) => {
-          Alert.success(`Push Notification received: ${payload.notification?.body}`);
+          Alert.success(`[WERK HIERDIE OOIT?] Push Notification received: ${payload.notification?.body}`);
         });
       } catch (error) {
         Alert.error(`Push Notification initialization failed: ${error.message}`);

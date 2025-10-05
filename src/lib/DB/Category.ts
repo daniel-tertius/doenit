@@ -1,4 +1,4 @@
-import type { RxCollection } from "rxdb";
+import type { RxCollection } from "$lib/chunk/rxdb";
 import { Table } from "./_Table";
 
 export class CategoryTable extends Table<Category> {

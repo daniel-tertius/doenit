@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
-  import { InputCheckbox } from "../element/input";
+  import InputCheckbox from "../element/input/InputCheckbox.svelte";
   import { Categories, Important, Shared } from "$lib/icon";
   import TaskDueDate from "./TaskDueDate.svelte";
   import TaskContainer from "./TaskContainer.svelte";
@@ -47,7 +47,7 @@
    */
   function handleSelect(event) {
     event.stopPropagation();
-    setTimeout(() => onselect(task), 500);
+    setTimeout(() => onselect(task), 400);
   }
 
   /**

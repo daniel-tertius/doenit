@@ -1,7 +1,7 @@
 import { deleteObject, getStorage, ref, uploadBytes } from "firebase/storage";
 import { FirebaseStorage } from "@capacitor-firebase/storage";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { getApp, initializeApp } from "firebase/app";
+import { getApp, initializeApp } from "$lib/chunk/firebase-app";
 import { FIREBASE_CONFIG } from "$lib";
 
 class Files {

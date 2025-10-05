@@ -3,7 +3,7 @@ import { type User } from "./user.svelte";
 
 class CacheHandler<T> {
   private key: string;
-  private private_value: T | null = null;
+  private private_value: T | null = $state(null);
 
   constructor(key: string) {
     this.key = key;
@@ -15,8 +15,7 @@ class CacheHandler<T> {
   }
 
   set value(data: T) {
-    if (data === this.private_value) return;
-
+    // Do NOT: if (this.private_value === data) return;
     if (data == null) {
       this.private_value = null;
       this.remove();
@@ -82,4 +81,5 @@ export class Cached {
   static readonly textSettings = new CacheHandler<{ size: 16 | 20 | 24 }>("text_settings");
   static readonly lastBackup = new CacheHandler<string | null>("last_backup");
   static readonly automaticBackup = new CacheHandler<boolean>("automatic_backup");
+  static readonly rateUs = new CacheHandler<RateUsSetting>("rate_us");
 }

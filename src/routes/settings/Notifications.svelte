@@ -2,7 +2,8 @@
   import { slide } from "svelte/transition";
   import { notifications } from "$lib/services/notification.svelte";
   import { XCircle, Clock, Loading } from "$lib/icon";
-  import { InputSwitch, InputTime } from "$lib/components/element/input";
+  import InputSwitch from "$lib/components/element/input/InputSwitch.svelte";
+  import InputTime from "$lib/components/element/input/InputTime.svelte";
   import { t } from "$lib/services/language.svelte";
   import Accordion from "$lib/components/element/Accordion.svelte";
   import Check from "$lib/icon/Check.svelte";

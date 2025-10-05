@@ -1,6 +1,5 @@
 import { arrayUnion, arrayRemove, setDoc } from "firebase/firestore";
 import { Table } from "./_OnlineTable";
-import { Notify } from "$lib/services/notifications/notifications";
 
 export class ChangeLogTable extends Table<Changelog> {
   constructor() {

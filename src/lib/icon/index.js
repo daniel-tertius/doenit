@@ -18,6 +18,7 @@ import Info from "./Info.svelte";
 import Leave from "./Leave.svelte";
 import Loading from "./Loading.svelte";
 import Lock from "./Lock.svelte";
+import Mail from "./Mail.svelte";
 import Moon from "./Moon.svelte";
 import More from "./More.svelte";
 import New from "./New.svelte";
@@ -57,6 +58,7 @@ export {
   Leave,
   Loading,
   Lock,
+  Mail,
   Moon,
   More,
   New,

@@ -3,12 +3,11 @@
   import { goto } from "$app/navigation";
   import { Check, Loading, Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
-  import { InputCheckbox } from "$lib/components/element/input";
+  import InputCheckbox from "$lib/components/element/input/InputCheckbox.svelte";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
-  import { normalize } from "$lib";
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
   import { navigating } from "$app/state";

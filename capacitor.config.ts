@@ -33,8 +33,10 @@ const config: CapacitorConfig = {
     GoogleAuth: {
       clientId: process.env.PUBLIC_GOOGLE_AUTH || "",
       scopes: ["profile", "email"],
-      grantOfflineAccess: true,
     },
+    EdgeToEdge: {
+      backgroundColor: "#2b2f31",
+    }
   },
   android: {
     buildOptions: {

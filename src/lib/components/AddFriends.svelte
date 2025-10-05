@@ -1,9 +1,9 @@
 <script>
   import { inviteService } from "$lib/services/invites.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { InputText } from "./element/input";
+  import InputText from "./element/input/InputText.svelte";
   import { slide } from "svelte/transition";
-  import { Button } from "./element/button";
+  import Button from "./element/button/Button.svelte";
   import { Plus } from "$lib/icon";
   import { isValidEmail, normalize } from "$lib";
   import user from "$lib/core/user.svelte";

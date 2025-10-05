@@ -1,7 +1,10 @@
 <script>
-  import { Alert } from "$lib/core";
+  import Modal from "$lib/components/modal/Modal.svelte";
+  import { Alert } from "$lib/core/alert";
   import user, { signIn, signOut } from "$lib/core/user.svelte";
   import { t } from "$lib/services/language.svelte";
+
+  let is_open = $state(false);
 
   async function handleSignIn() {
     const result = await signIn();
@@ -10,7 +13,9 @@
     Alert.error(result.error_message || t("something_went_wrong"));
   }
 
-  async function handleSignout() {
+  async function handleSignOut() {
+    is_open = false;
+
     const result = await signOut();
     if (result.success) return;
 
@@ -34,33 +39,41 @@
       {t("log_in_with_google")}
     </button>
   {:else}
-    <div class="flex justify-start gap-4 w-full">
-      <!-- Profile Picture -->
-      <img
-        src={user.value.avatar}
-        alt={t("profile")}
-        class="w-13 h-13 my-auto rounded-full"
-        referrerpolicy="no-referrer"
-      />
+    <button
+      aria-label="teken uit"
+      type="button"
+      class="flex justify-start gap-4 w-full"
+      onclick={() => (is_open = true)}
+    >
+      {#if user.value.avatar}
+        <img
+          src={user.value.avatar}
+          alt={t("profile")}
+          class="w-13 h-13 my-auto rounded-full"
+          referrerpolicy="no-referrer"
+        />
+      {/if}
 
-      <!-- User Info -->
       <div class="space-y-0.5">
         <h2 class="text-2xl font-semibold">
           {user.value.name}
         </h2>
-        <p class="text-sm text-muted">
+        <p class="text-sm font-medium text-muted">
           {user.value.email}
         </p>
       </div>
-
-      <button
-        type="button"
-        aria-label={t("sign_out")}
-        class="underline text-sm text-muted opacity-80 absolute top-4 right-4"
-        onclick={handleSignout}
-      >
-        {t("sign_out")}
-      </button>
-    </div>
+    </button>
   {/if}
 </div>
+
+<Modal bind:is_open class="max-w-[80%]!" onclose={() => (is_open = false)}>
+  <div class="font-medium mb-2 text-lg">{t("sign_out")}?</div>
+  <div class="flex gap-1 w-full justify-between">
+    <button class="py-1 px-3 w-20 h-10 bg-card rounded-lg" onclick={() => (is_open = false)}>
+      {t("no")}
+    </button>
+    <button class="py-1 px-3 w-20 h-10 bg-primary rounded-lg text-alt" onclick={() => handleSignOut()}>
+      {t("yes")}
+    </button>
+  </div>
+</Modal>

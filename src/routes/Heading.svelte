@@ -1,12 +1,12 @@
 <script>
   import { page } from "$app/state";
   import { fade, fly, slide } from "svelte/transition";
-  import { ButtonBack } from "$lib/components/element/button";
+  import ButtonBack from "$lib/components/element/button/ButtonBack.svelte";
   import DeleteAll from "../lib/components/DeleteAll.svelte";
   import { t } from "$lib/services/language.svelte";
   import { Selected } from "$lib/selected";
-  import { ButtonSearchTask } from "$lib/components/element/button";
-  import { InputText } from "$lib/components/element/input";
+  import ButtonSearchTask from "$lib/components/element/button/ButtonSearchTask.svelte";
+  import InputText from "$lib/components/element/input/InputText.svelte";
   import { getContext, untrack } from "svelte";
 
   /** @type {Record<string, string>} */
@@ -52,15 +52,17 @@
       </div>
     </div>
 
-    {#if Selected.tasks.size}
-      <DeleteAll />
-    {:else if is_home}
-      <ButtonSearchTask
-        onclick={(show) => {
-          show_searchbar = show;
-        }}
-      />
-    {/if}
+    <div class="h-full aspect-square ml-2 flex items-center justify-start">
+      {#if Selected.tasks.size}
+        <DeleteAll />
+      {:else if is_home}
+        <ButtonSearchTask
+          onclick={(show) => {
+            show_searchbar = show;
+          }}
+        />
+      {/if}
+    </div>
   </div>
 
   {#if show_searchbar}

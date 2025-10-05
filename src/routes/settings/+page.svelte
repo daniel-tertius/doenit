@@ -2,7 +2,7 @@
   import About from "./About.svelte";
   import Backup from "./Backup.svelte";
   import Notifications from "./Notifications.svelte";
-  import Support from "./Support.svelte";
+  import SupportMe from "./SupportMe.svelte";
   import Appearance from "./Appearance.svelte";
   import UserDisplay from "./UserDisplay.svelte";
 </script>
@@ -12,6 +12,6 @@
   <Appearance />
   <Notifications />
   <Backup />
-  <Support />
+  <SupportMe />
   <About />
 </div>

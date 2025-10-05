@@ -1,6 +1,5 @@
-import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema";
-import { getRxStorageDexie } from "rxdb/plugins/storage-dexie";
-import { addRxPlugin, createRxDatabase } from "rxdb";
+import { addRxPlugin, createRxDatabase } from "$lib/chunk/rxdb";
+import { getRxStorageDexie, RxDBMigrationSchemaPlugin } from "$lib/chunk/rxdb_helper";
 import { CategoryTable } from "./DB/Category";
 import { TaskTable } from "./DB/Task";
 import { RoomTable } from "./DB/Room";

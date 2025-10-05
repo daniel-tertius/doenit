@@ -1,5 +1,6 @@
 <script>
-  import { ButtonMainSubmit, ButtonNavbar } from "$lib/components/element/button";
+  import ButtonMainSubmit from "$lib/components/element/button/ButtonMainSubmit.svelte";
+  import ButtonNavbar from "$lib/components/element/button/ButtonNavbar.svelte";
   import CategoryFilter from "$lib/components/CategoryFilter.svelte";
   import AddFriends from "$lib/components/AddFriends.svelte";
   import { page } from "$app/state";

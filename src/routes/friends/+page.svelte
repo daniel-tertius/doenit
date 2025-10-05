@@ -2,7 +2,7 @@
   import InputText from "$lib/components/element/input/InputText.svelte";
   import { CardInvite, CardRoom } from "$lib/components/element/card";
   import { inviteService } from "$lib/services/invites.svelte";
-  import { Button } from "$lib/components/element/button";
+  import Button from "$lib/components/element/button/Button.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
   import { t } from "$lib/services/language.svelte";
   import { OnlineDB } from "$lib/OnlineDB";
@@ -10,7 +10,7 @@
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
   import user from "$lib/core/user.svelte";
-  import { Alert } from "$lib/core";
+  import { Alert } from "$lib/core/alert";
   import { Notify } from "$lib/services/notifications/notifications";
 
   /** @type {Room[]} */
@@ -178,7 +178,6 @@
       {/if}
     {/each}
 
-    <!-- Current Friends (Rooms) -->
     {#each rooms as room}
       <CardRoom {...room} onedit={() => handleEdit(room)} />
     {:else}
@@ -191,7 +190,6 @@
   </div>
 {/if}
 
-<!-- Edit Room Modal -->
 <Modal bind:is_open={open} title={t("edit_room")} onclose={handleClose}>
   <span class="pb-1">{t("choose_room_name")}</span>
   <InputText bind:value={room_name} focus_on_mount placeholder={t("choose_room_name")} disabled={edit_room_loading} />

@@ -8,10 +8,6 @@ class Theme {
   #value: ThemeValue = $state("dark");
   #edge_to_edge_bg_colour: string = $derived(this.#value === "dark" ? DEFAULT_HEX_COLOR : "#F5F5F5");
 
-  constructor() {
-    this.init();
-  }
-
   async init() {
     let theme = await cached_theme.get();
     if (!theme) {

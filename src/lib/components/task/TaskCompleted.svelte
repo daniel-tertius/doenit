@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
-  import { InputCheckbox } from "../element/input";
+  import InputCheckbox from "../element/input/InputCheckbox.svelte";
   import TaskDueDate from "./TaskDueDate.svelte";
   import { Categories, Sync } from "$lib/icon";
   import TaskContainer from "./TaskContainer.svelte";
@@ -36,7 +36,9 @@
   onMount(async () => {
     if (!task.category_id) return;
 
-    category = await DB.Category.get(task.category_id);
+    try {
+      category = await DB.Category.getOne({ selector: { id: task.category_id, archived: { $ne: true } } });
+    } catch (error) {}
   });
 
   /**
@@ -45,7 +47,7 @@
    */
   function handleSelect(event) {
     event.stopPropagation();
-    setTimeout(() => onselect(task), 500);
+    setTimeout(() => onselect(task), 400);
   }
 </script>
 
