@@ -54,16 +54,8 @@ class PushNotificationService {
   private setupMessageListener() {
     // Listen for messages when app is in foreground
     FirebaseMessaging.addListener("notificationReceived", (notification) => {
-      // Check if it's an invite notification
-      const notificationData = (notification as any).data;
-      const notificationType = notificationData?.type || "unknown";
-      
-      if (notificationType === "friend_invite") {
-        Alert.success(t("received_friend_invite_notification"));
-        this.handleInviteNotification(notification);
-      } else {
-        Alert.success(t("received_notification", { type: notificationType }));
-      }
+      Alert.success(notification.notification.title ?? "Nuwe vriend uitnodiging");
+      this.handleInviteNotification(notification);
     });
 
     // Listen for notification taps (when app is in background)

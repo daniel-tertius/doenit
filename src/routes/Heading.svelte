@@ -23,6 +23,7 @@
   const title = $derived(TITLES[page.route.id ?? "/"] || t("task_list"));
   const search_text = getContext("search_text");
   const is_home = $derived(page.route.id === "/");
+  const is_done = $derived(page.route.id === "/complete");
 
   let show_searchbar = $state(false);
 
@@ -55,12 +56,8 @@
     <div class="h-full aspect-square ml-2 flex items-center justify-start">
       {#if Selected.tasks.size}
         <DeleteAll />
-      {:else if is_home}
-        <ButtonSearchTask
-          onclick={(show) => {
-            show_searchbar = show;
-          }}
-        />
+      {:else if is_home || is_done}
+        <ButtonSearchTask bind:show={show_searchbar} />
       {/if}
     </div>
   </div>

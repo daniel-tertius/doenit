@@ -217,28 +217,6 @@ class InviteService {
   }
 
   /**
-   * Get pending invites sent by current user
-   */
-  async getSentInvites(): Promise<Invite[]> {
-    try {
-      if (!user.value) return [];
-
-      const invites = await OnlineDB.Invite.getAll({
-        filters: [
-          { field: "sender_email_address", operator: "==", value: user.value.email },
-          { field: "status", operator: "==", value: "pending" },
-        ],
-        sort: [{ field: "created_at", direction: "desc" }],
-      });
-
-      return invites;
-    } catch (error) {
-      Alert.error(t("error_getting_sent_invites") + ": " + error);
-      return [];
-    }
-  }
-
-  /**
    * Get pending invites received by current user
    */
   async getReceivedInvites(): Promise<Invite[]> {

@@ -14,6 +14,7 @@
   function onselect(event) {
     event.stopPropagation();
 
+    Selected.tasks.clear();
     if (is_selected) {
       Selected.categories.delete(id);
     } else {

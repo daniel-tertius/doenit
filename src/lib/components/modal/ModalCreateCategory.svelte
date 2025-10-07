@@ -58,7 +58,7 @@
 
   <button
     class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-md ml-auto mt-4"
-    type="button"
+    type="submit"
     onclick={addCategory}
   >
     <Plus size={18} />

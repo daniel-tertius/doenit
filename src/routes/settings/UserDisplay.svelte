@@ -69,10 +69,10 @@
 <Modal bind:is_open class="max-w-[80%]!" onclose={() => (is_open = false)}>
   <div class="font-medium mb-2 text-lg">{t("sign_out")}?</div>
   <div class="flex gap-1 w-full justify-between">
-    <button class="py-1 px-3 w-20 h-10 bg-card rounded-lg" onclick={() => (is_open = false)}>
+    <button type="button" class="py-1 px-3 w-20 h-10 bg-card rounded-lg" onclick={() => (is_open = false)}>
       {t("no")}
     </button>
-    <button class="py-1 px-3 w-20 h-10 bg-primary rounded-lg text-alt" onclick={() => handleSignOut()}>
+    <button type="button" class="py-1 px-3 w-20 h-10 bg-primary rounded-lg text-alt" onclick={() => handleSignOut()}>
       {t("yes")}
     </button>
   </div>

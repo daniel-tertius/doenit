@@ -126,8 +126,8 @@
       }
 
       await Notify.Push.send({
-        title: "Left Group",
-        body: `${user.value.name} have left the group "${room.name}"`,
+        title: t("left_group"),
+        body: t("user_left_group", { user_name: user.value.name, room_name: room.name }),
         email_address: email_addresses,
       });
 
@@ -190,7 +190,7 @@
   </div>
 {/if}
 
-<Modal bind:is_open={open} title={t("edit_room")} onclose={handleClose}>
+<Modal bind:is_open={open} onclose={handleClose}>
   <span class="pb-1">{t("choose_room_name")}</span>
   <InputText bind:value={room_name} focus_on_mount placeholder={t("choose_room_name")} disabled={edit_room_loading} />
 
@@ -212,7 +212,7 @@
 
     <button
       class="bg-primary w-full flex gap-1 items-center text-alt px-4 py-2 rounded-lg justify-center"
-      type="button"
+      type="submit"
       disabled={edit_room_loading}
       onclick={saveRoom}
     >

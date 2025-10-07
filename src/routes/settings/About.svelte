@@ -29,7 +29,7 @@
         type="button"
         aria-label={t("rate_doenit")}
         onclick={handleRateApp}
-        class="w-full justify-center h-12 bg-card border-default border text-alt rounded-md flex items-center gap-2"
+        class="w-full justify-center h-12 bg-card border-default border rounded-md flex items-center gap-2"
       >
         <Star class="text-xl" />
         {t("rate_doenit")}
@@ -44,7 +44,7 @@
         type="button"
         aria-label={t("send_email")}
         href="mailto:{SUPPORT_EMAIL}"
-        class="w-full justify-center h-12 bg-card border-default border text-alt rounded-md items-center flex gap-2"
+        class="w-full justify-center h-12 bg-card border-default border rounded-md items-center flex gap-2"
       >
         <Mail class="text-xl" />
         {t("send_email")}

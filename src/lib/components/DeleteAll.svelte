@@ -86,7 +86,7 @@
   </p>
   <button
     class="bg-error flex gap-1 items-center text-alt ml-auto px-4 py-2 rounded-md"
-    type="button"
+    type="submit"
     onclick={deleteAll}
   >
     <Trash class="h-full" size={18} />

@@ -15,7 +15,7 @@
   <div class="flex gap-2 mt-2" transition:slide>
     <button
       type="button"
-      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
         date = today.toLocaleDateString("en-CA");
       }}
@@ -25,7 +25,7 @@
     </button>
     <button
       type="button"
-      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
         date = tomorrow.toLocaleDateString("en-CA");
       }}
@@ -35,7 +35,7 @@
     </button>
     <button
       type="button"
-      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
         date = in_a_week.toLocaleDateString("en-CA");
       }}
@@ -45,7 +45,7 @@
     </button>
     <button
       type="button"
-      class="bg-card p-1 rounded-lg border border-default w-full text-sm shadow-sm"
+      class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
         date = in_a_month.toLocaleDateString("en-CA");
       }}

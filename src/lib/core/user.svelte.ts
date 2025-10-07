@@ -13,7 +13,7 @@ import {
 } from "firebase/auth";
 import { Value } from "$lib/utils.svelte";
 
-export class User {
+class User {
   private _user = $state() as FirebaseUser;
   private _message_token: string | null = $state(null);
 

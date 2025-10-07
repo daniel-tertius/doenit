@@ -161,8 +161,8 @@
       }
 
       await Notify.Push.send({
-        title: "Task Completed",
-        body: `"${task.name}" was completed`,
+        title: t("task_completed"),
+        body: t("task_was_completed", { task_name: task.name }),
         email_address: email_addresses,
       });
     }

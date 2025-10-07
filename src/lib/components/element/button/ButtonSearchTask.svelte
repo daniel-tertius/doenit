@@ -1,20 +1,16 @@
 <script>
   import { Search } from "$lib/icon";
-  import { fade } from "svelte/transition";
 
   /**
    * @typedef {Object} Props
-   * @property {(p0: boolean) => void} [onclick]
+   * @property {boolean} [show=false] - Indicates if the search bar is shown.
    */
 
   /** @type {Props} */
-  const { onclick = () => {} } = $props();
-
-  let show = $state(false);
+  let { show = $bindable() } = $props();
 
   function handleClick() {
     show = !show;
-    onclick(show);
   }
 </script>
 

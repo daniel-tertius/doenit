@@ -17,6 +17,7 @@
 
   let task = $state(data.task);
   let is_deleting = $state(false);
+  let is_saving = $state(false);
   let error = $state({});
   let other_interval = $state(data.task.repeat_interval_number > 1 ? data.task.repeat_interval : "");
 
@@ -40,6 +41,7 @@
   async function onsubmit(event) {
     try {
       event.preventDefault();
+      is_saving = true;
 
       if (task.repeat_interval_number > 1) {
         task.repeat_interval = other_interval;
@@ -52,19 +54,36 @@
       }
 
       if (user.value && task.room_id) {
-
         const room = await DB.Room.get(task.room_id);
         if (room) {
+          const email_address = user.value.email;
           await OnlineDB.Changelog.create({
             type: "change",
             data: JSON.stringify(task),
             room_id: task.room_id,
             total_reads_needed: room.users.length,
-            user_reads_list: [user.value.email],
+            user_reads_list: [email_address],
           });
+
+          const is_task_shared = !data.task.room_id;
+          if (is_task_shared) {
+            const email_addresses = [];
+            for (const { email, pending } of room.users) {
+              if (email && email !== email_address && !pending) {
+                email_addresses.push(email);
+              }
+            }
+
+            await Notify.Push.send({
+              title: t("task_shared"),
+              body: t("task_was_shared", { task_name: task.name }),
+              email_address: email_addresses,
+            });
+          }
         }
       }
 
+      is_saving = false;
       await goto("/");
     } catch (error) {
       Alert.error(`${t("error_updating_task")}: ${error}`);
@@ -113,8 +132,8 @@
         }
 
         await Notify.Push.send({
-          title: "Task Completed",
-          body: `"${task.name}" was completed`,
+          title: t("task_completed"),
+          body: t("task_was_completed", { task_name: task.name }),
           email_address: email_addresses,
         });
       }
@@ -153,10 +172,11 @@
 <button
   type="submit"
   form="form"
+  disabled={is_saving || !!navigating.to}
   class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
   aria-label={t("create_new_item")}
 >
-  {#if navigating.to}
+  {#if is_saving || navigating.to}
     <Loading class="text-2xl" />
   {:else}
     <Check class="text-2xl" />
@@ -168,7 +188,7 @@
   <p>{t("delete_task_confirmation")}</p>
   <button
     class="bg-error flex gap-1 items-center text-alt ml-auto px-4 py-2 rounded-md"
-    type="button"
+    type="submit"
     onclick={deleteTask}
   >
     <Trash class="h-full" size={18} />

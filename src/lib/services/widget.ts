@@ -3,6 +3,7 @@ import { OnlineDB } from "$lib/OnlineDB";
 import user from "$lib/core/user.svelte";
 import { DB } from "$lib/DB";
 import { Notify } from "./notifications/notifications";
+import { t } from "$lib/services/language.svelte";
 
 export interface TaskWidgetPlugin {
   updateWidget({
@@ -37,7 +38,7 @@ export class Widget {
       console.log("[💬 Widget]:", JSON.stringify(result));
     } catch (error) {
       console.error("[💬 Widget]:", error);
-      alert("Failed to update widget:" + JSON.stringify(error));
+      alert(t("failed_to_update_widget") + " " + JSON.stringify(error));
     }
   }
 
@@ -82,8 +83,8 @@ export class Widget {
       }
 
       await Notify.Push.send({
-        title: "Task Completed",
-        body: `"${task.name}" was completed`,
+        title: t("task_completed"),
+        body: t("task_was_completed", { task_name: task.name }),
         email_address: email_addresses,
       });
     });

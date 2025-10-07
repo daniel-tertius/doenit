@@ -54,7 +54,7 @@
   <!-- TODO: Wys wanneer dit laas gedoen is (as dit voorheen gedoen was). -->
   <div class="flex justify-end space-x-4">
     <button
-      type="button"
+      type="submit"
       aria-label={t("backup_aria")}
       class="text-md items-center justify-center text-alt px-4 py-2 flex gap-1 bg-primary rounded-lg"
       onclick={handleClick}

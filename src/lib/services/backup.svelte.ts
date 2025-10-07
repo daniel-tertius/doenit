@@ -6,6 +6,8 @@ import { DB } from "$lib/DB";
 import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
 import DateUtil from "$lib/DateUtil";
 import { Cached } from "$lib/core/cache.svelte";
+import { Alert } from "$lib/core/alert";
+import User from "$lib/core/user.svelte";
 
 class BackupClass {
   last_backup_at: string = $state("Never");
@@ -52,7 +54,7 @@ class BackupClass {
       }
 
       const last_backup_at = last_backup_str ? new Date(last_backup_str) : null;
-      this.last_backup_at = last_backup_at ? DateUtil.format(last_backup_at, "ddd, DD MMM YYYY, HH:mm") : "Never";
+      this.last_backup_at = last_backup_at ? DateUtil.format(last_backup_at, "ddd, DD MMM YYYY, HH:mm") : t("never");
 
       // If more than a day ago, create a backup
       const time_diff_ms = last_backup_at ? Date.now() - +last_backup_at : Infinity;
@@ -64,14 +66,14 @@ class BackupClass {
         }
       }
     } catch (error) {
-      console.error("Error checking last backup:", error);
+      Alert.error(t("error_checking_last_backup") + " " + error);
     }
     this.is_loading = false;
   }
 
   private async getLastBackupTime(): Promise<string | null> {
     try {
-      const user_id = Cached.user.value?.uid;
+      const user_id = User.value?.uid;
       if (!user_id) return null;
 
       const [backup] = await OnlineDB.BackupManifest.getAll({
@@ -88,16 +90,15 @@ class BackupClass {
       await cached_last_backup.set(backup.timestamp);
       return backup.timestamp;
     } catch (error) {
-      // TODO: Translation
-      console.error("Error fetching last backup time:", error);
+      Alert.error(t("error_fetching_last_backup_time") + " " + error);
       return null;
     }
   }
 
   async createBackup(): Promise<SimpleResult> {
     try {
-      const user_id = Cached.user.value?.uid;
-      if (!user_id) return { success: false, error_message: "User not signed in" };
+      const user_id = User.value?.uid;
+      if (!user_id) return { success: false, error_message: t("user_not_logged_in") };
 
       const tasks = await DB.Task.getAll({
         selector: { archived: { $ne: true } },
@@ -122,8 +123,7 @@ class BackupClass {
         ],
       });
       if (existing_backups.length > 0) {
-        // TODO: Translation
-        return { success: false, error_message: "Geen veranderinge sedert verlede rugsteun." };
+        return { success: false, error_message: t("no_changes_since_last_backup") };
       }
 
       // Max 3 backups per user
@@ -140,7 +140,7 @@ class BackupClass {
       const file_path = `users/${user_id}/snapshots/${new Date().toISOString()}.bin`;
       const uploadResult = await Files.upload(file_path, encrypted_blob);
       if (!uploadResult.success) {
-        throw new Error(uploadResult.error_message || "File upload failed");
+        throw new Error(uploadResult.error_message || t("file_upload_failed"));
       }
 
       await OnlineDB.BackupManifest.create({
@@ -155,8 +155,8 @@ class BackupClass {
       this.last_backup_at = DateUtil.format(new Date(), "ddd, DD MMM YYYY, HH:mm");
       return { success: true };
     } catch (error) {
-      alert("Backup failed: " + (error as Error).message || "Something went wrong");
-      return { success: false, error_message: (error as Error).message || "Something went wrong" };
+      Alert.error(t("backup_failed") + " " + ((error as Error).message || t("something_went_wrong")));
+      return { success: false, error_message: (error as Error).message || t("something_went_wrong") };
     }
   }
 
@@ -165,18 +165,18 @@ class BackupClass {
 
     try {
       if (!manifest) {
-        throw new Error("No backup data found");
+        throw new Error(t("no_backup_data_found"));
       }
 
       const blob = await Files.download(manifest.file_path);
       const encrypted_data = await blob.text();
       if (!encrypted_data) {
-        throw new Error("Failed to read backup data");
+        throw new Error(t("failed_to_read_backup_data"));
       }
 
       const data = await this.decryptAndDecompress(encrypted_data);
       if (!data.tasks || !data.categories) {
-        throw new Error("Invalid backup data format");
+        throw new Error(t("invalid_backup_data_format"));
       }
 
       // Clear data.
@@ -194,15 +194,15 @@ class BackupClass {
       return { success: true };
     } catch (error) {
       this.is_loading = false;
-      alert("Backup restoration failed: " + (error as Error).message);
-      return { success: false, error_message: (error as Error).message || "Something went wrong" };
+      Alert.error(t("backup_restoration_failed") + " " + (error as Error).message);
+      return { success: false, error_message: (error as Error).message || t("something_went_wrong") };
     }
   }
 
   async getBackup(): Promise<Result<BackupManifest>> {
     try {
-      const user_id = Cached.user.value?.uid;
-      if (!user_id) return { success: false, error_message: "User not signed in" };
+      const user_id = User.value?.uid;
+      if (!user_id) return { success: false, error_message: t("user_not_logged_in") };
 
       const backup_manifests = await OnlineDB.BackupManifest.getAll({
         filters: [{ field: "user_id", operator: "==", value: user_id }],
@@ -211,14 +211,14 @@ class BackupClass {
 
       return { success: true, data: backup_manifests[0] };
     } catch (error) {
-      console.error("Listing backups failed:", error);
-      return { success: false, error_message: (error as Error).message || "Something went wrong" };
+      console.error(t("listing_backups_failed"), error);
+      return { success: false, error_message: (error as Error).message || t("something_went_wrong") };
     }
   }
 
   private async compressAndEncrypt(data: any): Promise<string> {
     try {
-      const { gzip } = await import("pako"); 
+      const { gzip } = await import("pako");
 
       // Convert data to JSON string
       const jsonString = JSON.stringify(data);
@@ -248,9 +248,10 @@ class BackupClass {
 
       return result;
     } catch (error) {
-      console.error("Error compressing and encrypting data:", error);
-      alert("Error during compression and encryption: " + (error.stack || error));
-      throw new Error("Failed to compress and encrypt data" + (error.stack || error));
+      console.error(t("error_compressing_encrypting"), error);
+      const errorMessage = error instanceof Error ? error.stack || error.message : String(error);
+      Alert.error(t("error_compressing_encrypting") + " " + errorMessage);
+      throw new Error(t("failed_to_compress_encrypt") + " " + errorMessage);
     }
   }
 
@@ -275,16 +276,15 @@ class BackupClass {
       const compressed = Uint8Array.from(atob(compressedBase64), (c) => c.charCodeAt(0));
 
       // Decompress the data
-      const { ungzip } = await import("pako"); 
+      const { ungzip } = await import("pako");
       const decompressed = ungzip(compressed, { to: "string" });
 
       // Parse JSON and return
       const result = JSON.parse(decompressed);
       return result;
     } catch (error) {
-      // TODO: Translation
-      console.error("Error decrypting and decompressing data:", error);
-      throw new Error("Error during decryption/decompression: " + (error as Error).message);
+      console.error(t("error_decrypting_decompressing"), error);
+      throw new Error(t("error_during_decryption_decompression") + " " + (error as Error).message);
     }
   }
 

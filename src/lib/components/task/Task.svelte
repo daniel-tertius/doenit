@@ -69,6 +69,7 @@
 
 <TaskContainer
   {tick_animation}
+  id={task.id}
   class={{
     border: true,
     "bg-success/20 border-success text-alt": is_ongoing && !is_selected && !is_past,

@@ -2,17 +2,10 @@ import type { RxCollection } from "$lib/chunk/rxdb";
 import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
 import { DB } from "$lib/DB";
-import { RateApp } from "$lib/services/rateApp";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
     super(collection);
-  }
-
-  async create(task: Omit<Task, "id" | "created_at" | "archived">): Promise<Task> {
-    const result = await super.create(task);
-
-    return result;
   }
 
   async completeId(task_id: string) {
@@ -76,7 +69,7 @@ export class TaskTable extends Table<Task> {
         await this.delete(change.task_id);
         break;
       case "complete":
-        await this.completeId(change.task_id);
+        await this.completeId(change.task_id).catch(() => null);
       default:
         break;
     }

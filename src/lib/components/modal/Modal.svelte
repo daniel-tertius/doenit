@@ -42,7 +42,7 @@
     onclick={onclose}
     role="none"
   >
-    <div
+    <form
       class={[
         "relative shadow-lg max-h-[90dvh] w-[500px] max-w-[90dvw] overflow-y-auto rounded-lg bg-surface p-4",
         close_button && "pt-5",
@@ -62,6 +62,6 @@
         </button>
       {/if}
       {@render children()}
-    </div>
+    </form>
   </div>
 {/if}

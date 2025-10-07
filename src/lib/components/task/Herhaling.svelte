@@ -223,7 +223,7 @@
 
   <button
     class="bg-primary text-alt rounded-lg h-12 w-40 ml-auto flex gap-1 items-center justify-center"
-    type="button"
+    type="submit"
     onclick={() => {
       save();
     }}

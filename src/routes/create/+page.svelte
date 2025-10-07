@@ -10,6 +10,7 @@
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
   import { RateApp } from "$lib/services/rateApp.js";
+  import { Alert } from "$lib/core/alert.js";
 
   let { data } = $props();
 
@@ -17,24 +18,33 @@
 
   let other_interval = $state("");
   let error = $state({});
+  let is_saving = $state(false);
 
   /**
    * @param {Event} event
    */
   async function onsubmit(event) {
-    event.preventDefault();
+    try {
+      event.preventDefault();
 
-    if (task.repeat_interval_number > 1) {
-      task.repeat_interval = other_interval;
+      is_saving = true;
+
+      if (task.repeat_interval_number > 1) {
+        task.repeat_interval = other_interval;
+      }
+
+      const result = await createTask(task);
+      if (!result.success) {
+        error = result.error;
+        return;
+      }
+
+      await goto(`/?new_id=${result.task.id}`);
+    } catch (error) {
+      Alert.error(`${t("error_creating_task")}: ${error}`);
     }
 
-    const result = await createTask(task);
-    if (!result.success) {
-      error = result.error;
-      return;
-    }
-
-    await goto(`/?new_id=${result.task.id}`);
+    is_saving = false;
   }
 
   /**
@@ -79,11 +89,12 @@
       }
 
       await Notify.Push.send({
-        title: "Task Created",
-        body: `"${task.name}" was created`,
+        title: t("task_created"),
+        body: t("task_was_created", { task_name: task.name }),
         email_address: email_addresses,
       });
     }
+
     return { success: true, task: new_task };
   }
 
@@ -129,8 +140,9 @@
   form="form"
   class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
   aria-label={t("create_new_item")}
+  disabled={is_saving || !!navigating.to}
 >
-  {#if navigating.to}
+  {#if is_saving || navigating.to}
     <Loading class="text-2xl" />
   {:else}
     <Check class="text-2xl" />

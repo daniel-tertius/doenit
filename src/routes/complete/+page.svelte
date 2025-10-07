@@ -3,14 +3,19 @@
   import { Haptics } from "@capacitor/haptics";
   import { Selected } from "$lib/selected";
   import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
+  import { normalize } from "$lib";
 
   Selected.tasks.clear();
 
+  const search_text = getContext("search_text");
+
   /** @type {Task[]}*/
   let tasks = $state([]);
+
+  const filtered_tasks = $derived(filterTasks(tasks, search_text.value));
 
   onMount(() => {
     const sub = DB.Task.subscribe((result) => (tasks = result), {
@@ -55,10 +60,28 @@
   async function handleSelect(task) {
     await DB.Task.uncomplete(task);
   }
+
+  /**
+   * @param {Task[]} tasks
+   * @param {string} search_text
+   * @returns {Task[]}
+   */
+  function filterTasks(tasks, search_text) {
+    return tasks.filter((task) => {
+      if (!!search_text?.trim().length) {
+        const normalized_search = normalize(search_text);
+        const in_name = normalize(task.name).includes(normalized_search);
+        const in_description = normalize(task.description || "").includes(normalized_search);
+        if (!in_name && !in_description) return false;
+      }
+
+      return true;
+    });
+  }
 </script>
 
 <div class="space-y-1.5">
-  {#each tasks as task (task.id)}
+  {#each filtered_tasks as task (task.id)}
     <TaskCompleted
       {task}
       onclick={() => handleClick(task)}

@@ -153,7 +153,7 @@
 
       <button
         class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-lg ml-auto"
-        type="button"
+        type="submit"
         onclick={editCategory}
       >
         <Check class="h-full" size={18} />

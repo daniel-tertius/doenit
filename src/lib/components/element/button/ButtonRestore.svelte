@@ -70,7 +70,9 @@
     <div class="mb-4">
       <h2 class="text-lg font-semibold">{t("restore_data")}</h2>
       <p class="text-muted">
-        {t("latest_backup_made_on", { timestamp: DateUtil.format(new Date(selected_backup.timestamp), "DD MMM YYYY, HH:mm") })}
+        {t("latest_backup_made_on", {
+          timestamp: DateUtil.format(new Date(selected_backup.timestamp), "DD MMM YYYY, HH:mm"),
+        })}
       </p>
     </div>
 
@@ -86,7 +88,7 @@
     </div>
 
     <button
-      type="button"
+      type="submit"
       disabled={is_loading}
       class="w-full mt-4 h-12 p-2 bg-primary text-alt rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
       transition:slide

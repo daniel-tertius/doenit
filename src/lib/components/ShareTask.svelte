@@ -7,6 +7,7 @@
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
   import user from "$lib/core/user.svelte";
+  import Modal from "./modal/Modal.svelte";
 
   /**
    * @typedef {Object} Props
@@ -70,43 +71,41 @@
   </div>
 {/if}
 
-{#if show}
-  <div
-    class="fixed top-0 left-0 w-full h-full flex item-center justify-center bg-black/50 z-50"
-    in:fade={{ duration: 150 }}
-    out:fade={{ duration: 150, delay: 200 }}
-  >
-    <div class="max-w-[90%] w-[600px] h-[66.66%] bg-surface border border-default rounded-lg p-4 m-auto flex flex-col">
-      <h1 class="text-xl font-bold">{t("share_with_friends")}</h1>
+<Modal bind:is_open={show} onclose={() => (show = false)}>
+  <h1 class="text-xl font-bold">{t("share_with_friends")}</h1>
 
-      <div class="flex-1 overflow-y-auto mb-4 mt-2 rounded-lg space-y-4">
-        {#each rooms as room (room.id)}
-          <button
-            aria-label="{room.name} room"
-            type="button"
-            class="w-full bg-card border border-default rounded-lg text-start group"
-            bind:this={roomRefs[room.id]}
-            onclick={async () => {
-              selected_room = room;
-              room_id = room.id;
-              await tick();
-              show = false;
-            }}
-          >
-            <CardRoom {...room} selected={room.id === room_id} />
-          </button>
-        {/each}
-      </div>
-      <Button
+  <div class="flex-1 overflow-y-auto mb-4 mt-2 rounded-lg space-y-4">
+    {#each rooms as room (room.id)}
+      <button
+        aria-label="{room.name} room"
         type="button"
-        aria-label={t("close")}
-        onclick={() => {
+        class="w-full bg-card border border-default rounded-lg text-start group"
+        bind:this={roomRefs[room.id]}
+        onclick={async () => {
+          if (!!selected_room && selected_room.id === room.id) {
+            selected_room = null;
+            room_id = "";
+          } else {
+            selected_room = room;
+            room_id = room.id;
+          }
+
+          await tick();
           show = false;
         }}
       >
-        <Times size={20} />
-        <span>{t("close")}</span>
-      </Button>
-    </div>
+        <CardRoom {...room} selected={room.id === room_id} />
+      </button>
+    {/each}
   </div>
-{/if}
+  <Button
+    type="submit"
+    aria-label={t("close")}
+    onclick={() => {
+      show = false;
+    }}
+  >
+    <Times size={20} />
+    <span>{t("close")}</span>
+  </Button>
+</Modal>
