@@ -4,6 +4,7 @@
   import { Categories, Home, Check, Settings, Shared } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
   import { fly } from "svelte/transition";
+  import { PUBLIC_ADMIN_EMAILS } from "$env/static/public";
 
   let isReady = false;
 
@@ -13,12 +14,13 @@
 
   let { onclose } = $props();
 
-  const is_van_niekerks = ["tertiusvniekerk@gmail.com", "cynel.gildenhuys@gmail.com"].includes(user.value?.email ?? "");
+  const admin_array = PUBLIC_ADMIN_EMAILS.split(",") || [];
+  const is_admin = admin_array.includes(user.value?.email ?? "");
   const NAVIGATION_TIMES = $derived([
     { Icon: Home, label: t("home"), href: "/" },
     { Icon: Check, label: t("completed_tasks"), href: "/complete" },
     { Icon: Categories, label: t("categories"), href: "/categories" },
-    { Icon: Shared, label: t("friends"), href: "/friends", show: /* !!user.value */ is_van_niekerks },
+    { Icon: Shared, label: t("friends"), href: "/friends", show: /* !!user.value */ is_admin },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
 </script>

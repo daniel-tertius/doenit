@@ -6,6 +6,7 @@
   import Backup from "$lib/services/backup.svelte";
   import InputSwitch from "$lib/components/element/input/InputSwitch.svelte";
   import user from "$lib/core/user.svelte";
+  import { Alert } from "$lib/core/alert";
 
   async function createBackup() {
     const result = await Backup.createBackup();
@@ -23,12 +24,7 @@
    */
   async function restoreBackup(manifest) {
     const result = await Backup.restoreBackup(manifest);
-    if (!result.success) {
-      alert(t("restore_error") + " " + result.error_message);
-      return;
-    }
-
-    alert(t("restore_success"));
+    if (result.success) Alert.success(t("restore_success"));
   }
 
   /**
