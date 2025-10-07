@@ -22,6 +22,7 @@ Thumbs.db
 
 # Production keystore - keep secure!
 android/app-production.keystore
+android/app.keystore
 
 # Vite
 vite.config.js.timestamp-*
