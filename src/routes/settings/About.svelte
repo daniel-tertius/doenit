@@ -2,11 +2,20 @@
   import { t } from "$lib/services/language.svelte";
   import { RateApp } from "$lib/services/rateApp.js";
   import { Star, Mail } from "$lib/icon";
+  import { Device } from '@capacitor/device';
 
   const SUPPORT_EMAIL = "doenitapp@gmail.com";
+  const VERSION = "1.2.5";
 
   async function handleRateApp() {
     await RateApp.directRate();
+  }
+
+  async function handleSendEmail() {
+    const deviceInfo = await Device.getInfo();
+    const device = `${deviceInfo.manufacturer} ${deviceInfo.model} - ${deviceInfo.operatingSystem} ${deviceInfo.osVersion}`;
+    const subject = encodeURIComponent(`Fout in Doenit ${VERSION} - ${device}`);
+    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}`;
   }
 </script>
 
@@ -40,15 +49,15 @@
   <div class="pt-2 border-t border-default">
     <p class="mb-2">{t("contact_support")}</p>
     <div class="w-full flex justify-end">
-      <a
+      <button
         type="button"
         aria-label={t("send_email")}
-        href="mailto:{SUPPORT_EMAIL}"
+        onclick={handleSendEmail}
         class="w-full justify-center h-12 bg-card border-default border rounded-md items-center flex gap-2"
       >
         <Mail class="text-xl" />
         {t("send_email")}
-      </a>
+      </button>
     </div>
   </div>
 </section>
