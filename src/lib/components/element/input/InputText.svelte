@@ -5,7 +5,7 @@
   let { value = $bindable(), focus_on_mount = false, debounce = 0, can_clear = false, ...rest } = $props();
 
   let internal_value = $state(value);
-  /** @type {NodeJS.Timeout | null}*/
+  /** @type {NodeJS.Timeout | null} */
   let timeout = null;
 
   $effect(() => {
