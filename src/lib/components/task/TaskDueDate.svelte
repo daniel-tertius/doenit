@@ -23,7 +23,7 @@
   }}
 >
   <span class="flex gap-1 items-center">
-    <Clock class="w-sm h-sm" />
+    <Clock class="w-sm h-sm flex-shrink-0" />
     {@render children?.()}
   </span>
 

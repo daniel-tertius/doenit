@@ -19,15 +19,16 @@ class InviteService {
     try {
       for (const invite of invites) {
         if (invite.recipient_email_address !== user.value.email) continue;
-        if (invite.status !== "pending") return;
+        if (invite.status !== "pending") continue;
 
         Alert.success(t("you_have_pending_invite_from", { email: invite.sender_email_address }));
       }
     } catch (error) {
-      console.error("❌ Error processing invite changes:", error);
-      Alert.error(t("error_processing_invite_changes") + ": " + (error as Error).message);
+      const error_message = error instanceof Error ? error.message : String(error);
+      Alert.error(`${t("error_processing_invite_changes")}: ${error_message}`);
     }
   }
+
   /**
    * Send an invite to another user
    */

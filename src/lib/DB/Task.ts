@@ -2,10 +2,37 @@ import type { RxCollection } from "$lib/chunk/rxdb";
 import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
 import { DB } from "$lib/DB";
+import { Photos } from "$lib/services/photos.svelte";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
     super(collection);
+  }
+
+  /**
+   * Override delete to cleanup photos
+   */
+  async delete(ids: string | string[]): Promise<void> {
+    if (!Array.isArray(ids)) ids = [ids];
+
+    // Get all tasks to be deleted and their photos
+    const tasks = await Promise.all(ids.map((id) => this.get(id)));
+
+    // Collect all photo IDs to delete
+    const photo_ids: string[] = [];
+    for (const task of tasks) {
+      if (task?.photo_ids?.length) {
+        photo_ids.push(...task.photo_ids);
+      }
+    }
+
+    // Delete the tasks
+    await super.delete(ids);
+
+    // Delete the photos
+    if (photo_ids.length > 0) {
+      await Photos.deletePhotos(photo_ids);
+    }
   }
 
   async completeId(task_id: string) {
@@ -50,11 +77,14 @@ export class TaskTable extends Table<Task> {
   async implementChange(change: Changelog) {
     switch (change.type) {
       case "create":
+        if (!change.data) break;
+
         const task = JSON.parse(change.data); // TODO Encrypt/Decrypt
         await this.create(task);
         break;
-      case "change":
+      case "update":
         if (true) {
+          if (!change.data) break;
           const updated_task = JSON.parse(change.data); // TODO Encrypt/Decrypt
           const task = await DB.Task.get(updated_task.id).catch(() => null);
           if (!task) {
@@ -66,9 +96,11 @@ export class TaskTable extends Table<Task> {
         }
         break;
       case "delete":
+        if (!change.task_id) break;
         await this.delete(change.task_id);
         break;
       case "complete":
+        if (!change.task_id) break;
         await this.completeId(change.task_id).catch(() => null);
       default:
         break;

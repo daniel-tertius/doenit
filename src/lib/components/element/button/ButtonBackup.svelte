@@ -45,22 +45,25 @@
   {/if}
   <div>
     <p class="font-medium">{is_backing_up ? t("backup_in_progress") : t("backup_now")}</p>
-    <p class="text-sm">Laas: {Backup.last_backup_at}</p>
+    <p class="text-sm">{t("last_backup")}: {Backup.last_backup_at}</p>
   </div>
 </button>
 
 <Modal class="p-6" bind:is_open onclose={() => (is_open = false)}>
   <h2 class="text-lg font-semibold mb-4">{t("backup_question")}</h2>
-  <!-- TODO: Wys wanneer dit laas gedoen is (as dit voorheen gedoen was). -->
+  {#if Backup.last_backup_at}
+    <p class="text-sm mb-4">
+      {t("last_backup")}: {Backup.last_backup_at}
+    </p>
+  {/if}
   <div class="flex justify-end space-x-4">
     <button
-      type="submit"
       aria-label={t("backup_aria")}
       class="text-md items-center justify-center text-alt px-4 py-2 flex gap-1 bg-primary rounded-lg"
       onclick={handleClick}
     >
       <Check />
-      <span>{t("confirm")}</span>
+      <span>{t("backup")}</span>
     </button>
   </div>
 </Modal>

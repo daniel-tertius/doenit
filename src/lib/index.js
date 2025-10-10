@@ -7,9 +7,10 @@ import * as env from "$env/static/public";
 
 export const AFRIKAANS = Symbol("af");
 export const ENGLISH = Symbol("en");
-
+export const CAT_FILTER_KEY = Symbol("Indicates if category filter is showing (on the home screen)");
 export const DEFAULT_HEX_COLOR = "#2b2f31";
 export const BACKUP_APP_NAME = "[DEFAULT]";
+export const COMPLETE_TASK_DELAY_MS = 400;
 export const INVITE_EXPIRATION_DAYS = 7;
 export const MAX_INVITES_PER_DAY = 3;
 export const FIREBASE_CONFIG = {

@@ -24,7 +24,6 @@ export class Alert {
 
     Alert.queue.push(options);
     if (!Alert.showing) {
-      console.log(Alert.container);
       Alert.displayNext();
     }
   }
@@ -41,7 +40,7 @@ export class Alert {
     const toast = document.createElement("div");
     toast.className =
       Alert.getClass(opts.type || "info") +
-      " m-2 px-4 py-2 rounded shadow-lg text-white text-center pointer-events-auto inline-block overflow-auto max-h-[40vh] max-width-[90vw]";
+      " m-2 px-4 py-2 rounded shadow-lg text-white text-center pointer-events-auto inline-block overflow-auto max-h-[40vh] max-w-[90vw]";
     // Create message span
     const messageSpan = document.createElement("span");
     messageSpan.textContent = opts.message;
@@ -106,7 +105,7 @@ export class Alert {
       // Create modal
       const modal = document.createElement("div");
       modal.className =
-        "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-page rounded-lg p-6 max-w-[90%] w-full pointer-events-auto";
+        "fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-page rounded-lg p-6 max-w-[90%] sm:max-w-md w-full pointer-events-auto";
 
       // Title
       const title = document.createElement("h3");

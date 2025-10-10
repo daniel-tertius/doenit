@@ -8,6 +8,9 @@
   import ShareTask from "./ShareTask.svelte";
   import Button from "./element/button/Button.svelte";
   import { Important } from "$lib/icon";
+  import PhotoGallery from "./photo/PhotoGallery.svelte";
+  import { Photos } from "$lib/services/photos.svelte";
+  import User from "$lib/core/user.svelte";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
@@ -68,5 +71,13 @@
     </Button>
   </div>
 
-  <ShareTask bind:room_id={task.room_id} />
+  {#if User.value?.is_friends_enabled}
+    <ShareTask bind:room_id={task.room_id} />
+  {/if}
 </div>
+
+{#if Photos.PHOTOS_ENABLED}
+  <div class="border-t border-default pt-4">
+    <PhotoGallery bind:photo_ids={task.photo_ids} />
+  </div>
+{/if}

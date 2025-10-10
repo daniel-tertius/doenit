@@ -35,10 +35,17 @@ async function initDB() {
             updated_at: oldDoc.created_at,
           };
         },
+        5: function (oldDoc) {
+          // migration from v4 to v5: add photo_ids field
+          return {
+            ...oldDoc,
+            photo_ids: [],
+          };
+        },
       },
       schema: {
         title: "task",
-        version: 4,
+        version: 5,
         description: "describes a task",
         type: "object",
         properties: {
@@ -62,6 +69,7 @@ async function initDB() {
           archived: { type: "boolean" },
           created_at: { type: "string" },
           updated_at: { type: "string" },
+          photo_ids: { type: "array", items: { type: "string" } },
         },
         required: ["id", "name", "archived", "created_at", "updated_at"],
         primaryKey: "id",

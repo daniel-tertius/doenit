@@ -160,8 +160,6 @@ class Notification {
   }
 
   async scheduleNotifications(all_tasks?: Task[]) {
-    console.debug("[😨 Doenit]: Herskeduleer kennisgewings");
-
     try {
       if (all_tasks == null) {
         all_tasks = await DB.Task.getAll({ selector: { archived: { $ne: true } } });
@@ -286,9 +284,9 @@ class Notification {
 
       if (notifications.length > 0) {
         await LocalNotifications.schedule({ notifications });
-        console.debug(`[😨 Doenit]: Scheduled ${notifications.length} notifications`);
+        console.debug(`[😨 Doenit]: ${notifications.length} kennisgewings geskeduleer.`);
       } else {
-        console.debug("[😨 Doenit]: No notifications to schedule");
+        console.debug("[😨 Doenit]: Geen kennisgewings om te skeduleer");
       }
     } catch (error) {
       console.error("Error scheduling notifications:", error);

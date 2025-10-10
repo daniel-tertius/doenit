@@ -5,15 +5,16 @@
   import { getContext, onMount, tick } from "svelte";
   import { goto, pushState } from "$app/navigation";
   import { t } from "$lib/services/language.svelte";
-  import { fade, slide } from "svelte/transition";
+  import { SvelteDate } from "svelte/reactivity";
   import { navigating, page } from "$app/state";
   import { Haptics } from "@capacitor/haptics";
+  import { fade } from "svelte/transition";
   import { Selected } from "$lib/selected";
   import { OnlineDB } from "$lib/OnlineDB";
   import user from "$lib/core/user.svelte";
+  import { Alert } from "$lib/core/alert";
   import { Plus } from "$lib/icon";
   import { DB } from "$lib/DB";
-  import { SvelteDate } from "svelte/reactivity";
 
   Selected.tasks.clear();
 
@@ -23,14 +24,16 @@
   let categories = $state([]);
   let current_time = new SvelteDate();
 
+  /** @type {Value<string>}*/
   const search_text = getContext("search_text");
+
   const filtered_tasks = $derived(filterTasksByCategory(tasks, search_text.value));
   const default_category = $derived(categories.find(({ is_default }) => is_default));
 
   onMount(() => {
     // Calculate ms until next minute (00 seconds)
     const now = new Date();
-    const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+    const ms_to_next_minute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 
     /** @type {NodeJS.Timeout} */
     let interval;
@@ -44,7 +47,7 @@
     const timeout = setTimeout(() => {
       current_time.setTime(Date.now());
       startInterval();
-    }, msToNextMinute);
+    }, ms_to_next_minute);
 
     return () => {
       clearTimeout(timeout);
@@ -69,22 +72,25 @@
     return () => sub.unsubscribe();
   });
 
-  onMount(() => {
-    const { searchParams, search, origin, pathname } = page.url;
+  onMount(async () => {
+    const { searchParams, origin, pathname } = page.url;
     const task_id = navigating.from?.params?.item_id || searchParams.get("new_id");
     if (!task_id) return;
 
+    await tick(); // Make sure router is initialized.
+
     // Update the URL without reloading the page
     searchParams.delete("new_id");
-    const url_search = !!searchParams.size ? `?${search}` : "";
+    const url_search = !!searchParams.size ? `${page.url.search}` : "";
     const new_url = `${origin}${pathname}${url_search}`;
     pushState(new_url, {});
+
     scrollToTask(task_id);
   });
 
   /**
    * @param {Task[]} tasks
-   * @param {string} search_text
+   * @param {string | null} search_text
    * @returns {Task[]}
    */
   function filterTasksByCategory(tasks, search_text) {
@@ -140,9 +146,10 @@
   async function handleSelect(task) {
     await DB.Task.complete(task);
     if (task.room_id) {
+      if (!user.value?.is_friends_enabled) return;
+
       const room = await DB.Room.get(task.room_id);
-      if (!room) throw new Error("Room not found");
-      if (!user.value) return;
+      if (!room) return Alert.error("Kon nie die taak se kamer vind nie.");
 
       const email_address = user.value.email;
       OnlineDB.Changelog.create({
@@ -166,8 +173,8 @@
         email_address: email_addresses,
       });
     }
-    await tick();
 
+    await tick();
     scrollToTask(task.id);
   }
 

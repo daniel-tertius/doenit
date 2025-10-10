@@ -15,6 +15,7 @@ export async function load() {
       repeat_interval_number: 1,
       archived: false,
       category_id: undefined,
+      photo_ids: [],
     },
   };
 }

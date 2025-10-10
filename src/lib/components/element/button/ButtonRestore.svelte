@@ -88,7 +88,6 @@
     </div>
 
     <button
-      type="submit"
       disabled={is_loading}
       class="w-full mt-4 h-12 p-2 bg-primary text-alt rounded-lg font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
       transition:slide

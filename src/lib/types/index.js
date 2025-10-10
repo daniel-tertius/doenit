@@ -16,6 +16,7 @@
  * @property {boolean} important - Indicates if the task is marked as important.
  * @property {string} [category_id] - Optional category ID associated with the task.
  * @property {string|null} [room_id] - Optional room ID for shared tasks.
+ * @property {string[]} [photo_ids] - Array of photo IDs (filenames) attached to this task.
  */
 
 /**
@@ -52,55 +53,20 @@
  */
 
 /**
- * @typedef {ChangelogMetaData & Change} Changelog
- */
-
-/**
- * @typedef {Object} ChangelogMetaData
+ * @typedef {Object} Changelog
  * @property {string} id - Primary key (UUID).
  * @property {boolean} archived - Indicates if the changelog entry is archived.
  * @property {string} created_at - ISO string timestamp of when the change was made.
  * @property {string} room_id
  * @property {number} total_reads_needed
  * @property {string[]} user_reads_list - Array of user IDs who have read this changelog entry
+ * @property {ChangeType} type - Type of change (see Change typedef).
+ * @property {string} [data] - Encrypted and compressed task data (if applicable).
+ * @property {string} [task_id] - ID of the task affected by this change (if applicable).
  */
 
 /**
- * @typedef {LeftRoomChange | CreateChange | CompleteChange | ChangeChange | DeleteChange | InviteAcceptedChange} Change
- */
-
-/**
- * @typedef {Object} InviteAcceptedChange
- * @property {'invite_accepted' | 'invite_declined'} type
- */
-
-/**
- * @typedef {Object} LeftRoomChange
- * @property {'left_room'} type
- */
-
-/**
- * @typedef {Object} CreateChange
- * @property {'create'} type
- * @property {string} data - Encrypted and compressed task data.
- */
-
-/**
- * @typedef {Object} CompleteChange
- * @property {'complete'} type
- * @property {string} task_id - ID of the task to be marked as complete.
- */
-
-/**
- * @typedef {Object} ChangeChange
- * @property {'change'} type
- * @property {string} data - Encrypted and compressed task data.
- */
-
-/**
- * @typedef {Object} DeleteChange
- * @property {'delete'} type
- * @property {string} task_id - ID of the task to be deleted.
+ * @typedef {'create' | 'update' | 'delete' | 'complete' | 'invite_accepted' | 'invite_declined' | 'left_room'} ChangeType
  */
 
 /**
@@ -128,6 +94,11 @@
  */
 
 /**
+ * @template T
+ * @typedef {import('../utils.svelte').Value<T>} Value<T>
+ */
+
+/**
  * @typedef {{ success: true } | { success: false, error_message: string }} SimpleResult
  */
 
@@ -145,4 +116,15 @@
  * @property {string} expires_at - Timestamp when the invite expires (format: "YYYY-MM-DD HH:mm" or "YYYY-MM-DD"), or null.
  * @property {string | null} [acceptedAt] - Optional timestamp when the invite was accepted (format: "YYYY-MM-DD HH:mm" or "YYYY-MM-DD"), or null.
  * @property {string} [message] - Optional message attached to the invite.
+ */
+
+/**
+ * @typedef {Object} TaskPhoto
+ * @property {string} id - Primary key (UUID).
+ * @property {string} filepath - Path to the photo file.
+ * @property {string} [webview_path] - Optional webview path for displaying the photo.
+ */
+
+/**
+ * @typedef {import('firebase/auth').Unsubscribe} FirebaseUnsubscribe
  */

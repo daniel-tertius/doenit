@@ -47,7 +47,7 @@ class Theme {
     this.updateEdgeToEdgeColour();
     root.classList.remove("theme-dark", "theme-light");
     root.classList.add(`theme-${theme_value}`);
-    console.log(`Theme set to ${theme_value}`);
+    console.debug(`[😨 Doenit]: Tema gestel na '${theme_value}'.`);
     document.documentElement.setAttribute("data-theme", theme_value);
   }
 

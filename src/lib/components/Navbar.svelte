@@ -4,30 +4,25 @@
   import { Categories, Home, Check, Settings, Shared } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
   import { fly } from "svelte/transition";
-  import { PUBLIC_ADMIN_EMAILS } from "$env/static/public";
 
-  let isReady = false;
+  let is_mounted = false;
 
-  setTimeout(() => {
-    isReady = true;
-  }, 300);
+  setTimeout(() => (is_mounted = true), 300);
 
-  let { onclose } = $props();
+  const { onclose } = $props();
 
-  const admin_array = PUBLIC_ADMIN_EMAILS.split(",") || [];
-  const is_admin = admin_array.includes(user.value?.email ?? "");
   const NAVIGATION_TIMES = $derived([
     { Icon: Home, label: t("home"), href: "/" },
     { Icon: Check, label: t("completed_tasks"), href: "/complete" },
     { Icon: Categories, label: t("categories"), href: "/categories" },
-    { Icon: Shared, label: t("friends"), href: "/friends", show: /* !!user.value */ is_admin },
+    { Icon: Shared, label: t("friends"), href: "/friends", show: !!user.value?.is_friends_enabled },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
 </script>
 
 <svelte:window
   onclick={() => {
-    if (isReady) onclose();
+    if (is_mounted) onclose();
   }}
 />
 

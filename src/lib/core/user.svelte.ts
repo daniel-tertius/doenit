@@ -1,5 +1,5 @@
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
-import { PUBLIC_GOOGLE_AUTH } from "$env/static/public";
+import { PUBLIC_ADMIN_EMAILS, PUBLIC_GOOGLE_AUTH } from "$env/static/public";
 import { getApp, initializeApp } from "$lib/chunk/firebase-app";
 import { t } from "$lib/services/language.svelte";
 import { FIREBASE_CONFIG, normalize } from "$lib";
@@ -12,10 +12,14 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 import { Value } from "$lib/utils.svelte";
+import { Cached } from "./cache.svelte";
 
 class User {
   private _user = $state() as FirebaseUser;
   private _message_token: string | null = $state(null);
+
+  readonly is_friends_enabled: boolean = $derived(PUBLIC_ADMIN_EMAILS.includes(this._user?.email || ""));
+  readonly is_backup_enabled: boolean = $derived(!!this._user && !!Cached.automaticBackup.value);
 
   constructor(user: FirebaseUser) {
     this._user = user;

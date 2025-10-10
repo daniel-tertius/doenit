@@ -13,14 +13,15 @@
   import { Alert } from "$lib/core/alert";
   import { Notify } from "$lib/services/notifications/notifications";
 
+  /** @type {Room?} */
+  let selected_room = null;
+
   /** @type {Room[]} */
   let rooms = $state([]);
 
   let open = $state(false);
   let room_name = $state("");
   let edit_room_loading = $state(false);
-  /** @type {Room | null} */
-  let selected_room = $state(null);
   let error_message = $state("");
 
   const invites = $derived(inviteService.invites);
@@ -190,7 +191,7 @@
   </div>
 {/if}
 
-<Modal bind:is_open={open} onclose={handleClose}>
+<Modal bind:is_open={open} onclose={handleClose} onsubmit={saveRoom}>
   <span class="pb-1">{t("choose_room_name")}</span>
   <InputText bind:value={room_name} focus_on_mount placeholder={t("choose_room_name")} disabled={edit_room_loading} />
 
@@ -214,7 +215,6 @@
       class="bg-primary w-full flex gap-1 items-center text-alt px-4 py-2 rounded-lg justify-center"
       type="submit"
       disabled={edit_room_loading}
-      onclick={saveRoom}
     >
       <Check class="h-full" />
       <span>{t("save")}</span>

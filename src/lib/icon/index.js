@@ -3,6 +3,7 @@ import ArrowLeft from "./ArrowLeft.svelte";
 import Back from "./Back.svelte";
 import Bell from "./Bell.svelte";
 import Burger from "./Burger.svelte";
+import Camera from "./Camera.svelte";
 import Categories from "./Categories.svelte";
 import Check from "./Check.svelte";
 import CheckCircle from "./CheckCircle.svelte";
@@ -35,6 +36,7 @@ import TestTube from "./TestTube.svelte";
 import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
 import Upload from "./Upload.svelte";
+import X from "./X.svelte";
 import XCircle from "./XCircle.svelte";
 
 export {
@@ -43,6 +45,7 @@ export {
   Back,
   Bell,
   Burger,
+  Camera,
   Categories,
   Check,
   CheckCircle,
@@ -75,5 +78,6 @@ export {
   Times,
   Trash,
   Upload,
+  X,
   XCircle,
 };

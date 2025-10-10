@@ -18,7 +18,6 @@
       oninput={() => (error_message = "")}
       placeholder={t("what_needs_to_be_done")}
       class={{
-        "p-2 w-full rounded-lg border": true,
         "placeholder:text-error! border-error! bg-error/20!": !!error_message,
       }}
     />

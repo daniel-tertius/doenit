@@ -1,5 +1,5 @@
 <script>
-  import { displayDateTime } from "$lib";
+  import { COMPLETE_TASK_DELAY_MS, displayDateTime } from "$lib";
   import { onMount } from "svelte";
   import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
@@ -47,7 +47,7 @@
    */
   function handleSelect(event) {
     event.stopPropagation();
-    setTimeout(() => onselect(task), 400);
+    setTimeout(() => onselect(task), COMPLETE_TASK_DELAY_MS);
   }
 </script>
 

@@ -1,12 +1,10 @@
 <script>
   import { Shared, Times } from "$lib/icon";
-  import { fade } from "svelte/transition";
   import Button from "$lib/components/element/button/Button.svelte";
   import { CardRoom } from "$lib/components/element/card";
   import { onMount, tick } from "svelte";
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
-  import user from "$lib/core/user.svelte";
   import Modal from "./modal/Modal.svelte";
 
   /**
@@ -38,38 +36,53 @@
       hasScrolled = true;
     }
   });
+
+  /**
+   * Handles click on a room.
+   * @param {Room} room
+   */
+  async function selectRoom(room) {
+    if (!!selected_room && selected_room.id === room.id) {
+      selected_room = null;
+      room_id = "";
+    } else {
+      selected_room = room;
+      room_id = room.id;
+    }
+
+    await tick();
+    show = false;
+  }
 </script>
 
-{#if !!user.value}
-  <div class="grid grid-cols-[40px_auto_128px] py-2 bg-page border-y border-default">
-    <Shared class="m-auto" />
-    <div class="flex flex-col my-auto truncate">
-      <span class="font-bold">{t("share_with_friends_question")}</span>
-      {#if !!selected_room}
-        <span class="space-x-0.5 flex flex-wrap truncate">
-          <span class="italic">{t("shared_with")}</span>
-          <span class="font-medium truncate">{selected_room.name}</span>
-        </span>
-      {/if}
-    </div>
-
-    <Button
-      type="button"
-      aria-label={t("share")}
-      onclick={() => {
-        show = true;
-        hasScrolled = false;
-      }}
-      class={{
-        "bg-card border border-default": !room_id,
-        "bg-success/10! border-success! text-success!": !!room_id,
-      }}
-    >
-      <Shared />
-      <span>{!!room_id ? t("shared") : t("share")}</span>
-    </Button>
+<div class="grid grid-cols-[40px_auto_128px] py-2 bg-page border-y border-default">
+  <Shared class="m-auto" />
+  <div class="flex flex-col my-auto truncate">
+    <span class="font-bold">{t("share_with_friends_question")}</span>
+    {#if !!selected_room}
+      <span class="space-x-0.5 flex flex-wrap truncate">
+        <span class="italic">{t("shared_with")}</span>
+        <span class="font-medium truncate">{selected_room.name}</span>
+      </span>
+    {/if}
   </div>
-{/if}
+
+  <Button
+    type="button"
+    aria-label={t("share")}
+    onclick={() => {
+      show = true;
+      hasScrolled = false;
+    }}
+    class={{
+      "bg-card border border-default": !room_id,
+      "bg-success/10! border-success! text-success!": !!room_id,
+    }}
+  >
+    <Shared class="flex-shrink-0" />
+    <span>{!!room_id ? t("shared") : t("share")}</span>
+  </Button>
+</div>
 
 <Modal bind:is_open={show} onclose={() => (show = false)}>
   <h1 class="text-xl font-bold">{t("share_with_friends")}</h1>
@@ -81,30 +94,13 @@
         type="button"
         class="w-full bg-card border border-default rounded-lg text-start group"
         bind:this={roomRefs[room.id]}
-        onclick={async () => {
-          if (!!selected_room && selected_room.id === room.id) {
-            selected_room = null;
-            room_id = "";
-          } else {
-            selected_room = room;
-            room_id = room.id;
-          }
-
-          await tick();
-          show = false;
-        }}
+        onclick={() => selectRoom(room)}
       >
         <CardRoom {...room} selected={room.id === room_id} />
       </button>
     {/each}
   </div>
-  <Button
-    type="submit"
-    aria-label={t("close")}
-    onclick={() => {
-      show = false;
-    }}
-  >
+  <Button aria-label={t("close")} onclick={() => (show = false)}>
     <Times size={20} />
     <span>{t("close")}</span>
   </Button>

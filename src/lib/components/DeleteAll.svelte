@@ -8,8 +8,11 @@
   import { OnlineDB } from "$lib/OnlineDB";
   import user from "$lib/core/user.svelte";
   import { onNavigate } from "$app/navigation";
+  import { page } from "$app/state";
 
   let is_deleting = $state(false);
+
+  const is_completed_page = $derived(page.url.pathname === "/complete");
 
   onNavigate(() => {
     Selected.tasks.clear();
@@ -19,7 +22,20 @@
     const ids = [...Selected.tasks.values()];
     Selected.tasks.clear();
 
-    await DB.Task.delete(ids);
+    if (is_completed_page) {
+      const tasks = await DB.Task.getAll({ selector: { id: { $in: ids } } });
+      const promises = tasks.map(async (task) => {
+        const is_repeat_task = task.repeat_interval && task.due_date;
+        if (is_repeat_task) {
+          await DB.Task.update(task.id, { ...task, completed: 0 });
+        } else {
+          await DB.Task.delete(task.id);
+        }
+      });
+      await Promise.all(promises);
+    } else {
+      await DB.Task.delete(ids);
+    }
 
     updateChangelog(ids);
 
@@ -58,18 +74,16 @@
         room_id: task.room_id || "",
         total_reads_needed: room.users.length,
         user_reads_list: [user.value.email],
-        user_id: user.value.uid,
       });
     }
   }
 </script>
 
 <div class="h-full aspect-square flex items-end justify-between top-1">
-  <!-- TODO Translation -->
   {#if Selected.tasks.size}
     <button
       transition:fade
-      aria-label="Delete tasks label"
+      aria-label={t("delete_tasks")}
       class="aspect-square bg-error text-alt h-full rounded-md w-fit max-h-12 my-auto"
       onclick={() => (is_deleting = true)}
       type="button"

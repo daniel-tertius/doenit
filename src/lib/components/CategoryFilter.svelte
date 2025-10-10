@@ -6,10 +6,13 @@
   import { Plus, DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
   import { Selected } from "$lib/selected";
-  import { onMount } from "svelte";
+  import { getContext, onMount } from "svelte";
   import { DB } from "$lib/DB";
+  import { CAT_FILTER_KEY } from "$lib";
 
-  let show_dropdown = $state(false);
+  /** @type {Value<boolean>}*/
+  const is_cat_filter_showing = getContext(CAT_FILTER_KEY);
+
   let is_adding = $state(false);
 
   /** @type {Category?} */
@@ -31,7 +34,7 @@
   });
 </script>
 
-{#if show_dropdown}
+{#if is_cat_filter_showing.value}
   <div
     transition:slide
     class="absolute border-t border-default left-0 right-0 mt-1 bg-page rounded-t-md max-h-[66dvh] overflow-y-auto z-1"
@@ -62,7 +65,7 @@
   class="w-full bg-card rounded-md h-15 px-4 flex items-center justify-between"
   onclick={(e) => {
     e.stopPropagation();
-    show_dropdown = !show_dropdown;
+    is_cat_filter_showing.value = !is_cat_filter_showing.value;
   }}
 >
   {#if Selected.categories.size === 0}
@@ -73,7 +76,7 @@
     {t("categories_selected", { count: Selected.categories.size })}
   {/if}
 
-  <DownChevron class="{show_dropdown ? '' : '-rotate-180'} text-xl" />
+  <DownChevron class="{is_cat_filter_showing.value ? '' : '-rotate-180'} text-xl" />
 </button>
 
 <ModalCreateCategory

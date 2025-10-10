@@ -55,10 +55,10 @@
       {/if}
 
       <div class="space-y-0.5">
-        <h2 class="text-2xl font-semibold">
+        <h2 class="text-left text-2xl font-semibold">
           {user.value.name}
         </h2>
-        <p class="text-sm font-medium text-muted">
+        <p class="text-left text-sm font-medium text-muted">
           {user.value.email}
         </p>
       </div>

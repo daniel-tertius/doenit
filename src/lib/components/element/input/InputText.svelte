@@ -43,8 +43,8 @@
 <div class="relative w-full">
   <input
     {...rest}
-    type="text"
     use:init
+    type="text"
     bind:value={internal_value}
     class={[
       "bg-card border border-default p-2 h-12 w-full rounded-lg placeholder:text-muted outline-none focus:ring-1 ring-primary",

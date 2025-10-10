@@ -55,12 +55,13 @@ export const translations = {
     error_updating_task: "Fout met opdateer",
     filter_on: "Filtreer op",
     task_completed: "Taak Voltooi",
-    task_was_completed: "\"{{task_name}}\" is voltooi",
+    task_was_completed: '"{{task_name}}" is voltooi',
     task_shared: "Taak Gedeel",
-    task_was_shared: "\"{{task_name}}\" is gedeel",
+    task_was_shared: '"{{task_name}}" is gedeel',
     task_created: "Taak Geskep",
-    task_was_created: "\"{{task_name}}\" is geskep",
+    task_was_created: '"{{task_name}}" is geskep',
     failed_to_update_widget: "Kon nie widget opdateer nie:",
+    delete_tasks: "Verwyder take",
 
     // Task Actions & Buttons
     create: "Skep",
@@ -73,6 +74,14 @@ export const translations = {
     close: "Sluit",
     close_modal: "Sluit venster",
     check: "Merk",
+
+    // Photos
+    add_photo: "Voeg Foto By",
+    delete_photo: "Skrap Foto",
+    delete_photo_confirm: "Is jy seker jy wil hierdie foto skrap?",
+    photos_not_supported_web: "Foto's word slegs op mobiele toestelle ondersteun",
+    error_adding_photo: "Kon nie foto byvoeg nie:",
+    no_photo_data: "Geen foto data nie",
 
     // Date & Time
     date: "Datum",
@@ -155,7 +164,7 @@ export const translations = {
     sync_error: "Sinkronisasie fout",
     leave_friend: "Verlaat",
     left_group: "Groep Verlaat",
-    user_left_group: "{{user_name}} het die groep \"{{room_name}}\" verlaat",
+    user_left_group: '{{user_name}} het die groep "{{room_name}}" verlaat',
 
     // Room Management
     edit_room: "Wysig Groep",
@@ -239,7 +248,7 @@ export const translations = {
 
     // Notifications
     notifications: "Kennisgewings",
-    reminders: "Herhinneringe",
+    reminders: "Herinneringe",
     reminder_time: "Herinneringstyd",
     notify_past_due_tasks: "Stel my in kennis oor verstreke take",
     past_due_date: "⚠️ U het {{task_count}} verstreke take ⚠️",
@@ -286,6 +295,7 @@ export const translations = {
     backup_label: "Rugsteun",
     backup_aria: "Rugsteun",
     backup_now: "Rugsteun nou",
+    backup: "Rugsteun",
     backup_question: "Wil u 'n rugsteun skep?",
     backup_confirmation: "Is jy seker jy wil 'n rugsteun skep? Dit gaan vorige rugsteune oorskryf.",
     backup_success: "Rugsteun suksesvol geskep!",
@@ -320,6 +330,7 @@ export const translations = {
     error_decrypting_decompressing: "Fout tydens dekripsie en dekompressie:",
     error_during_decryption_decompression: "Fout tydens dekripsie/dekompressie:",
     listing_backups_failed: "Lys van rugsteune het misluk:",
+    last_backup: "Laas",
 
     // Support & About
     support: "Ondersteuning",
@@ -410,12 +421,13 @@ export const translations = {
     error_updating_task: "Error updating the task.",
     filter_on: "Filter on",
     task_completed: "Task Completed",
-    task_was_completed: "\"{{task_name}}\" was completed",
+    task_was_completed: '"{{task_name}}" was completed',
     task_shared: "Task Shared",
-    task_was_shared: "\"{{task_name}}\" was shared",
+    task_was_shared: '"{{task_name}}" was shared',
     task_created: "Task Created",
-    task_was_created: "\"{{task_name}}\" was created",
+    task_was_created: '"{{task_name}}" was created',
     failed_to_update_widget: "Failed to update widget:",
+    delete_tasks: "Delete tasks",
 
     // Task Actions & Buttons
     create: "Create",
@@ -428,6 +440,14 @@ export const translations = {
     close: "Close",
     close_modal: "Close modal",
     check: "Check",
+
+    // Photos
+    add_photo: "Add Photo",
+    delete_photo: "Delete Photo",
+    delete_photo_confirm: "Are you sure you want to delete this photo?",
+    photos_not_supported_web: "Photos are only supported on mobile devices",
+    error_adding_photo: "Could not add photo:",
+    no_photo_data: "No photo data",
 
     // Date & Time
     date: "Date",
@@ -510,7 +530,7 @@ export const translations = {
     sync_error: "Synchronization error",
     leave_friend: "Leave",
     left_group: "Left Group",
-    user_left_group: "{{user_name}} have left the group \"{{room_name}}\"",
+    user_left_group: '{{user_name}} have left the group "{{room_name}}"',
 
     // Room Management
     edit_room: "Edit room",
@@ -641,6 +661,7 @@ export const translations = {
     backup_label: "Backup",
     backup_aria: "Backup",
     backup_now: "Backup now",
+    backup: "Backup",
     backup_question: "Do you want to create a backup?",
     backup_confirmation: "Are you sure you want to create a backup? This will overwrite previous backups.",
     backup_success: "Backup created successfully!",
@@ -675,6 +696,7 @@ export const translations = {
     error_decrypting_decompressing: "Error decrypting and decompressing data:",
     error_during_decryption_decompression: "Error during decryption/decompression:",
     listing_backups_failed: "Listing backups failed:",
+    last_backup: "Last",
 
     // Support & About
     support: "Support",

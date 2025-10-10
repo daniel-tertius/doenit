@@ -13,13 +13,13 @@
 <section class="rounded-md p-4 bg-surface space-y-3 text-t-secondary">
   <h3 class="font-semibold text-lg mb-2">{t("about_doenit")}</h3>
 
-  <!-- Keep in sync with:  -->
+  <!-- Hou in lyn met:  -->
   <!-- android/app/build.gradle – versionName -->
   <!-- package.json – "version" -->
 
   <div class="flex justify-between">
     <p>{t("version")}:</p>
-    <pre>1.2.4</pre>
+    <pre>1.2.5</pre>
   </div>
 
   <div class="pt-2 border-t border-default">

@@ -58,7 +58,7 @@
         if (room) {
           const email_address = user.value.email;
           await OnlineDB.Changelog.create({
-            type: "change",
+            type: "update",
             data: JSON.stringify(task),
             room_id: task.room_id,
             total_reads_needed: room.users.length,
@@ -186,11 +186,7 @@
 <Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">
   <h2 class="font-bold text-lg">{t("delete_task")}</h2>
   <p>{t("delete_task_confirmation")}</p>
-  <button
-    class="bg-error flex gap-1 items-center text-alt ml-auto px-4 py-2 rounded-md"
-    type="submit"
-    onclick={deleteTask}
-  >
+  <button class="bg-error flex gap-1 items-center text-alt ml-auto px-4 py-2 rounded-md" onclick={deleteTask}>
     <Trash class="h-full" size={18} />
     <span>{t("delete")}</span>
   </button>

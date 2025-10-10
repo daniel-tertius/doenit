@@ -46,21 +46,18 @@
   }
 </script>
 
-<Modal bind:is_open={open} onclose={handleClose}>
+<Modal bind:is_open={open} onclose={handleClose} onsubmit={addCategory}>
   <h2 class="text-lg font-semibold mb-2">{t("create_new_category")}</h2>
-  <InputText bind:value={new_category_name} focus_on_mount placeholder={t("choose_category_name")} />
+  <InputText
+    bind:value={new_category_name}
+    focus_on_mount
+    placeholder={t("choose_category_name")}
+    class={{
+      "placeholder:text-error! border-error! bg-error/20!": !!error_message,
+    }}
+  />
 
-  {#if !!error_message}
-    <div class="text-error text-sm mt-1 text-right w-full" transition:slide>
-      <span>{error_message}</span>
-    </div>
-  {/if}
-
-  <button
-    class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-md ml-auto mt-4"
-    type="submit"
-    onclick={addCategory}
-  >
+  <button class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-md ml-auto mt-4" type="submit">
     <Plus size={18} />
     <span>{t("create")}</span>
   </button>

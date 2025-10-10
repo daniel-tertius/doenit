@@ -2,6 +2,7 @@ import { notifications } from "$lib/services/notification.svelte";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { text } from "$lib/services/text.svelte";
 import { theme } from "$lib/services/theme.svelte";
+import { Alert } from "$lib/core/alert";
 import { DB } from "$lib/DB";
 
 // Keep this
@@ -22,7 +23,7 @@ export async function load() {
     text.init();
     notifications.init();
   } catch (error) {
-    console.error("Initialization error:", error);
-    notifications.send("Failed", "Failed to initialize the app. Please try again.");
+    const error_message = error instanceof Error ? error.message : String(error);
+    Alert.error("Fout met inisialisering van die toepassing. Probeer asseblief weer: " + error_message);
   }
 }

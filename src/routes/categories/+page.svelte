@@ -90,8 +90,11 @@
     <form onsubmit={createCategory} class="flex gap-2 items-center h-12">
       <InputText
         bind:value={new_category_name}
+        maxlength="50"
         placeholder={t("enter_new_category_name")}
-        class="w-full h-12! rounded-lg bg-card border border-default px-4 py-2 text-sm font-medium focus:outline-none"
+        class={{
+          "placeholder:text-error! border-error! bg-error/20!": !!error_message && !is_editing,
+        }}
         oninput={() => (error_message = "")}
       />
 
@@ -99,12 +102,6 @@
         <Plus />
       </button>
     </form>
-
-    {#if error_message}
-      <div class="text-error text-sm mt-1 flex justify-end">
-        {error_message}
-      </div>
-    {/if}
   </div>
 
   <div class="flex flex-col space-y-2">
@@ -124,7 +121,9 @@
           </div>
         </button>
 
-        <div class="py-3 w-full text-lg font-semibold">{category.name}</div>
+        <div class="py-3 w-full text-lg font-semibold truncate">
+          <span>{category.name}</span>
+        </div>
 
         <button class="h-full text-error flex items-center justify-center" onclick={() => deleteCategory(category.id)}>
           <Trash />
@@ -134,31 +133,30 @@
   </div>
 </div>
 
-<Modal bind:is_open={is_editing} onclose={() => (is_editing = false)}>
-  {#if category}
-    <div class="space-y-4">
-      <div class="text-lg font-semibold">{t("edit_category_name")}</div>
-      <InputText
-        bind:value={category.name}
-        focus_on_mount
-        placeholder={t("enter_category_name")}
-        oninput={() => (error_message = "")}
-      />
+{#if category}
+  <Modal
+    bind:is_open={is_editing}
+    onsubmit={editCategory}
+    onclose={() => {
+      error_message = "";
+    }}
+    class="space-y-4"
+  >
+    <h2 class="text-lg font-semibold">{t("edit_category_name")}</h2>
+    <InputText
+      bind:value={category.name}
+      maxlength="50"
+      focus_on_mount
+      placeholder={t("enter_category_name")}
+      class={{
+        "placeholder:text-error! border-error! bg-error/20!": !!error_message,
+      }}
+      oninput={() => (error_message = "")}
+    />
 
-      {#if !!error_message}
-        <div class="text-error text-sm mt-1 text-right w-full" transition:slide>
-          <span>{error_message}</span>
-        </div>
-      {/if}
-
-      <button
-        class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-lg ml-auto"
-        type="submit"
-        onclick={editCategory}
-      >
-        <Check class="h-full" size={18} />
-        <span>{t("save")}</span>
-      </button>
-    </div>
-  {/if}
-</Modal>
+    <button class="bg-primary flex gap-1 items-center text-alt px-4 py-2 rounded-lg ml-auto" type="submit">
+      <Check class="h-full" size={18} />
+      <span>{t("save")}</span>
+    </button>
+  </Modal>
+{/if}

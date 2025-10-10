@@ -22,6 +22,7 @@ export async function load({ params, parent }) {
       important: !!origin_task.important,
       completed: origin_task.completed ?? 0,
       room_id: origin_task.room_id || undefined,
+      photo_ids: origin_task.photo_ids || [],
       repeat_interval: origin_task.repeat_interval,
       repeat_interval_number: origin_task.repeat_interval_number || 1,
       repeat_specific_days: origin_task.repeat_specific_days || [],

@@ -1,5 +1,5 @@
 <script>
-  import { displayDateTime } from "$lib";
+  import { COMPLETE_TASK_DELAY_MS, displayDateTime } from "$lib";
   import { onMount } from "svelte";
   import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
@@ -22,7 +22,6 @@
   /** @type {Props & Record<string, any>} */
   const { current_time, task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
-  const today = new Date();
   const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
   const start_date = DateUtil.parseWithTimeBoundary(task.start_date || task.due_date, "start");
   /** @type {Category?} */
@@ -31,15 +30,9 @@
 
   const is_past = $derived(!!due_date && due_date < current_time);
   const is_selected = $derived(Selected.tasks.has(task.id));
-  const is_ongoing = $derived(isOngoing(due_date, start_date, today));
+  const is_ongoing = $derived(isOngoing(due_date, start_date, current_time));
 
-  onMount(async () => {
-    if (!task.category_id) return;
-
-    try {
-      category = await DB.Category.getOne({ selector: { id: task.category_id, archived: { $ne: true } } });
-    } catch (error) {}
-  });
+  onMount(() => initDefaultCategory(task));
 
   /**
    * Handles the selection of a completed task.
@@ -47,7 +40,7 @@
    */
   function handleSelect(event) {
     event.stopPropagation();
-    setTimeout(() => onselect(task), 400);
+    setTimeout(() => onselect(task), COMPLETE_TASK_DELAY_MS);
   }
 
   /**
@@ -64,6 +57,17 @@
     }
 
     return today >= start_date && today <= due_date;
+  }
+
+  /**
+   * Initializes the default category for the task.
+   * @param {Task} task
+   */
+  async function initDefaultCategory(task) {
+    if (!task?.category_id) return;
+
+    const selector = { selector: { id: task.category_id, archived: { $ne: true } } };
+    category = await DB.Category.getOne(selector).catch(() => null);
   }
 </script>
 
@@ -82,7 +86,7 @@
 >
   <ItemName name={task.name} {tick_animation} description={task.description} />
 
-  <div class="flex flex-wrap gap-2 pl-10 font-normal">
+  <div class="flex flex-wrap gap-2 pl-10 font-normal w-full">
     {#if task.due_date}
       <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
         {displayDateTime({ due_date, start_date })}
@@ -92,16 +96,16 @@
     {#if category}
       <div
         class={{
-          "text-left px-1 w-fit flex items-center h-fit gap-1 rounded opacity-80": true,
+          "text-left px-1 w-fit max-w-full flex items-center h-fit gap-1 rounded opacity-80": true,
           "bg-surface": !is_past && !is_ongoing && !is_selected,
           "bg-error/80": is_past && !is_selected,
           "bg-success/80": is_ongoing && !is_selected && !is_past,
           "bg-primary": is_selected,
         }}
       >
-        <Categories class="w-sm h-sm" />
+        <Categories class="w-sm h-sm flex-shrink-0" />
 
-        <span>{category.name}</span>
+        <span class="truncate">{category.name}</span>
       </div>
     {/if}
   </div>

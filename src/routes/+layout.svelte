@@ -1,53 +1,60 @@
 <script>
   import { pushNotificationService } from "$lib/services/pushNotifications.svelte";
   import { notifications } from "$lib/services/notification.svelte";
+  import { onDestroy, onMount, setContext, untrack } from "svelte";
   import { inviteService } from "$lib/services/invites.svelte";
   import { SplashScreen } from "@capacitor/splash-screen";
-  import { onDestroy, onMount, setContext, untrack } from "svelte";
+  import { Photos } from "$lib/services/photos.svelte";
   import Backup from "$lib/services/backup.svelte";
   import { Widget } from "$lib/services/widget";
+  import { Value } from "$lib/utils.svelte";
   import user from "$lib/core/user.svelte";
   import { OnlineDB } from "$lib/OnlineDB";
+  import { Alert } from "$lib/core/alert";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
   import Footer from "./Footer.svelte";
   import { App } from "@capacitor/app";
-  import { page } from "$app/state";
   import { DB } from "$lib/DB";
   import "../app.css";
-  import { Value } from "$lib/utils.svelte";
-  import { cached_rate_us_setting } from "$lib/cached";
-  import { Cached } from "$lib/core/cache.svelte";
-  import { Alert } from "$lib/core/alert";
+  import { CAT_FILTER_KEY } from "$lib";
+  import { page } from "$app/state";
+  import { Selected } from "$lib/selected";
 
   let { children } = $props();
 
   /** @type {string[]} */
   let room_ids = $state([]);
-  const search_text = new Value("");
 
+  const is_cat_filter_showing = new Value(false);
+  setContext(CAT_FILTER_KEY, is_cat_filter_showing);
+
+  const search_text = new Value("");
   setContext("search_text", search_text);
 
-  /** @type {import('firebase/auth').Unsubscribe?} */
+  /** @type {FirebaseUnsubscribe?} */
   let unsubscribeChangelog = null;
-  /** @type {import('firebase/auth').Unsubscribe?} */
+  /** @type {FirebaseUnsubscribe?} */
   let unsubscribeInvites = null;
 
   $effect(() => {
-    if (!user.value) return;
+    if (!user.value?.is_backup_enabled) return;
 
     untrack(async () => {
       Backup.init();
-      await pushNotificationService.init();
     });
   });
 
   $effect(() => {
-    if (!user.value) return;
+    if (unsubscribeChangelog) unsubscribeChangelog();
+    if (!user.value?.is_friends_enabled) return;
     if (!room_ids.length) return;
 
+    untrack(async () => {
+      await pushNotificationService.init();
+    });
+
     // Clean up existing subscription before creating a new one
-    if (unsubscribeChangelog) unsubscribeChangelog();
     unsubscribeChangelog = OnlineDB.Changelog.subscribe(consumeChangelog, {
       filters: [
         { field: "archived", operator: "==", value: false },
@@ -58,19 +65,18 @@
   });
 
   $effect(() => {
-    if (!user.value) return;
+    if (!user.value?.is_friends_enabled) return;
 
-    untrack(() => {
-      if (!user.value) return;
+    /** @param {Invite[]} invites */
+    const handleInvites = (invites) => untrack(() => inviteService.handleNewInvites(invites));
 
-      if (unsubscribeInvites) unsubscribeInvites();
-      unsubscribeInvites = OnlineDB.Invite.subscribe((i) => inviteService.handleNewInvites(i), {
-        filters: [
-          { field: "status", operator: "==", value: "pending" },
-          { field: "recipient_email_address", operator: "==", value: user.value.email },
-        ],
-        sort: [{ field: "created_at", direction: "desc" }],
-      });
+    if (unsubscribeInvites) unsubscribeInvites();
+    unsubscribeInvites = OnlineDB.Invite.subscribe(handleInvites, {
+      filters: [
+        { field: "status", operator: "==", value: "pending" },
+        { field: "recipient_email_address", operator: "==", value: user.value.email },
+      ],
+      sort: [{ field: "created_at", direction: "desc" }],
     });
   });
 
@@ -88,13 +94,21 @@
   });
 
   onMount(() => {
+    cleanupOrphanedPhotos();
+  });
+
+  onMount(() => {
     SplashScreen.hide();
 
-    App.addListener("backButton", (event) => {
-      if (page.url.pathname === "/") {
-        App.exitApp();
+    App.addListener("backButton", () => {
+      if (is_cat_filter_showing.value) {
+        is_cat_filter_showing.value = false;
+      } else if (Selected.tasks.size) {
+        Selected.tasks.clear();
+      } else if (page.url.pathname !== "/") {
+        goto("/");
       } else {
-        goto("/", { invalidateAll: false });
+        App.exitApp();
       }
     });
 
@@ -106,8 +120,8 @@
   });
 
   onDestroy(() => {
-    unsubscribeChangelog?.();
-    unsubscribeInvites?.();
+    if (unsubscribeChangelog) unsubscribeChangelog();
+    if (unsubscribeInvites) unsubscribeInvites();
   });
 
   /**
@@ -141,8 +155,25 @@
         }
       }
     } catch (error) {
-      // TODO: Translate
-      Alert.error("Fout met verwerking van changelog veranderinge: " + error);
+      const error_message = error instanceof Error ? error.message : String(error);
+      Alert.error(`Fout met verwerking van changelog veranderinge: ${error_message}`);
+    }
+  }
+
+  /**
+   * Cleanup orphaned photos (photos not referenced by any task)
+   */
+  async function cleanupOrphanedPhotos() {
+    if (!Photos.PHOTOS_ENABLED) return;
+
+    try {
+      const tasks = await DB.Task.getAll();
+      const photo_ids = tasks.flatMap((task) => task.photo_ids || []).filter(Boolean);
+
+      await Photos.cleanupOrphanedPhotos(photo_ids);
+    } catch (error) {
+      const error_message = error instanceof Error ? error.message : String(error);
+      Alert.error(`Fout tydens wees-foto skoonmaak: ${error_message}`);
     }
   }
 </script>

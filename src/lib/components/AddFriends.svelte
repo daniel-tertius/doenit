@@ -32,10 +32,10 @@
     }
 
     // Check if user is trying to invite themselves
-    // if (user.value.email === friend_email) {
-    //   error_message = t("cannot_invite_yourself");
-    //   return;
-    // }
+    if (user.value.email === friend_email) {
+      error_message = t("cannot_invite_yourself");
+      return;
+    }
 
     is_loading = true;
     error_message = "";

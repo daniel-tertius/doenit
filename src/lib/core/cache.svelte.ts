@@ -1,5 +1,4 @@
 import { Preferences } from "@capacitor/preferences";
-import { type User } from "./user.svelte";
 
 class CacheHandler<T> {
   private key: string;
@@ -72,7 +71,6 @@ class CacheHandler<T> {
 }
 
 export class Cached {
-  static readonly user = new CacheHandler<User | null>("user");
   static readonly defaultCategories = new CacheHandler<string[]>("selected_categories");
   static readonly theme = new CacheHandler<"light" | "dark" | null>("theme");
   static readonly notificationTime = new CacheHandler<string | null>("time");
