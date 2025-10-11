@@ -11,13 +11,21 @@
   import PhotoGallery from "./photo/PhotoGallery.svelte";
   import { Photos } from "$lib/services/photos.svelte";
   import User from "$lib/core/user.svelte";
+  import InputText2 from "./element/input/InputText2.svelte";
 
   let { task = $bindable(), error = $bindable(), other_interval = $bindable() } = $props();
 
   const title = $derived(!!task.start_date ? t("date") : t("due_date"));
 </script>
 
-<InputTaskName bind:name={task.name} bind:description={task.description} bind:error_message={error.name} />
+<InputText2 focus_on_mount placeholder={t("what_needs_to_be_done")} bind:value={task.name} />
+<hr class="border-default -mt-4" />
+
+<div>
+  <label class="font-bold" for="category">{t("category")}</label>
+
+  <CategoryPicker bind:category_id={task.category_id} />
+</div>
 
 <div class="w-full">
   <label class="font-bold" for="date">{title}</label>
@@ -41,12 +49,6 @@
     bind:other_interval
   />
 {/if}
-
-<div>
-  <label class="font-bold" for="category">{t("category")}</label>
-
-  <CategoryPicker bind:category_id={task.category_id} />
-</div>
 
 <div>
   <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-default">

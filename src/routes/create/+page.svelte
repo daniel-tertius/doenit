@@ -9,7 +9,6 @@
   import { Check, Loading } from "$lib/icon";
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
-  import { RateApp } from "$lib/services/rateApp.js";
   import { Alert } from "$lib/core/alert.js";
 
   let { data } = $props();
@@ -124,11 +123,6 @@
     // @ts-ignore
     return { success: true, task };
   }
-
-  onNavigate(async () => {
-    // Check daily usage for rating prompt
-    await RateApp.checkDailyUsage();
-  });
 </script>
 
 <form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative pb-16">

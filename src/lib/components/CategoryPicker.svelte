@@ -1,15 +1,20 @@
 <script>
   import ModalCreateCategory from "$lib/components/modal/ModalCreateCategory.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { DownChevron, Times } from "$lib/icon";
-  import { onMount } from "svelte";
+  import { DownChevron, Plus, Times } from "$lib/icon";
+  import { onMount, tick } from "svelte";
   import { DB } from "$lib/DB";
+  import Modal from "./modal/Modal.svelte";
+  import { wait } from "$lib";
 
   let { category_id = $bindable() } = $props();
 
   /** @type {Category[]} */
   let categories = $state([]);
+  let is_open = $state(false);
   let is_adding = $state(false);
+
+  const category = $derived(categories.find((c) => c.id === category_id));
 
   $effect(() => {
     if (category_id === null) {
@@ -37,23 +42,46 @@
     const category_exists = categories.some((c) => c.id === category_id);
     if (!category_exists) category_id = "";
   }
+
+  /**
+   * Select a category
+   * @param {string} id
+   */
+  async function selectCategory(id) {
+    category_id = id;
+
+    await wait(200);
+    is_open = false;
+  }
 </script>
 
 <div class="relative">
-  <select
-    id="category"
-    bind:value={category_id}
-    class="bg-card p-2 w-full border border-default rounded-lg open:text-normal appearance-none outline-none focus:ring ring-primary pr-6 truncate {!category_id &&
-      'text-normal'}"
+  <button
+    type="button"
+    class={[
+      "text-left bg-card p-2 w-full border border-default rounded-lg appearance-none outline-none focus:ring ring-primary pr-6 truncate",
+      !category_id && "text-muted",
+    ]}
+    onclick={() => (is_open = true)}
   >
-    <option value="">{t("choose_category")}</option>
-    {#each categories as category (category.id)}
-      {#if !category.is_default}
-        <option value={category.id}>{category.name}</option>
-      {/if}
-    {/each}
-    <option class="font-semibold" value={null}>+ {t("create_category")}</option>
-  </select>
+    {#if category}
+      <span>{category.name}</span>
+    {:else}
+      <span>{t("choose_category")}</span>
+    {/if}
+  </button>
+  {#if category_id}
+    <button
+      type="button"
+      aria-label="Verwyder"
+      onclick={() => (category_id = "")}
+      class="absolute right-0 top-1/2 -translate-y-1/2 p-2"
+    >
+      <Times size={18} />
+    </button>
+  {:else}
+    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
+  {/if}
 
   {#if category_id}
     <button onclick={() => (category_id = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
@@ -63,6 +91,53 @@
     <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
   {/if}
 </div>
+
+<Modal bind:is_open>
+  <h1 class="font-bold mb-2 leading-[120%]">Kies 'n kategorie</h1>
+  <div>
+    {#each categories as category}
+      {@const is_selected = category.id === category_id}
+      <button
+        type="button"
+        onclick={() => selectCategory(category.id)}
+        class={[
+          "text-left flex border rounded-lg border-primary w-full py-2 outline-none",
+          is_selected && "bg-primary/20",
+          !is_selected && "border-transparent",
+        ]}
+      >
+        <div
+          class={[
+            "my-auto mx-2 flex items-center justify-center w-4 h-4 aspect-square rounded-full border",
+            is_selected ? "border-primary" : "",
+          ]}
+        >
+          {#if is_selected}
+            <div class="w-2 h-2 bg-primary rounded-full m-auto"></div>
+          {/if}
+        </div>
+
+        <div class={["w-full p-1", !is_selected && "border-default "]}>
+          <span>{category.name}</span>
+        </div>
+      </button>
+    {/each}
+  </div>
+
+  <div>
+    <button
+      type="button"
+      class="w-full mt-1 h-12 bg-card border border-default rounded-md flex items-center justify-center gap-2"
+      onclick={() => {
+        is_adding = true;
+        is_open = false;
+      }}
+    >
+      <Plus />
+      <span>{t("add_category")}</span>
+    </button>
+  </div>
+</Modal>
 
 <ModalCreateCategory
   bind:open={is_adding}

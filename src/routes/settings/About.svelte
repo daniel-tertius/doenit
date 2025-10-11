@@ -2,13 +2,16 @@
   import { t } from "$lib/services/language.svelte";
   import { RateApp } from "$lib/services/rateApp.js";
   import { Star, Mail } from "$lib/icon";
-  import { Device } from '@capacitor/device';
+  import { Device } from "@capacitor/device";
 
+  // Hou in lyn met:
+  // - android/app/build.gradle – versionName
+  // - package.json – version
   const SUPPORT_EMAIL = "doenitapp@gmail.com";
   const VERSION = "1.2.5";
 
   async function handleRateApp() {
-    await RateApp.directRate();
+    await RateApp.openStorePage();
   }
 
   async function handleSendEmail() {
@@ -22,13 +25,9 @@
 <section class="rounded-md p-4 bg-surface space-y-3 text-t-secondary">
   <h3 class="font-semibold text-lg mb-2">{t("about_doenit")}</h3>
 
-  <!-- Hou in lyn met:  -->
-  <!-- android/app/build.gradle – versionName -->
-  <!-- package.json – "version" -->
-
   <div class="flex justify-between">
     <p>{t("version")}:</p>
-    <pre>1.2.5</pre>
+    <pre>{VERSION}</pre>
   </div>
 
   <div class="pt-2 border-t border-default">

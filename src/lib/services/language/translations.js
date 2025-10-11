@@ -134,6 +134,7 @@ export const translations = {
     sat: "Sa",
 
     // Categories
+    add_category: "Voeg Kategorie By",
     category: "Kategorie",
     all_categories: "Alle Kategorieë",
     choose_category: "Kies 'n kategorie",
@@ -359,7 +360,7 @@ export const translations = {
     s: "e", // plural suffix
 
     // Rate app
-    rate_app_message: "Lekker! Nog 'n taak afgehandel 🎉\nGeniet jy Doenit? Los 'n ⭐️⭐️⭐️⭐️⭐️",
+    rate_app_message: "Geniet jy Doenit? Los 'n ⭐️⭐️⭐️⭐️⭐️",
     rate_app_title: "Doenit",
     rate_now: "Gradeer nou",
     maybe_later: "Miskien later",
@@ -500,6 +501,7 @@ export const translations = {
     sat: "Sat",
 
     // Categories
+    add_category: "Add Category",
     category: "Category",
     all_categories: "All Categories",
     choose_category: "Choose a category",
@@ -725,7 +727,7 @@ export const translations = {
     s: "s", // plural suffix
 
     // Rate app
-    rate_app_message: "Great! Another task completed 🎉\nEnjoy using Doenit? Leave us a ⭐️⭐️⭐️⭐️⭐️",
+    rate_app_message: "Enjoy using Doenit? Leave a ⭐️⭐️⭐️⭐️⭐️",
     rate_app_title: "Doenit",
     rate_now: "Rate now",
     maybe_later: "Maybe later",

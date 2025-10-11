@@ -1,9 +1,7 @@
 import { Cached } from "./cache.svelte";
 
-// this types and interfaces
-export type ToastType = "success" | "error" | "info";
-
-export interface ToastOptions {
+type ToastType = "success" | "error" | "info";
+interface ToastOptions {
   message: string;
   type?: ToastType;
   duration?: number; // ms
@@ -18,7 +16,7 @@ export class Alert {
   static show(options: ToastOptions) {
     if (!Alert.container) {
       Alert.container = document.createElement("div");
-      Alert.container.className = "fixed z-50 inset-0 w-full flex flex-col items-center pointer-events-none ";
+      Alert.container.className = "fixed z-50 inset-0 w-full flex flex-col items-center pointer-events-none";
       document.body.appendChild(Alert.container);
     }
 

@@ -3,12 +3,15 @@ import { Alert } from "$lib/core/alert.js";
 import { t } from "$lib/services/language.svelte";
 import { DateUtil } from "$lib/core/date_util";
 import { Cached } from "$lib/core/cache.svelte";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
+import { PUBLIC_GOOGLE_PLAY_STORE_URL } from "$env/static/public";
 
 class RateAppService {
   constructor() {
     this.TASK_COMPLETION_THRESHOLD = 3;
     this.DAYS_OF_USE_THRESHOLD = 7;
-    this.DISMISS_COOLDOWN_DAYS = 30;
+    this.DISMISS_COOLDOWN_DAYS = 15;
   }
 
   async init() {
@@ -100,7 +103,10 @@ class RateAppService {
       }
     } else {
       // User dismissed - set cooldown
-      Cached.rateUs.value.last_dismissed_date = new Date().toISOString();
+      const rate = Cached.rateUs.value;
+      rate.last_dismissed_date = new Date().toISOString();
+
+      Cached.rateUs.value = rate;
     }
   }
 
@@ -119,6 +125,21 @@ class RateAppService {
   async directRate() {
     try {
       await InAppReview.requestReview();
+      if (Cached.rateUs.value) {
+        Cached.rateUs.value.has_rated = true;
+      }
+    } catch (e) {
+      Alert.error(t("rate_app_error"));
+    }
+  }
+
+  async openStorePage() {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        Browser.open({ url: PUBLIC_GOOGLE_PLAY_STORE_URL });
+      } else {
+        window.open(PUBLIC_GOOGLE_PLAY_STORE_URL, "_blank");
+      }
     } catch (e) {
       Alert.error(t("rate_app_error"));
     }

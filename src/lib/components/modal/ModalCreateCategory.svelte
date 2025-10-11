@@ -51,7 +51,9 @@
   <InputText
     bind:value={new_category_name}
     focus_on_mount
+    maxlength="50"
     placeholder={t("choose_category_name")}
+    onfocus={() => (error_message = "")}
     class={{
       "placeholder:text-error! border-error! bg-error/20!": !!error_message,
     }}
