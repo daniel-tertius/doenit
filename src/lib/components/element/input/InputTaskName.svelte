@@ -1,47 +1,109 @@
 <script>
-  import { DownChevron } from "$lib/icon";
-  import { slide } from "svelte/transition";
-  import InputText from "./InputText.svelte";
   import { t } from "$lib/services/language.svelte";
+  import ButtonClear from "../button/ButtonClear.svelte";
 
-  let { name = $bindable(), description = $bindable(), error_message = $bindable() } = $props();
+  /**
+   * @typedef {Object} Props
+   * @property {string} value
+   * @property {boolean} [show]
+   * @property {(e: Event) => Promise<void>} [onsubmit]
+   * @property {Readonly<boolean>} [invalid]
+   * @property {Readonly<boolean>} [focus_on_mount]
+   * @property {Readonly<boolean>} [can_clear]
+   */
 
-  let show_description = $state(!!description);
+  /** @type {Props & Record<string, any>} */
+  let { value = $bindable(), onsubmit, show, invalid, focus_on_mount = false, can_clear = false, ...rest } = $props();
+
+  /** @type {HTMLTextAreaElement | null} */
+  let textarea = null;
+
+  // Adjust height when value changes externally
+  $effect(() => {
+    value;
+    setTimeout(() => adjustHeight(), 0);
+  });
+
+  /**
+   * Adjust the height of the textarea based on content
+   */
+  function adjustHeight() {
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    const scrollHeight = textarea.scrollHeight;
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight);
+    const maxHeight = lineHeight * 4; // 4 lines max
+
+    textarea.style.height = `${Math.min(scrollHeight, maxHeight) + 2}px`;
+  }
+
+  /**
+   * Handle input event
+   */
+  function handleInput() {
+    invalid = false;
+    adjustHeight();
+  }
+
+  /**
+   * Clear the textarea value
+   */
+  function clearValue() {
+    value = "";
+    if (textarea) {
+      textarea.style.height = "auto";
+    }
+  }
+
+  /**
+   * Focus the textarea when it is mounted
+   * @param {HTMLTextAreaElement} el
+   */
+  function init(el) {
+    textarea = el;
+
+    if (focus_on_mount) {
+      setTimeout(() => {
+        el?.focus();
+        el?.click();
+      }, 100);
+    }
+
+    // Initial height adjustment
+    adjustHeight();
+  }
 </script>
 
-<div>
-  <span class="font-bold">{t("what_needs_to_be_done")}</span>
-  <div class="grid grid-cols-[auto_48px] gap-2">
-    <InputText
-      bind:value={name}
-      focus_on_mount
-      oninput={() => (error_message = "")}
-      placeholder={t("what_needs_to_be_done")}
-      class={{
-        "placeholder:text-error! border-error! bg-error/20!": !!error_message,
-      }}
-    />
-
-    <button
-      type="button"
-      class="rounded-full border border-default my-auto aspect-square flex justify-center items-center bg-card"
-      onclick={() => (show_description = !show_description)}
-    >
-      <DownChevron class={show_description ? "-rotate-180" : ""} size={18} />
-    </button>
+<div {...rest} class={["relative w-full", !show && "px-2", rest.class]}>
+  <div
+    tabindex="-1"
+    class={[
+      "z-10 pointer-events-none",
+      !value && "pl-[9px] text-muted translate-y-[140%]",
+      !!value && "z-50 relative font-semibold",
+      invalid && "text-error",
+    ]}
+  >
+    {t("what_needs_to_be_done")}
   </div>
+
+  <textarea
+    {...rest}
+    use:init
+    bind:value
+    oninput={handleInput}
+    {invalid}
+    rows="1"
+    class={{
+      "border-b border-default p-2 w-full placeholder:text-muted outline-none focus:border-primary resize-none overflow-y-auto": true,
+      "border-error!": invalid,
+      "bg-error/20!": show && invalid,
+      "bg-card border border-default rounded-lg bg-card": show,
+    }}
+  ></textarea>
+
+  {#if can_clear && value}
+    <ButtonClear onclick={clearValue} />
+  {/if}
 </div>
-
-{#if show_description}
-  <div transition:slide>
-    <label class="font-bold" for="description">{t("description")}</label>
-    <textarea
-      id="description"
-      bind:value={description}
-      placeholder={t("description_placeholder")}
-      rows="3"
-      class="bg-card p-2 w-full rounded-lg border border-default resize-none min-h-20 max-h-36 outline-none focus:ring-1 focus:ring-primary"
-      style="field-sizing: content;"
-    ></textarea>
-  </div>
-{/if}

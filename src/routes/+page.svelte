@@ -220,6 +220,8 @@
     <div class="flex flex-col items-center gap-4 py-12">
       {#if !Selected.categories.size}
         <div class="text-lg">{t("empty_list")}</div>
+      {:else if search_text.value?.trim().length}
+        <div class="text-lg">{t("no_tasks_found_for_search")}</div>
       {:else}
         <div class="text-lg">{t("no_tasks_found")}</div>
       {/if}

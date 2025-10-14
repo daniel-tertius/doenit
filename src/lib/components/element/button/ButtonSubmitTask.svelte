@@ -1,0 +1,26 @@
+<script>
+  import { navigating } from "$app/state";
+  import { Check, Loading } from "$lib/icon";
+  import { t } from "$lib/services/language.svelte";
+
+  /**
+   * @typedef {Object} Props
+   * @property {Readonly<boolean>} loading
+   */
+
+  /** @type {Props} */
+  const { loading } = $props();
+</script>
+
+<button
+  type="submit"
+  class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-13 w-13 p-3"
+  aria-label={t("create_new_item")}
+  disabled={loading || !!navigating.to}
+>
+  {#if loading || navigating.to}
+    <Loading class="text-2xl" />
+  {:else}
+    <Check class="text-2xl" />
+  {/if}
+</button>

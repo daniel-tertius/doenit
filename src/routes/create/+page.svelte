@@ -1,17 +1,46 @@
 <script>
-  import { fly } from "svelte/transition";
-  import { goto, onNavigate } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t, language } from "$lib/services/language.svelte";
   import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
-  import { navigating } from "$app/state";
-  import { Check, Loading } from "$lib/icon";
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
   import { Alert } from "$lib/core/alert.js";
+  import { getContext } from "svelte";
 
   let { data } = $props();
+
+  /** @type {Value<Function?>}*/
+  const onBack = getContext("onBackFunction");
+  onBack.value = async () => {
+    const has_changes = Object.keys(data.task).some((key) => {
+      const original_value = data.task[key];
+      const current_value = task[key];
+
+      // Handle primitive values.
+      if (typeof original_value !== "object" || original_value === null) {
+        return original_value !== current_value;
+      }
+
+      // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
+      return JSON.stringify(original_value) !== JSON.stringify(current_value);
+    });
+
+    if (has_changes) {
+      const discard = await Alert.confirm({
+        title: "Skrap veranderinge?",
+        message: "U het ongestoorde veranderinge.",
+        cancelText: "Nee",
+        confirmText: "Skrap",
+      });
+
+      if (!discard) return;
+    }
+
+    onBack.value = null;
+    goto("/");
+  };
 
   let task = $state(data.task);
 
@@ -125,20 +154,4 @@
   }
 </script>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 grow relative pb-16">
-  <EditTask bind:error bind:task bind:other_interval />
-</form>
-
-<button
-  type="submit"
-  form="form"
-  class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
-  aria-label={t("create_new_item")}
-  disabled={is_saving || !!navigating.to}
->
-  {#if is_saving || navigating.to}
-    <Loading class="text-2xl" />
-  {:else}
-    <Check class="text-2xl" />
-  {/if}
-</button>
+<EditTask bind:error bind:task bind:other_interval {onsubmit} />

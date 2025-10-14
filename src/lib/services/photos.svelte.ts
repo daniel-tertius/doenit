@@ -6,7 +6,7 @@ import { t } from "$lib/services/language.svelte";
 import { DateUtil } from "$lib/core/date_util";
 
 class PhotoService {
-  readonly PHOTOS_ENABLED: boolean = true;
+  readonly PHOTOS_ENABLED: boolean = false;
 
   private is_dir_created = false;
 

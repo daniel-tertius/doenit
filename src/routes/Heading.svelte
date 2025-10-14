@@ -8,6 +8,15 @@
   import ButtonSearchTask from "$lib/components/element/button/ButtonSearchTask.svelte";
   import InputText from "$lib/components/element/input/InputText.svelte";
   import { getContext, untrack } from "svelte";
+  import { goto } from "$app/navigation";
+
+  /** @type {Value<Function?>}*/
+  const onBack = getContext("onBackFunction");
+
+  const onback = () => {
+    if (onBack.value) onBack.value();
+    else goto("/");
+  };
 
   /** @type {Record<string, string>} */
   const TITLES = $derived({
@@ -39,7 +48,9 @@
 
 <div class="flex flex-col">
   <div class="flex p-1 bg-surface border-default border-b">
-    <ButtonBack />
+    <div class="h-full mr-2 aspect-square flex items-center justify-start">
+      <ButtonBack class="bg-card" onclick={onback} />
+    </div>
 
     <div class="w-fit mx-auto flex items-center justify-center gap-1 py-2">
       <img alt="logo" src="logo.png" class="w-3xl" />

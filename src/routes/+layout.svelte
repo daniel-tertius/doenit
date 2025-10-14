@@ -32,6 +32,9 @@
   const search_text = new Value("");
   setContext("search_text", search_text);
 
+  const onBack = new Value();
+  setContext("onBackFunction", onBack);
+
   /** @type {FirebaseUnsubscribe?} */
   let unsubscribeChangelog = null;
   /** @type {FirebaseUnsubscribe?} */

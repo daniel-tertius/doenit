@@ -1,7 +1,6 @@
 <script>
-  import { fly } from "svelte/transition";
   import { goto } from "$app/navigation";
-  import { Check, Loading, Trash } from "$lib/icon";
+  import { Trash } from "$lib/icon";
   import Modal from "$lib/components/modal/Modal.svelte";
   import InputCheckbox from "$lib/components/element/input/InputCheckbox.svelte";
   import EditTask from "$lib/components/EditTask.svelte";
@@ -10,10 +9,41 @@
   import { OnlineDB } from "$lib/OnlineDB.js";
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
-  import { navigating } from "$app/state";
   import { Alert } from "$lib/core/alert.js";
+  import { getContext } from "svelte";
 
-  let { data } = $props();
+  const { data } = $props();
+
+  /** @type {Value<Function?>}*/
+  const onBack = getContext("onBackFunction");
+  onBack.value = async () => {
+    const has_changes = Object.keys(data.task).some((key) => {
+      const original_value = data.task[key];
+      const current_value = task[key];
+
+      // Handle primitive values.
+      if (typeof original_value !== "object" || original_value === null) {
+        return original_value !== current_value;
+      }
+
+      // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
+      return JSON.stringify(original_value) !== JSON.stringify(current_value);
+    });
+
+    if (has_changes) {
+      const discard = await Alert.confirm({
+        title: "Skrap veranderinge?",
+        message: "U het ongestoorde veranderinge.",
+        cancelText: "Nee",
+        confirmText: "Skrap",
+      });
+
+      if (!discard) return;
+    }
+
+    onBack.value = null;
+    goto("/");
+  };
 
   let task = $state(data.task);
   let is_deleting = $state(false);
@@ -154,34 +184,18 @@
   <Trash class="text-2xl text-error" />
 </button>
 
-<form id="form" {onsubmit} in:fly={{ duration: 300, x: "-100%" }} class="space-y-4 relative pb-16">
-  <EditTask bind:error bind:task bind:other_interval />
+<EditTask bind:error bind:task bind:other_interval {onsubmit} />
 
-  <div class="h-12 flex">
-    <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
+<div class="h-12 flex">
+  <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
 
-    <InputCheckbox
-      class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2!"
-      onselect={handleSelectTask}
-      is_selected={!!task.archived}
-      tick_animation={!!task.archived}
-    />
-  </div>
-</form>
-
-<button
-  type="submit"
-  form="form"
-  disabled={is_saving || !!navigating.to}
-  class="absolute bottom-4 right-4 flex justify-center text-alt bg-primary items-center aspect-square rounded-full h-15 w-15 p-3"
-  aria-label={t("create_new_item")}
->
-  {#if is_saving || navigating.to}
-    <Loading class="text-2xl" />
-  {:else}
-    <Check class="text-2xl" />
-  {/if}
-</button>
+  <InputCheckbox
+    class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2!"
+    onselect={handleSelectTask}
+    is_selected={!!task.archived}
+    tick_animation={!!task.archived}
+  />
+</div>
 
 <Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">
   <h2 class="font-bold text-lg">{t("delete_task")}</h2>
