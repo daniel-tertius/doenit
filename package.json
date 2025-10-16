@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build --mode production",
     "build:dev": "NODE_ENV=development vite build",
     "build:prod": "NODE_ENV=production vite build",
     "preview": "vite preview",
@@ -44,7 +44,6 @@
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
-    "@capacitor/splash-screen": "^7.0.2",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
     "dexie": "^4.2.0",

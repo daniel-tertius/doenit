@@ -20,12 +20,6 @@ const config: CapacitorConfig = {
       iconColor: "#ffffff",
       sound: "notification.wav",
     },
-    SplashScreen: {
-      launchAutoHide: true,
-      androidScaleType: "FIT_CENTER",
-      backgroundColor: "#1f2326",
-      showSpinner: false,
-    },
     FirebaseAuthentication: {
       skipNativeAuth: false,
       providers: ["google.com"],
@@ -36,7 +30,7 @@ const config: CapacitorConfig = {
     },
     EdgeToEdge: {
       backgroundColor: "#2b2f31",
-    }
+    },
   },
   android: {
     buildOptions: {
