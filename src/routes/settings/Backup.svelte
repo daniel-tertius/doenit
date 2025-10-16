@@ -7,6 +7,7 @@
   import InputSwitch from "$lib/components/element/input/InputSwitch.svelte";
   import user from "$lib/core/user.svelte";
   import { Alert } from "$lib/core/alert";
+  import { Info } from "$lib/icon";
 
   async function createBackup() {
     const result = await Backup.createBackup();
@@ -53,5 +54,18 @@
 
     <ButtonBackup bind:is_loading={Backup.is_loading} onclick={createBackup} class="mb-4" />
     <ButtonRestore bind:is_loading={Backup.is_loading} onclick={restoreBackup} getBackup={handleBackup} />
+
+    <div
+      class={{
+        "border rounded-lg px-2 flex flex-col gap-1 justify-center mt-2": true,
+        "text-error py-1.5 border border-error bg-error/20": true,
+      }}
+    >
+      <div class="flex gap-1 items-center">
+        <Info class="text-lg" />
+        <p class="leading-none font-semibold">{t("warning")}:</p>
+      </div>
+      <p class="leading-none">{t("backup_photos_warning")}</p>
+    </div>
   </div>
 </Accordion>

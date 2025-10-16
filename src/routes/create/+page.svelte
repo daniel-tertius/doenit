@@ -7,46 +7,54 @@
   import user from "$lib/core/user.svelte.js";
   import { Notify } from "$lib/services/notifications/notifications.js";
   import { Alert } from "$lib/core/alert.js";
-  import { getContext } from "svelte";
+  import { onMount, setContext } from "svelte";
+  import { backHandler } from "$lib/BackHandler.svelte.js";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { Photos } from "$lib/services/photos.svelte.js";
+  import { SvelteSet } from "svelte/reactivity";
 
   let { data } = $props();
 
-  /** @type {Value<Function?>}*/
-  const onBack = getContext("onBackFunction");
-  onBack.value = async () => {
-    const has_changes = Object.keys(data.task).some((key) => {
-      const original_value = data.task[key];
-      const current_value = task[key];
+  let error = $state({});
+  let task = $state(data.task);
+  let is_saving = $state(false);
+  let other_interval = $state("");
 
-      // Handle primitive values.
-      if (typeof original_value !== "object" || original_value === null) {
-        return original_value !== current_value;
-      }
+  /** @type {SvelteSet<string>} */
+  const deleted_photo_ids = new SvelteSet();
+  setContext("deleted_photo_ids", deleted_photo_ids);
 
-      // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
-      return JSON.stringify(original_value) !== JSON.stringify(current_value);
-    });
+  onMount(() => {
+    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
+      const has_changes = Object.keys(data.task).some((key) => {
+        const original_value = data.task[key];
+        const current_value = task[key];
 
-    if (has_changes) {
-      const discard = await Alert.confirm({
-        title: "Skrap veranderinge?",
-        message: "U het ongestoorde veranderinge.",
-        cancelText: "Nee",
-        confirmText: "Skrap",
+        // Handle primitive values.
+        if (typeof original_value !== "object" || original_value === null) {
+          return original_value !== current_value;
+        }
+
+        // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
+        return JSON.stringify(original_value) !== JSON.stringify(current_value);
       });
 
-      if (!discard) return;
-    }
+      if (has_changes) {
+        const discard = await Alert.confirm({
+          title: "Skrap veranderinge?",
+          message: "U het ongestoorde veranderinge.",
+          cancelText: "Nee",
+          confirmText: "Skrap",
+        });
 
-    onBack.value = null;
-    goto("/");
-  };
+        if (!discard) return;
+      }
 
-  let task = $state(data.task);
+      goto("/");
+    }, -1));
 
-  let other_interval = $state("");
-  let error = $state({});
-  let is_saving = $state(false);
+    return () => backHandler.unregister(token);
+  });
 
   /**
    * @param {Event} event
@@ -66,6 +74,11 @@
         error = result.error;
         return;
       }
+
+      // Delete removed photos
+      const ids = [...deleted_photo_ids.values()];
+      const promised = ids.map((p) => Photos.deletePhoto(p));
+      await Promise.all(promised);
 
       await goto(`/?new_id=${result.task.id}`);
     } catch (error) {

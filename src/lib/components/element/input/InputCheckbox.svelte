@@ -34,7 +34,7 @@
 >
   <div
     class={{
-      "rounded border  h-6 w-6 flex items-center justify-center": true,
+      "rounded border h-6 w-6 flex items-center justify-center": true,
       "border-primary shadow-none bg-primary": is_checked,
       "bg-white shadow-inner shadow-black border-default": !is_checked,
     }}

@@ -7,7 +7,6 @@ import * as env from "$env/static/public";
 
 export const AFRIKAANS = Symbol("af");
 export const ENGLISH = Symbol("en");
-export const CAT_FILTER_KEY = Symbol("Indicates if category filter is showing (on the home screen)");
 export const DEFAULT_HEX_COLOR = "#2b2f31";
 export const BACKUP_APP_NAME = "[DEFAULT]";
 export const COMPLETE_TASK_DELAY_MS = 400;
@@ -21,6 +20,9 @@ export const FIREBASE_CONFIG = {
   messagingSenderId: env.PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: env.PUBLIC_FIREBASE_APP_ID,
 };
+
+/** @type {{ value: symbol | null }} */
+export let BACK_BUTTON_FUNCTION = { value: null };
 
 /**
  * Get the current locale for date formatting

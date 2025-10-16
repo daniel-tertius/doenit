@@ -15,9 +15,9 @@
   import { slide } from "svelte/transition";
   import { tick } from "svelte";
 
-  let { task = $bindable(), error = $bindable(), other_interval = $bindable(), onsubmit } = $props();
+  let { task = $bindable(), error = $bindable(), other_interval = $bindable(), onsubmit, expanded = false } = $props();
 
-  let show = $state(false);
+  let show = $state(expanded);
   let loading = $state(false);
   let invalid = $state(false);
 
@@ -51,8 +51,8 @@
   <InputTaskName {onsubmit} {invalid} {show} focus_on_mount bind:value={task.name} />
 
   {#if !show}
-    <div class="flex justify-center mt-10">
-      <button class="bg-card rounded-full px-4 py-1" type="button" onclick={showMore}> Show More </button>
+    <div class="absolute bottom-7 left-0 right-0 flex justify-center mt-10">
+      <button class="bg-card rounded-full px-4 py-1" type="button" onclick={showMore}>{t("more")}</button>
     </div>
   {:else}
     <div transition:slide={{ axis: "y" }} class="space-y-4">
@@ -85,7 +85,7 @@
       {/if}
 
       <div>
-        <div class="grid grid-cols-[40px_auto_128px] py-2 border-t border-default">
+        <div class="grid grid-cols-[40px_auto_128px] py-2 border-y border-default">
           <Important class="m-auto" />
           <div class="flex flex-col">
             <span class="font-semibold">{t("is_this_important")}</span>
@@ -113,7 +113,7 @@
       </div>
 
       {#if Photos.PHOTOS_ENABLED}
-        <div class="border-t border-default pt-4">
+        <div>
           <PhotoGallery bind:photo_ids={task.photo_ids} />
         </div>
       {/if}

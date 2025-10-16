@@ -8,10 +8,6 @@ import android.content.IntentFilter;
 import android.content.Context;
 import android.util.Log;
 
-
-
-
-
 import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
 import java.util.Set;
@@ -33,21 +29,26 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         Log.d(Const.LOG_TAG_DOENIT, "MainActivity onCreate called");
 
-
         // Register plugins
         registerPlugin(TaskWidgetPlugin.class);
 
         super.onCreate(savedInstanceState);
+
+        // Initialize DB lazily only when needed
+        DB.init(getApplicationContext());
 
         // Handle intent
         Intent intent = getIntent();
         Bridge bridge = getBridge();
 
         Utils.navigateToRoute(bridge, intent);
-        DB.init(this);
 
-        // Check for pending task updates from SharedPreferences
-        checkForPendingTaskUpdates();
+        // Skip pending task updates check if we're going to /create
+        String route = intent.getStringExtra("route");
+        if (route == null || !route.equals("/create")) {
+            // Check for pending task updates from SharedPreferences
+            checkForPendingTaskUpdates();
+        }
     }
 
     @Override
@@ -60,7 +61,6 @@ public class MainActivity extends BridgeActivity {
         Bridge bridge = getBridge();
 
         Utils.navigateToRoute(bridge, intent);
-        DB.init(this);
 
         // Check for pending task updates from SharedPreferences
         checkForPendingTaskUpdates();

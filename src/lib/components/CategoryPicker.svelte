@@ -70,6 +70,7 @@
       <span>{t("choose_category")}</span>
     {/if}
   </button>
+
   {#if category_id}
     <button
       type="button"
@@ -80,15 +81,7 @@
       <Times size={18} />
     </button>
   {:else}
-    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
-  {/if}
-
-  {#if category_id}
-    <button onclick={() => (category_id = "")} class="absolute right-0 top-1/2 -translate-y-1/2 p-2">
-      <Times size={18} />
-    </button>
-  {:else}
-    <DownChevron class="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
+    <DownChevron class="absolute text-muted right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
   {/if}
 </div>
 

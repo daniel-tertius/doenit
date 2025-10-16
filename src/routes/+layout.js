@@ -1,5 +1,4 @@
 import { notifications } from "$lib/services/notification.svelte";
-import { SplashScreen } from "@capacitor/splash-screen";
 import { theme } from "$lib/services/theme.svelte";
 import { text } from "$lib/services/text.svelte";
 import { RateApp } from "$lib/services/rateApp";
@@ -13,8 +12,6 @@ export const ssr = false;
 
 export async function load() {
   try {
-    SplashScreen.show({ autoHide: true, showDuration: 1000 });
-
     await DB.init();
 
     RateApp.checkDailyUsage();

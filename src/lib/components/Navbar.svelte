@@ -1,8 +1,10 @@
 <script>
   import { page } from "$app/state";
+  import { backHandler } from "$lib/BackHandler.svelte";
   import user from "$lib/core/user.svelte";
   import { Categories, Home, Check, Settings, Shared } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
+  import { onMount } from "svelte";
   import { fly } from "svelte/transition";
 
   let is_mounted = false;
@@ -18,6 +20,18 @@
     { Icon: Shared, label: t("friends"), href: "/friends", show: !!user.value?.is_friends_enabled },
     { Icon: Settings, label: t("settings"), href: "/settings" },
   ]);
+
+  onMount(() => {
+    const token = backHandler.register(() => {
+      if (is_mounted) {
+        onclose();
+        return true;
+      }
+      return false;
+    }, 501);
+
+    return () => backHandler.unregister(token);
+  });
 </script>
 
 <svelte:window

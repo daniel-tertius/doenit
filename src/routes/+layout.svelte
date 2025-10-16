@@ -3,7 +3,7 @@
   import { notifications } from "$lib/services/notification.svelte";
   import { onDestroy, onMount, setContext, untrack } from "svelte";
   import { inviteService } from "$lib/services/invites.svelte";
-  import { SplashScreen } from "@capacitor/splash-screen";
+  import { backHandler } from "$lib/BackHandler.svelte";
   import { Photos } from "$lib/services/photos.svelte";
   import Backup from "$lib/services/backup.svelte";
   import { Widget } from "$lib/services/widget";
@@ -15,25 +15,17 @@
   import { goto } from "$app/navigation";
   import Footer from "./Footer.svelte";
   import { App } from "@capacitor/app";
+  import { page } from "$app/state";
   import { DB } from "$lib/DB";
   import "../app.css";
-  import { CAT_FILTER_KEY } from "$lib";
-  import { page } from "$app/state";
-  import { Selected } from "$lib/selected";
 
   let { children } = $props();
 
   /** @type {string[]} */
   let room_ids = $state([]);
 
-  const is_cat_filter_showing = new Value(false);
-  setContext(CAT_FILTER_KEY, is_cat_filter_showing);
-
   const search_text = new Value("");
   setContext("search_text", search_text);
-
-  const onBack = new Value();
-  setContext("onBackFunction", onBack);
 
   /** @type {FirebaseUnsubscribe?} */
   let unsubscribeChangelog = null;
@@ -43,9 +35,7 @@
   $effect(() => {
     if (!user.value?.is_backup_enabled) return;
 
-    untrack(async () => {
-      Backup.init();
-    });
+    untrack(() => Backup.init());
   });
 
   $effect(() => {
@@ -53,9 +43,7 @@
     if (!user.value?.is_friends_enabled) return;
     if (!room_ids.length) return;
 
-    untrack(async () => {
-      await pushNotificationService.init();
-    });
+    untrack(() => pushNotificationService.init());
 
     // Clean up existing subscription before creating a new one
     unsubscribeChangelog = OnlineDB.Changelog.subscribe(consumeChangelog, {
@@ -84,10 +72,7 @@
   });
 
   onMount(() => {
-    const sub = DB.Room.subscribe((rooms) => {
-      room_ids = rooms.map((r) => r.id);
-    });
-
+    const sub = DB.Room.subscribe((rooms) => (room_ids = rooms.map((r) => r.id)));
     return () => sub.unsubscribe();
   });
 
@@ -96,25 +81,39 @@
     return () => sub.unsubscribe();
   });
 
-  onMount(() => {
-    cleanupOrphanedPhotos();
+  $effect(() => {
+    setTimeout(() => {
+      untrack(() => cleanupOrphanedPhotos());
+    }, 5000); // Delay to avoid impacting startup performance
   });
 
   onMount(() => {
-    SplashScreen.hide();
+    // Register default navigation handler (lowest priority)
+    const nav_token = backHandler.register(() => {
+      if (page.url.pathname !== "/") {
+        goto("/");
+        return true;
+      }
+      return false;
+    }, -100);
+
+    // Register app exit handler (fallback)
+    const exit_token = backHandler.register(() => {
+      App.exitApp();
+      return true;
+    }, -1000);
 
     App.addListener("backButton", () => {
-      if (is_cat_filter_showing.value) {
-        is_cat_filter_showing.value = false;
-      } else if (Selected.tasks.size) {
-        Selected.tasks.clear();
-      } else if (page.url.pathname !== "/") {
-        goto("/");
-      } else {
-        App.exitApp();
-      }
+      backHandler.handle();
     });
 
+    return () => {
+      backHandler.unregister(nav_token);
+      backHandler.unregister(exit_token);
+    };
+  });
+
+  onMount(() => {
     // Listen for task completion events from native side
     window.addEventListener("taskCompleted", async (event) => {
       console.log("[💬 Doenit] Task completed event received");

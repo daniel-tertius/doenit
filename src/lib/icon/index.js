@@ -7,11 +7,14 @@ import Camera from "./Camera.svelte";
 import Categories from "./Categories.svelte";
 import Check from "./Check.svelte";
 import CheckCircle from "./CheckCircle.svelte";
+import ChevronLeft from "./ChevronLeft.svelte";
+import ChevronRight from "./ChevronRight.svelte";
 import Clock from "./Clock.svelte";
 import DownChevron from "./DownChevron.svelte";
 import Download from "./Download.svelte";
 import DownloadCloud from "./DownloadCloud.svelte";
 import Edit from "./Edit.svelte";
+import Gallery from "./Gallery.svelte";
 import Google from "./Google.svelte";
 import Home from "./Home.svelte";
 import Important from "./Important.svelte";
@@ -49,11 +52,14 @@ export {
   Categories,
   Check,
   CheckCircle,
+  ChevronLeft,
+  ChevronRight,
   Clock,
   DownChevron,
   Download,
   DownloadCloud,
   Edit,
+  Gallery,
   Google,
   Home,
   Important,

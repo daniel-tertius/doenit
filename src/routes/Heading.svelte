@@ -1,22 +1,17 @@
 <script>
   import { page } from "$app/state";
-  import { fade, fly, slide } from "svelte/transition";
+  import { fade, slide } from "svelte/transition";
   import ButtonBack from "$lib/components/element/button/ButtonBack.svelte";
-  import DeleteAll from "../lib/components/DeleteAll.svelte";
+  import DeleteAll from "$lib/components/DeleteAll.svelte";
   import { t } from "$lib/services/language.svelte";
   import { Selected } from "$lib/selected";
   import ButtonSearchTask from "$lib/components/element/button/ButtonSearchTask.svelte";
   import InputText from "$lib/components/element/input/InputText.svelte";
-  import { getContext, untrack } from "svelte";
-  import { goto } from "$app/navigation";
+  import { getContext, onMount, untrack } from "svelte";
+  import { backHandler } from "$lib/BackHandler.svelte";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
 
-  /** @type {Value<Function?>}*/
-  const onBack = getContext("onBackFunction");
-
-  const onback = () => {
-    if (onBack.value) onBack.value();
-    else goto("/");
-  };
+  let show_searchbar = $state(false);
 
   /** @type {Record<string, string>} */
   const TITLES = $derived({
@@ -34,8 +29,6 @@
   const is_home = $derived(page.route.id === "/");
   const is_done = $derived(page.route.id === "/complete");
 
-  let show_searchbar = $state(false);
-
   $effect(() => {
     page.url;
 
@@ -44,12 +37,33 @@
       search_text.value = "";
     });
   });
+
+  onMount(() => {
+    const token = backHandler.register(() => {
+      if (show_searchbar) {
+        show_searchbar = false;
+        return true;
+      }
+      return false;
+    }, 500);
+
+    return () => backHandler.unregister(token);
+  });
 </script>
 
 <div class="flex flex-col">
   <div class="flex p-1 bg-surface border-default border-b">
     <div class="h-full mr-2 aspect-square flex items-center justify-start">
-      <ButtonBack class="bg-card" onclick={onback} />
+      <ButtonBack
+        class="bg-card"
+        onclick={() => {
+          const token = BACK_BUTTON_FUNCTION.value;
+          if (!token) return;
+
+          const func = backHandler.handlers.get(token);
+          if (func) func.handler();
+        }}
+      />
     </div>
 
     <div class="w-fit mx-auto flex items-center justify-center gap-1 py-2">

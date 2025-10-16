@@ -69,14 +69,13 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         if (ACTION_ADD_TASK.equals(action)) {
             try {
                 Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Handling ADD_TASK action");
-                // Open the app to create a new task
-                Intent appIntent = new Intent(context, MainActivity.class);
-                appIntent.putExtra("route", "/create");
-                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                // Open CreateTaskActivity for fastest startup
+                Intent appIntent = new Intent(context, CreateTaskActivity.class);
+                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                 context.startActivity(appIntent);
             } catch (Exception e) {
-                Log.e(Const.LOG_TAG_TASK_WIDGET, "Failed to start MainActivity", e);
+                Log.e(Const.LOG_TAG_TASK_WIDGET, "Failed to start CreateTaskActivity", e);
             }
         } else if (ACTION_COMPLETE_TASK.equals(action)) {
             String taskId = intent.getStringExtra(EXTRA_TASK_ID);

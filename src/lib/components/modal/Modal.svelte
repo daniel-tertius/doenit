@@ -1,10 +1,12 @@
 <script>
-  import { fade } from "svelte/transition";
-  import { quadInOut } from "svelte/easing";
-  import { Times } from "$lib/icon";
-  import { untrack } from "svelte";
-  import { Device } from "@capacitor/device";
+  import { backHandler } from "$lib/BackHandler.svelte";
   import { t } from "$lib/services/language.svelte";
+  import { Device } from "@capacitor/device";
+  import { quadInOut } from "svelte/easing";
+  import { onMount, untrack } from "svelte";
+  import { fade } from "svelte/transition";
+  import { Times } from "$lib/icon";
+
   // import { EdgeToEdge } from "@capawesome/capacitor-android-edge-to-edge-support";
   // import { theme } from "$lib/services/theme.svelte";
   // import { DEFAULT_HEX_COLOR } from "$lib";
@@ -31,6 +33,18 @@
       //   color: theme.value === "dark" ? (DEFAULT_HEX_COLOR + is_open ? "44" : "") : "#F5F5F5",
       // });
     });
+  });
+
+  onMount(() => {
+    const token = backHandler.register(() => {
+      if (is_open) {
+        handleClose();
+        return true;
+      }
+      return false;
+    }, 1000);
+
+    return () => backHandler.unregister(token);
   });
 
   /**

@@ -6,13 +6,27 @@ import android.content.Context;
 
 public class DB {
     private static SharedPreferences prefs;
+    private static DB instance;
+    private static Context appContext;
 
-    public static void init(Context context) {
+    public static DB init(Context context) {
         if (prefs != null) {
-            return;
+            return instance;
         }
 
-        prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
+        appContext = context.getApplicationContext();
+        prefs = appContext.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
+        if (instance == null) {
+            instance = new DB();
+        }
+        return instance;
+    }
+    
+    // Lazy initialization - called automatically when needed
+    private static void ensureInitialized(Context context) {
+        if (prefs == null && context != null) {
+            init(context);
+        }
     }
 
     public static void saveData(String name, String data) {

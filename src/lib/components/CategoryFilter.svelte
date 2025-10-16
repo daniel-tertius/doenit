@@ -1,19 +1,17 @@
 <script>
   import ModalCreateCategory from "$lib/components/modal/ModalCreateCategory.svelte";
+  import { backHandler } from "$lib/BackHandler.svelte";
   import CategoryButton from "./CategoryButton.svelte";
   import { t } from "$lib/services/language.svelte";
   import { selectedCategories } from "$lib/cached";
   import { Plus, DownChevron } from "$lib/icon";
   import { slide } from "svelte/transition";
   import { Selected } from "$lib/selected";
-  import { getContext, onMount } from "svelte";
+  import { onMount } from "svelte";
   import { DB } from "$lib/DB";
-  import { CAT_FILTER_KEY } from "$lib";
-
-  /** @type {Value<boolean>}*/
-  const is_cat_filter_showing = getContext(CAT_FILTER_KEY);
 
   let is_adding = $state(false);
+  let is_filter_open = $state(false);
 
   /** @type {Category?} */
   let default_category = $state(null);
@@ -32,9 +30,21 @@
 
     return () => sub.unsubscribe();
   });
+
+  onMount(() => {
+    const token = backHandler.register(() => {
+      if (is_filter_open) {
+        is_filter_open = false;
+        return true;
+      }
+      return false;
+    }, 500);
+
+    return () => backHandler.unregister(token);
+  });
 </script>
 
-{#if is_cat_filter_showing.value}
+{#if is_filter_open}
   <div
     transition:slide
     class="absolute border-t border-default left-0 right-0 mt-1 bg-page rounded-t-md max-h-[66dvh] overflow-y-auto z-1"
@@ -65,7 +75,7 @@
   class="w-full bg-card rounded-md h-15 px-4 flex items-center justify-between"
   onclick={(e) => {
     e.stopPropagation();
-    is_cat_filter_showing.value = !is_cat_filter_showing.value;
+    is_filter_open = !is_filter_open;
   }}
 >
   {#if Selected.categories.size === 0}
@@ -76,7 +86,7 @@
     {t("categories_selected", { count: Selected.categories.size })}
   {/if}
 
-  <DownChevron class="{is_cat_filter_showing.value ? '' : '-rotate-180'} text-xl" />
+  <DownChevron class="{is_filter_open ? '' : '-rotate-180'} text-xl" />
 </button>
 
 <ModalCreateCategory

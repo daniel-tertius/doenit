@@ -20,6 +20,7 @@
   onMount(() => {
     const sub = DB.Task.subscribe((result) => (tasks = result), {
       selector: { $or: [{ archived: { $eq: true } }, { completed: { $gt: 0 } }] },
+      sort: [{ completed_at: "desc" }],
     });
 
     return () => sub.unsubscribe();

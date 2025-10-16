@@ -1,55 +1,32 @@
 <script>
-  import { goto } from "$app/navigation";
-  import { Trash } from "$lib/icon";
-  import Modal from "$lib/components/modal/Modal.svelte";
   import InputCheckbox from "$lib/components/element/input/InputCheckbox.svelte";
+  import { Notify } from "$lib/services/notifications/notifications.js";
+  import Modal from "$lib/components/modal/Modal.svelte";
   import EditTask from "$lib/components/EditTask.svelte";
   import { t } from "$lib/services/language.svelte";
-  import { DB } from "$lib/DB.js";
   import { OnlineDB } from "$lib/OnlineDB.js";
   import user from "$lib/core/user.svelte.js";
-  import { Notify } from "$lib/services/notifications/notifications.js";
   import { Alert } from "$lib/core/alert.js";
-  import { getContext } from "svelte";
+  import { goto } from "$app/navigation";
+  import { Trash } from "$lib/icon";
+  import { DB } from "$lib/DB.js";
+  import { onMount, setContext } from "svelte";
+  import { backHandler } from "$lib/BackHandler.svelte.js";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { SvelteSet } from "svelte/reactivity";
+  import { Photos } from "$lib/services/photos.svelte.js";
 
   const { data } = $props();
-
-  /** @type {Value<Function?>}*/
-  const onBack = getContext("onBackFunction");
-  onBack.value = async () => {
-    const has_changes = Object.keys(data.task).some((key) => {
-      const original_value = data.task[key];
-      const current_value = task[key];
-
-      // Handle primitive values.
-      if (typeof original_value !== "object" || original_value === null) {
-        return original_value !== current_value;
-      }
-
-      // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
-      return JSON.stringify(original_value) !== JSON.stringify(current_value);
-    });
-
-    if (has_changes) {
-      const discard = await Alert.confirm({
-        title: "Skrap veranderinge?",
-        message: "U het ongestoorde veranderinge.",
-        cancelText: "Nee",
-        confirmText: "Skrap",
-      });
-
-      if (!discard) return;
-    }
-
-    onBack.value = null;
-    goto("/");
-  };
 
   let task = $state(data.task);
   let is_deleting = $state(false);
   let is_saving = $state(false);
   let error = $state({});
   let other_interval = $state(data.task.repeat_interval_number > 1 ? data.task.repeat_interval : "");
+
+  /** @type {SvelteSet<string>} */
+  const deleted_photo_ids = new SvelteSet();
+  setContext("deleted_photo_ids", deleted_photo_ids);
 
   $effect(() => {
     if (!!task.due_date) return;
@@ -63,6 +40,38 @@
     if (task.repeat_interval !== "weekly_custom_days") return;
 
     task.start_date = task.due_date;
+  });
+
+  onMount(() => {
+    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
+      const has_changes = Object.keys(data.task).some((key) => {
+        const original_value = data.task[key];
+        const current_value = task[key];
+
+        // Handle primitive values.
+        if (typeof original_value !== "object" || original_value === null) {
+          return original_value !== current_value;
+        }
+
+        // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
+        return JSON.stringify(original_value) !== JSON.stringify(current_value);
+      });
+
+      if (has_changes) {
+        const discard = await Alert.confirm({
+          title: "Skrap veranderinge?",
+          message: "U het ongestoorde veranderinge.",
+          cancelText: "Nee",
+          confirmText: "Skrap",
+        });
+
+        if (!discard) return;
+      }
+
+      goto("/");
+    }, -1));
+
+    return () => backHandler.unregister(token);
   });
 
   /**
@@ -82,6 +91,11 @@
         error = { message: t("error_updating_task") };
         return;
       }
+
+      // Delete removed photos
+      const ids = [...deleted_photo_ids.values()];
+      const promised = ids.map((p) => Photos.deletePhoto(p));
+      await Promise.all(promised);
 
       if (user.value && task.room_id) {
         const room = await DB.Room.get(task.room_id);
@@ -136,6 +150,7 @@
         task.archived = false;
       } else {
         task.completed++;
+        task.archived = true;
       }
 
       await DB.Task.update(task.id, task);
@@ -184,13 +199,13 @@
   <Trash class="text-2xl text-error" />
 </button>
 
-<EditTask bind:error bind:task bind:other_interval {onsubmit} />
+<EditTask bind:error bind:task bind:other_interval {onsubmit} expanded />
 
 <div class="h-12 flex">
   <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
 
   <InputCheckbox
-    class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2!"
+    class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2! z-1"
     onselect={handleSelectTask}
     is_selected={!!task.archived}
     tick_animation={!!task.archived}
