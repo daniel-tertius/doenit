@@ -23,9 +23,10 @@
   } = $props();
 
   const getRoundedClass = () => {
-    if (is_range_start) return "rounded-l-lg";
-    if (is_range_end) return "rounded-r-lg";
-    return "rounded-lg";
+    if (is_range_start && is_in_range) return "rounded-l";
+    if (is_range_start && !is_in_range) return "rounded";
+    if (is_range_end) return "rounded-r";
+    return "rounded";
   };
 </script>
 
@@ -35,10 +36,9 @@
     "aspect-square cursor-pointer text-sm relative p-2 flex items-center justify-center",
     is_other_month && "text-muted",
     (is_today || is_selected || is_range_start || is_range_end) && "font-semibold",
-    is_today && !is_selected && !is_range_start && !is_range_end && "text-primary",
-    is_in_range && !is_selected && !is_range_start && !is_range_end && "bg-primary/10",
-    (is_selected || is_range_start || is_range_end) && "bg-primary/40",
-    (is_selected || is_range_start || is_range_end) && "text-primary",
+    is_today && !is_selected && !is_range_start && !is_range_end && "text-alt",
+    is_in_range && !is_selected && !is_range_start && !is_range_end && "bg-primary/60 text-alt",
+    (is_selected || is_range_start || is_range_end) && "bg-primary text-alt",
   ]}
   onclick={() => onclick(date)}
   type="button"

@@ -148,7 +148,7 @@
     if (!task) return { success: false, error: { message: t("no_task_found") } };
     if (!task.name?.trim()) return { success: false, error: { name: t("what_must_be_done") } };
 
-    if (!!task.start_date && !!task.due_date && !!task.due_date && task.start_date > task.due_date) {
+    if (!!task.start_date && !!task.due_date && task.start_date > task.due_date) {
       return { success: false, error: { date: t("start_date_before_end") } };
     }
 

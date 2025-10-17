@@ -4,44 +4,50 @@
   import ChevronLeft from "$lib/icon/ChevronLeft.svelte";
   import ChevronRight from "$lib/icon/ChevronRight.svelte";
   import DownChevron from "$lib/icon/DownChevron.svelte";
+  import { t } from "$lib/services/language.svelte";
+  import { untrack } from "svelte";
 
   /**
-   * @typedef {Object} CalendarProps
-   * @property {Date | null} startDate - Initial/controlled start date
-   * @property {Date | null} endDate - Initial/controlled end date
-   * @property {string} locale - Locale for formatting (default: 'en-US')
-   * @property {number} weekStartsOn - 0 for Sunday, 1 for Monday (default: 1)
+   * @typedef {Object} Props
+   * @property {Date | null} start_date - Initial/controlled start date
+   * @property {Date | null} end_date - Initial/controlled end date
+   * @property {string} [locale] - Locale for formatting (default: 'en-US')
+   * @property {number} [week_starts_on] - 0 for Sunday, 1 for Monday (default: 1)
    * @property {Function} ondateselected - Callback when dates are selected: ({ start_date, end_date }) => void
    */
 
+  /** @type {Props} */
   let {
-    startDate = $bindable(null),
-    endDate = $bindable(null),
+    start_date = $bindable(null),
+    end_date = $bindable(null),
     locale = "af-ZA",
-    weekStartsOn = 1,
+    week_starts_on = 1,
     ondateselected = null,
   } = $props();
 
   // Current month being viewed
-  let currentMonth = $state(new Date());
-  currentMonth.setDate(1);
-  currentMonth.setHours(0, 0, 0, 0);
+  let current_month = $state(goToToday());
 
   // Internal selection state
-  let internalStartDate = $state(startDate);
-  let internalEndDate = $state(endDate);
+  let internal_start_date = $state(start_date);
+  let internal_end_date = $state(end_date);
 
   // Sync with props
   $effect(() => {
-    internalStartDate = startDate;
-    internalEndDate = endDate;
+    start_date;
+    end_date;
+
+    untrack(() => {
+      internal_start_date = start_date;
+      internal_end_date = end_date;
+    });
   });
 
   // Month/year navigation state
-  let isYearPickerOpen = $state(false);
+  let is_year_picker_open = $state(false);
   let is_month_picker_open = $state(false);
 
-  const monthNames = $derived.by(() => {
+  const month_names = $derived.by(() => {
     const names = [];
     for (let i = 0; i < 12; i++) {
       const date = new Date(2025, i, 1);
@@ -50,90 +56,92 @@
     return names;
   });
 
-  const currentMonthName = $derived(currentMonth.toLocaleDateString(locale, { month: "long", year: "numeric" }));
+  const current_month_name = $derived(current_month.toLocaleDateString(locale, { month: "long", year: "numeric" }));
 
   function previousMonth() {
-    const newMonth = new Date(currentMonth);
+    const newMonth = new Date(current_month);
     newMonth.setMonth(newMonth.getMonth() - 1);
-    currentMonth = newMonth;
+    current_month = newMonth;
   }
 
   function nextMonth() {
-    const newMonth = new Date(currentMonth);
+    const newMonth = new Date(current_month);
     newMonth.setMonth(newMonth.getMonth() + 1);
-    currentMonth = newMonth;
+    current_month = newMonth;
   }
 
   function goToToday() {
-    currentMonth = new Date();
-    currentMonth.setDate(1);
-    currentMonth.setHours(0, 0, 0, 0);
+    const date = new Date();
+    date.setDate(1);
+    date.setHours(0, 0, 0, 0);
+
+    return date;
   }
 
-  function selectMonth(monthIndex) {
-    const newMonth = new Date(currentMonth);
-    newMonth.setMonth(monthIndex);
-    currentMonth = newMonth;
+  function selectMonth(index) {
+    const newMonth = new Date(current_month);
+    newMonth.setMonth(index);
+    current_month = newMonth;
     is_month_picker_open = false;
   }
 
   function selectYear(year) {
-    const newMonth = new Date(currentMonth);
+    const newMonth = new Date(current_month);
     newMonth.setFullYear(year);
-    currentMonth = newMonth;
-    isYearPickerOpen = false;
+    current_month = newMonth;
+    is_year_picker_open = false;
   }
 
   function handleDayClick(date) {
-    const clickedDate = new Date(date);
-    clickedDate.setHours(0, 0, 0, 0);
+    const clicked_date = new Date(date);
+    clicked_date.setHours(0, 0, 0, 0);
 
     // Date range selection logic
-    if (!internalStartDate || (internalStartDate && internalEndDate)) {
+    if (!internal_start_date || (internal_start_date && internal_end_date)) {
       // Start new selection
-      internalStartDate = clickedDate;
-      internalEndDate = null;
-    } else if (internalStartDate && !internalEndDate) {
+      internal_start_date = clicked_date;
+      internal_end_date = null;
+    } else if (internal_start_date && !internal_end_date) {
       // Complete the range
-      if (clickedDate < internalStartDate) {
+      if (clicked_date < internal_start_date) {
         // Clicked date is before start, swap them
-        internalEndDate = internalStartDate;
-        internalStartDate = clickedDate;
-      } else if (clickedDate.getTime() === internalStartDate.getTime()) {
+        internal_end_date = internal_start_date;
+        internal_start_date = clicked_date;
+      } else if (clicked_date.getTime() === internal_start_date.getTime()) {
         // Clicked same date, keep only start date
-        internalEndDate = null;
+        internal_end_date = null;
       } else {
         // Clicked date is after start
-        internalEndDate = clickedDate;
+        internal_end_date = clicked_date;
       }
     }
 
     // Update bindable props
-    startDate = internalStartDate;
-    endDate = internalEndDate;
+    start_date = internal_start_date;
+    end_date = internal_end_date;
 
     // Emit event
     if (ondateselected) {
       ondateselected({
-        start_date: internalStartDate,
-        end_date: internalEndDate,
+        start_date: internal_start_date,
+        end_date: internal_end_date,
       });
     }
   }
 
   // Generate year range for year picker
-  const yearRange = $derived.by(() => {
-    const currentYear = currentMonth.getFullYear();
+  const year_range = $derived.by(() => {
+    const current_year = current_month.getFullYear();
     const years = [];
-    for (let i = currentYear - 10; i <= currentYear + 10; i++) {
+    for (let i = current_year - 10; i <= current_year + 10; i++) {
       years.push(i);
     }
     return years;
   });
 </script>
 
-<div class="w-full bg-surface rounded-lg p-4">
-  <div class="flex items-center justify-between mb-4 gap-2">
+<div class="w-full bg-surface rounded-lg">
+  <div class="flex items-center justify-between mb-4 gap-1">
     <button
       class="cursor-pointer p-2 rounded flex items-center justify-center text-muted"
       onclick={previousMonth}
@@ -143,22 +151,29 @@
       <ChevronLeft class="w-5 h-5" />
     </button>
 
-    <div class="flex items-center gap-2 flex-1 justify-center">
+    <div class="flex items-center flex-1 justify-between">
       <button
         class="cursor-pointer px-3 py-2 rounded-lg text-base font-semibold flex items-center gap-2"
-        onclick={() => (is_month_picker_open = !is_month_picker_open)}
+        onclick={() => {
+          is_month_picker_open = !is_month_picker_open;
+          if (!is_month_picker_open) {
+            is_year_picker_open = false;
+          }
+        }}
         type="button"
       >
-        {currentMonthName}
+        {current_month_name}
         <DownChevron class="w-4 h-4 {is_month_picker_open ? 'rotate-180' : ''}" />
       </button>
 
       <button
-        class="bg-card border border-default cursor-pointer px-3 py-1.5 rounded-lg text-sm"
-        onclick={goToToday}
+        class="bg-card border border-default cursor-pointer px-3 py-1.5 rounded text-sm"
+        onclick={() => {
+          current_month = goToToday();
+        }}
         type="button"
       >
-        Today
+        {t("today")}
       </button>
     </div>
 
@@ -172,42 +187,57 @@
     </button>
   </div>
 
-  {#if is_month_picker_open}
-    <div class="mb-4 border border-default rounded-md p-3 bg-page" transition:slide={{ duration: 200 }}>
-      <div class="grid grid-cols-3 gap-2 mb-2">
-        {#each monthNames as month, index}
+  <div class="relative">
+    {#if is_month_picker_open}
+      <div
+        class="mb-4 border absolute z-10 top-0 left-0 right-0 border-default rounded-md p-3 bg-page"
+        transition:slide={{ duration: 200 }}
+      >
+        <div class="grid grid-cols-3 gap-2 mb-2">
+          {#each month_names as month, index}
+            {@const is_selected = current_month.getMonth() === index}
+            <button
+              class={{
+                "border cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center": true,
+                "bg-primary/20 border-primary text-alt": is_selected,
+                "bg-card border-default text-normal": !is_selected,
+              }}
+              onclick={() => selectMonth(index)}
+              type="button"
+            >
+              {month}
+            </button>
+          {/each}
+        </div>
+        <div class="flex justify-center">
           <button
-            class="bg-surface border border-default cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400"
-            class:bg-blue-600={currentMonth.getMonth() === index}
-            class:text-white={currentMonth.getMonth() === index}
-            class:border-blue-600={currentMonth.getMonth() === index}
-            onclick={() => selectMonth(index)}
+            class="bg-card border border-default cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center gap-1"
+            onclick={() => {
+              is_year_picker_open = !is_year_picker_open;
+            }}
             type="button"
           >
-            {month}
+            {current_month.getFullYear()}
+            <DownChevron class="w-4 h-4 transition-transform duration-200 {is_year_picker_open ? 'rotate-180' : ''}" />
           </button>
-        {/each}
+        </div>
       </div>
-      <div class="flex justify-center">
-        <button
-          class="bg-white border border-gray-200 cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center gap-1 hover:bg-gray-100 hover:border-gray-400"
-          onclick={() => {
-            isYearPickerOpen = !isYearPickerOpen;
-          }}
-          type="button"
-        >
-          {currentMonth.getFullYear()}
-          <DownChevron class="w-4 h-4 transition-transform duration-200 {isYearPickerOpen ? 'rotate-180' : ''}" />
-        </button>
-      </div>
-      {#if isYearPickerOpen}
-        <div class="grid grid-cols-3 gap-2 max-h-52 overflow-y-auto mt-2">
-          {#each yearRange as year}
+    {/if}
+
+    {#if is_year_picker_open}
+      <div
+        class="mb-4 border absolute z-10 top-0 left-0 right-0 border-default rounded-md p-3 bg-page"
+        transition:slide={{ duration: 200 }}
+      >
+        <div class="grid grid-cols-3 gap-2 mb-2">
+          {#each year_range as year}
+            {@const is_selected = current_month.getFullYear() === year}
             <button
-              class="bg-white border border-gray-200 cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center hover:bg-gray-100 hover:border-gray-400"
-              class:bg-blue-600={currentMonth.getFullYear() === year}
-              class:text-white={currentMonth.getFullYear() === year}
-              class:border-blue-600={currentMonth.getFullYear() === year}
+              class={{
+                "border cursor-pointer p-2 rounded text-sm transition-all duration-150 flex items-center justify-center": true,
+                "bg-primary/20 border-primary text-alt": is_selected,
+                "bg-card border-default text-normal": !is_selected,
+              }}
               onclick={() => selectYear(year)}
               type="button"
             >
@@ -215,18 +245,18 @@
             </button>
           {/each}
         </div>
-      {/if}
-    </div>
-  {/if}
+      </div>
+    {/if}
 
-  <div>
-    <CalendarMonth
-      {currentMonth}
-      startDate={internalStartDate}
-      endDate={internalEndDate}
-      {locale}
-      {weekStartsOn}
-      ondayclick={handleDayClick}
-    />
+    <div>
+      <CalendarMonth
+        {current_month}
+        start_date={internal_start_date}
+        end_date={internal_end_date}
+        {locale}
+        {week_starts_on}
+        ondayclick={handleDayClick}
+      />
+    </div>
   </div>
 </div>

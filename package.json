@@ -46,6 +46,7 @@
     "@capacitor/preferences": "^7.0.1",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
+    "blaze-slider": "^1.9.3",
     "dexie": "^4.2.0",
     "dotenv": "^16.5.0",
     "firebase": "11.10.0",

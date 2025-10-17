@@ -2,21 +2,22 @@
   import CalendarDay from "./CalendarDay.svelte";
 
   /**
-   * @typedef {Object} CalendarMonthProps
-   * @property {Date} currentMonth - The month to display
-   * @property {Date | null} startDate - Selected start date
-   * @property {Date | null} endDate - Selected end date
+   * @typedef {Object} Props
+   * @property {Date} current_month - The month to display
+   * @property {Date | null} start_date - Selected start date
+   * @property {Date | null} end_date - Selected end date
    * @property {string} locale - Locale for day/month names
-   * @property {number} weekStartsOn - 0 for Sunday, 1 for Monday
+   * @property {number} week_starts_on - 0 for Sunday, 1 for Monday
    * @property {Function} ondayclick - Handler when a day is clicked
    */
 
+  /** @type {Props} */
   let {
-    currentMonth,
-    startDate = null,
-    endDate = null,
+    current_month,
+    start_date = null,
+    end_date = null,
     locale = "af-ZA",
-    weekStartsOn = 1,
+    week_starts_on = 1,
     ondayclick = () => {},
   } = $props();
 
@@ -26,7 +27,7 @@
   // Generate day headers based on locale and week start
   const dayHeaders = $derived.by(() => {
     const headers = [];
-    const baseDate = new Date(2025, 0, weekStartsOn === 0 ? 4 : 5); // Jan 4/5, 2025 is a Sat/Sun
+    const baseDate = new Date(2025, 0, week_starts_on === 0 ? 4 : 5); // Jan 4/5, 2025 is a Sat/Sun
 
     for (let i = 0; i < 7; i++) {
       const date = new Date(baseDate);
@@ -38,15 +39,15 @@
 
   // Generate calendar days
   const calendarDays = $derived.by(() => {
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
+    const year = current_month.getFullYear();
+    const month = current_month.getMonth();
 
     // First day of the month
     const firstDay = new Date(year, month, 1);
     let firstDayOfWeek = firstDay.getDay();
 
     // Adjust for week start day
-    if (weekStartsOn === 1) {
+    if (week_starts_on === 1) {
       firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     }
 
@@ -99,14 +100,14 @@
     s.setHours(0, 0, 0, 0);
     const e = new Date(end);
     e.setHours(0, 0, 0, 0);
-    return d > s && d < e;
+    return d >= s && d <= e;
   }
 </script>
 
 <div class="w-full">
   <div class="grid grid-cols-7 gap-1 mb-2">
-    {#each dayHeaders as dayName}
-      <div class="text-center text-xs font-semibold p-2 uppercase">{dayName}</div>
+    {#each dayHeaders as name}
+      <div class="text-center text-xs font-semibold p-2 uppercase">{name}</div>
     {/each}
   </div>
 
@@ -116,10 +117,10 @@
         {date}
         is_today={isSameDay(date, today)}
         is_other_month={isOtherMonth}
-        is_selected={isSameDay(date, startDate) || isSameDay(date, endDate)}
-        is_in_range={isDateInRange(date, startDate, endDate)}
-        is_range_start={isSameDay(date, startDate)}
-        is_range_end={isSameDay(date, endDate)}
+        is_selected={isSameDay(date, start_date) || isSameDay(date, end_date)}
+        is_in_range={isDateInRange(date, start_date, end_date)}
+        is_range_start={isSameDay(date, start_date)}
+        is_range_end={isSameDay(date, end_date)}
         onclick={ondayclick}
       />
     {/each}
