@@ -75,7 +75,7 @@
   }
 </script>
 
-<div {...rest} class={["relative w-full", !show && "px-2", rest.class]}>
+<div {...rest} class={["relative w-full", rest.class]}>
   <div
     tabindex="-1"
     class={[
@@ -97,9 +97,8 @@
     rows="1"
     class={{
       "border-b border-default p-2 w-full placeholder:text-muted outline-none focus:border-primary resize-none overflow-y-auto": true,
-      "border-error!": invalid,
-      "bg-error/20!": show && invalid,
-      "bg-card border border-default rounded-lg bg-card": show,
+      "bg-card border border-default rounded-lg bg-card": true,
+      "bg-error/20! border-error!": invalid,
     }}
   ></textarea>
 

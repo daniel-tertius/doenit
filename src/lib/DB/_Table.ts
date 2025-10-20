@@ -71,7 +71,7 @@ export class Table<T extends Task | Category | Room> {
 
       await this.collection.find({ selector: { id: { $in: ids } } }).remove();
     } catch (e) {
-      alert(`Failed to delete from ${this.collection.name}: ` + e);
+      alert(`Fout met verwydering van item ${this.collection.name}: ` + e);
     }
   }
 

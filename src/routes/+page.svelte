@@ -195,8 +195,8 @@
 
 <div class="space-y-1.5">
   {#each filtered_tasks as task, i (task.id)}
-    {@const display_date = displayPrettyDate(task.due_date)}
-    {@const last_display_date = displayPrettyDate(filtered_tasks[i - 1]?.due_date)}
+    {@const display_date = displayPrettyDate(task.start_date, task.due_date)}
+    {@const last_display_date = displayPrettyDate(filtered_tasks[i - 1]?.start_date, filtered_tasks[i - 1]?.due_date)}
     {@const is_same_display_date = display_date === last_display_date}
 
     {#if !is_same_display_date}
@@ -207,7 +207,7 @@
       {/key}
     {/if}
 
-    {#key task.id + task.due_date}
+    {#key task.id + task.start_date}
       <TaskComponent
         {current_time}
         {task}

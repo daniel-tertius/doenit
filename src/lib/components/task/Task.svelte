@@ -23,12 +23,13 @@
   const { current_time, task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
-  const start_date = DateUtil.parseWithTimeBoundary(task.start_date || task.due_date, "start");
+  const start_date = DateUtil.parseWithTimeBoundary(task.start_date, "start");
+
   /** @type {Category?} */
   let category = $state(null);
   let tick_animation = $state(false);
 
-  const is_past = $derived(!!due_date && due_date < current_time);
+  const is_past = $derived(!!start_date && start_date < current_time);
   const is_selected = $derived(Selected.tasks.has(task.id));
   const is_ongoing = $derived(isOngoing(due_date, start_date, current_time));
 
@@ -50,13 +51,12 @@
    * @param {Date} today
    */
   function isOngoing(due_date, start_date, today) {
-    if (!due_date) return false;
-
-    if (!start_date || +due_date === +start_date) {
-      return DateUtil.format(today, "YYYY-MM-DD") === DateUtil.format(due_date, "YYYY-MM-DD");
+    if (!start_date) return false;
+    if (!!due_date) {
+      return today >= start_date && today <= due_date;
+    } else {
+      return DateUtil.isSameDay(today, start_date) && today <= start_date;
     }
-
-    return today >= start_date && today <= due_date;
   }
 
   /**
@@ -76,8 +76,8 @@
   id={task.id}
   class={{
     border: true,
-    "bg-success/20 border-success text-alt": is_ongoing && !is_selected && !is_past,
-    "bg-error/20 border-error text-alt": is_past && !is_selected,
+    "bg-success/20 border-success text-alt": is_ongoing && !is_selected,
+    "bg-error/20 border-error text-alt": is_past && !is_selected && !is_ongoing,
     "bg-primary/20 border-primary text-alt": is_selected,
     "bg-card border-default": !is_selected && !is_past && !is_ongoing,
   }}
@@ -87,7 +87,7 @@
   <ItemName name={task.name} {tick_animation} description={task.description} />
 
   <div class="flex flex-wrap gap-2 pl-10 font-normal w-full">
-    {#if task.due_date}
+    {#if task.start_date}
       <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
         {displayDateTime({ due_date, start_date })}
       </TaskDueDate>
@@ -98,8 +98,8 @@
         class={{
           "text-left px-1 w-fit max-w-full flex items-center h-fit gap-1 rounded opacity-80": true,
           "bg-surface": !is_past && !is_ongoing && !is_selected,
-          "bg-error/80": is_past && !is_selected,
-          "bg-success/80": is_ongoing && !is_selected && !is_past,
+          "bg-error/80": is_past && !is_selected && !is_ongoing,
+          "bg-success/80": is_ongoing && !is_selected,
           "bg-primary": is_selected,
         }}
       >

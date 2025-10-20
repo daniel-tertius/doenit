@@ -6,10 +6,10 @@
   import { t } from "$lib/services/language.svelte";
   import { Selected } from "$lib/selected";
   import ButtonSearchTask from "$lib/components/element/button/ButtonSearchTask.svelte";
-  import InputText from "$lib/components/element/input/InputText.svelte";
   import { getContext, onMount, untrack } from "svelte";
   import { backHandler } from "$lib/BackHandler.svelte";
   import { BACK_BUTTON_FUNCTION } from "$lib";
+  import InputTextDebounce from "$lib/components/element/input/InputTextDebounce.svelte";
 
   let show_searchbar = $state(false);
 
@@ -89,7 +89,7 @@
 
   {#if show_searchbar}
     <div class="p-2 bg-surface" transition:slide={{ duration: 200 }}>
-      <InputText
+      <InputTextDebounce
         bind:value={search_text.value}
         debounce={300}
         class="h-12"

@@ -6,12 +6,14 @@
   import DownChevron from "$lib/icon/DownChevron.svelte";
   import { t } from "$lib/services/language.svelte";
   import { untrack } from "svelte";
+  import DateUtil from "$lib/DateUtil";
 
   /**
    * @typedef {Object} Props
    * @property {Date | null} start_date - Initial/controlled start date
    * @property {Date | null} end_date - Initial/controlled end date
    * @property {string} [locale] - Locale for formatting (default: 'en-US')
+   * @property {boolean} [is_range_enabled] - Whether date range selection is enabled (default: true)
    * @property {number} [week_starts_on] - 0 for Sunday, 1 for Monday (default: 1)
    * @property {Function} ondateselected - Callback when dates are selected: ({ start_date, end_date }) => void
    */
@@ -22,6 +24,7 @@
     end_date = $bindable(null),
     locale = "af-ZA",
     week_starts_on = 1,
+    is_range_enabled = true,
     ondateselected = null,
   } = $props();
 
@@ -97,7 +100,8 @@
     clicked_date.setHours(0, 0, 0, 0);
 
     // Date range selection logic
-    if (!internal_start_date || (internal_start_date && internal_end_date)) {
+    const same_day = DateUtil.isSameDay(internal_start_date, clicked_date);
+    if (!is_range_enabled || !internal_start_date || (internal_start_date && internal_end_date) || same_day) {
       // Start new selection
       internal_start_date = clicked_date;
       internal_end_date = null;
@@ -144,9 +148,9 @@
   <div class="flex items-center justify-between mb-4 gap-1">
     <button
       class="cursor-pointer p-2 rounded flex items-center justify-center text-muted"
+      aria-label="Previous month"
       onclick={previousMonth}
       type="button"
-      aria-label="Previous month"
     >
       <ChevronLeft class="w-5 h-5" />
     </button>
@@ -166,22 +170,24 @@
         <DownChevron class="w-4 h-4 {is_month_picker_open ? 'rotate-180' : ''}" />
       </button>
 
-      <button
-        class="bg-card border border-default cursor-pointer px-3 py-1.5 rounded text-sm"
-        onclick={() => {
-          current_month = goToToday();
-        }}
-        type="button"
-      >
-        {t("today")}
-      </button>
+      {#if current_month.toString() !== goToToday().toString()}
+        <button
+          class="bg-card border border-default cursor-pointer px-3 py-1.5 rounded text-sm"
+          onclick={() => {
+            current_month = goToToday();
+          }}
+          type="button"
+        >
+          {t("today")}
+        </button>
+      {/if}
     </div>
 
     <button
       class="border-none cursor-pointer p-2 rounded-lg flex items-center justify-center text-muted"
+      aria-label="Next month"
       onclick={nextMonth}
       type="button"
-      aria-label="Next month"
     >
       <ChevronRight class="w-5 h-5" />
     </button>

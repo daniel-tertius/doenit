@@ -10,11 +10,10 @@
   import { goto } from "$app/navigation";
   import { Trash } from "$lib/icon";
   import { DB } from "$lib/DB.js";
-  import { onMount, setContext } from "svelte";
-  import { backHandler } from "$lib/BackHandler.svelte.js";
-  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { setContext } from "svelte";
   import { SvelteSet } from "svelte/reactivity";
   import { Photos } from "$lib/services/photos.svelte.js";
+  import SaveChanges from "$lib/components/SaveChanges.svelte";
 
   const { data } = $props();
 
@@ -29,67 +28,73 @@
   setContext("deleted_photo_ids", deleted_photo_ids);
 
   $effect(() => {
-    if (!!task.due_date) return;
+    if (!!task.start_date) return;
 
     task.repeat_interval = "";
     task.repeat_interval_number = 1;
-    task.start_date = null;
+    task.due_date = null;
   });
 
   $effect(() => {
     if (task.repeat_interval !== "weekly_custom_days") return;
 
-    task.start_date = task.due_date;
-  });
-
-  onMount(() => {
-    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
-      const has_changes = Object.keys(data.task).some((key) => {
-        const original_value = data.task[key];
-        const current_value = task[key];
-
-        // Handle primitive values.
-        if (typeof original_value !== "object" || original_value === null) {
-          return original_value !== current_value;
-        }
-
-        // For objects/arrays, do a shallow comparison or use JSON for deep comparison.
-        return JSON.stringify(original_value) !== JSON.stringify(current_value);
-      });
-
-      if (has_changes) {
-        const discard = await Alert.confirm({
-          title: "Skrap veranderinge?",
-          message: "U het ongestoorde veranderinge.",
-          cancelText: "Nee",
-          confirmText: "Skrap",
-        });
-
-        if (!discard) return;
-      }
-
-      goto("/");
-    }, -1));
-
-    return () => backHandler.unregister(token);
+    task.due_date = task.start_date;
   });
 
   /**
    * @param {Event} event
    */
   async function onsubmit(event) {
-    try {
-      event.preventDefault();
-      is_saving = true;
+    event.preventDefault();
+    await updateTask(task);
+  }
 
+  /**
+   * @param {Task} task
+   * @returns {Promise<Result<string>>}
+   */
+  async function updateTask(task) {
+    is_saving = true;
+
+    try {
       if (task.repeat_interval_number > 1) {
         task.repeat_interval = other_interval;
       }
 
-      const result = await DB.Task.update(task.id, task);
-      if (!result) {
-        error = { message: t("error_updating_task") };
-        return;
+      const updated_task = await DB.Task.update(task.id, task);
+      if (!updated_task) {
+        throw new Error(t("error_updating_task"));
+      }
+
+      if (task.room_id && !!user.value) {
+        const room = await DB.Room.get(task.room_id);
+        // TODO: Vertaal
+        if (!room) throw new Error("Vriend nie gevind");
+
+        const email_address = user.value.email;
+        await OnlineDB.Changelog.create({
+          type: "update",
+          data: JSON.stringify(task),
+          room_id: task.room_id,
+          total_reads_needed: room.users.length,
+          user_reads_list: [email_address],
+        });
+
+        const is_task_shared = !data.task.room_id;
+        if (is_task_shared) {
+          const email_addresses = [];
+          for (const { email, pending } of room.users) {
+            if (email && email !== email_address && !pending) {
+              email_addresses.push(email);
+            }
+          }
+
+          await Notify.Push.send({
+            title: t("task_shared"),
+            body: t("task_was_shared", { task_name: task.name }),
+            email_address: email_addresses,
+          });
+        }
       }
 
       // Delete removed photos
@@ -97,40 +102,14 @@
       const promised = ids.map((p) => Photos.deletePhoto(p));
       await Promise.all(promised);
 
-      if (user.value && task.room_id) {
-        const room = await DB.Room.get(task.room_id);
-        if (room) {
-          const email_address = user.value.email;
-          await OnlineDB.Changelog.create({
-            type: "update",
-            data: JSON.stringify(task),
-            room_id: task.room_id,
-            total_reads_needed: room.users.length,
-            user_reads_list: [email_address],
-          });
-
-          const is_task_shared = !data.task.room_id;
-          if (is_task_shared) {
-            const email_addresses = [];
-            for (const { email, pending } of room.users) {
-              if (email && email !== email_address && !pending) {
-                email_addresses.push(email);
-              }
-            }
-
-            await Notify.Push.send({
-              title: t("task_shared"),
-              body: t("task_was_shared", { task_name: task.name }),
-              email_address: email_addresses,
-            });
-          }
-        }
-      }
-
-      is_saving = false;
       await goto("/");
+      is_saving = false;
+      return { success: true, data: task.id };
     } catch (error) {
-      Alert.error(`${t("error_updating_task")}: ${error}`);
+      const error_message = error instanceof Error ? error.message : String(error);
+      Alert.error(error_message);
+      is_saving = false;
+      return { success: false, error_message };
     }
   }
 
@@ -199,17 +178,20 @@
   <Trash class="text-2xl text-error" />
 </button>
 
-<EditTask bind:error bind:task bind:other_interval {onsubmit} expanded />
+<SaveChanges original={data.task} changed={task} onsave={updateTask} />
+<div class="mb-20">
+  <EditTask bind:error bind:task bind:other_interval {onsubmit} expanded />
 
-<div class="h-12 flex">
-  <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
+  <div class="h-12 flex">
+    <div class="font-bold text-left my-auto w-full">{t("complete")}</div>
 
-  <InputCheckbox
-    class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2! z-1"
-    onselect={handleSelectTask}
-    is_selected={!!task.archived}
-    tick_animation={!!task.archived}
-  />
+    <InputCheckbox
+      class="static! top-0! translate-0! left-0! bottom-0! right-0! p-2! z-1"
+      onselect={handleSelectTask}
+      is_selected={!!task.archived}
+      tick_animation={!!task.archived}
+    />
+  </div>
 </div>
 
 <Modal bind:is_open={is_deleting} onclose={() => (is_deleting = false)} class="space-y-4">

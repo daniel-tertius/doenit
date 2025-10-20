@@ -212,7 +212,7 @@ class Notification {
             let body = tasks
               .map(
                 (task, idx) =>
-                  `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+                  `${idx + 1}. ${task.name}${task.start_date && task.start_date.includes(" ") ? ` (${task.start_date.split(" ")[1]})` : ""}`
               )
               .join("\n");
 
@@ -227,45 +227,50 @@ class Notification {
         }
 
         const tasks = getTasksOnDate(all_tasks, date);
-        if (tasks.length > 0) {
+        if (!!tasks.length) {
           // Create a beautiful body for the tasks
           let body = tasks
             .map(
               (task, idx) =>
-                `${idx + 1}. ${task.name}${task.due_date && task.due_date.includes(" ") ? ` (${task.due_date.split(" ")[1]})` : ""}`
+                `${idx + 1}. ${task.name}${task.start_date && task.start_date.includes(" ") ? ` (${task.start_date.split(" ")[1]})` : ""}`
             )
             .join("\n");
-
-          notifications.push({
-            title:
-              tasks.length === 1
-                ? t("daily_reminder_title_singular")
-                : t("daily_reminder_title", { task_count: tasks.length }),
-            body: body,
-            id: DAILY_REMINDER_ID_BASE + i,
-            schedule: { at: new Date(+date) /* Need to copy date */ },
-          });
+          if (date > new Date()) {
+            notifications.push({
+              title:
+                tasks.length === 1
+                  ? t("daily_reminder_title_singular")
+                  : t("daily_reminder_title", { task_count: tasks.length }),
+              body: body,
+              id: DAILY_REMINDER_ID_BASE + i,
+              schedule: { at: new Date(+date) /* Need to copy date */ },
+            });
+          }
 
           // Schedule a notification for the tasks with time set in the due date.
           for (let j = 0; j < tasks.length; j++) {
             const task = tasks[j];
-            const has_due_time = task.due_date?.includes(" ");
+            const has_due_time = task.start_date?.includes(" ");
             if (!has_due_time) continue;
 
             // Validate YYYY-MM-DD HH:mm format
             const date_time_regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-            if (!date_time_regex.test(task.due_date!)) {
+            if (!date_time_regex.test(task.start_date!)) {
               console.warn(
-                `Invalid task due date format: ${task.due_date} for task: ${task.name}. Expected YYYY-MM-DD HH:mm format.`
+                `Ongeldige datumformaat: ${task.start_date} vir: ${task.name}. Verwag YYYY-MM-DD HH:mm formaat.`
               );
               continue;
             }
 
-            const task_date = new Date(task.due_date!);
+            const task_date = new Date(task.start_date!);
 
             // Validate that the date is valid
             if (isNaN(task_date.getTime())) {
-              console.warn(`Invalid task due date: ${task.due_date} for task: ${task.name}`);
+              console.warn(`Invalid task due date: ${task.start_date} for task: ${task.name}`);
+              continue;
+            }
+
+            if (task_date < new Date()) {
               continue;
             }
 
@@ -326,9 +331,9 @@ function getTasksOnDate(tasks: Task[], date: Date): Task[] {
   target_date.setHours(0, 0, 0, 0);
 
   return tasks.filter((task) => {
-    if (!task.due_date) return false;
+    if (!task.start_date) return false;
 
-    const task_date = new Date(task.due_date);
+    const task_date = new Date(task.start_date);
     task_date.setHours(0, 0, 0, 0);
 
     return task_date.toLocaleDateString("en-CA") === target_date.toLocaleDateString("en-CA");
@@ -342,9 +347,9 @@ function getTasksBeforeDate(tasks: Task[], date: Date): Task[] {
   target_date.setHours(0, 0, 0, 0);
 
   return tasks.filter((task) => {
-    if (!task.due_date) return false;
+    if (!task.start_date) return false;
 
-    const task_date = new Date(task.due_date);
+    const task_date = new Date(task.start_date);
     task_date.setHours(0, 0, 0, 0);
 
     return task_date < target_date;

@@ -67,6 +67,8 @@ export const translations = {
     delete_tasks: "Verwyder take",
 
     // Task Actions & Buttons
+    save_changes: "Stoor veranderinge",
+    discard: "Skrap",
     create: "Skep",
     save: "Stoor",
     edit: "Wysig",
@@ -102,6 +104,7 @@ export const translations = {
     next_month: "Volgende maand",
     later: "Later",
     past: "Verby",
+    ongoing: "Besig",
     forever: "verewig",
     choose_start_date: "Kies 'n begindatum",
     choose_start_time: "Kies 'n begin tyd",
@@ -144,6 +147,7 @@ export const translations = {
     all_categories: "Alle Kategorieë",
     choose_category: "Kies 'n kategorie",
     choose_category_name: "Kies 'n naam vir jou kategorie",
+    no_categories_yet: "Nog geen kategorieë",
     enter_category_name: "Benoem jou kategorie",
     enter_new_category_name: "Voer nuwe kategorienaam in…",
     create_category: "Skep Kategorie",
@@ -166,7 +170,7 @@ export const translations = {
     friend_already_added: "Hierdie vriend is reeds bygevoeg",
     friend_added_offline: "Vriend bygevoeg (sal sinkroniseer wanneer aanlyn)",
     cannot_invite_yourself: "Jy kan nie jouself uitnooi nie",
-    sync_success: "Take gesinkroniseerd",
+    sync_success: "Take gesinkroniseer",
     sync_error: "Sinkronisasie fout",
     leave_friend: "Verlaat",
     left_group: "Groep Verlaat",
@@ -440,6 +444,8 @@ export const translations = {
     delete_tasks: "Delete tasks",
 
     // Task Actions & Buttons
+    save_changes: "Save changes",
+    discard: "Discard",
     create: "Create",
     save: "Save",
     edit: "Edit",
@@ -475,6 +481,7 @@ export const translations = {
     next_month: "Next Month",
     later: "Later",
     past: "Past",
+    ongoing: "Ongoing",
     forever: "forever",
     choose_start_date: "Choose a start date",
     choose_start_time: "Choose a start time",
@@ -517,6 +524,7 @@ export const translations = {
     all_categories: "All Categories",
     choose_category: "Choose a category",
     choose_category_name: "Choose a name for your category",
+    no_categories_yet: "No categories yet",
     enter_category_name: "Enter category name",
     enter_new_category_name: "Enter new category name…",
     create_category: "Create Category",

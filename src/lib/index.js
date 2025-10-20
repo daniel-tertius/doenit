@@ -38,10 +38,10 @@ function getCurrentLocale() {
  * @param {string | Date | number | null} [a0.start_date]
  */
 export function displayDate({ due_date, start_date }) {
-  if (!due_date) return "";
+  if (!start_date) return "";
 
-  if (!start_date) {
-    return new Date(due_date).toLocaleDateString(getCurrentLocale(), {
+  if (!due_date) {
+    return new Date(start_date).toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -92,11 +92,13 @@ export function displayDate({ due_date, start_date }) {
 
 /**
  *
- * @param {Date | number | string | undefined | null} date
+ * @param {Date | null} date
  * @returns {boolean}
  */
-export function isTimeAtMidnightUTC(date) {
-  return date?.length !== 16;
+export function isTimeAtMidnight(date) {
+  if (!date) return false;
+
+  return date.getHours() === 0 && date.getMinutes() === 0;
 }
 
 /**
@@ -156,29 +158,29 @@ export function displayDateRange({ start, end }) {
 
 /**
  * @param {Object} a0
- * @param {string | Date | number | null} a0.due_date
- * @param {string | Date | number | null} [a0.start_date]
+ * @param {Date | null} a0.due_date
+ * @param {Date | null} [a0.start_date]
  */
 export function displayDateTime({ due_date, start_date }) {
-  if (!due_date) return "";
+  if (!start_date) return "";
 
-  if (!start_date) {
-    const date = new Date(due_date);
-    const dateStr = date.toLocaleDateString(getCurrentLocale(), {
+  if (!due_date || `${start_date}` === `${due_date}`) {
+    const date = new Date(start_date);
+    const date_str = date.toLocaleDateString(getCurrentLocale(), {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
 
-    if (isTimeAtMidnightUTC(due_date)) {
-      return dateStr;
+    if (isTimeAtMidnight(start_date)) {
+      return date_str;
     }
 
-    const timeStr = date.toLocaleTimeString(getCurrentLocale(), {
+    const time_str = date.toLocaleTimeString(getCurrentLocale(), {
       hour: "2-digit",
       minute: "2-digit",
     });
-    return `${dateStr} ${timeStr}`;
+    return `${date_str} ${time_str}`;
   }
 
   const startDate = new Date(start_date);
@@ -192,12 +194,9 @@ export function displayDateTime({ due_date, start_date }) {
   const startMonth = startDateOnly.getMonth();
   const dueMonth = dueDateOnly.getMonth();
 
-  const startTime = isTimeAtMidnightUTC(start_date)
+  const startTime = isTimeAtMidnight(start_date)
     ? ""
     : startDate.toLocaleTimeString(getCurrentLocale(), { hour: "2-digit", minute: "2-digit" });
-  const dueTime = isTimeAtMidnightUTC(due_date)
-    ? ""
-    : dueDate.toLocaleTimeString(getCurrentLocale(), { hour: "2-digit", minute: "2-digit" });
 
   // Same date
   if (+startDateOnly === +dueDateOnly) {
@@ -207,12 +206,10 @@ export function displayDateTime({ due_date, start_date }) {
       day: "numeric",
     });
 
-    if (!startTime && !dueTime) {
+    if (!startTime) {
       return dateStr;
-    } else if (!startTime || startTime === dueTime) {
-      return `${dateStr} ${dueTime}`;
     } else {
-      return `${dateStr} ${startTime} - ${dueTime || "00:00"}`;
+      return `${dateStr} ${startTime}`;
     }
   }
 
@@ -222,9 +219,7 @@ export function displayDateTime({ due_date, start_date }) {
       month: "short",
       year: "numeric",
     });
-    return `${startDateOnly.getDate()}${startTime ? " " + startTime : ""} - ${dueDateOnly.getDate()}${
-      dueTime ? " " + dueTime : ""
-    } ${monthYear}`;
+    return `${startDateOnly.getDate()}${startTime ? " " + startTime : ""} - ${dueDateOnly.getDate()} ${monthYear}`;
   }
 
   // Same year, different month
@@ -235,7 +230,7 @@ export function displayDateTime({ due_date, start_date }) {
       day: "numeric",
       year: "numeric",
     });
-    return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
+    return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}`;
   }
 
   // Different years
@@ -249,7 +244,7 @@ export function displayDateTime({ due_date, start_date }) {
     month: "short",
     day: "numeric",
   });
-  return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}${dueTime ? " " + dueTime : ""}`;
+  return `${startStr}${startTime ? " " + startTime : ""} - ${dueStr}`;
 }
 
 export function displayDateShort(date) {
@@ -272,16 +267,21 @@ export function formatDate(date) {
 
 /**
  * @param {number | Date | string | null} date
+ * @param {number | Date | string | null} [end_date]
  * @returns {string}
  */
-export function displayPrettyDate(date) {
+export function displayPrettyDate(date, end_date) {
   if (!date) return t("no_date");
 
   // Check if the date is in the past
   const date_obj = new Date(date);
+  const end_date_obj = end_date ? new Date(end_date) : null;
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  if (date_obj < now) return t("past");
+  if (date_obj < now) {
+    if (!end_date_obj || end_date_obj < now) return t("past");
+    return t("ongoing");
+  }
 
   date = formatDate(date);
   const today = formatDate(new Date());
@@ -389,71 +389,76 @@ export function wait(ms) {
  * @param {Task[]} data
  */
 export function sortTasksByDueDate(data) {
-  if (!data?.length) return [];
+  try {
+    if (!data?.length) return [];
 
-  let past_tasks = [];
-  let today_tasks = [];
-  let tomorrow_tasks = [];
-  let day_after_tomorrow_tasks = [];
-  let this_week_tasks = [];
-  let this_month_tasks = [];
-  let next_month_tasks = [];
-  let later_tasks = [];
-  let no_date = [];
+    let past_tasks = [];
+    let today_tasks = [];
+    let tomorrow_tasks = [];
+    let day_after_tomorrow_tasks = [];
+    let this_week_tasks = [];
+    let this_month_tasks = [];
+    let next_month_tasks = [];
+    let later_tasks = [];
+    let no_date = [];
 
-  const today = new Date().setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today).setDate(new Date(today).getDate() + 1);
-  const day_after_tomorrow = new Date(today).setDate(new Date(today).getDate() + 2);
-  const this_week_start = new Date();
-  this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
-  const this_week_end = new Date(this_week_start);
-  this_week_end.setDate(this_week_end.getDate() + 6);
+    const today = new Date().setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today).setDate(new Date(today).getDate() + 1);
+    const day_after_tomorrow = new Date(today).setDate(new Date(today).getDate() + 2);
+    const this_week_start = new Date();
+    this_week_start.setDate(this_week_start.getDate() - this_week_start.getDay());
+    const this_week_end = new Date(this_week_start);
+    this_week_end.setDate(this_week_end.getDate() + 6);
 
-  const current_month = new Date().getMonth();
-  const current_year = new Date().getFullYear();
+    const current_month = new Date().getMonth();
+    const current_year = new Date().getFullYear();
 
-  const next_month = (current_month + 1) % 12;
-  const next_month_year = next_month === 0 ? current_year + 1 : current_year;
+    const next_month = (current_month + 1) % 12;
+    const next_month_year = next_month === 0 ? current_year + 1 : current_year;
 
-  data = sortByField(data, "name", "asc");
-  for (const task of data) {
-    if (!task.due_date) {
-      no_date.push(task);
-      continue;
+    data = sortByField(data, "name", "asc");
+    for (const task of data) {
+      if (!task.start_date) {
+        no_date.push(task);
+        continue;
+      }
+
+      const due_date = new Date(new Date(task.start_date).setHours(0, 0, 0, 0));
+      if (+due_date < today) {
+        past_tasks.push(task);
+      } else if (+due_date === today) {
+        today_tasks.push(task);
+      } else if (+due_date === tomorrow) {
+        tomorrow_tasks.push(task);
+      } else if (+due_date === day_after_tomorrow) {
+        day_after_tomorrow_tasks.push(task);
+      } else if (due_date >= this_week_start && due_date <= this_week_end) {
+        this_week_tasks.push(task);
+      } else if (due_date.getMonth() === current_month && due_date.getFullYear() === current_year) {
+        this_month_tasks.push(task);
+      } else if (due_date.getMonth() === next_month && due_date.getFullYear() === next_month_year) {
+        next_month_tasks.push(task);
+      } else {
+        later_tasks.push(task);
+      }
     }
 
-    const due_date = new Date(new Date(task.due_date).setHours(0, 0, 0, 0));
-    if (+due_date < today) {
-      past_tasks.push(task);
-    } else if (+due_date === today) {
-      today_tasks.push(task);
-    } else if (+due_date === tomorrow) {
-      tomorrow_tasks.push(task);
-    } else if (+due_date === day_after_tomorrow) {
-      day_after_tomorrow_tasks.push(task);
-    } else if (due_date >= this_week_start && due_date <= this_week_end) {
-      this_week_tasks.push(task);
-    } else if (due_date.getMonth() === current_month && due_date.getFullYear() === current_year) {
-      this_month_tasks.push(task);
-    } else if (due_date.getMonth() === next_month && due_date.getFullYear() === next_month_year) {
-      next_month_tasks.push(task);
-    } else {
-      later_tasks.push(task);
-    }
+    const with_date = [
+      ...sortTasksByPriority(sortByField(past_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(today_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(tomorrow_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(day_after_tomorrow_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(this_week_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(this_month_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(next_month_tasks, "start_date", "asc")),
+      ...sortTasksByPriority(sortByField(later_tasks, "start_date", "asc")),
+    ];
+
+    return [...with_date, ...sortTasksByPriority(no_date)];
+  } catch (error) {
+    console.warn("Error sorting tasks by due date:", error);
+    return data;
   }
-
-  const with_date = [
-    ...sortTasksByPriority(sortByField(past_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(today_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(tomorrow_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(day_after_tomorrow_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(this_week_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(this_month_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(next_month_tasks, "due_date", "asc")),
-    ...sortTasksByPriority(sortByField(later_tasks, "due_date", "asc")),
-  ];
-
-  return [...with_date, ...sortTasksByPriority(no_date)];
 }
 
 /**

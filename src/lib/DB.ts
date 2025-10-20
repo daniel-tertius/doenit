@@ -42,10 +42,20 @@ async function initDB() {
             photo_ids: [],
           };
         },
+        6: function (oldDoc) {
+          if (!oldDoc.start_date) {
+            oldDoc.start_date = oldDoc.due_date;
+            oldDoc.due_date = null;
+          } else if (oldDoc.start_date === oldDoc.due_date) {
+            oldDoc.due_date = null;
+          }
+
+          return oldDoc;
+        },
       },
       schema: {
         title: "task",
-        version: 5,
+        version: 6,
         description: "describes a task",
         type: "object",
         properties: {

@@ -3,10 +3,61 @@ import DateUtil from "$lib/DateUtil";
 import { Table } from "./_Table";
 import { DB } from "$lib/DB";
 import { Photos } from "$lib/services/photos.svelte";
+import { language, t } from "$lib/services/language.svelte";
 
 export class TaskTable extends Table<Task> {
   constructor(collection: RxCollection<Task>) {
     super(collection);
+  }
+
+  create(task: Omit<Task, "id" | "created_at" | "updated_at">): Promise<Task> {
+    if (!task) throw Error(t("no_task_found"));
+    if (!task.name?.trim()) throw Error(t("what_must_be_done"));
+
+    if (!!task.start_date && !!task.due_date && task.start_date > task.due_date) {
+      throw Error(t("start_date_before_end"));
+    }
+
+    task.completed = 0;
+    task.archived = false;
+
+    task.name = task.name.trim();
+    task.description = task.description?.trim() ?? "";
+
+    if (task.archived && !task.completed) {
+      task.archived = false;
+    }
+
+    if (!!task.completed && !task.repeat_interval) {
+      if (!task.completed_at)
+        task.completed_at = new Date().toLocaleString(language.value === "af" ? "af-ZA" : "en-US");
+      if (!task.archived) task.archived = true;
+    }
+
+    return super.create(task);
+  }
+
+  async update(id: string, task: Task): Promise<Task | null> {
+    if (!task) throw Error(t("no_task_found"));
+    if (!task.name?.trim()) throw Error(t("what_must_be_done"));
+
+    if (!!task.start_date && !!task.due_date && task.start_date > task.due_date) {
+      throw Error(t("start_date_before_end"));
+    }
+
+    task.name = task.name.trim();
+    task.description = task.description?.trim() ?? "";
+
+    if (task.archived && !task.completed) {
+      task.archived = false;
+    }
+
+    if (!!task.completed && !task.repeat_interval) {
+      if (!task.completed_at) task.completed_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
+      if (!task.archived) task.archived = true;
+    }
+
+    return await super.update(id, task);
   }
 
   /**
@@ -43,19 +94,18 @@ export class TaskTable extends Table<Task> {
   }
 
   async complete(task: Task) {
-    const is_repeat_task = task.repeat_interval && task.due_date;
+    const is_repeat_task = task.repeat_interval && task.start_date;
     if (is_repeat_task) {
       task.completed++;
-      task.due_date = getNextDueDate(task);
       task.start_date = getNextStartDate(task);
+      task.due_date = getNextDueDate(task);
     } else {
       task.completed = 1;
       task.archived = true;
       task.completed_at = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
     }
 
-    // await RateApp.onTaskCompleted();
-    return this.update(task.id, task);
+    return super.update(task.id, task);
   }
 
   uncomplete(task: Task) {
@@ -145,6 +195,7 @@ const REPEAT_INTERVALS: Record<string, (arg0: { date: Date; num?: number; specif
 function getNextDueDate(task: Task) {
   if (!task.repeat_interval || !task.due_date) return null;
 
+  const has_time = task.due_date.includes(" ");
   const calcNextDay = REPEAT_INTERVALS[task.repeat_interval];
   const new_day = new Date(
     calcNextDay({
@@ -154,12 +205,13 @@ function getNextDueDate(task: Task) {
     })
   );
 
-  return new_day.toLocaleDateString("en-CA");
+  return DateUtil.format(new_day, has_time ? "YYYY-MM-DD HH:mm" : "YYYY-MM-DD");
 }
 
 function getNextStartDate(task: Task) {
   if (!task.repeat_interval || !task.start_date) return null;
 
+  const has_time = task.start_date.includes(" ");
   const calcNextDay = REPEAT_INTERVALS[task.repeat_interval];
   const new_day = new Date(
     calcNextDay({
@@ -169,5 +221,5 @@ function getNextStartDate(task: Task) {
     })
   );
 
-  return new_day.toLocaleDateString("en-CA");
+  return DateUtil.format(new_day, has_time ? "YYYY-MM-DD HH:mm" : "YYYY-MM-DD");
 }

@@ -6,6 +6,7 @@
   import { DB } from "$lib/DB";
   import Modal from "./modal/Modal.svelte";
   import { wait } from "$lib";
+  import ButtonClear from "./element/button/ButtonClear.svelte";
 
   let { category_id = $bindable() } = $props();
 
@@ -60,7 +61,7 @@
     type="button"
     class={[
       "text-left bg-card p-2 w-full border border-default rounded-lg appearance-none outline-none focus:ring ring-primary pr-6 truncate",
-      !category_id && "text-muted",
+      !category && "text-muted",
     ]}
     onclick={() => (is_open = true)}
   >
@@ -71,23 +72,20 @@
     {/if}
   </button>
 
-  {#if category_id}
-    <button
-      type="button"
-      aria-label="Verwyder"
-      onclick={() => (category_id = "")}
-      class="absolute right-0 top-1/2 -translate-y-1/2 p-2"
-    >
-      <Times size={18} />
-    </button>
+  {#if category}
+    <ButtonClear onclick={() => (category_id = "")} class="absolute right-0 top-0 bottom-0" />
   {:else}
-    <DownChevron class="absolute text-muted right-2 top-1/2 -translate-y-1/2 pointer-events-none" size={18} />
+  <div class="aspect-square h-11 flex items-center justify-center absolute right-0 top-0 bottom-0 ">
+    <DownChevron
+      class=" text-muted pointer-events-none"
+    />
+  </div>
   {/if}
 </div>
 
 <Modal bind:is_open>
-  <h1 class="font-bold mb-2 leading-[120%]">Kies 'n kategorie</h1>
-  <div>
+  <h1 class="font-bold mb-4 leading-[120%]">{t("choose_category")}</h1>
+  <div class="mb-4">
     {#each categories as category}
       {@const is_selected = category.id === category_id}
       <button
@@ -110,10 +108,12 @@
           {/if}
         </div>
 
-        <div class={["w-full p-1", !is_selected && "border-default "]}>
+        <div class={["w-full p-1", !is_selected && "border-default"]}>
           <span>{category.name}</span>
         </div>
       </button>
+    {:else}
+      <p class="text-muted italic">{t("no_categories_yet")}</p>
     {/each}
   </div>
 

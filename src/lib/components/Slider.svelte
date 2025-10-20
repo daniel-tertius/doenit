@@ -9,9 +9,9 @@
    */
 
   /** @type {Props} */
-  let { options = [], value = $bindable(""), onchange } = $props();
+  let { options = [], value = $bindable(""), onchange, ...rest } = $props();
 
-  const item_height = 24;
+  const item_height = 32;
   const visible_items = 3;
   const total_repeats = 5;
 
@@ -89,7 +89,7 @@
   }
 </script>
 
-<div class="relative w-full" style="height: {item_height * visible_items}px;">
+<div class={["relative w-full", rest.class || ""]} style="height: {item_height * visible_items}px;">
   <!-- Selection indicator -->
   <div
     class="absolute left-0 right-0 pointer-events-none z-10 border-y border-default"

@@ -10,6 +10,7 @@
   import { Value } from "$lib/utils.svelte";
   import user from "$lib/core/user.svelte";
   import { OnlineDB } from "$lib/OnlineDB";
+  import { Selected } from "$lib/selected";
   import { Alert } from "$lib/core/alert";
   import Heading from "./Heading.svelte";
   import { goto } from "$app/navigation";
@@ -32,6 +33,11 @@
   /** @type {FirebaseUnsubscribe?} */
   let unsubscribeInvites = null;
 
+  /** @type {symbol | null} */
+  let selection_token = null;
+
+  const has_selection = $derived(!!Selected.tasks.size);
+  $inspect(has_selection, "has_selection");
   $effect(() => {
     if (!user.value?.is_backup_enabled) return;
 
@@ -87,6 +93,24 @@
     }, 5000); // Delay to avoid impacting startup performance
   });
 
+  $effect(() => {
+    has_selection;
+
+    untrack(() => {
+      if (has_selection && !selection_token) {
+        selection_token = backHandler.register(() => {
+          Selected.tasks.clear();
+          if (selection_token) {
+            backHandler.unregister(selection_token);
+            selection_token = null;
+          }
+
+          return true;
+        }, 10);
+      }
+    });
+  });
+
   onMount(() => {
     // Register default navigation handler (lowest priority)
     const nav_token = backHandler.register(() => {
@@ -108,6 +132,7 @@
     });
 
     return () => {
+      if (selection_token) backHandler.unregister(selection_token);
       backHandler.unregister(nav_token);
       backHandler.unregister(exit_token);
     };

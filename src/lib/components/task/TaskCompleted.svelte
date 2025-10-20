@@ -22,8 +22,8 @@
   const { task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const today = new Date();
-  const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
-  const start_date = DateUtil.parseWithTimeBoundary(task.start_date || task.due_date, "start");
+  const due_date = DateUtil.parseWithTimeBoundary(task.due_date || task.start_date, "end");
+  const start_date = DateUtil.parseWithTimeBoundary(task.start_date, "start");
 
   /** @type {Category?} */
   let category = $state(null);

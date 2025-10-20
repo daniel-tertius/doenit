@@ -16,8 +16,8 @@
 <div
   class={{
     "text-left rounded-full px-2 w-fit flex items-center h-fit gap-1 opacity-80": true,
-    "bg-error/80": is_past && !is_complete && !is_selected,
-    "bg-success/80": is_ongoing && !is_complete && !is_selected && !is_past,
+    "bg-error/80": is_past && !is_complete && !is_selected && !is_ongoing,
+    "bg-success/80": is_ongoing && !is_complete && !is_selected,
     "bg-primary": is_selected,
     "bg-surface": is_complete || (!is_past && !is_ongoing && !is_complete && !is_selected),
   }}

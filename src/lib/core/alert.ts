@@ -135,7 +135,7 @@ export class Alert {
       // Confirm button
       const confirmButton = document.createElement("button");
       confirmButton.textContent = options.confirmText || (Cached.language.value === "af" ? "Bevestig" : "Confirm");
-      confirmButton.className = "px-4 py-2 bg-primary text-white rounded-lg ml-auto";
+      confirmButton.className = "px-4 py-2 bg-primary text-alt rounded-lg ml-auto";
       confirmButton.onclick = () => {
         backdrop.remove();
         modal.remove();
