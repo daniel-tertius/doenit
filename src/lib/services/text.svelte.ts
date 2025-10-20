@@ -29,7 +29,7 @@ class Text {
     }
 
     this.settings.size = size;
-    console.log("Setting text size to", size);
+    console.log("Stel tekstgrootte in op", size);
     cached_text_settings.set(this.settings);
 
     this.updateCSSVariable();

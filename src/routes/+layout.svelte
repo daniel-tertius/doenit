@@ -37,7 +37,6 @@
   let selection_token = null;
 
   const has_selection = $derived(!!Selected.tasks.size);
-  $inspect(has_selection, "has_selection");
   $effect(() => {
     if (!user.value?.is_backup_enabled) return;
 

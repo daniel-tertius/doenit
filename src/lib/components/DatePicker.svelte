@@ -7,6 +7,7 @@
   import Button from "./element/button/Button.svelte";
   import { Check } from "$lib/icon";
   import { onMount, untrack } from "svelte";
+  import { t } from "$lib/services/language.svelte";
   import ButtonClear from "./element/button/ButtonClear.svelte";
 
   /**
@@ -18,6 +19,7 @@
   /** @type {Props} */
   let { start = $bindable(), end = $bindable() } = $props();
 
+  $inspect("start", start);
   const DEFAULT_HOUR = "08";
   const DEFAULT_MIN = "00";
 
@@ -25,65 +27,55 @@
   let enable_range = !!end;
 
   // Internal selection state
-  let internal_start_date = $state(start ? new Date(start) : null);
-  let internal_end_date = $state(end ? new Date(end) : null);
-  let internal_start_hour = $state(initStartHour(start));
-  let internal_start_min = $state(
-    !!start && !!new Date(start).getMinutes() ? `${new Date(start).getMinutes()}`.padStart(2, "0") : DEFAULT_MIN
-  );
+  let start_date = $state(start ? new Date(start) : null);
+  let end_date = $state(end ? new Date(end) : null);
+  let start_hour = $state(initStartHour(start));
+  let start_min = $state(initStartMinute(start));
+
   let is_open = $state(false);
 
   const is_time_picked = $derived(start?.includes(" "));
-  const display_start = $derived(getDisplayStart());
-  const display_end = $derived(internal_end_date ? DateUtil.format(internal_end_date, "D MMM YYYY") : null);
+  const display_end = $derived(end_date ? DateUtil.format(end_date, "D MMM YYYY") : null);
+  const display_start = $derived(start_date ? DateUtil.format(start_date, "D MMM YYYY") : null);
+  const display_time = $derived(start?.split(" ")[1] ?? "");
 
   $effect(() => {
     start;
     end;
 
     untrack(() => {
-      internal_start_date = start ? new Date(start) : null;
-      internal_end_date = end ? new Date(end) : null;
+      start_date = start ? new Date(start) : null;
+      end_date = end ? new Date(end) : null;
     });
   });
 
   $effect(() => {
-    internal_start_date;
+    start_date;
+
     if (!is_mounted) return;
     enable_range = true;
   });
 
-  $effect(() => {
-    internal_start_min;
-    internal_start_hour;
-
-    untrack(() => {
-      if (!internal_start_date) return;
-      if (!internal_start_min || !internal_start_hour) return;
-      if (internal_end_date) return;
-
-      const start_time = `${internal_start_hour}:${internal_start_min}`;
-      handleSelection({ start_date: internal_start_date, start_time });
-    });
-  });
-
-  onMount(() => {
-    is_mounted = true;
-  });
+  onMount(() => (is_mounted = true));
 
   /**
    * @param {string} start_date_str
    */
   function initStartHour(start_date_str) {
-    if (!start_date_str) return DEFAULT_HOUR;
+    if (!start_date_str?.includes(" ")) return DEFAULT_HOUR;
 
-    const has_time = start_date_str.includes(" ");
-    if (has_time) {
-      const date = new Date(start_date_str);
-      return !!date.getHours() ? `${date.getHours()}`.padStart(2, "0") : DEFAULT_HOUR;
-    }
+    const time = start_date_str.split(" ")[1].split(":")[0];
+    return time ?? DEFAULT_HOUR;
+  }
 
-    return DEFAULT_HOUR;
+  /**
+   * @param {string} start_date_str
+   */
+  function initStartMinute(start_date_str) {
+    if (!start_date_str?.includes(" ")) return DEFAULT_MIN;
+
+    const time = start_date_str.split(" ")[1].split(":")[1];
+    return time ?? DEFAULT_MIN;
   }
 
   /**
@@ -103,45 +95,25 @@
       end = update.end_date ? DateUtil.format(update.end_date, "YYYY-MM-DD") : null;
     }
   }
-
-  function getDisplayStart() {
-    if (!internal_start_date) return "";
-
-    const is_midnight = `${internal_start_hour}:${internal_start_min}` === "00:00";
-    const has_time = !!internal_start_hour && !!internal_start_min;
-    if (!!internal_end_date || !is_time_picked || is_midnight || !has_time) {
-      return DateUtil.format(internal_start_date, "D MMM YYYY");
-    }
-
-    return DateUtil.format(internal_start_date, `D MMM YYYY ${internal_start_hour}:${internal_start_min}`);
-  }
 </script>
 
 <div class="border border-default h-11 bg-card rounded-lg w-full flex">
-  <button
-    type="button"
-    onclick={() => {
-      is_open = !is_open;
-    }}
-    class="w-full"
-  >
-    <div class="w-full flex items-center justify-between p-2">
-      {#if !internal_start_date && !internal_end_date}
-        <span class="text-muted">Kies datums</span>
-      {:else if internal_start_date && !internal_end_date}
-        <span>{display_start}</span>
-      {:else if internal_start_date && internal_end_date}
-        <span>{display_start}</span>
-        <span> tot </span>
-        <span>{display_end}</span>
-      {/if}
-    </div>
+  <button type="button" onclick={() => (is_open = !is_open)} class="w-full flex items-center justify-between p-2">
+    {#if !start_date && !end_date}
+      <span class="text-muted">{t("datepicker_choose_dates")}</span>
+    {:else if start_date && !end_date}
+      <span>{display_start} {display_time}</span>
+    {:else if start_date && end_date}
+      <span>{display_start}</span>
+      <span> {t("to")} </span>
+      <span>{display_end}</span>
+    {/if}
   </button>
 
-  {#if internal_start_date}
+  {#if start_date}
     <ButtonClear
       onclick={() => {
-        internal_start_hour = internal_start_min = "";
+        start_hour = start_min = "";
         start = end = "";
       }}
     />
@@ -149,31 +121,38 @@
 </div>
 
 <Modal bind:is_open onclose={() => (enable_range = false)} close_button={false}>
+  <h1 class="mx-auto w-fit font-semibold py-2 text-lg">{t("datepicker_choose_start_and_end_date")}</h1>
   <div class="mb-2">
-    <Calendar
-      is_range_enabled={enable_range}
-      bind:start_date={internal_start_date}
-      bind:end_date={internal_end_date}
-      ondateselected={handleSelection}
-    />
+    <Calendar is_range_enabled={enable_range} bind:start_date bind:end_date ondateselected={handleSelection} />
   </div>
 
-  {#if !internal_end_date}
+  {#if !end_date}
+    <h1 class="mx-auto w-fit font-semibold py-2 text-lg">{t("datepicker_choose_start_time")}</h1>
     <div transition:slide={{ axis: "y" }} class="flex gap-2 w-full mb-2">
       <div class="w-full text-center">
-        <span class={{ "font-semibold": true, "opacity-30": !is_time_picked }}>Uur</span>
+        <span class={{ "font-semibold": true, "opacity-50": !is_time_picked }}>{t("datepicker_hour")}</span>
         <Slider
-          class={{ "opacity-30": !is_time_picked }}
+          class={{ "opacity-50": !is_time_picked }}
           options={Array.from({ length: 24 }).map((_, i) => `${i}`.padStart(2, "0"))}
-          bind:value={internal_start_hour}
+          bind:value={start_hour}
+          onchange={() => {
+            if (!start_date) return;
+            const start_time = `${start_hour}:${start_min}`;
+            handleSelection({ start_date, start_time });
+          }}
         />
       </div>
       <div class="w-full text-center">
-        <span class={{ "font-semibold": true, "opacity-30": !is_time_picked }}>Minute</span>
+        <span class={{ "font-semibold": true, "opacity-50": !is_time_picked }}>{t("datepicker_minute")}</span>
         <Slider
-          class={{ "opacity-30": !is_time_picked }}
+          class={{ "opacity-50": !is_time_picked }}
           options={Array.from({ length: 60 }).map((_, i) => `${i}`.padStart(2, "0"))}
-          bind:value={internal_start_min}
+          bind:value={start_min}
+          onchange={() => {
+            if (!start_date) return;
+            const start_time = `${start_hour}:${start_min}`;
+            handleSelection({ start_date, start_time });
+          }}
         />
       </div>
     </div>
@@ -187,6 +166,6 @@
     }}
   >
     <Check />
-    <span>Bevestig</span>
+    <span>{t("confirm")}</span>
   </Button>
 </Modal>

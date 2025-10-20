@@ -56,7 +56,6 @@ export class Widget {
         },
       });
 
-      alert("[💬 Widget]: Updating widget..." + JSON.stringify(tasks, null, 2));
       const result = await TaskWidget.updateWidget({ tasks, categories });
       console.log("[💬 Widget]:", JSON.stringify(result));
     } catch (error) {

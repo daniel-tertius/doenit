@@ -23,7 +23,7 @@
   const { current_time, task, onselect = () => {}, onclick = () => {}, onlongpress = () => {}, ...rest } = $props();
 
   const due_date = DateUtil.parseWithTimeBoundary(task.due_date, "end");
-  const start_date = DateUtil.parseWithTimeBoundary(task.start_date, "start");
+  const start_date = DateUtil.parseWithTimeBoundary(task.start_date, !!due_date ? "start" : "end");
 
   /** @type {Category?} */
   let category = $state(null);
@@ -89,7 +89,10 @@
   <div class="flex flex-wrap gap-2 pl-10 font-normal w-full">
     {#if task.start_date}
       <TaskDueDate is_complete={false} {is_ongoing} {is_past} {is_selected} is_repeating={!!task.repeat_interval}>
-        {displayDateTime({ due_date, start_date })}
+        {displayDateTime({
+          due_date: DateUtil.parseWithTimeBoundary(task.due_date),
+          start_date: DateUtil.parseWithTimeBoundary(task.start_date),
+        })}
       </TaskDueDate>
     {/if}
 

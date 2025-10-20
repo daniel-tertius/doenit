@@ -38,7 +38,7 @@ export default class DateUtil {
    * @param {'end' | 'start'} type
    * @return {Date | null} Returns a Date object representing the start or end of the day.
    */
-  static parseWithTimeBoundary(date: string | null, type: "end" | "start"): Date | null {
+  static parseWithTimeBoundary(date: string | null, type: "end" | "start" = "start"): Date | null {
     if (!date) return null;
 
     const [day, time] = date.split(" ");

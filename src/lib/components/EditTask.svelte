@@ -40,8 +40,6 @@
     if (onsubmit) await onsubmit(event);
     loading = false;
   }
-
-  $inspect("task.start_date", task.start_date).with(console.trace);
 </script>
 
 <form class="space-y-4" onsubmit={handleSubmit}>

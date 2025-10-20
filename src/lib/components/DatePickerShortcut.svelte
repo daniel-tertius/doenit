@@ -17,7 +17,7 @@
       type="button"
       class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
-        date = `${today.toLocaleDateString("en-CA")} 00:00:00`;
+        date = today.toLocaleDateString("en-CA");
       }}
     >
       <span>{t("today")}</span>
@@ -27,7 +27,7 @@
       type="button"
       class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
-        date = `${tomorrow.toLocaleDateString("en-CA")} 00:00:00`;
+        date = tomorrow.toLocaleDateString("en-CA");
       }}
     >
       {t("tomorrow")}
@@ -37,7 +37,7 @@
       type="button"
       class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
-        date = `${in_a_week.toLocaleDateString("en-CA")} 00:00:00`;
+        date = in_a_week.toLocaleDateString("en-CA");
       }}
     >
       {t("in_a_week")}
@@ -47,7 +47,7 @@
       type="button"
       class="bg-card p-1 rounded-lg border border-default w-full text-sm"
       onclick={() => {
-        date = `${in_a_month.toLocaleDateString("en-CA")} 00:00:00`;
+        date = in_a_month.toLocaleDateString("en-CA");
       }}
     >
       {t("in_a_month")}

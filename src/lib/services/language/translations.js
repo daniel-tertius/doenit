@@ -113,6 +113,13 @@ export const translations = {
     choose_time: "Kies 'n tyd",
     to_date: "Tot datum",
     from_date: "Vanaf datum",
+    // DatePicker specific
+    to: "tot",
+    datepicker_choose_dates: "Kies datums",
+    datepicker_choose_start_and_end_date: "Kies 'n begin- en einddatum",
+    datepicker_choose_start_time: "Kies 'n begintyd",
+    datepicker_hour: "Uur",
+    datepicker_minute: "Minuut",
 
     // Repeat/Recurrence
     repeat: "Herhaal",
@@ -490,6 +497,13 @@ export const translations = {
     choose_time: "Choose a time",
     to_date: "To date",
     from_date: "From date",
+    // DatePicker specific
+    to: "to",
+    datepicker_choose_dates: "Choose dates",
+    datepicker_choose_start_and_end_date: "Choose a start and end date",
+    datepicker_choose_start_time: "Choose a start time",
+    datepicker_hour: "Hour",
+    datepicker_minute: "Minute",
 
     // Repeat/Recurrence
     repeat: "Repeat",
