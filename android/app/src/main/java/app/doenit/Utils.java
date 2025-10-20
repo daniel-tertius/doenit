@@ -35,36 +35,45 @@ public class Utils {
      * @param taskId  The task ID used as notification ID
      */
     public static void cancelNotification(Context context, String taskId) {
-        // TODO: I need to write my own LocalNotifications plugin that can be accessed by the widget.
-        
+        // TODO: I need to write my own LocalNotifications plugin that can be accessed
+        // by the widget.
+
         // if (context == null || taskId == null) {
-        //     return;
+        // return;
         // }
 
         // int notificationId = taskId.hashCode();
 
         // // Cancel the notification
-        // NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // NotificationManager nm = (NotificationManager)
+        // context.getSystemService(Context.NOTIFICATION_SERVICE);
         // nm.cancel(notificationId);
 
         // // Cancel the alarm
         // try {
-            
-        //     Intent intent = new Intent(context, Class.forName("com.capacitorjs.plugins.localnotifications.LocalNotificationsPlugin"));
-        //     intent.setAction("com.capacitorjs.plugins.localnotifications.NOTIFICATION_INTENT");
-        //     intent.putExtra("com.capacitorjs.plugins.localnotifications.NOTIFICATION_INTENT", notificationId);
-            
-        //     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            
-        //     AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        //     alarmManager.cancel(pendingIntent);
-            
-        //     Log.d(Const.LOG_TAG_DOENIT, "Cancelled alarm for notificationId: " + notificationId);
+
+        // Intent intent = new Intent(context,
+        // Class.forName("com.capacitorjs.plugins.localnotifications.LocalNotificationsPlugin"));
+        // intent.setAction("com.capacitorjs.plugins.localnotifications.NOTIFICATION_INTENT");
+        // intent.putExtra("com.capacitorjs.plugins.localnotifications.NOTIFICATION_INTENT",
+        // notificationId);
+
+        // PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
+        // notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT |
+        // PendingIntent.FLAG_IMMUTABLE);
+
+        // AlarmManager alarmManager = (AlarmManager)
+        // context.getSystemService(Context.ALARM_SERVICE);
+        // alarmManager.cancel(pendingIntent);
+
+        // Log.d(Const.LOG_TAG_DOENIT, "Cancelled alarm for notificationId: " +
+        // notificationId);
         // } catch (Exception e) {
-        //     Log.e(Const.LOG_TAG_DOENIT, "Error canceling alarm", e);
+        // Log.e(Const.LOG_TAG_DOENIT, "Error canceling alarm", e);
         // }
 
-        // Log.d(Const.LOG_TAG_DOENIT, "Cancelled notification for taskId HASH: " + notificationId);
+        // Log.d(Const.LOG_TAG_DOENIT, "Cancelled notification for taskId HASH: " +
+        // notificationId);
     }
 
     /**
@@ -125,5 +134,9 @@ public class Utils {
     public static void clearData(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
         prefs.edit().clear().apply();
+    }
+
+    public static boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty() || value.equals("null");
     }
 }

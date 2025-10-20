@@ -71,7 +71,8 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Handling ADD_TASK action");
                 // Open CreateTaskActivity for fastest startup
                 Intent appIntent = new Intent(context, CreateTaskActivity.class);
-                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                appIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
                 context.startActivity(appIntent);
             } catch (Exception e) {
@@ -147,6 +148,18 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         // Set up empty view
         views.setEmptyView(R.id.widget_list_view, R.id.empty_view);
 
+        // --- DYNAMIC EMPTY TEXT BASED ON LANGUAGE ---
+        SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
+        String lang = prefs.getString("language", "en");
+        String emptyText;
+        if ("en".equals(lang)) {
+            emptyText = "Your list is empty!\nPress + to add one";
+        } else {
+            emptyText = "Jou lys is skoon!\nDruk + om een by te voeg";
+        }
+        views.setTextViewText(R.id.empty_view, emptyText);
+        // --------------------------------------------
+
         // Set up add task button
         Intent addTaskIntent = new Intent(context, TaskWidgetProvider.class);
         addTaskIntent.setAction(ACTION_ADD_TASK);
@@ -173,6 +186,42 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, views);
 
         Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Updated widget " + appWidgetId + " with PendingIntent template");
+    }
+
+    /**
+     * Update language for widgets. Saves new language to SharedPreferences and
+     * triggers an update for all widget instances so they re-read the language.
+     * Call this from the app when the user changes language.
+     */
+    public static void updateLanguage(Context context, String language) {
+        try {
+            // persist language where widget reads it
+            SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
+            prefs.edit().putString("language", language).apply();
+
+            // Trigger immediate update for all widgets
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
+
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "updateLanguage: updating " + appWidgetIds.length + " widget(s) to language=" + language);
+
+            // Update each widget (this will call updateAppWidget)
+            for (int id : appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, id);
+            }
+
+            // Notify ListView to refresh
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+
+            // Also send a standard broadcast update (helps some launchers)
+            Intent intent = new Intent(context, TaskWidgetProvider.class);
+            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+            context.sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.e(Const.LOG_TAG_DOENIT, "Error updating widget language", e);
+        }
     }
 
     public static void completeTask(Context context, String taskId) {

@@ -216,13 +216,15 @@ class Notification {
               )
               .join("\n");
 
-            notifications.push({
-              title:
-                tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
-              body: body,
-              id: PAST_TASKS_ID_BASE + i,
-              schedule: { at: new Date(+date) /* Need to copy date */ },
-            });
+            if (date > new Date()) {
+              notifications.push({
+                title:
+                  tasks.length === 1 ? t("past_due_date_singular") : t("past_due_date", { task_count: tasks.length }),
+                body: body,
+                id: PAST_TASKS_ID_BASE + i,
+                schedule: { at: new Date(+date) /* Need to copy date */ },
+              });
+            }
           }
         }
 

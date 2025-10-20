@@ -5,13 +5,27 @@
     <color name="colorAccent">#FF4081</color>
 
     <!-- Dark mode widget colors -->
-    <color name="widget_background">#3b4144</color>
+    <color name="widget_background">#242729</color>
     <color name="widget_heading_background">#242729</color>
     <color name="widget_border">#404040</color>
     <color name="widget_text_primary">#ebcaad</color>
     <color name="widget_text_secondary">#e1af84</color>
     <color name="task_item_background">#2f3437</color>
     <color name="primary_color">#3B4144</color>
-    <color name="pill_due_date_background">#3B4144</color>
-    <color name="pill_category_background">#3B4144</color>
+    <color name="pill_due_date_background">#2B2F31</color>
+    <color name="pill_category_background">#2B2F31</color>
+
+    <!-- Task state colors matching app theme -->
+    <color name="task_background_default">#34393c</color>
+    <color name="task_background_ongoing">#223d33</color>
+    <color name="task_background_past">#4a2f31</color>
+
+    <color name="task_border_default">#2c3133</color>
+    <color name="task_border_ongoing">#1d774b</color>
+    <color name="task_border_past">#ab4546</color>
+
+    <!-- Pill colors for different states -->
+    <color name="pill_background_default">#2c3133</color>
+    <color name="pill_background_ongoing">#1d774b</color>
+    <color name="pill_background_past">#ab4546</color>
 </resources>

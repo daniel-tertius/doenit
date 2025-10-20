@@ -60,4 +60,27 @@ public class TaskWidgetPlugin extends Plugin {
             call.reject("Failed to update widget: " + e.getMessage());
         }
     }
+
+    @PluginMethod
+    public void updateLanguage(PluginCall call) {
+        try {
+            String language = call.getString("language");
+            if (Utils.isEmpty(language)) {
+                call.reject("Missing 'language' parameter");
+                return;
+            }
+
+            Context context = getContext();
+
+            // Delegate to the widget provider which will persist and refresh widgets
+            TaskWidgetProvider.updateLanguage(context, language);
+
+            JSObject ret = new JSObject();
+            ret.put("success", true);
+            ret.put("language", language);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("Failed to update widget language: " + e.getMessage());
+        }
+    }
 }

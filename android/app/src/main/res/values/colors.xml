@@ -10,8 +10,24 @@
     <color name="widget_border">#E0E0E0</color>
     <color name="widget_text_primary">#212121</color>
     <color name="widget_text_secondary">#757575</color>
-    <color name="task_item_background">#e4e6e7</color>
+    <color name="task_item_background">#2F3437</color>
     <color name="primary_color">#d6d9db</color>
     <color name="pill_due_date_background">#c8cdd0</color>
     <color name="pill_category_background">#c8cdd0</color>
+
+    <!-- Task state colors matching app theme -->
+    <color name="task_background_default">#34393C</color>
+    <color name="task_background_ongoing">#E8F5E9</color>
+    <color name="task_background_past">#FFEBEE</color>
+    <color name="task_background_selected">#E3F2FD</color>
+
+    <color name="task_border_default">#E0E0E0</color>
+    <color name="task_border_ongoing">#1B9859</color>
+    <color name="task_border_past">#E05252</color>
+
+    <!-- Pill colors for different states -->
+    <color name="pill_background_default">#EEEEEE</color>
+    <color name="pill_background_ongoing">#A5D6A7</color>
+    <color name="pill_background_past">#EF9A9A</color>
+    <color name="pill_background_selected">#90CAF9</color>
 </resources>

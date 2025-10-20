@@ -1,5 +1,6 @@
 import { cached_language } from "$lib/cached";
 import { translations } from "./language/translations";
+import { Widget } from "./widget";
 
 type LanguageValue = "af" | "en";
 class LanguageService {
@@ -28,6 +29,7 @@ class LanguageService {
 
     this._value = lang;
     cached_language.set(lang);
+    Widget.updateLanguage(lang);
   }
 
   get value() {

@@ -356,8 +356,7 @@ view_app_logs() {
     echo -e "${BLUE} 📋 Kyk app logs (Ctrl+C om te stop)...${NC}"
     echo -e "${CYAN}Monitoring beide produksie (doenit.app) en ontwikkeling (doenit.app.dev) apps${NC}"
     adb logcat -c
-    adb logcat
-    #  | grep -E "(Doenit|Console)"
+    adb logcat | grep -E "(Doenit|Console)"
 }
 
 # Begin CLI
