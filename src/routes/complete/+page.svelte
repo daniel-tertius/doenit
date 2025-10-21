@@ -6,7 +6,8 @@
   import { getContext, onMount } from "svelte";
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
-  import { normalize } from "$lib";
+  import { BACK_BUTTON_FUNCTION, normalize } from "$lib";
+  import { backHandler } from "$lib/BackHandler.svelte";
 
   Selected.tasks.clear();
 
@@ -24,6 +25,14 @@
     });
 
     return () => sub.unsubscribe();
+  });
+
+  onMount(() => {
+    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
+      await goto(`/`);
+    }, -1));
+
+    return () => backHandler.unregister(token);
   });
 
   /**

@@ -12,6 +12,9 @@
   import user from "$lib/core/user.svelte";
   import { Alert } from "$lib/core/alert";
   import { Notify } from "$lib/services/notifications/notifications";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { goto } from "$app/navigation";
+  import { backHandler } from "$lib/BackHandler.svelte";
 
   /** @type {Room?} */
   let selected_room = null;
@@ -35,6 +38,14 @@
     });
 
     return () => sub.unsubscribe();
+  });
+
+  onMount(() => {
+    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
+      await goto(`/`);
+    }, -1));
+
+    return () => backHandler.unregister(token);
   });
 
   async function saveRoom() {

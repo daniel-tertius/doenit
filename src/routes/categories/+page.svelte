@@ -6,6 +6,9 @@
   import { fly, slide } from "svelte/transition";
   import { onMount } from "svelte";
   import { DB } from "$lib/DB";
+  import { goto } from "$app/navigation";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { backHandler } from "$lib/BackHandler.svelte";
 
   let new_category_name = $state("");
   /** @type {string?} */
@@ -30,6 +33,14 @@
   onMount(async () => {
     const category = await DB.Category.getDefault();
     default_id = category.id;
+  });
+
+  onMount(() => {
+    const token = (BACK_BUTTON_FUNCTION.value = backHandler.register(async () => {
+      await goto(`/`);
+    }, -1));
+
+    return () => backHandler.unregister(token);
   });
 
   /**
