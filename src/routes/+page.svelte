@@ -73,19 +73,57 @@
   });
 
   onMount(async () => {
+    await tick(); // Make sure router is initialized.
+
     const { searchParams, origin, pathname } = page.url;
     const task_id = navigating.from?.params?.item_id || searchParams.get("new_id");
-    if (!task_id) return;
+    if (!!task_id) scrollToTask(task_id);
 
-    await tick(); // Make sure router is initialized.
+    const completed_task_ids = searchParams.get("completed_task_ids");
+    if (!!completed_task_ids) {
+      const task_ids = completed_task_ids.split(",");
+      const unique_task_ids = [...new Set(task_ids)];
+      const tasks = await DB.Task.getAll({ selector: { id: { $in: unique_task_ids } } });
+      const promises = tasks.map(async (task) => {
+        await DB.Task.complete(task);
+        if (!task.room_id) return;
+
+        const room = await DB.Room.get(task.room_id);
+        if (!room) throw new Error("Room not found: " + task.room_id);
+        if (!user.value) return;
+
+        const email_address = user.value.email;
+        await OnlineDB.Changelog.create({
+          type: "complete",
+          task_id: task.id,
+          room_id: task.room_id || "",
+          total_reads_needed: room.users.length,
+          user_reads_list: [email_address],
+        });
+
+        const email_addresses = [];
+        for (const { email, pending } of room.users) {
+          if (email && email !== email_address && !pending) {
+            email_addresses.push(email);
+          }
+        }
+
+        await Notify.Push.send({
+          title: t("task_completed"),
+          body: t("task_was_completed", { task_name: task.name }),
+          email_address: email_addresses,
+        });
+      });
+
+      await Promise.all(promises).catch(() => Alert.error("Kon nie take as voltooi gemerk nie."));
+    }
 
     // Update the URL without reloading the page
     searchParams.delete("new_id");
+    searchParams.delete("completed_task_ids");
     const url_search = !!searchParams.size ? `${page.url.search}` : "";
     const new_url = `${origin}${pathname}${url_search}`;
     pushState(new_url, {});
-
-    scrollToTask(task_id);
   });
 
   /**

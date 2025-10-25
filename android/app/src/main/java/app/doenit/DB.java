@@ -44,21 +44,25 @@ public class DB {
             Log.e(Const.LOG_TAG_DOENIT_DB, "Error saving data", e);
         }
     }
-
-    public static String getString(String name) {
+    public static String getString(String name, String defaultValue) {
         if (prefs == null) {
             Log.e(Const.LOG_TAG_DOENIT_DB, "SharedPreferences not initialized");
-            return null;
+            return defaultValue;
         }
 
         try {
-            String value = prefs.getString(name, null);
+            String value = prefs.getString(name, defaultValue);
             Log.d(Const.LOG_TAG_DOENIT_DB, "Retrieved string for " + name + ": " + value);
             return value;
         } catch (Exception e) {
             Log.e(Const.LOG_TAG_DOENIT_DB, "Error getting string", e);
-            return null;
+            return defaultValue;
         }
+    }
+
+    // Overload for backward compatibility
+    public static String getString(String name) {
+        return getString(name, null);
     }
 
     public static int getInt(String name) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,10 +8,10 @@
 
     <!-- Header with app name and add button -->
     <LinearLayout
+        android:id="@+id/widget_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/widget_header_background"
         android:gravity="center_vertical"
         android:padding="4dp">
 
@@ -23,30 +24,28 @@
             android:contentDescription="Doenit Logo" />
 
         <TextView
-            android:id="@+id/app_name_text"
+            android:id="@+id/app_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Doenit"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/widget_text_primary" />
+        />
 
         <ImageButton
-            android:id="@+id/add_task_button"
+            android:id="@+id/add_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/add_button_background"
-            android:src="@drawable/ic_add"
             android:contentDescription="Voeg taak by"
-            android:scaleType="centerInside" />
+            android:scaleType="centerInside"
+        />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/widget_background"
         android:gravity="center_vertical"
         android:paddingTop="4dp"
         android:paddingLeft="4dp"

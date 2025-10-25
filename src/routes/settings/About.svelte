@@ -4,11 +4,11 @@
   import { Star, Mail } from "$lib/icon";
   import { Device } from "@capacitor/device";
 
-  // Hou in lyn met:
+  // Hou Weergawe in lyn met:
   // - android/app/build.gradle – versionName
   // - package.json – version
   const SUPPORT_EMAIL = "doenitapp@gmail.com";
-  const VERSION = "1.2.6";
+  const VERSION = "1.2.7";
 
   async function handleRateApp() {
     await RateApp.openStorePage();

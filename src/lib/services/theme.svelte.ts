@@ -3,6 +3,7 @@ import { DEFAULT_HEX_COLOR } from "$lib";
 import { cached_theme } from "$lib/cached";
 import { Capacitor } from "@capacitor/core";
 import { Device } from "@capacitor/device";
+import { Widget } from "./widget";
 
 class Theme {
   #value: ThemeValue = $state("dark");
@@ -41,8 +42,9 @@ class Theme {
 
     // Remove existing theme classes
 
-    cached_theme.set(theme_value);
     this.#value = theme_value;
+    cached_theme.set(theme_value);
+    Widget.updateTheme(theme_value);
 
     this.updateEdgeToEdgeColour();
     root.classList.remove("theme-dark", "theme-light");

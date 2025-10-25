@@ -141,7 +141,7 @@
     // Listen for task completion events from native side
     window.addEventListener("taskCompleted", async (event) => {
       console.log("[💬 Doenit] Task completed event received");
-      Widget.finishTasks(event.detail.task_ids);
+      Widget.finishTasks(event?.detail?.task_ids);
     });
   });
 
@@ -155,7 +155,7 @@
    */
   async function handleTasksUpdate(tasks) {
     await notifications.scheduleNotifications(tasks);
-    await Widget.updateWidget(tasks);
+    await Widget.updateTasks(tasks);
   }
 
   /**

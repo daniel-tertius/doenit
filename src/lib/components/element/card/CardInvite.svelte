@@ -53,11 +53,6 @@
         <span class="font-medium">
           {t("from")}: {invite.sender_name}
         </span>
-        <span
-          class="inline-flex items-center px-2 py-1 rounded-full mb-auto text-xs bg-success/20 text-success truncate"
-        >
-          {t("new_request")}
-        </span>
       </div>
 
       <p class="text-sm mb-1">

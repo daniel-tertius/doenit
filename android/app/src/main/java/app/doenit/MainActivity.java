@@ -104,8 +104,9 @@ public class MainActivity extends BridgeActivity {
 
             Log.d(Const.LOG_TAG_DOENIT, "Found pending task update for taskIds: " + taskIds);
             String js = String.format(
-                    "setTimeout(() => { window.dispatchEvent(new CustomEvent('taskCompleted', { detail: { task_ids: '%s'} })); }, 1000);",
-                    taskIds);
+                "window.location.href = '/?completed_task_ids=%s';",
+                taskIds
+            );
 
             webView.post(() -> {
                 webView.evaluateJavascript(js, null);

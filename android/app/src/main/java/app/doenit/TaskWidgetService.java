@@ -3,6 +3,7 @@ package doenit.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.view.View;
 import android.util.Log;
 
 import android.widget.RemoteViews;
@@ -53,8 +54,12 @@ public class TaskWidgetService extends RemoteViewsService {
 
         @Override
         public void onDataSetChanged() {
-            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "onDataSetChanged called - refreshing widget data");
-            loadTasks();
+            try {
+                Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "onDataSetChanged called - refreshing widget data");
+                loadTasks();
+            } catch (Exception e) {
+                Log.e(Const.LOG_TAG_DOENIT_WIDGET, "Error refreshing widget data", e);
+            }
         }
 
         @Override
@@ -84,85 +89,93 @@ public class TaskWidgetService extends RemoteViewsService {
 
             // Set task name
             views.setTextViewText(R.id.task_name, task.name);
+            int text_name_color = Colors.get((isOngoing || isPast) ? "text-alt" : "text-normal");
+            int app_name_text_color = context.getResources().getColor(text_name_color);
+            views.setTextColor(R.id.task_name, app_name_text_color);
 
             // Set background based on task state
-            int backgroundResource = R.drawable.task_item_background_default;
-            if (isOngoing) {
-                backgroundResource = R.drawable.task_item_background_ongoing;
-            } else if (isPast) {
-                backgroundResource = R.drawable.task_item_background_past;
-            }
-            views.setInt(R.id.task_container, "setBackgroundResource", backgroundResource);
+            int backgroundColor = Drawable.taskDefault();
+            if (isOngoing)
+                backgroundColor = Drawable.taskOngoing();
+            else if (isPast)
+                backgroundColor = Drawable.taskPast();
+            views.setInt(R.id.task_container, "setBackgroundResource", backgroundColor);
 
             // Handle due date display with icon
 
             // Show date pill if either startDate or dueDate is present
-            String displayDate = null;
-            Log.d(Const.LOG_TAG_DOENIT_WIDGET,
-                    "Task " + task.id + " - dueDate: " + task.dueDate + ", startDate: " + task.startDate);
-            if (!Utils.isEmpty(task.dueDate)) {
-                displayDate = task.dueDate;
-            } else if (!Utils.isEmpty(task.startDate)) {
-                displayDate = task.startDate;
-            }
+            String date = TaskUtil.getDate(task);
+            if (!Utils.isEmpty(date)) {
+                views.setViewVisibility(R.id.date_pill, View.VISIBLE);
+                views.setViewVisibility(R.id.pills_container, View.VISIBLE);
+                views.setTextViewText(R.id.pill_date, date);
 
-            Log.d(Const.LOG_TAG_DOENIT_WIDGET,
-                    "Task " + task.id + " - displayDate: " + displayDate + " is Start Empty: "
-                            + Utils.isEmpty(task.startDate) + " is Due Empty: " + Utils.isEmpty(task.dueDate));
-
-            if (!Utils.isEmpty(displayDate)) {
-                views.setViewVisibility(R.id.due_date_container, android.view.View.VISIBLE);
-                views.setViewVisibility(R.id.pills_container, android.view.View.VISIBLE);
-                views.setTextViewText(R.id.task_due_date, displayDate);
+                int color = Colors.get((isOngoing || isPast) ? "text-alt" : "text-normal");
+                int dueDateTextColor = context.getResources().getColor(color);
+                views.setTextColor(R.id.pill_date, dueDateTextColor);
+                int clockIconRes = Drawable.iconClockNormal();
+                if (isOngoing || isPast) {
+                    clockIconRes = Drawable.iconClockAlt();
+                }
+                views.setImageViewResource(R.id.icon_clock, clockIconRes);
 
                 // Set pill background based on state
-                int pillBackground = R.drawable.pill_background_default;
+                int pill = Drawable.pillDefault();
                 if (isOngoing) {
-                    pillBackground = R.drawable.pill_background_ongoing;
+                    pill = Drawable.pillOngoing();
                 } else if (isPast) {
-                    pillBackground = R.drawable.pill_background_past;
+                    pill = Drawable.pillPast();
                 }
-                views.setInt(R.id.due_date_container, "setBackgroundResource", pillBackground);
+                views.setInt(R.id.date_pill, "setBackgroundResource", pill);
 
                 // Show repeat icon if task is repeating
+                views.setViewVisibility(R.id.repeat_icon, task.isRepeating ? View.VISIBLE : View.GONE);
                 if (task.isRepeating) {
-                    views.setViewVisibility(R.id.repeat_icon, android.view.View.VISIBLE);
-                } else {
-                    views.setViewVisibility(R.id.repeat_icon, android.view.View.GONE);
+                    int repeatIconRes = Drawable.iconSyncNormal();
+                    if (isOngoing || isPast) {
+                        repeatIconRes = Drawable.iconSyncAlt();
+                    }
+                    views.setImageViewResource(R.id.repeat_icon, repeatIconRes);
                 }
             } else {
-                views.setViewVisibility(R.id.due_date_container, android.view.View.GONE);
+                views.setViewVisibility(R.id.date_pill, View.GONE);
             }
 
             // Handle category display with icon
-            if (task.category != null && !task.category.isEmpty()) {
-                views.setViewVisibility(R.id.category_container, android.view.View.VISIBLE);
-                views.setViewVisibility(R.id.pills_container, android.view.View.VISIBLE);
-                views.setTextViewText(R.id.task_category, task.category);
+            if (!Utils.isEmpty(task.category)) {
+                views.setViewVisibility(R.id.category_container, View.VISIBLE);
+                views.setViewVisibility(R.id.pills_container, View.VISIBLE);
+                views.setTextViewText(R.id.pill_category, task.category);
+
+                int color = Colors.get((isOngoing || isPast) ? "text-alt" : "text-normal");
+                int categoryTextColor = context.getResources().getColor(color);
+
+                views.setTextColor(R.id.pill_category, categoryTextColor);
+                int categoryIconRes = Drawable.iconCategoryNormal();
+                if (isOngoing || isPast) {
+                    categoryIconRes = Drawable.iconCategoryAlt();
+                }
+                views.setImageViewResource(R.id.icon_category, categoryIconRes);
 
                 // Set pill background based on state
-                int pillBackground = R.drawable.pill_background_default;
+                int pill = Drawable.pillDefault();
                 if (isOngoing) {
-                    pillBackground = R.drawable.pill_background_ongoing;
+                    pill = Drawable.pillOngoing();
                 } else if (isPast) {
-                    pillBackground = R.drawable.pill_background_past;
+                    pill = Drawable.pillPast();
                 }
-                views.setInt(R.id.category_container, "setBackgroundResource", pillBackground);
+                views.setInt(R.id.category_container, "setBackgroundResource", pill);
             } else {
-                views.setViewVisibility(R.id.category_container, android.view.View.GONE);
+                views.setViewVisibility(R.id.category_container, View.GONE);
             }
 
             // Hide pills container if both date and category are hidden
-            if (Utils.isEmpty(displayDate) && Utils.isEmpty(task.category)) {
-                views.setViewVisibility(R.id.pills_container, android.view.View.GONE);
+            if (Utils.isEmpty(date) && Utils.isEmpty(task.category)) {
+                views.setViewVisibility(R.id.pills_container, View.GONE);
             }
 
             // Set priority indicators
-            if (task.important) {
-                views.setViewVisibility(R.id.important_icon, android.view.View.VISIBLE);
-            } else {
-                views.setViewVisibility(R.id.important_icon, android.view.View.GONE);
-            }
+            views.setViewVisibility(R.id.important_icon, task.important ? View.VISIBLE : View.GONE);
 
             // Set up fill-in intent for COMPLETE_TASK (complete_button)
             Intent completeIntent = new Intent();
@@ -284,19 +297,11 @@ public class TaskWidgetService extends RemoteViewsService {
                 return "";
             }
 
-            // Default to Afrikaans
+            // Get user preferred language
             Locale locale = new Locale("af", "ZA");
-
-            // Try to get language preference from SharedPreferences (set by Capacitor
-            // Preferences)
-            try {
-                SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
-                String languagePref = prefs.getString("language", null);
-                if ("en".equals(languagePref)) {
-                    locale = Locale.ENGLISH;
-                }
-            } catch (Exception e) {
-                // Fallback to Afrikaans if anything goes wrong
+            String language = DB.getString("language", "af");
+            if ("en".equals(language)) {
+                locale = Locale.ENGLISH;
             }
 
             try {
@@ -400,15 +405,5 @@ public class TaskWidgetService extends RemoteViewsService {
                 return dateA.compareTo(dateB); // Fallback to string comparison
             }
         }
-    }
-
-    static class Task {
-        String id;
-        String name;
-        String dueDate;
-        String startDate;
-        String category;
-        boolean important;
-        boolean isRepeating;
     }
 }

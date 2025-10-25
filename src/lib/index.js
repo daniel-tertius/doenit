@@ -406,7 +406,6 @@ export function sortTasksByDueDate(tasks) {
     let later_tasks = [];
     let no_date = [];
 
-    const now = new Date();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today).setDate(new Date(today).getDate() + 1);
@@ -457,9 +456,7 @@ export function sortTasksByDueDate(tasks) {
       }
     }
 
-    console.log(ongoing_tasks);
-
-    const with_date = [
+    const sorted_tasks = [
       ...sortTasksByPriority(sortByField(past_tasks, "start_date", "asc")),
       ...sortTasksByPriority(sortByField(ongoing_tasks, "start_date", "asc")),
       ...sortTasksByPriority(sortByField(today_tasks, "start_date", "asc")),
@@ -472,7 +469,7 @@ export function sortTasksByDueDate(tasks) {
       ...sortTasksByPriority(no_date),
     ];
 
-    return with_date;
+    return sorted_tasks;
   } catch (error) {
     console.warn("Error sorting tasks by due date:", error);
     return tasks;

@@ -133,7 +133,7 @@
       {/if}
 
       <Button
-        class="bg-primary text-alt"
+        class="bg-primary border-none text-alt"
         type="button"
         onclick={sendInvite}
         disabled={is_loading || !friend_email.trim() || !user}

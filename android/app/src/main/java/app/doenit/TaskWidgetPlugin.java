@@ -19,7 +19,7 @@ import org.json.JSONArray;
 public class TaskWidgetPlugin extends Plugin {
 
     @PluginMethod
-    public void updateWidget(PluginCall call) {
+    public void updateTasks(PluginCall call) {
         try {
             Context context = getContext();
 
@@ -34,23 +34,22 @@ public class TaskWidgetPlugin extends Plugin {
             }
 
             // Categories
-            JSONArray categoriesArray = call.getArray("categories");
-            JSONObject categoriesObject = new JSONObject();
-            int categoriesCount = categoriesArray != null ? categoriesArray.length() : 0;
+            JSONArray categories = call.getArray("categories");
+            JSONObject category_hash = new JSONObject();
+            int categoriesCount = categories != null ? categories.length() : 0;
             if (categoriesCount > 0) {
-                for (int i = 0; i < categoriesArray.length(); i++) {
-                    JSONObject category = categoriesArray.getJSONObject(i);
-                    String categoryId = category.optString("id", "");
-                    if (!categoryId.isEmpty()) {
-                        categoriesObject.put(categoryId, category);
+                for (int i = 0; i < categories.length(); i++) {
+                    JSONObject category = categories.getJSONObject(i);
+                    String category_id = category.optString("id");
+                    if (!Utils.isEmpty(category_id)) {
+                        category_hash.put(category_id, category);
                     }
                 }
             }
-            
-            Log.d(Const.LOG_TAG_DOENIT, "updateWidget called with " + tasks.length() + " tasks and " + categoriesCount + " categories");
-            Log.d(Const.LOG_TAG_DOENIT, "Tasks JSON: " + tasks.toString());
-            Log.d(Const.LOG_TAG_DOENIT, "Categories JSON: " + categoriesObject.toString());
-            TaskWidgetProvider.updateTasksData(context, tasks.toString(), categoriesObject.toString());
+
+            Log.d(Const.LOG_TAG_DOENIT, "Tasks count: " + tasks.length());
+            Log.d(Const.LOG_TAG_DOENIT, "Categories count: " + categories.length());
+            TaskWidgetProvider.updateTasksData(context, tasks.toString(), category_hash.toString());
 
             JSObject ret = new JSObject();
             ret.put("success", true);
@@ -81,6 +80,29 @@ public class TaskWidgetPlugin extends Plugin {
             call.resolve(ret);
         } catch (Exception e) {
             call.reject("Failed to update widget language: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void updateTheme(PluginCall call) {
+        try {
+            String theme = call.getString("theme");
+            if (Utils.isEmpty(theme)) {
+                call.reject("Missing 'theme' parameter");
+                return;
+            }
+
+            Context context = getContext();
+
+            // Delegate to the widget provider which will persist and refresh widgets
+            TaskWidgetProvider.updateTheme(context, theme);
+
+            JSObject ret = new JSObject();
+            ret.put("success", true);
+            ret.put("theme", theme);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("Failed to update widget theme: " + e.getMessage());
         }
     }
 }

@@ -7,7 +7,7 @@ import { t } from "$lib/services/language.svelte";
 import { sortTasksByDueDate } from "$lib";
 
 export interface TaskWidgetPlugin {
-  updateWidget({
+  updateTasks({
     tasks,
     categories,
   }: {
@@ -16,6 +16,7 @@ export interface TaskWidgetPlugin {
   }): Promise<{ success: boolean; message: string }>;
 
   updateLanguage({ language }: { language: string }): Promise<{ success: boolean }>;
+  updateTheme({ theme }: { theme: string }): Promise<{ success: boolean }>;
 }
 
 const TaskWidget = Capacitor.registerPlugin<TaskWidgetPlugin>("TaskWidget");
@@ -32,14 +33,29 @@ export class Widget {
       console.log("[💬 Widget]: Language update result:", JSON.stringify(result));
     } catch (error) {
       console.error("[💬 Widget]: Language update error:", error);
-      alert(t("failed_to_update_widget_language") + " " + JSON.stringify(error));
+      alert(t("failed_to_update_widget") + " " + JSON.stringify(error));
+    }
+  }
+
+  static async updateTheme(theme: string) {
+    if (!Capacitor.isNativePlatform()) {
+      console.warn("Widget theme update called on web platform - ignoring");
+      return;
+    }
+
+    try {
+      const result = await TaskWidget.updateTheme({ theme });
+      console.log("[💬 Widget]: Theme update result:", JSON.stringify(result));
+    } catch (error) {
+      console.error("[💬 Widget]: Theme update error:", error);
+      alert(t("failed_to_update_widget") + " " + JSON.stringify(error));
     }
   }
 
   /**
    * Update the widget display
    */
-  static async updateWidget(tasks?: Task[]) {
+  static async updateTasks(tasks?: Task[]) {
     if (!Capacitor.isNativePlatform()) {
       console.warn("Widget update called on web platform - ignoring");
       return;
@@ -47,16 +63,14 @@ export class Widget {
 
     try {
       if (!tasks) {
-        tasks = sortTasksByDueDate(await DB.Task.getAll({ selector: { archived: false } }));
+        const all_tasks = await DB.Task.getAll({ selector: { archived: false } });
+        tasks = sortTasksByDueDate(all_tasks);
       }
 
-      const categories = await DB.Category.getAll({
-        selector: {
-          id: { $in: tasks.map((task) => task.category_id).filter(Boolean) },
-        },
-      });
+      const category_ids = tasks.map((task) => task.category_id).filter(Boolean);
+      const categories = await DB.Category.getAll({ selector: { id: { $in: category_ids } } });
 
-      const result = await TaskWidget.updateWidget({ tasks, categories });
+      const result = await TaskWidget.updateTasks({ tasks, categories });
       console.log("[💬 Widget]:", JSON.stringify(result));
     } catch (error) {
       console.error("[💬 Widget]:", error);
@@ -73,19 +87,12 @@ export class Widget {
       return console.warn("[⚠️ Doenit] No Tasks found with IDs: " + task_ids);
     }
 
-    for (const task of tasks) {
-      if (!task.archived) continue;
-
-      console.warn("[⚠️ Doenit] Task already archived: " + task.id);
-    }
-
     const updates = tasks.map(async (task) => {
       await DB.Task.complete(task);
       if (!task.room_id) return;
 
       const room = await DB.Room.get(task.room_id);
-      if (!room) throw new Error("Room not found");
-
+      if (!room) throw new Error("Room not found: " + task.room_id);
       if (!user.value) return;
 
       const email_address = user.value.email;
@@ -110,7 +117,10 @@ export class Widget {
         email_address: email_addresses,
       });
     });
-    await Promise.all(updates);
+    await Promise.all(updates).catch((error) => {
+      const error_message = error instanceof Error ? error.message : JSON.stringify(error);
+      alert("Error updating tasks: " + error_message);
+    });
 
     console.log("[💬 Doenit] Tasks updated successfully");
   }

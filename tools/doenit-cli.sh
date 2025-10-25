@@ -46,7 +46,7 @@ show_menu() {
     echo -e "${CYAN}╠═══════════════════════════════════╦══════════════════════════════╣${NC}"
     echo -e "${CYAN}║ ${YELLOW}1.${NC} Web Ontwikkeling (npm run dev) ${CYAN}║ ${YELLOW}5.${NC} Bou en Installeer (dev)   ${CYAN}║${NC}"
     echo -e "${CYAN}║ ${YELLOW}2.${NC} Firebase Functions Bestuur     ${CYAN}║ ${YELLOW}6.${NC} Toestel Bestuur           ${CYAN}║${NC}"
-    echo -e "${CYAN}║ ${YELLOW}3.${NC} Installeer Dependencies        ${CYAN}║ ${YELLOW}7.${NC} Widget Debug              ${CYAN}║${NC}"
+    echo -e "${CYAN}║ ${YELLOW}3.${NC} Bou en installeer (dev net app)${CYAN}║ ${YELLOW}7.${NC} Widget Debug              ${CYAN}║${NC}"
     echo -e "${CYAN}║ ${YELLOW}4.${NC} Bou App (produksie)            ${CYAN}║ ${YELLOW}8.${NC} App Logs Kyk              ${CYAN}║${NC}"
     echo -e "${CYAN}╚═══════════════════════════════════╩══════════════════════════════╝${NC}"
     echo ""
@@ -62,7 +62,7 @@ main() {
         case $choice in
             1) start_web_dev ;;
             2) manage_functions ;;
-            3) install_deps ;;
+            3) build_and_install_only_app ;;
             4) build_app ;;
             5) build_and_install ;;
             6) device_management ;;
@@ -103,35 +103,45 @@ manage_functions() {
 }
 
 # Install dependencies
-install_deps() {
-    echo -e "${YELLOW} 📦 Installeer alle dependencies...${NC}"
-    
-    local dirs=("." "functions" "packages/capacitor-google-auth")
-    local names=("Root" "Functions" "Google Auth plugin")
-    
-    for i in "${!dirs[@]}"; do
-        echo -e "${BLUE}${names[i]} dependencies...${NC}"
-        (cd "${dirs[i]}" && npm install) || {
-            echo -e "${RED} ❌ ${names[i]} dependencies failed${NC}"
+build_and_install_only_app() {
+    echo -e "${BLUE}📱 Bou Android debug APK...${NC}"
+    export NODE_ENV=development
+    # cd android
+    if npx cap build android --androidreleasetype "APK" --signing-type "apksigner"; then
+    # if ./gradlew assembleDebug; then
+        echo -e "${GREEN} ✅ Debug APK gebou${NC}"
+        
+        # # Find the APK file
+        APK_PATH="android/app/build/outputs/apk/release/app-release-signed.apk"
+        # APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
+        if [ -f "$APK_PATH" ]; then
+            echo -e "${BLUE}📲 Installeer op toestel...${NC}"
+            if adb install -r "$APK_PATH"; then
+                echo -e "${GREEN} ✅ Ontwikkeling app geïnstalleer${NC}"
+                echo -e "${CYAN}App ID: doenit.app.dev${NC}"
+                echo -e "${CYAN}App Naam: Doenit Dev${NC}"
+            else
+                echo -e "${RED} ❌ Installasie gefaal${NC}"
+                # cd ..
+                return 1
+            fi
+        else
+            echo -e "${RED} ❌ APK lêer nie gevind nie: $APK_PATH${NC}"
+        #     cd ..
             return 1
-        }
-    done
+        fi
+    else
+        echo -e "${RED} ❌ APK bou gefaal${NC}"
+    #     cd ..
+        return 1
+    fi
+    # cd ..
+    unset NODE_ENV
     
-    echo -e "${GREEN} ✅ Alle dependencies geïnstalleer${NC}"
-}
-
-# Helper function: Common build steps
-do_build() {
-    echo -e "${BLUE} 🏗️ Bou app...${NC}"
-    npm run build || {
-        echo -e "${RED} ❌ Build failed${NC}"
-        return 1
-    }
-    npx cap sync || {
-        echo -e "${RED} ❌ Capacitor sync failed${NC}"
-        return 1
-    }
-    echo -e "${GREEN} ✅ App gebou${NC}"
+    # Copy to app-output for convenience
+    mkdir -p app-output
+    cp android/app/build/outputs/apk/debug/app-debug.apk app-output/doenit-dev.apk 2>/dev/null || true
+    echo -e "${GREEN} 🎉 Ontwikkeling app gereed!${NC}"
 }
 
 # Bou app (produksie)
@@ -226,44 +236,9 @@ build_and_install() {
         return 1
     }
     
-    echo -e "${BLUE}📱 Bou Android debug APK...${NC}"
-    export NODE_ENV=development
-    # cd android
-    if npx cap build android --androidreleasetype "APK" --signing-type "apksigner"; then
-    # if ./gradlew assembleDebug; then
-        echo -e "${GREEN} ✅ Debug APK gebou${NC}"
-        
-        # # Find the APK file
-        APK_PATH="android/app/build/outputs/apk/release/app-release-signed.apk"
-        # APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
-        if [ -f "$APK_PATH" ]; then
-            echo -e "${BLUE}📲 Installeer op toestel...${NC}"
-            if adb install -r "$APK_PATH"; then
-                echo -e "${GREEN} ✅ Ontwikkeling app geïnstalleer${NC}"
-                echo -e "${CYAN}App ID: doenit.app.dev${NC}"
-                echo -e "${CYAN}App Naam: Doenit Dev${NC}"
-            else
-                echo -e "${RED} ❌ Installasie gefaal${NC}"
-                # cd ..
-                return 1
-            fi
-        else
-            echo -e "${RED} ❌ APK lêer nie gevind nie: $APK_PATH${NC}"
-        #     cd ..
-            return 1
-        fi
-    else
-        echo -e "${RED} ❌ APK bou gefaal${NC}"
-    #     cd ..
+    build_and_install_only_app || {
         return 1
-    fi
-    # cd ..
-    unset NODE_ENV
-    
-    # Copy to app-output for convenience
-    mkdir -p app-output
-    cp android/app/build/outputs/apk/debug/app-debug.apk app-output/doenit-dev.apk 2>/dev/null || true
-    echo -e "${GREEN} 🎉 Ontwikkeling app gereed!${NC}"
+    }
 }
 
 # Check of toestel gekoppel is

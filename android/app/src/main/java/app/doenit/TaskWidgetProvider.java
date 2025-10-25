@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.widget.RemoteViews;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.util.Log;
 import android.net.Uri;
 
@@ -32,27 +33,32 @@ public class TaskWidgetProvider extends AppWidgetProvider {
     public static final String EXTRA_TASK_ID = Const.EXTRA_TASK_ID;
 
     public static void updateTasksData(Context context, String tasksJson, String categoriesStr) {
-        DB.saveData(Const.WIDGET_TASKS, tasksJson);
-        DB.saveData(Const.WIDGET_CATEGORIES, categoriesStr);
-
-        // Update all widgets
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
-
-        Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Found " + appWidgetIds.length + " widget instances");
-
-        for (int i = 0; i < appWidgetIds.length; i++) {
-            updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+        try {
+            DB.saveData(Const.WIDGET_TASKS, tasksJson);
+            DB.saveData(Const.WIDGET_CATEGORIES, categoriesStr);
+    
+            // Update all widgets
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
+    
+            Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Found " + appWidgetIds.length + " widget instances");
+    
+            for (int i = 0; i < appWidgetIds.length; i++) {
+                updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
+            }
+    
+            // Notify that the data has changed so ListView refreshes
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+            Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Notified " + appWidgetIds.length + " widgets of data change");
+        } catch (Exception e) {
+            Log.e(Const.LOG_TAG_DOENIT, "Error updating widget tasks data", e);
         }
-
-        // Notify that the data has changed so ListView refreshes
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
-        Log.d(Const.LOG_TAG_DOENIT_UPDATE, "Notified " + appWidgetIds.length + " widgets of data change");
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        DB.init(context);
         for (int i = 0; i < appWidgetIds.length; i++) {
             updateAppWidget(context, appWidgetManager, appWidgetIds[i]);
         }
@@ -131,6 +137,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
         Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "[updateAppWidget] " + appWidgetId);
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.task_widget);
+        setWidgetColors(context, views);
 
         // Set up the list view
         Intent serviceIntent = new Intent(context, TaskWidgetService.class);
@@ -148,17 +155,8 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         // Set up empty view
         views.setEmptyView(R.id.widget_list_view, R.id.empty_view);
 
-        // --- DYNAMIC EMPTY TEXT BASED ON LANGUAGE ---
-        SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
-        String lang = prefs.getString("language", "en");
-        String emptyText;
-        if ("en".equals(lang)) {
-            emptyText = "Your list is empty!\nPress + to add one";
-        } else {
-            emptyText = "Jou lys is skoon!\nDruk + om een by te voeg";
-        }
-        views.setTextViewText(R.id.empty_view, emptyText);
-        // --------------------------------------------
+        String empty_text = TaskUtil.getListIsEmptyString();
+        views.setTextViewText(R.id.empty_view, empty_text);
 
         // Set up add task button
         Intent addTaskIntent = new Intent(context, TaskWidgetProvider.class);
@@ -168,7 +166,7 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 appWidgetId + 1000,
                 addTaskIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        views.setOnClickPendingIntent(R.id.add_task_button, addTaskPendingIntent);
+        views.setOnClickPendingIntent(R.id.add_button, addTaskPendingIntent);
 
         // Set up click action for app name/logo to open main app
         Intent appIntent = new Intent(context, MainActivity.class);
@@ -179,13 +177,31 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 appIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        views.setOnClickPendingIntent(R.id.app_name_text, mainAppPendingIntent);
+        views.setOnClickPendingIntent(R.id.app_name, mainAppPendingIntent);
         views.setOnClickPendingIntent(R.id.app_logo, mainAppPendingIntent);
 
         // Update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
 
         Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Updated widget " + appWidgetId + " with PendingIntent template");
+    }
+
+    static void setWidgetColors(Context context, RemoteViews views) {
+        Resources resources = context.getResources();
+
+        views.setInt(R.id.widget_body, "setBackgroundResource", Drawable.mainContainer());
+        views.setInt(R.id.widget_header, "setBackgroundResource", Drawable.headerContainer());
+
+        int app_name_text_res_id = Colors.get("text-strong");
+        int app_name_text_color = resources.getColor(app_name_text_res_id);
+        views.setTextColor(R.id.app_name, app_name_text_color);
+
+        views.setInt(R.id.add_button, "setBackgroundResource", Drawable.addButton());
+        views.setImageViewResource(R.id.add_button, Drawable.iconAdd());
+
+        int empty_view_text_res_id = Colors.get("text-normal");
+        int empty_view_text_color = resources.getColor(empty_view_text_res_id);
+        views.setInt(R.id.empty_view, "setTextColor", empty_view_text_color);
     }
 
     /**
@@ -195,16 +211,15 @@ public class TaskWidgetProvider extends AppWidgetProvider {
      */
     public static void updateLanguage(Context context, String language) {
         try {
-            // persist language where widget reads it
-            SharedPreferences prefs = context.getSharedPreferences(Const.DB_NAME, Context.MODE_PRIVATE);
-            prefs.edit().putString("language", language).apply();
+            DB.saveData("language", language);
 
             // Trigger immediate update for all widgets
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
 
-            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "updateLanguage: updating " + appWidgetIds.length + " widget(s) to language=" + language);
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE,
+                    "updateLanguage: updating " + appWidgetIds.length + " widget(s) to language=" + language);
 
             // Update each widget (this will call updateAppWidget)
             for (int id : appWidgetIds) {
@@ -224,77 +239,41 @@ public class TaskWidgetProvider extends AppWidgetProvider {
         }
     }
 
+    public static void updateTheme(Context context, String theme) {
+        try {
+            DB.saveData("theme", theme);
+
+            // Trigger immediate update for all widgets
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName cn = new ComponentName(context, TaskWidgetProvider.class);
+            int[] appWidgetIds = appWidgetManager.getAppWidgetIds(cn);
+
+            Log.d(Const.LOG_TAG_DOENIT_SIMPLE,
+                    "updateTheme: updating " + appWidgetIds.length + " widget(s) to theme=" + theme);
+
+            // Update each widget (this will call updateAppWidget)
+            for (int id : appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, id);
+            }
+
+            // Notify ListView to refresh
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_list_view);
+
+            // Also send a standard broadcast update (helps some launchers)
+            Intent intent = new Intent(context, TaskWidgetProvider.class);
+            intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
+            context.sendBroadcast(intent);
+        } catch (Exception e) {
+            Log.e(Const.LOG_TAG_DOENIT, "Error updating widget theme", e);
+        }
+    }
+
     public static void completeTask(Context context, String taskId) {
         try {
-            // Load current tasks and categories from SharedPreferences
-            String tasksStr = DB.getString(Const.WIDGET_TASKS);
-            String categoriesStr = DB.getString(Const.WIDGET_CATEGORIES);
-
-            if (tasksStr == null || tasksStr.isEmpty()) {
-                Log.e(Const.LOG_TAG_DOENIT, "No tasks data found in SharedPreferences");
-                return;
-            }
-
-            JSONArray tasks = new JSONArray(tasksStr);
-
-            // Find and update the task
-            boolean taskFound = false;
-            boolean isRepeatTask = false;
-
-            for (int i = 0; i < tasks.length(); i++) {
-                JSONObject task = tasks.getJSONObject(i);
-                String currentTaskId = task.optString("id", "");
-
-                if (currentTaskId.equals(taskId)) {
-                    taskFound = true;
-
-                    // Check if this is a repeat task
-                    String repeatInterval = task.optString("repeat_interval", "");
-                    isRepeatTask = repeatInterval != null && !repeatInterval.isEmpty() && task.has("due_date");
-
-                    if (isRepeatTask) {
-                        // For repeat tasks: increment completed counter and update dates
-                        int completedCount = task.optInt("completed", 0);
-                        task.put("completed", completedCount + 1);
-
-                        // Calculate next due date
-                        String nextDueDate = calculateNextDueDate(task);
-                        if (nextDueDate != null) {
-                            task.put("due_date", nextDueDate);
-                        }
-
-                        // Calculate next start date if it exists
-                        if (task.has("start_date")) {
-                            String nextStartDate = calculateNextStartDate(task);
-                            if (nextStartDate != null) {
-                                task.put("start_date", nextStartDate);
-                            }
-                        }
-                    } else {
-                        // For non-repeat tasks: mark as completed and archived
-                        task.put("completed", 1);
-                        task.put("archived", true);
-                        task.put("completed_at",
-                                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
-                    }
-
-                    break;
-                }
-            }
-
-            if (!taskFound) {
-                Log.e(Const.LOG_TAG_DOENIT, "Task with ID " + taskId + " not found");
-                return;
-            }
-
-            // Refresh the widget data with updated tasks and categories
-            updateTasksData(context, tasks.toString(), categoriesStr);
-            Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Task completed: " + taskId + ", isRepeatTask: " + isRepeatTask);
-
             // Send broadcast to notify main app of task completion
             Intent broadcastIntent = new Intent(Const.BROADCAST_TASK_COMPLETED);
             broadcastIntent.putExtra("taskId", taskId);
-            broadcastIntent.putExtra("updatedTasksJson", tasks.toString());
             context.sendBroadcast(broadcastIntent);
             Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Broadcast sent for task completion: " + taskId);
 
@@ -306,8 +285,6 @@ public class TaskWidgetProvider extends AppWidgetProvider {
                 taskIds += "," + taskId;
             }
             DB.saveData(Const.TASK_ID, taskIds);
-
-            Utils.cancelNotification(context, taskId);
         } catch (Exception e) {
             Log.e(Const.LOG_TAG_DOENIT, "Error completing task", e);
         }
