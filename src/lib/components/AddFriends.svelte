@@ -4,7 +4,7 @@
   import InputText from "./element/input/InputText.svelte";
   import { slide } from "svelte/transition";
   import Button from "./element/button/Button.svelte";
-  import { Plus } from "$lib/icon";
+  import { Plus, UserPlus } from "$lib/icon";
   import { isValidEmail, normalize } from "$lib";
   import user from "$lib/core/user.svelte";
 
@@ -84,7 +84,7 @@
     type="button"
     onclick={() => (open = true)}
   >
-    <Plus class="text-xl" />
+    <UserPlus class="text-xl" />
   </button>
 {/if}
 

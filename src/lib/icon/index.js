@@ -39,6 +39,7 @@ import TestTube from "./TestTube.svelte";
 import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
 import Upload from "./Upload.svelte";
+import UserPlus from "./UserPlus.svelte";
 import X from "./X.svelte";
 import XCircle from "./XCircle.svelte";
 
@@ -84,6 +85,7 @@ export {
   Times,
   Trash,
   Upload,
+  UserPlus,
   X,
   XCircle,
 };

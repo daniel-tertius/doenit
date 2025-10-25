@@ -1,4 +1,5 @@
 <script>
+  import AddFriends from "$lib/components/AddFriends.svelte";
   import { Plus, Loading, Check, Home } from "$lib/icon";
   import { navigating, page } from "$app/state";
   import { goto } from "$app/navigation";
@@ -10,10 +11,10 @@
     "/complete": Home,
     "/categories": Home,
     "/settings": Home,
-    "/friends": Home,
     "/[item_id]": Check,
   };
 
+  const is_friends = $derived(page.url.pathname === "/friends");
   const page_id = $derived(page.route.id ?? "");
   const is_form_page = $derived(["/create", "/[item_id]"].includes(page_id));
   const is_home = $derived(page_id === "/");
@@ -23,7 +24,9 @@
   const onclick = $derived(is_form_page ? null : () => goto(page_id === "/" ? "/create" : "/"));
 </script>
 
-{#if Icon}
+{#if is_friends}
+  <AddFriends />
+{:else if Icon}
   <button
     {type}
     {form}
