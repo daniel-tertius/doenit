@@ -7,6 +7,7 @@
   import { Plus, UserPlus } from "$lib/icon";
   import { isValidEmail, normalize } from "$lib";
   import user from "$lib/core/user.svelte";
+  import Loading from "$lib/icon/Loading.svelte";
 
   let open = $state(false);
   let friend_email = $state("");
@@ -25,24 +26,29 @@
       return;
     }
 
-    friend_email = normalize(friend_email);
-    if (!isValidEmail(friend_email)) {
+    // Moet nie invoer verander nie.
+    let email = normalize(friend_email);
+    if (!email.includes("@")) {
+      email += "@gmail.com";
+    }
+
+    if (!isValidEmail(email)) {
       error_message = t("invalid_email");
       return;
     }
 
     // Check if user is trying to invite themselves
-    if (user.value.email === friend_email) {
-      error_message = t("cannot_invite_yourself");
-      return;
-    }
+    // if (user.value.email === friend_email) {
+    //   error_message = t("cannot_invite_yourself");
+    //   return;
+    // }
 
     is_loading = true;
     error_message = "";
     success_message = "";
 
     try {
-      const result = await inviteService.sendInvite(friend_email);
+      const result = await inviteService.sendInvite(email);
       if (!result.success) {
         error_message = result.error_message;
         return;
@@ -80,8 +86,13 @@
 
 {#if !!user}
   <button
-    class="bg-primary text-alt flex gap-1 w-15 rounded-full h-15 justify-center items-center px-4 py-2"
+    class={{
+      "flex gap-1 w-15 rounded-full h-15 justify-center items-center px-4 py-2": true,
+      "bg-primary text-alt": !open,
+      "opacity-70 bg-card": open,
+    }}
     type="button"
+    disabled={open}
     onclick={() => (open = true)}
   >
     <UserPlus class="text-xl" />
@@ -106,21 +117,26 @@
         </button>
       </div>
 
-      <InputText
-        bind:value={friend_email}
-        placeholder={t("enter_friend_email")}
-        type="email"
-        oninput={() => (error_message = "")}
-        onkeydown={(/** @type {KeyboardEvent} */ e) => {
-          if (e.key === "Enter" && !is_loading && friend_email.trim()) {
-            sendInvite();
-          }
-        }}
-        class={error_message ? "border-error" : ""}
-        focus_on_mount={true}
-      />
+      <div class="relative">
+        <InputText
+          bind:value={friend_email}
+          placeholder={t("enter_friend_email")}
+          type="email"
+          oninput={() => {
+            friend_email = normalize(friend_email);
+            error_message = "";
+          }}
+          class={"pr-31" + (error_message ? " border-error! bg-error/20! placeholder:text-error" : "")}
+          focus_on_mount
+        />
+        <div
+          class="bg-surface border border-default m-0.5 absolute bottom-1 right-1 flex items-center px-3 top-1 pointer-events-none rounded-lg"
+        >
+          <span>@gmail.com</span>
+        </div>
+      </div>
 
-      {#if error_message}
+      {#if error_message && !!friend_email?.length}
         <div class="text-error text-sm mt-1 text-right w-full" transition:slide>
           <span>{error_message}</span>
         </div>
@@ -133,15 +149,17 @@
       {/if}
 
       <Button
-        class="bg-primary border-none text-alt"
+        class="bg-primary border-none text-alt disabled:opacity-70"
         type="button"
         onclick={sendInvite}
-        disabled={is_loading || !friend_email.trim() || !user}
+        disabled={is_loading}
       >
         {#if is_loading}
-          <span>{t("sending")}</span>
+          <Loading />
+          <span class="font-semibold">{t("sending")}</span>
         {:else}
-          <span>{t("send_invite")}</span>
+          <UserPlus class="text-lg mr-1" />
+          <span class="font-semibold">{t("send_invite")}</span>
         {/if}
       </Button>
 

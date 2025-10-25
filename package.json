@@ -44,6 +44,7 @@
     "@capacitor/haptics": "^7.0.1",
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
+    "@capacitor/push-notifications": "^7.0.3",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
     "blaze-slider": "^1.9.3",

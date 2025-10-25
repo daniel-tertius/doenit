@@ -15,6 +15,9 @@ const config: CapacitorConfig = {
     allowNavigation: ["*.firebaseapp.com"],
   },
   plugins: {
+    PushNotifications: {
+      presentationOptions: ["badge", "sound", "alert"],
+    },
     LocalNotifications: {
       smallIcon: "ic_stat_logo",
       iconColor: "#ffffff",

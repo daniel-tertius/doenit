@@ -18,7 +18,7 @@ class User {
   private _user = $state() as FirebaseUser;
   private _message_token: string | null = $state(null);
 
-  readonly is_friends_enabled: boolean = $derived(PUBLIC_ADMIN_EMAILS.includes(this._user?.email || ""));
+  readonly is_friends_enabled: boolean = $derived(!!this._user && PUBLIC_ADMIN_EMAILS.includes(this._user?.email || ""));
   readonly is_backup_enabled: boolean = $derived(!!this._user && !!Cached.automaticBackup.value);
 
   constructor(user: FirebaseUser) {

@@ -167,7 +167,7 @@ export const translations = {
     connect_with_friend: "Verbind met 'n vriend",
     enter_friend_email: "Voer vriend se e-posadres in",
     send_invite: "Stuur uitnodiging",
-    sending: "Stuur...",
+    sending: "Stuur tans…",
     invite_sent_to: "Uitnodiging gestuur na {{email}}",
     invitation_sent: "Uitnodiging gestuur",
     friends_with: "Vriende met",
