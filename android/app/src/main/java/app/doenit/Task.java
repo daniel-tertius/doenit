@@ -7,5 +7,5 @@ public class Task {
     String startDate;
     String category;
     boolean important;
-    boolean isRepeating;
+    boolean is_repeating;
 }

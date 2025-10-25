@@ -129,8 +129,8 @@ public class TaskWidgetService extends RemoteViewsService {
                 views.setInt(R.id.date_pill, "setBackgroundResource", pill);
 
                 // Show repeat icon if task is repeating
-                views.setViewVisibility(R.id.repeat_icon, task.isRepeating ? View.VISIBLE : View.GONE);
-                if (task.isRepeating) {
+                views.setViewVisibility(R.id.repeat_icon, task.is_repeating ? View.VISIBLE : View.GONE);
+                if (task.is_repeating) {
                     int repeatIconRes = Drawable.iconSyncNormal();
                     if (isOngoing || isPast) {
                         repeatIconRes = Drawable.iconSyncAlt();
@@ -227,14 +227,6 @@ public class TaskWidgetService extends RemoteViewsService {
                 for (int i = 0; i < tasksArray.length(); i++) {
                     JSONObject taskJson = tasksArray.getJSONObject(i);
 
-                    // Only include non-archived tasks
-                    boolean isArchived = taskJson.optBoolean("archived", false);
-
-                    if (isArchived) {
-                        Log.d(Const.LOG_TAG_DOENIT_SIMPLE, "Skipping task " + i + " (archived).");
-                        continue;
-                    }
-
                     Task task = new Task();
                     task.id = taskJson.optString("id", "");
                     task.name = taskJson.optString("name", "");
@@ -242,35 +234,14 @@ public class TaskWidgetService extends RemoteViewsService {
                     task.startDate = toDisplayDate(taskJson.optString("start_date", ""));
 
                     // Get category name from category ID
-                    String categoryId = taskJson.optString("category_id", "");
-                    task.category = getCategoryName(categoryId, categories);
+                    String category_id = taskJson.optString("category_id", "");
+                    task.category = getCategoryName(category_id, categories);
                     task.important = taskJson.optBoolean("important", false);
-                    task.isRepeating = !taskJson.optString("repeat_interval", "").isEmpty();
+                    task.is_repeating = !taskJson.optString("repeat_interval", "").isEmpty();
 
                     tasks.add(task);
                 }
 
-                // Replace the three separate sort calls with this single comprehensive sort
-                Collections.sort(tasks, new Comparator<Task>() {
-                    @Override
-                    public int compare(Task a, Task b) {
-                        // Primary: Due date (tasks with due dates come first, then by date)
-                        int dateComparison = compareDueDates(a.dueDate, b.dueDate);
-                        if (dateComparison != 0) {
-                            return dateComparison;
-                        }
-
-                        // Secondary: Important tasks first
-                        if (a.important && !b.important) {
-                            return -1;
-                        } else if (!a.important && b.important) {
-                            return 1;
-                        }
-
-                        // Tertiary: Alphabetical by name
-                        return a.name.compareToIgnoreCase(b.name);
-                    }
-                });
                 Log.d(Const.LOG_TAG_DOENIT_WIDGET, "Found " + tasksArray.length() + " total tasks, loaded "
                         + tasks.size() + " active tasks for widget");
             } catch (JSONException e) {
@@ -279,11 +250,11 @@ public class TaskWidgetService extends RemoteViewsService {
             }
         }
 
-        private String getCategoryName(String categoryId, JSONObject categories) {
+        private String getCategoryName(String category_id, JSONObject categories) {
             // Get category name from category ID
-            if (!categoryId.isEmpty() && categories.has(categoryId)) {
+            if (!category_id.isEmpty() && categories.has(category_id)) {
                 try {
-                    JSONObject category = categories.getJSONObject(categoryId);
+                    JSONObject category = categories.getJSONObject(category_id);
                     return category.optString("name", "");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -293,7 +264,7 @@ public class TaskWidgetService extends RemoteViewsService {
         }
 
         private String toDisplayDate(String dateString) {
-            if (dateString == null || dateString.isEmpty() || dateString.equals("null")) {
+            if (Utils.isEmpty(dateString)) {
                 return "";
             }
 
