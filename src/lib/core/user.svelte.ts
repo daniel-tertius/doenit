@@ -58,19 +58,22 @@ class User {
 
 const UserValue = new Value<User>();
 
-const app = initializeApp(FIREBASE_CONFIG);
-if (Capacitor.isNativePlatform()) {
-  const auth = getAuth(app);
-  auth.onAuthStateChanged((user) => {
-    if (!user) {
-      UserValue.value = null;
-    } else {
-      UserValue.value = new User(user);
-    }
-  });
-}
-
 export default UserValue;
+
+initializeUser();
+function initializeUser() {
+  const app = initializeApp(FIREBASE_CONFIG);
+  if (Capacitor.isNativePlatform()) {
+    const auth = getAuth(app);
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        UserValue.value = null;
+      } else {
+        UserValue.value = new User(user);
+      }
+    });
+  }
+}
 
 export async function signIn(): Promise<SimpleResult> {
   try {
