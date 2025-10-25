@@ -50,7 +50,7 @@
   }
 
   /**
-   * @param {Task | Omit<Task, "id" | "created_at" | "updated_at">} task
+   * @param {Task} task
    * @returns {Promise<Result<string>>}
    */
   async function updateTask(task) {
@@ -66,34 +66,26 @@
         throw new Error(t("error_updating_task"));
       }
 
-      if (task.room_id && !!user.value) {
-        const room = await DB.Room.get(task.room_id);
-        // TODO: Vertaal
-        if (!room) throw new Error("Vriend nie gevind");
+      if (user.value?.is_friends_enabled) {
+        // Was nie gedeel voor nie, maar nou wel
+        const is_shared = !data.task.room_id && !!task.room_id;
+        if (is_shared) {
+          const room = await DB.Room.get(task.room_id);
+          await OnlineDB.Changelog.createCreateEntry(room, task);
+        }
 
-        const email_address = user.value.email;
-        await OnlineDB.Changelog.create({
-          type: "update",
-          data: JSON.stringify(task),
-          room_id: task.room_id,
-          total_reads_needed: room.users.length,
-          user_reads_list: [email_address],
-        });
+        // Was gedeel voor, maar nou nie meer
+        const is_unshared = !!data.task.room_id && !task.room_id;
+        if (is_unshared) {
+          const room = await DB.Room.get(data.task.room_id);
+          await OnlineDB.Changelog.createUnshareUpdateEntry(room, task);
+        }
 
-        const is_task_shared = !data.task.room_id;
-        if (is_task_shared) {
-          const email_addresses = [];
-          for (const { email, pending } of room.users) {
-            if (email && email !== email_address && !pending) {
-              email_addresses.push(email);
-            }
-          }
-
-          await Notify.Push.send({
-            title: t("task_shared"),
-            body: t("task_was_shared", { task_name: task.name }),
-            email_address: email_addresses,
-          });
+        // Was gedeel voor en is steeds gedeel
+        const is_still_shared = !!data.task.room_id && !!task.room_id;
+        if (is_still_shared) {
+          const room = await DB.Room.get(task.room_id);
+          await OnlineDB.Changelog.createUpdateEntry(room, task);
         }
       }
 
@@ -133,33 +125,11 @@
       }
 
       await DB.Task.update(task.id, task);
-      if (task.room_id) {
-        if (!user.value) return;
-
+      if (task.room_id && !!user.value) {
         const room = await DB.Room.get(task.room_id);
         if (!room) return;
 
-        const email_address = user.value.email;
-        OnlineDB.Changelog.create({
-          type: "complete",
-          task_id: task.id,
-          room_id: task.room_id || "",
-          total_reads_needed: room.users.length,
-          user_reads_list: [email_address],
-        });
-
-        const email_addresses = [];
-        for (const { email, pending } of room.users) {
-          if (email && email !== email_address && !pending) {
-            email_addresses.push(email);
-          }
-        }
-
-        await Notify.Push.send({
-          title: t("task_completed"),
-          body: t("task_was_completed", { task_name: task.name }),
-          email_address: email_addresses,
-        });
+        await OnlineDB.Changelog.createCompleteEntry(room, task);
       }
     } catch (error) {
       Alert.error(`${t("error_updating_task")}: ${error}`);

@@ -102,6 +102,8 @@ export class Notify {
      * Actual sending is done server-side using the recipient's token.
      */
     static async send({ title, body, email_address }: { title: string; body: string; email_address: string[] }) {
+      if (!email_address.length) return;
+
       if (!Notify.Push.is_initialized) {
         await this.initialize();
       }

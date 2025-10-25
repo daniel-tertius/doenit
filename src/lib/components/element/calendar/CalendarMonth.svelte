@@ -17,7 +17,7 @@
     start_date = null,
     end_date = null,
     locale = "af-ZA",
-    week_starts_on = 1,
+    week_starts_on = 0,
     ondayclick = () => {},
   } = $props();
 
@@ -27,7 +27,7 @@
   // Generate day headers based on locale and week start
   const dayHeaders = $derived.by(() => {
     const headers = [];
-    const baseDate = new Date(2025, 0, week_starts_on === 0 ? 4 : 5); // Jan 4/5, 2025 is a Sat/Sun
+    const baseDate = new Date(2025, 1, week_starts_on === 0 ? 2 : 3); // Jan 4/5, 2025 is a Sat/Sun
 
     for (let i = 0; i < 7; i++) {
       const date = new Date(baseDate);

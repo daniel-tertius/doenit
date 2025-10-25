@@ -107,4 +107,15 @@ export class RoomTable extends Table<Room> {
     if (!updated) throw new Error("Failed to update room");
     return updated;
   }
+
+  getNotificationEmails(room: Room): string[] {
+    const excludingEmail = user.value?.email;
+    const emails: string[] = [];
+    for (const { email, pending } of room.users) {
+      if (email && email !== excludingEmail && !pending) {
+        emails.push(email);
+      }
+    }
+    return emails;
+  }
 }

@@ -100,49 +100,71 @@
     edit_room_loading = true;
 
     try {
-      const invites = await OnlineDB.Invite.getAll({
-        filters: [
-          { field: "room_id", operator: "==", value: room.id },
-          { field: "status", operator: "==", value: "pending" },
-          { field: "sender_email_address", operator: "==", value: user.value.email },
-        ],
-      });
+      const promises = [];
 
-      for (const invite of invites) {
-        invite.status = "cancelled";
-        OnlineDB.Invite.update(invite.id, invite);
-      }
+      promises.push(
+        new Promise(async () => {
+          const email_address = user.value?.email;
+          if (!email_address) return;
+
+          const invites = await OnlineDB.Invite.getAll({
+            filters: [
+              { field: "room_id", operator: "==", value: room.id },
+              { field: "status", operator: "==", value: "pending" },
+              { field: "sender_email_address", operator: "==", value: email_address },
+            ],
+          });
+
+          await Promise.all(
+            invites.map((invite) => {
+              invite.status = "cancelled";
+              return OnlineDB.Invite.update(invite.id, invite);
+            })
+          );
+
+          resolve(true);
+        })
+      );
 
       // Remove tasks assigned to this room
       const tasks = await DB.Task.getAll({ selector: { room_id: room.id } });
       for (const task of tasks) {
         task.room_id = null;
-        DB.Task.update(task.id, task);
+        promises.push(DB.Task.update(task.id, task));
       }
 
-      await DB.Room.delete(room.id);
+      promises.push(DB.Room.delete(room.id));
 
       const email_address = user.value.email;
-      await OnlineDB.Changelog.create({
-        room_id: room.id,
-        type: "left_room",
-        total_reads_needed: room.users.length,
-        user_reads_list: [email_address],
-      });
+      promises.push(
+        OnlineDB.Changelog.create({
+          room_id: room.id,
+          type: "left_room",
+          total_reads_needed: room.users.length,
+          user_reads_list: [email_address],
+        })
+      );
 
-      const email_addresses = [];
-      for (const { email, pending } of room.users) {
-        if (email && email !== email_address && !pending) {
-          email_addresses.push(email);
-        }
-      }
+      promises.push(
+        new Promise(async (resolve) => {
+          const email_addresses = [];
+          for (const { email, pending } of room.users) {
+            if (email && email !== email_address && !pending) {
+              email_addresses.push(email);
+            }
+          }
 
-      await Notify.Push.send({
-        title: t("left_group"),
-        body: t("user_left_group", { user_name: user.value.name, room_name: room.name }),
-        email_address: email_addresses,
-      });
+          await Notify.Push.send({
+            title: t("left_group"),
+            body: t("user_left_group", { user_name: user.value.name, room_name: room.name }),
+            email_address: email_addresses,
+          });
 
+          resolve(true);
+        })
+      );
+
+      await Promise.all(promises);
       handleClose();
     } catch (error) {
       console.error("Error leaving room:", error);

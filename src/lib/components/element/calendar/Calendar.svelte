@@ -23,13 +23,13 @@
     start_date = $bindable(null),
     end_date = $bindable(null),
     locale = "af-ZA",
-    week_starts_on = 1,
+    week_starts_on = 0,
     is_range_enabled = true,
     ondateselected = null,
   } = $props();
 
   // Current month being viewed
-  let current_month = $state(goToToday());
+  let current_month = $state(start_date || goToToday());
 
   // Internal selection state
   let internal_start_date = $state(start_date);
@@ -170,7 +170,7 @@
         <DownChevron class="w-4 h-4 {is_month_picker_open ? 'rotate-180' : ''}" />
       </button>
 
-      {#if current_month.toString() !== goToToday().toString()}
+      {#if DateUtil.format(current_month, "MM-YYYY") !== DateUtil.format(goToToday(), "MM-YYYY")}
         <button
           class="bg-card border border-default cursor-pointer px-3 py-1.5 rounded text-sm"
           onclick={() => {

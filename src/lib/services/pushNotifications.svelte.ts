@@ -54,42 +54,31 @@ class PushNotificationService {
   private setupMessageListener() {
     // Listen for messages when app is in foreground
     FirebaseMessaging.addListener("notificationReceived", (notification) => {
-      Alert.success(notification.notification.title ?? "Nuwe vriend uitnodiging");
       this.handleInviteNotification(notification);
     });
 
     // Listen for notification taps (when app is in background)
     FirebaseMessaging.addListener("notificationActionPerformed", (action) => {
-      // Alert.success("Notification action performed: " + JSON.stringify(action));
-
-      const actionData = (action.notification as any).data;
-      // if (actionData?.type === "friend_invite") {
-      // Navigate to friends page
+      this.handleInviteNotification(action.notification);
       window.location.pathname = "/friends";
-      // }
     });
   }
 
   private handleInviteNotification(notification: any) {
     try {
+      const formatted_notification = {
+        id: Date.now(),
+        title: notification.title || t("new_friend_invite"),
+        body: notification.body || t("you_have_new_friend_request"),
+        schedule: { at: new Date(Date.now() + 1000) },
+        actionTypeId: "FRIEND_INVITE",
+        largeBody: notification.body,
+      };
+
       // Show local notification with custom actions
-      LocalNotifications.schedule({
-        notifications: [
-          {
-            id: Date.now(),
-            title: notification.title || t("new_friend_invite"),
-            body: notification.body || t("you_have_new_friend_request"),
-            largeBody: notification.body,
-            actionTypeId: "FRIEND_INVITE",
-            extra: notification.data,
-            schedule: {
-              at: new Date(Date.now() + 1000), // Show immediately
-            },
-          },
-        ],
-      });
+      LocalNotifications.schedule({ notifications: [formatted_notification] });
     } catch (error) {
-      Alert.error(t("error_showing_invite_notification") + ": " + error);
+      Alert.error(`${t("error_showing_invite_notification")}: ${error}`);
     }
   }
 

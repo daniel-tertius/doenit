@@ -196,9 +196,15 @@ export const translations = {
     shared_with: "Gedeel met:",
 
     // Invites & Friend Requests
+    task_unshared: "Taak word nie meer gedeel nie",
+    task_was_unshared: '"{{task_name}}" word nie meer gedeel nie.',
+    task_updated: "Taak Opdateer",
+    task_was_updated: '"{{task_name}}" is opdateer',
+    
     pending_invites: "Hangende Uitnodigings",
     friend_requests: "Vriend Versoeke",
     current_friends: "Huidige Vriende",
+    
     no_pending_invites: "Geen hangende uitnodigings",
     no_friend_requests: "Geen vriend versoeke",
     invites_you_send_appear_here: "Uitnodigings wat jy stuur sal hier verskyn",
@@ -219,7 +225,7 @@ export const translations = {
     new_request: "Nuwe Versoek",
     failed_to_load_invites: "Kon nie uitnodigings laai nie",
     failed_to_cancel_invite: "Kon nie uitnodiging kanselleer nie",
-    failed_to_accept_invite: "Kon nie uitnodiging aanvaar nie",
+    failed_to_accept_invite: "Kon nie die uitnodiging aanvaar nie",
     failed_to_decline_invite: "Kon nie uitnodiging weier nie",
     user_not_authenticated: "Gebruiker nie geverifieer nie",
     invite_already_sent: "Uitnodiging reeds gestuur na hierdie e-posadres",
@@ -580,6 +586,11 @@ export const translations = {
     shared_with: "Shared with:",
 
     // Invites & Friend Requests
+    task_unshared: "Task Unshared",
+    task_was_unshared: '"{{task_name}}" was unshared.',
+    task_updated: "Task Updated",
+    task_was_updated: '"{{task_name}}" was updated',
+    
     pending_invites: "Pending Invites",
     friend_requests: "Friend Requests",
     current_friends: "Current Friends",

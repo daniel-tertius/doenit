@@ -66,7 +66,7 @@
  */
 
 /**
- * @typedef {'create' | 'update' | 'delete' | 'complete' | 'invite_accepted' | 'invite_declined' | 'left_room'} ChangeType
+ * @typedef {'create' | 'update' | 'delete' | 'complete' | 'invite_accepted' | 'invite_declined' | 'left_room' | 'unshare'} ChangeType
  */
 
 /**

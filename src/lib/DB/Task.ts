@@ -130,8 +130,22 @@ export class TaskTable extends Table<Task> {
         if (!change.data) break;
 
         const task = JSON.parse(change.data); // TODO Encrypt/Decrypt
+        const existing_task = await DB.Task.get(task.id).catch(() => null);
+        if (existing_task) break;
+
         await this.create(task);
         break;
+      case "unshare":
+        if (true) {
+          if (!change.task_id) break;
+
+          const task = await DB.Task.get(change.task_id).catch(() => null);
+          if (!task) break;
+
+          task.room_id = null;
+          await this.update(task.id, task);
+          break;
+        }
       case "update":
         if (true) {
           if (!change.data) break;
@@ -139,7 +153,6 @@ export class TaskTable extends Table<Task> {
           const task = await DB.Task.get(updated_task.id).catch(() => null);
           if (!task) {
             await this.create(updated_task);
-            break;
           } else {
             await this.update(updated_task.id, updated_task);
           }
