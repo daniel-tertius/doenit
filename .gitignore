@@ -22,6 +22,8 @@ Thumbs.db
 
 # Production keystore - keep secure!
 android/app.keystore
+android/app.dev.keystore
+android/app.prod.keystore
 android/app/google-services.json
 android/app/google-services.dev.json
 android/app/google-services.prod.json

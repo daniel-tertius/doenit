@@ -168,6 +168,7 @@ build_app() {
     }
 
     cp android/app/google-services.prod.json android/app/google-services.json
+    cp android/app.prod.keystore android/app.keystore
 
     echo -e "${BLUE} 🏗️ Bou Svelte vir produksie...${NC}"
     NODE_ENV=production npm run build:prod || {
@@ -222,7 +223,8 @@ build_and_install() {
     }
 
     cp android/app/google-services.dev.json android/app/google-services.json
-    
+    cp android/app.dev.keystore android/app.keystore
+
     echo -e "${BLUE} 🏗️ Bou Svelte vir ontwikkeling...${NC}"
     NODE_ENV=development npm run build:dev || {
         echo -e "${RED} ❌ Development build failed${NC}"
