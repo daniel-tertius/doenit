@@ -11,17 +11,16 @@
    */
 
   /** @type {Props & Record<string, any>} */
-  let { is_loading = $bindable(false), onclick, ...rest } = $props();
+  let { is_loading = false, onclick, ...rest } = $props();
 
   let is_open = $state(false);
   let is_backing_up = $state(false);
 
   async function handleClick() {
-    is_loading = true;
-    is_backing_up = true;
     is_open = false;
+
+    is_backing_up = true;
     if (onclick) await onclick();
-    is_loading = false;
     is_backing_up = false;
   }
 </script>

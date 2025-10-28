@@ -16,7 +16,7 @@ import {
   type WhereFilterOp,
   getFirestore,
 } from "$lib/chunk/firebase-firestore";
-import { FIREBASE_CONFIG } from "$lib";
+import { APP_NAME, FIREBASE_CONFIG } from "$lib";
 import DateUtil from "$lib/DateUtil";
 
 interface QueryOptions {
@@ -162,9 +162,9 @@ export class Table<T extends BackupManifest | Invite | Changelog | Users> {
     let app;
 
     try {
-      app = getApp();
+      app = getApp(APP_NAME);
     } catch {
-      app = initializeApp(FIREBASE_CONFIG);
+      app = initializeApp(FIREBASE_CONFIG, APP_NAME);
     }
 
     return getFirestore(app, "doenitdb");

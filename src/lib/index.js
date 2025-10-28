@@ -13,6 +13,7 @@ export const BACKUP_APP_NAME = "[DEFAULT]";
 export const COMPLETE_TASK_DELAY_MS = 400;
 export const INVITE_EXPIRATION_DAYS = 7;
 export const MAX_INVITES_PER_DAY = 3;
+export const APP_NAME = env.PUBLIC_APP_ID || "doenit.app";
 export const FIREBASE_CONFIG = {
   apiKey: env.PUBLIC_FIREBASE_API_KEY,
   authDomain: env.PUBLIC_FIREBASE_AUTH_DOMAIN,

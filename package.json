@@ -1,12 +1,12 @@
 {
   "name": "doenit",
   "private": false,
-  "version": "1.2.8",
+  "version": "1.2.10",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build --mode production",
-    "build:dev": "NODE_ENV=development vite build",
+    "build:dev": "NODE_ENV=development vite build --mode development",
     "build:prod": "NODE_ENV=production vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",

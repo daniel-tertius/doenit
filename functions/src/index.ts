@@ -3,7 +3,10 @@ import * as admin from "firebase-admin";
 import * as cors from "cors";
 
 // Initialize Firebase Admin
-admin.initializeApp();
+admin.initializeApp({
+  projectId: process.env.PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.PUBLIC_FIREBASE_STORAGE_BUCKET,
+});
 
 // CORS configuration - Allow localhost and Capacitor app origins
 const corsHandler = cors({
@@ -17,10 +20,8 @@ const corsHandler = cors({
     "http://localhost", // Capacitor Android
     "https://localhost", // HTTPS localhost
     /^capacitor:\/\/.*$/, // Any capacitor protocol
-    /^http:\/\/localhost:\d+$/, // Any localhost port
     /^https:\/\/.*\.firebaseapp\.com$/, // Firebase hosting
     /^https:\/\/.*\.web\.app$/, // Firebase web app
-    true, // Allow any origin in development
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -68,21 +69,16 @@ export const sendPushNotification = functions.https.onRequest(async (req, res) =
       await admin.messaging().send({
         token: token,
         notification: {
-          title: title || "App Notification",
-          body: body || "You have a new push notification",
+          title: title || "Doenit Kennisgewing",
+          body: body || "U het 'n nuwe kennisgewing",
         },
       });
 
       res.json({ success: true });
     } catch (error) {
-      console.error("Error sending push notification:", error);
-      let errorMsg = "Internal server error";
-      if (error instanceof Error && error.message) {
-        errorMsg = error.message;
-      } else if (typeof error === "string") {
-        errorMsg = error;
-      }
-      res.status(500).json({ error: errorMsg });
+      const error_message = error instanceof Error ? error.message : String(error);
+      console.error("Fout met stuur van push notification:", error_message);
+      res.status(500).json({ error: error_message });
     }
   });
 });

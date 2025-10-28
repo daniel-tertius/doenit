@@ -2,7 +2,7 @@ import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { PUBLIC_ADMIN_EMAILS, PUBLIC_GOOGLE_AUTH } from "$env/static/public";
 import { getApp, initializeApp } from "$lib/chunk/firebase-app";
 import { t } from "$lib/services/language.svelte";
-import { FIREBASE_CONFIG, normalize } from "$lib";
+import { APP_NAME, FIREBASE_CONFIG, normalize } from "$lib";
 import { Capacitor } from "@capacitor/core";
 import {
   getAuth,
@@ -18,7 +18,9 @@ class User {
   private _user = $state() as FirebaseUser;
   private _message_token: string | null = $state(null);
 
-  readonly is_friends_enabled: boolean = $derived(!!this._user && PUBLIC_ADMIN_EMAILS.includes(this._user?.email || ""));
+  readonly is_friends_enabled: boolean = $derived(
+    !!this._user && PUBLIC_ADMIN_EMAILS.includes(this._user?.email || "")
+  );
   readonly is_backup_enabled: boolean = $derived(!!this._user && !!Cached.automaticBackup.value);
 
   constructor(user: FirebaseUser) {
@@ -62,16 +64,21 @@ export default UserValue;
 
 initializeUser();
 function initializeUser() {
-  const app = initializeApp(FIREBASE_CONFIG);
-  if (Capacitor.isNativePlatform()) {
-    const auth = getAuth(app);
-    auth.onAuthStateChanged((user) => {
-      if (!user) {
-        UserValue.value = null;
-      } else {
-        UserValue.value = new User(user);
-      }
-    });
+  try {
+    const app = initializeApp(FIREBASE_CONFIG, APP_NAME);
+    if (Capacitor.isNativePlatform()) {
+      const auth = getAuth(app);
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          UserValue.value = null;
+        } else {
+          UserValue.value = new User(user);
+        }
+      });
+    }
+  } catch (error) {
+    const error_message = error instanceof Error ? error.message : String(error);
+    alert(`Fout met gebruikersinitialisering: ${error_message}`);
   }
 }
 
@@ -99,19 +106,20 @@ export async function signIn(): Promise<SimpleResult> {
     if (!id_token) throw new Error(t("sign_in_error_no_idtoken"));
 
     const credential = GoogleAuthProvider.credential(id_token);
-    const auth = getAuth(getApp());
+    const auth = getAuth(getApp(APP_NAME));
     await signInWithCredential(auth, credential);
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error_message: `${t("google_verification_failed")} ${error}` };
+  } catch (error) {
+    const error_message = error instanceof Error ? error.message : JSON.stringify(error);
+    return { success: false, error_message: `${t("google_verification_failed")}: ${error_message}` };
   }
 }
 
 export async function signOut(): Promise<SimpleResult> {
   try {
     if (Capacitor.isNativePlatform()) {
-      await firebaseSignOut(getAuth(getApp()));
+      await firebaseSignOut(getAuth(getApp(APP_NAME)));
       await GoogleAuth.initialize({ clientId: PUBLIC_GOOGLE_AUTH });
       await GoogleAuth.signOut();
     }

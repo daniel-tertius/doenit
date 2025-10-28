@@ -2,12 +2,17 @@
   import Modal from "$lib/components/modal/Modal.svelte";
   import { Alert } from "$lib/core/alert";
   import user, { signIn, signOut } from "$lib/core/user.svelte";
+  import { Loading } from "$lib/icon";
   import { t } from "$lib/services/language.svelte";
 
   let is_open = $state(false);
+  let is_loading = $state(false);
 
   async function handleSignIn() {
+    is_loading = true;
     const result = await signIn();
+    is_loading = false;
+
     if (result.success) return;
 
     Alert.error(result.error_message || t("something_went_wrong"));
@@ -33,10 +38,19 @@
     <button
       type="button"
       aria-label={t("log_in_with_google")}
-      class="flex items-center bg-primary text-alt font-medium py-2 px-4 rounded-lg"
+      class={{
+        "flex items-center w-60 justify-center bg-card border border-default font-medium py-2 px-4 rounded-lg": true,
+        "opacity-50": is_loading,
+      }}
       onclick={handleSignIn}
     >
-      {t("log_in_with_google")}
+      {#if is_loading}
+        <Loading class="mr-3"/>
+        {t("loading")}
+      {:else}
+        <img src="google.svg" alt="Google" class="h-5 w-5 mr-3" />
+        {t("log_in_with_google")}
+      {/if}
     </button>
   {:else}
     <button

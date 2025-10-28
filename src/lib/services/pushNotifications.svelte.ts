@@ -31,7 +31,8 @@ class PushNotificationService {
       // Listen for incoming messages
       this.setupMessageListener();
     } catch (error) {
-      Alert.error(t("error_initializing_push_notifications") + ": " + error);
+      const error_message = error instanceof Error ? error.message : String(error);
+      Alert.error(`${t("error_initializing_push_notifications")}: ${error_message}`);
     }
   }
 

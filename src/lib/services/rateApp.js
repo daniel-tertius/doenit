@@ -83,11 +83,9 @@ class RateAppService {
   async showRatingPrompt() {
     if (!Cached.rateUs.value) return;
 
-    const message = t("rate_app_message");
-
     const result = await Alert.confirm({
       title: t("rate_app_title"),
-      message: message,
+      message: t("rate_app_message"),
       confirmText: t("rate_now"),
       cancelText: t("maybe_later"),
     });
@@ -95,8 +93,8 @@ class RateAppService {
     if (result) {
       // User wants to rate
       try {
-        await InAppReview.requestReview();
         Cached.rateUs.value.has_rated = true;
+        await InAppReview.requestReview();
       } catch (error) {
         console.error("Failed to show in-app review:", error);
         Alert.error(t("rate_app_error"));

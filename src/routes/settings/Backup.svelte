@@ -9,10 +9,12 @@
   import { Alert } from "$lib/core/alert";
   import { Info } from "$lib/icon";
 
+  const has_backup = $derived(Backup.last_backup_at !== t("never"));
+
   async function createBackup() {
     const result = await Backup.createBackup();
     if (!result.success) {
-      alert(t("backup_error") + " " + result.error_message);
+      Alert.error(`${t("backup_failed")}: ${result.error_message}`);
       return;
     }
 
@@ -25,7 +27,12 @@
    */
   async function restoreBackup(manifest) {
     const result = await Backup.restoreBackup(manifest);
-    if (result.success) Alert.success(t("restore_success"));
+    if (!result.success) {
+      Alert.error(`${t("backup_restoration_failed")}: ${result.error_message}`);
+      return;
+    }
+
+    alert(t("restore_success"));
   }
 
   /**
@@ -52,8 +59,10 @@
       <InputSwitch bind:value={Backup.automatic_backup} />
     </div>
 
-    <ButtonBackup bind:is_loading={Backup.is_loading} onclick={createBackup} class="mb-4" />
-    <ButtonRestore bind:is_loading={Backup.is_loading} onclick={restoreBackup} getBackup={handleBackup} />
+    <ButtonBackup is_loading={Backup.is_loading} onclick={createBackup} class="mb-4" />
+    {#if has_backup}
+      <ButtonRestore is_loading={Backup.is_loading} onclick={restoreBackup} getBackup={handleBackup} />
+    {/if}
 
     <div
       class={{

@@ -24,11 +24,10 @@
   async function handleClick() {
     if (!selected_backup) return;
 
-    is_restoring = true;
-    is_loading = true;
     is_open = false;
+
+    is_restoring = true;
     if (onclick) await onclick(selected_backup);
-    is_loading = false;
     is_restoring = false;
   }
 

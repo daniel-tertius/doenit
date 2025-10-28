@@ -2,7 +2,7 @@ import { deleteObject, getStorage, ref, uploadBytes } from "firebase/storage";
 import { FirebaseStorage } from "@capacitor-firebase/storage";
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { getApp, initializeApp } from "$lib/chunk/firebase-app";
-import { FIREBASE_CONFIG } from "$lib";
+import { APP_NAME, FIREBASE_CONFIG } from "$lib";
 
 class Files {
   static async upload(path: string, blob: Blob): Promise<SimpleResult> {
@@ -14,10 +14,8 @@ class Files {
 
       return { success: true };
     } catch (error) {
-      console.error("Upload failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Upload failed";
-      alert(`Upload failed: ${errorMessage}`);
-      return { success: false, error_message: errorMessage };
+      const error_message = error instanceof Error ? error.message : String(error);
+      return { success: false, error_message };
     }
   }
 
@@ -81,9 +79,9 @@ class Files {
     let app;
 
     try {
-      app = getApp();
+      app = getApp(APP_NAME);
     } catch {
-      app = initializeApp(FIREBASE_CONFIG);
+      app = initializeApp(FIREBASE_CONFIG, APP_NAME);
     }
 
     return getStorage(app);

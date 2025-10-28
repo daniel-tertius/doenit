@@ -1,16 +1,15 @@
+import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
 import { t } from "$lib/services/language.svelte";
 import Files from "$lib/services/files.svelte";
 import * as env from "$env/static/public";
 import { OnlineDB } from "$lib/OnlineDB";
-import { DB } from "$lib/DB";
-import { cached_automatic_backup, cached_last_backup } from "$lib/cached";
-import DateUtil from "$lib/DateUtil";
-import { Cached } from "$lib/core/cache.svelte";
-import { Alert } from "$lib/core/alert";
 import User from "$lib/core/user.svelte";
+import { Alert } from "$lib/core/alert";
+import DateUtil from "$lib/DateUtil";
+import { DB } from "$lib/DB";
 
 class BackupClass {
-  last_backup_at: string = $state("Never");
+  last_backup_at: string = $state(t("never"));
   is_loading: boolean = $state(false);
   #automatic_backup: boolean = $state(false);
 
@@ -71,6 +70,16 @@ class BackupClass {
     this.is_loading = false;
   }
 
+  async populateLastBackupTime() {
+    const last_backup_str = await this.getLastBackupTime();
+    if (last_backup_str) {
+      const last_backup_at = new Date(last_backup_str);
+      this.last_backup_at = DateUtil.format(last_backup_at, "ddd, DD MMM YYYY, HH:mm");
+    } else {
+      this.last_backup_at = t("never");
+    }
+  }
+
   private async getLastBackupTime(): Promise<string | null> {
     try {
       const user_id = User.value?.uid;
@@ -97,8 +106,10 @@ class BackupClass {
 
   async createBackup(): Promise<SimpleResult> {
     try {
+      this.is_loading = true;
+
       const user_id = User.value?.uid;
-      if (!user_id) return { success: false, error_message: t("user_not_logged_in") };
+      if (!user_id) throw Error(t("user_not_logged_in"));
 
       const tasks = await DB.Task.getAll({
         selector: { archived: { $ne: true } },
@@ -123,7 +134,7 @@ class BackupClass {
         ],
       });
       if (existing_backups.length > 0) {
-        return { success: false, error_message: t("no_changes_since_last_backup") };
+        throw Error(t("no_changes_since_last_backup"));
       }
 
       // Max 3 backups per user
@@ -153,10 +164,12 @@ class BackupClass {
 
       await cached_last_backup.set(new Date().toISOString());
       this.last_backup_at = DateUtil.format(new Date(), "ddd, DD MMM YYYY, HH:mm");
+      this.is_loading = false;
       return { success: true };
     } catch (error) {
-      Alert.error(t("backup_failed") + " " + ((error as Error).message || t("something_went_wrong")));
-      return { success: false, error_message: (error as Error).message || t("something_went_wrong") };
+      this.is_loading = false;
+      const error_message = error instanceof Error ? error.message : String(error);
+      return { success: false, error_message };
     }
   }
 
@@ -194,8 +207,8 @@ class BackupClass {
       return { success: true };
     } catch (error) {
       this.is_loading = false;
-      Alert.error(t("backup_restoration_failed") + " " + (error as Error).message);
-      return { success: false, error_message: (error as Error).message || t("something_went_wrong") };
+      const error_message = error instanceof Error ? error.message : String(error);
+      return { success: false, error_message };
     }
   }
 
@@ -248,10 +261,8 @@ class BackupClass {
 
       return result;
     } catch (error) {
-      console.error(t("error_compressing_encrypting"), error);
-      const errorMessage = error instanceof Error ? error.stack || error.message : String(error);
-      Alert.error(t("error_compressing_encrypting") + " " + errorMessage);
-      throw new Error(t("failed_to_compress_encrypt") + " " + errorMessage);
+      const error_message = error instanceof Error ? error.message : String(error);
+      throw new Error(`${t("failed_to_compress_encrypt")}: ${error_message}`);
     }
   }
 

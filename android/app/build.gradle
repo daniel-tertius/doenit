@@ -14,10 +14,7 @@ if (envSpecificFile.exists()) {
 def appId = envProps.getProperty('PUBLIC_APP_ID', 'doenit.app')
 def appName = envProps.getProperty('PUBLIC_APP_NAME', 'Doenit')
 
-// Only apply Google Services plugin for production builds
-if (appId == 'doenit.app') {
-    apply plugin: 'com.google.gms.google-services'
-}
+apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "doenit.app"  // Keep static namespace
@@ -26,8 +23,8 @@ android {
         applicationId appId
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 58
-        versionName "1.2.8"
+        versionCode 60
+        versionName "1.2.10"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         // Set app name based on environment
@@ -69,13 +66,10 @@ dependencies {
     def billing_version = "8.0.0"
     implementation "com.android.billingclient:billing:$billing_version"
 
-    // Firebase SDK - only for production builds
-    if (appId == 'doenit.app') {
-        implementation platform('com.google.firebase:firebase-bom:33.1.1')
-        implementation 'com.google.firebase:firebase-analytics'
-        implementation 'com.google.firebase:firebase-messaging'
-        implementation 'com.google.firebase:firebase-auth'
-    }
+    implementation platform('com.google.firebase:firebase-bom:33.1.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.android.gms:play-services-auth:21.2.0'
 
     testImplementation "junit:junit:$junitVersion"

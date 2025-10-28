@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Doenit Development CLI Tool
-# Volledige ontwikkeling hulpmiddel vir die Doenit app
-
-echo "=== Doenit Ontwikkeling CLI ==="
-echo "Jou alles-in-een ontwikkeling hulpmiddel"
-echo ""
-
 # Kleure vir uitset
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -90,14 +83,16 @@ start_web_dev() {
 manage_functions() {
     echo -e "${PURPLE} 🔥 Firebase Functions Bestuur${NC}"
     echo "1. Start functions emulator"
-    echo "2. Deploy functions"
-    echo "3. View functions logs"
+    echo "2. Deploy functions (produksie)"
+    echo "3. Deploy functions (ontwikkeling)"
+    echo "4. View functions logs"
     read -p "Kies opsie: " func_choice
     
     case $func_choice in
         1) run_firebase_command "serve" "Begin functions emulator" ;;
-        2) run_firebase_command "deploy" "Deploy functions" ;;
-        3) run_firebase_command "logs" "Kyk functions logs" ;;
+        2) run_firebase_command "deploy" "Deploy functions (produksie)" ;;
+        3) run_firebase_command "deploy-dev" "Deploy functions (ontwikkeling)" ;;
+        4) run_firebase_command "logs" "Kyk functions logs" ;;
         *) show_invalid_option ;;
     esac
 }
@@ -171,7 +166,9 @@ build_app() {
         echo -e "${RED} ❌ npm install failed${NC}"
         return 1
     }
-    
+
+    cp android/app/google-services.prod.json android/app/google-services.json
+
     echo -e "${BLUE} 🏗️ Bou Svelte vir produksie...${NC}"
     NODE_ENV=production npm run build:prod || {
         echo -e "${RED} ❌ Production build failed${NC}"
@@ -223,6 +220,8 @@ build_and_install() {
         echo -e "${RED} ❌ npm install failed${NC}"
         return 1
     }
+
+    cp android/app/google-services.dev.json android/app/google-services.json
     
     echo -e "${BLUE} 🏗️ Bou Svelte vir ontwikkeling...${NC}"
     NODE_ENV=development npm run build:dev || {

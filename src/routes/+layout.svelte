@@ -44,11 +44,15 @@
   });
 
   $effect(() => {
+    user.value;
+
+    untrack(() => Backup.populateLastBackupTime());
+  });
+
+  $effect(() => {
     if (unsubscribeChangelog) unsubscribeChangelog();
     if (!user.value?.is_friends_enabled) return;
     if (!room_ids.length) return;
-
-    untrack(() => pushNotificationService.init());
 
     // Clean up existing subscription before creating a new one
     unsubscribeChangelog = OnlineDB.Changelog.subscribe(consumeChangelog, {
@@ -74,6 +78,12 @@
       ],
       sort: [{ field: "created_at", direction: "desc" }],
     });
+  });
+
+  $effect(() => {
+    if (!user.value?.is_friends_enabled) return;
+
+    untrack(() => pushNotificationService.init());
   });
 
   onMount(() => {
@@ -135,14 +145,6 @@
       backHandler.unregister(nav_token);
       backHandler.unregister(exit_token);
     };
-  });
-
-  onMount(() => {
-    // Listen for task completion events from native side
-    window.addEventListener("taskCompleted", async (event) => {
-      console.log("[💬 Doenit] Task completed event received");
-      Widget.finishTasks(event?.detail?.task_ids);
-    });
   });
 
   onDestroy(() => {

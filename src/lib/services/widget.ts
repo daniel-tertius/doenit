@@ -63,10 +63,10 @@ export class Widget {
 
     try {
       if (!tasks) {
-        const all_tasks = await DB.Task.getAll({ selector: { archived: false } });
-        tasks = sortTasksByDueDate(all_tasks);
+        tasks = await DB.Task.getAll({ selector: { archived: false } });
       }
 
+      tasks = sortTasksByDueDate(tasks).slice(0, 20);
       const category_ids = tasks.map((task) => task.category_id).filter(Boolean);
       const categories = await DB.Category.getAll({ selector: { id: { $in: category_ids } } });
 
@@ -76,52 +76,5 @@ export class Widget {
       console.error("[💬 Widget]:", error);
       alert(t("failed_to_update_widget") + " " + JSON.stringify(error));
     }
-  }
-
-  static async finishTasks(task_ids: string) {
-    console.log("[💬 Doenit] Task IDs: " + task_ids);
-
-    const tasks = await DB.Task.getAll({ selector: { id: { $in: task_ids.split(",") } } });
-    console.log("[💬 Doenit] Tasks Found!");
-    if (!tasks?.length) {
-      return console.warn("[⚠️ Doenit] No Tasks found with IDs: " + task_ids);
-    }
-
-    const updates = tasks.map(async (task) => {
-      await DB.Task.complete(task);
-      if (!task.room_id) return;
-
-      const room = await DB.Room.get(task.room_id);
-      if (!room) throw new Error("Room not found: " + task.room_id);
-      if (!user.value) return;
-
-      const email_address = user.value.email;
-      await OnlineDB.Changelog.create({
-        type: "complete",
-        task_id: task.id,
-        room_id: task.room_id || "",
-        total_reads_needed: room.users.length,
-        user_reads_list: [email_address],
-      });
-
-      const email_addresses = [];
-      for (const { email, pending } of room.users) {
-        if (email && email !== email_address && !pending) {
-          email_addresses.push(email);
-        }
-      }
-
-      await Notify.Push.send({
-        title: t("task_completed"),
-        body: t("task_was_completed", { task_name: task.name }),
-        email_address: email_addresses,
-      });
-    });
-    await Promise.all(updates).catch((error) => {
-      const error_message = error instanceof Error ? error.message : JSON.stringify(error);
-      alert("Error updating tasks: " + error_message);
-    });
-
-    console.log("[💬 Doenit] Tasks updated successfully");
   }
 }
