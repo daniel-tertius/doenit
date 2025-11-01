@@ -18,6 +18,13 @@ export const translations = {
     medium: "Medium",
     large: "Groot",
 
+    // App Settings
+    app_settings: "Toepassings-instellings",
+    favourite_categories: "Gunsteling Kategorieë",
+    setup_favourite_categories: "Stel jou gunsteling kategorieë op",
+    goto_app_settings: "Gaan na toepassings-instellings om weer te verander.",
+    bulk_assign_category: "Massa-toeken van kategorie",
+
     // Language
     language: "Taal",
     afrikaans: "Afrikaans",
@@ -158,7 +165,7 @@ export const translations = {
     enter_category_name: "Benoem jou kategorie",
     enter_new_category_name: "Voer nuwe kategorienaam in…",
     create_category: "Skep Kategorie",
-    create_new_category: "Skep nuwe kategorie",
+    create_new_category: "Nuwe kategorie",
     edit_category_name: "Wysig naam",
     categories_selected: "{{count}} Kategorieë geselekteer",
     category_selected: "1 Kategorie geselekteer",
@@ -195,16 +202,19 @@ export const translations = {
     share_with_friends_question: "Deel met vriende?",
     shared_with: "Gedeel met:",
 
+    task: "Taak",
+    tasks: "Take",
+
     // Invites & Friend Requests
     task_unshared: "Taak word nie meer gedeel nie",
     task_was_unshared: '"{{task_name}}" word nie meer gedeel nie.',
     task_updated: "Taak Opdateer",
     task_was_updated: '"{{task_name}}" is opdateer',
-    
+
     pending_invites: "Hangende Uitnodigings",
     friend_requests: "Vriend Versoeke",
     current_friends: "Huidige Vriende",
-    
+
     no_pending_invites: "Geen hangende uitnodigings",
     no_friend_requests: "Geen vriend versoeke",
     invites_you_send_appear_here: "Uitnodigings wat jy stuur sal hier verskyn",
@@ -390,6 +400,42 @@ export const translations = {
     rate_app_error: "Kon nie die gradeering funksie vertoon nie.",
     havent_rated_yet: "Het jy al Doenit gegradeer?",
     rate_doenit: "Gradeer Doenit",
+
+    // Coming Soon
+    coming_soon: "Hierdie funksie kom binnekort",
+    working_on_it: "Ek werk daaraan…",
+
+    // Doenit Plus Subscription
+    doenit_plus: "Doenit Plus",
+    upgrade_to_plus: "Gradeer op na Plus",
+    current_plan: "Huidige Plan",
+    free_plan: "Gratis",
+    plus_plan: "Plus",
+    subscription_price: "R20 per maand",
+    per_month: "per maand",
+    start_free_trial: "Begin Gratis Proeftydperk",
+    subscribe_now: "Teken Nou In",
+    one_week_free: "1 week gratis",
+    trial_then_price: "1 week gratis proeftydperk, dan R20/maand",
+    auto_renews_monthly: "Hernuwing elke maand outomaties",
+    cancel_anytime: "Kanselleer enige tyd",
+    plus_benefits: "Plus Voordele",
+    benefit_rooms: "Sluit aan by kamers",
+    benefit_rooms_desc: "Deel take met jou vriende in gedeelde kamers",
+    benefit_backup: "Outomatiese Rugsteun",
+    benefit_backup_desc: "Jou data word outomaties gerugsteun",
+    unlock_plus_features: "Ontsluit Plus Funksies",
+    why_plus: "Hoekom Plus?",
+    plus_feature_collaboration: "Samewerking met Vriende",
+    plus_feature_collaboration_desc:
+      "Skep en bestuur take met jou vriende in gedeelde kamers. Perfek vir huisgenote, spanne, of families.",
+    plus_feature_peace_of_mind: "Gemoedsrus",
+    plus_feature_peace_of_mind_desc:
+      "Moenie weer bekommerd wees oor data verlies nie. Jou take word outomaties gerugsteun.",
+    rooms_locked: "Kamers is 'n Plus funksie",
+    rooms_locked_desc: "Gradeer op na DOenit Plus om kamers te ontsluit en take met jou vriende te deel.",
+    backup_locked: "Outomatiese rugsteun is 'n Plus funksie",
+    backup_locked_desc: "Gradeer op na DOenit Plus om outomatiese rugsteun te ontsluit.",
   },
 
   en: {
@@ -407,6 +453,13 @@ export const translations = {
     small: "Small",
     medium: "Medium",
     large: "Large",
+
+    // App Settings
+    app_settings: "App Settings",
+    favourite_categories: "Favourite Categories",
+    setup_favourite_categories: "Set up your favourite categories",
+    goto_app_settings: "Go to app settings to change again.",
+    bulk_assign_category: "Bulk Assign Category",
 
     // Language
     language: "Language",
@@ -548,7 +601,7 @@ export const translations = {
     enter_category_name: "Enter category name",
     enter_new_category_name: "Enter new category name…",
     create_category: "Create Category",
-    create_new_category: "Create new category",
+    create_new_category: "Create category",
     edit_category_name: "Edit name",
     categories_selected: "{{count}} Categories selected",
     category_selected: "1 Category selected",
@@ -585,12 +638,15 @@ export const translations = {
     share_with_friends_question: "Share with friends?",
     shared_with: "Shared with:",
 
+    task: "Task",
+    tasks: "Tasks",
+
     // Invites & Friend Requests
     task_unshared: "Task Unshared",
     task_was_unshared: '"{{task_name}}" was unshared.',
     task_updated: "Task Updated",
     task_was_updated: '"{{task_name}}" was updated',
-    
+
     pending_invites: "Pending Invites",
     friend_requests: "Friend Requests",
     current_friends: "Current Friends",
@@ -779,5 +835,41 @@ export const translations = {
     rate_app_error: "Could not show rating.",
     havent_rated_yet: "Haven't rated Doenit yet?",
     rate_doenit: "Rate Doenit",
+
+    // Coming Soon
+    coming_soon: "This feature is coming soon",
+    working_on_it: "I'm working on it…",
+
+    // DOenit Plus Subscription
+    doenit_plus: "Doenit Plus",
+    upgrade_to_plus: "Upgrade to Plus",
+    current_plan: "Current Plan",
+    free_plan: "Free",
+    plus_plan: "Plus",
+    subscription_price: "R20 per month",
+    per_month: "per month",
+    start_free_trial: "Start Free Trial",
+    subscribe_now: "Subscribe Now",
+    one_week_free: "1 week free",
+    trial_then_price: "1 week free trial, then R20/month",
+    auto_renews_monthly: "Auto-renews monthly",
+    cancel_anytime: "Cancel anytime",
+    plus_benefits: "Plus Benefits",
+    benefit_rooms: "Join Rooms",
+    benefit_rooms_desc: "Share tasks with your friends in shared rooms",
+    benefit_backup: "Automatic Backup",
+    benefit_backup_desc: "Your data is automatically backed up",
+    unlock_plus_features: "Unlock Plus Features",
+    why_plus: "Why Plus?",
+    plus_feature_collaboration: "Collaboration with Friends",
+    plus_feature_collaboration_desc:
+      "Create and manage tasks with your friends in shared rooms. Perfect for roommates, teams, or families.",
+    plus_feature_peace_of_mind: "Peace of Mind",
+    plus_feature_peace_of_mind_desc:
+      "Never worry about losing your data again. Your tasks are automatically backed up.",
+    rooms_locked: "Rooms are a Plus feature",
+    rooms_locked_desc: "Upgrade to DOenit Plus to unlock rooms and share tasks with your friends.",
+    backup_locked: "Automatic backup is a Plus feature",
+    backup_locked_desc: "Upgrade to DOenit Plus to unlock automatic backup.",
   },
 };

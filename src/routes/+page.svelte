@@ -132,22 +132,35 @@
    * @returns {Task[]}
    */
   function filterTasksByCategory(tasks, search_text) {
-    return tasks.filter((task) => {
-      if (!!search_text?.trim().length) {
-        const normalized_search = normalize(search_text);
+    const has_search_text = !!search_text?.trim().length;
+    const normalized_search = normalize(search_text ?? "");
+    const default_category_id = default_category?.id ?? "";
+
+    const filtered_tasks = [];
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      if (has_search_text) {
         const in_name = normalize(task.name).includes(normalized_search);
-        const in_description = normalize(task.description || "").includes(normalized_search);
-        if (!in_name && !in_description) return false;
+        if (!in_name) continue;
       }
 
-      if (!Selected.categories.size) return true;
-      const category_id = task.category_id;
-      if (!category_id && default_category) {
-        return Selected.categories.has(default_category.id);
+      const has_cat_filter_enabled = !!Selected.categories.size;
+      if (has_cat_filter_enabled) {
+        const category_id = task.category_id ?? default_category_id;
+        if (!Selected.categories.has(category_id)) continue;
       }
 
-      return Selected.categories.has(category_id);
-    });
+      const has_room_filter_enabled = !!Selected.rooms.size;
+      if (has_room_filter_enabled) {
+        const room_id = task.room_id;
+        if (!room_id || !Selected.rooms.has(room_id)) {
+          continue;
+        }
+      }
+
+      filtered_tasks.push(task);
+    }
+    return filtered_tasks;
   }
 
   /**
@@ -211,9 +224,6 @@
         email_address: email_addresses,
       });
     }
-
-    await tick();
-    scrollToTask(task.id);
   }
 
   /**
@@ -256,7 +266,7 @@
     {/key}
   {:else}
     <div class="flex flex-col items-center gap-4 py-12">
-      {#if !Selected.categories.size}
+      {#if !Selected.categories.size && !Selected.rooms.size}
         <div class="text-lg">{t("empty_list")}</div>
       {:else if search_text.value?.trim().length}
         <div class="text-lg">{t("no_tasks_found_for_search")}</div>

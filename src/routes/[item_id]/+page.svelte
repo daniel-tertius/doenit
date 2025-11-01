@@ -67,21 +67,21 @@
       }
 
       if (user.value?.is_friends_enabled) {
-        // Was nie gedeel voor nie, maar nou wel
+        // Was nie vrooër gedeel nie, en nou wel
         const is_shared = !data.task.room_id && !!task.room_id;
         if (is_shared) {
           const room = await DB.Room.get(task.room_id);
           await OnlineDB.Changelog.createCreateEntry(room, task);
         }
 
-        // Was gedeel voor, maar nou nie meer
+        // Was vrooër gedeel, maar nou nie meer
         const is_unshared = !!data.task.room_id && !task.room_id;
         if (is_unshared) {
           const room = await DB.Room.get(data.task.room_id);
           await OnlineDB.Changelog.createUnshareUpdateEntry(room, task);
         }
 
-        // Was gedeel voor en is steeds gedeel
+        // Was vrooër gedeel en is steeds gedeel
         const is_still_shared = !!data.task.room_id && !!task.room_id;
         if (is_still_shared) {
           const room = await DB.Room.get(task.room_id);

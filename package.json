@@ -1,7 +1,7 @@
 {
   "name": "doenit",
   "private": false,
-  "version": "1.2.10",
+  "version": "1.2.11",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -45,9 +45,11 @@
     "@capacitor/local-notifications": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
     "@capacitor/push-notifications": "^7.0.3",
+    "@capacitor/share": "^7.0.2",
     "@capawesome/capacitor-android-edge-to-edge-support": "^7.0.0",
     "@codetrix-studio/capacitor-google-auth": "file:packages/capacitor-google-auth",
     "blaze-slider": "^1.9.3",
+    "cordova-plugin-purchase": "^13.12.1",
     "dexie": "^4.2.0",
     "dotenv": "^16.5.0",
     "firebase": "11.10.0",

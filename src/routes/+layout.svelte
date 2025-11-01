@@ -87,6 +87,8 @@
   });
 
   onMount(() => {
+    if (!user.value?.is_friends_enabled) return;
+
     const sub = DB.Room.subscribe((rooms) => (room_ids = rooms.map((r) => r.id)));
     return () => sub.unsubscribe();
   });
@@ -167,7 +169,7 @@
     try {
       if (!changes.length) return;
 
-      if (!user.value) return;
+      if (!user.value?.is_friends_enabled) return;
 
       for (const change of changes) {
         if (!room_ids.includes(change.room_id)) continue;

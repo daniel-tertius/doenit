@@ -34,7 +34,7 @@ class InviteService {
    */
   async sendInvite(recipient_email_address: string): Promise<SimpleResult> {
     try {
-      if (!user.value) {
+      if (!user.value?.is_friends_enabled) {
         return { success: false, error_message: t("user_not_authenticated") };
       }
 
@@ -81,7 +81,7 @@ class InviteService {
    */
   async acceptInvite(invite_id: string): Promise<{ success: boolean; message: string }> {
     try {
-      if (!user.value) {
+      if (!user.value?.is_friends_enabled) {
         return { success: false, message: t("user_not_authenticated") };
       }
 

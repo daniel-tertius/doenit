@@ -1,20 +1,20 @@
 <script>
   import InputText from "$lib/components/element/input/InputText.svelte";
   import { CardInvite, CardRoom } from "$lib/components/element/card";
-  import { inviteService } from "$lib/services/invites.svelte";
+  import { Notify } from "$lib/services/notifications/notifications";
   import Button from "$lib/components/element/button/Button.svelte";
+  import { inviteService } from "$lib/services/invites.svelte";
   import Modal from "$lib/components/modal/Modal.svelte";
-  import { t } from "$lib/services/language.svelte";
-  import { OnlineDB } from "$lib/OnlineDB";
+  import { backHandler } from "$lib/BackHandler.svelte";
   import { Check, Leave, Loading } from "$lib/icon";
-  import { onMount } from "svelte";
-  import { DB } from "$lib/DB";
+  import { t } from "$lib/services/language.svelte";
+  import { BACK_BUTTON_FUNCTION } from "$lib";
+  import { OnlineDB } from "$lib/OnlineDB";
   import user from "$lib/core/user.svelte";
   import { Alert } from "$lib/core/alert";
-  import { Notify } from "$lib/services/notifications/notifications";
-  import { BACK_BUTTON_FUNCTION } from "$lib";
   import { goto } from "$app/navigation";
-  import { backHandler } from "$lib/BackHandler.svelte";
+  import { onMount } from "svelte";
+  import { DB } from "$lib/DB";
 
   /** @type {Room?} */
   let selected_room = null;
@@ -28,10 +28,11 @@
   let error_message = $state("");
 
   const invites = $derived(inviteService.invites);
-
   const user_count = $derived(selected_room?.users?.length || 0);
 
   onMount(() => {
+    if (!user.value?.is_friends_enabled) return;
+
     const sub = DB.Room.subscribe((result) => (rooms = result.sort(sortByPendingAndAlphabetical)), {
       selector: {},
       sort: [{ name: "asc" }],
@@ -50,10 +51,7 @@
 
   async function saveRoom() {
     if (!selected_room) return;
-    if (!room_name) {
-      error_message = t("error.empty_category_name");
-      return;
-    }
+    if (!room_name) return;
 
     selected_room.name = room_name.trim();
     await DB.Room.update(selected_room?.id, selected_room);
@@ -73,6 +71,7 @@
     if (!a_pending && b_pending) return 1;
     return a.name.localeCompare(b.name);
   }
+
   /**
    * @param {Room} room
    */
@@ -103,7 +102,7 @@
       const promises = [];
 
       promises.push(
-        new Promise(async () => {
+        new Promise(async (resolve) => {
           const email_address = user.value?.email;
           if (!email_address) return;
 

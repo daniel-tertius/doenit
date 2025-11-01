@@ -1,6 +1,6 @@
 <script>
   import { COMPLETE_TASK_DELAY_MS, displayDateTime } from "$lib";
-  import { onMount } from "svelte";
+  import { untrack } from "svelte";
   import { Selected } from "$lib/selected";
   import ItemName from "./ItemName.svelte";
   import InputCheckbox from "../element/input/InputCheckbox.svelte";
@@ -30,10 +30,17 @@
   let tick_animation = $state(false);
 
   const is_past = $derived(!!start_date && start_date < current_time);
+  const category_id = $derived(task.category_id);
   const is_selected = $derived(Selected.tasks.has(task.id));
   const is_ongoing = $derived(isOngoing(due_date, start_date, current_time));
 
-  onMount(() => initDefaultCategory(task));
+  $effect(() => {
+    category_id;
+
+    untrack(async () => {
+      initDefaultCategory(task);
+    });
+  });
 
   /**
    * Handles the selection of a completed task.

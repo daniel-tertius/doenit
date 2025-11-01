@@ -45,7 +45,7 @@
 
       const new_task = await DB.Task.create(task);
 
-      if (task.room_id && !!user.value) {
+      if (task.room_id && !!user.value?.is_friends_enabled) {
         const room = await DB.Room.get(task.room_id);
 
         // TODO: Vertaal

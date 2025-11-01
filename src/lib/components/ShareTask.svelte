@@ -6,6 +6,7 @@
   import { DB } from "$lib/DB";
   import { t } from "$lib/services/language.svelte";
   import Modal from "./modal/Modal.svelte";
+  import user from "$lib/core/user.svelte";
 
   /**
    * @typedef {Object} Props
@@ -21,19 +22,21 @@
   /** @type {Room[]} */
   let rooms = $state([]);
   /** @type {Record<string, HTMLButtonElement>} */
-  let roomRefs = $state({});
-  let hasScrolled = $state(false);
+  let room_refs = $state({});
+  let has_scrolled = $state(false);
 
   onMount(async () => {
+    if (!user.value?.is_friends_enabled) return;
+
     const all_rooms = await DB.Room.getAll();
     rooms = all_rooms.filter((r) => r.users?.every((u) => !u.pending));
     selected_room = rooms.find((r) => r.id === room_id) || null;
   });
 
   $effect(() => {
-    if (!hasScrolled && show && room_id && roomRefs[room_id]) {
-      roomRefs[room_id].scrollIntoView({ behavior: "smooth", block: "center" });
-      hasScrolled = true;
+    if (!has_scrolled && show && room_id && room_refs[room_id]) {
+      room_refs[room_id].scrollIntoView({ behavior: "smooth", block: "center" });
+      has_scrolled = true;
     }
   });
 
@@ -72,7 +75,7 @@
     aria-label={t("share")}
     onclick={() => {
       show = true;
-      hasScrolled = false;
+      has_scrolled = false;
     }}
     class={{
       "bg-card border border-default": !room_id,
@@ -93,7 +96,7 @@
         aria-label="{room.name} room"
         type="button"
         class="w-full bg-card border border-default rounded-lg text-start group"
-        bind:this={roomRefs[room.id]}
+        bind:this={room_refs[room.id]}
         onclick={() => selectRoom(room)}
       >
         <CardRoom {...room} selected={room.id === room_id} />

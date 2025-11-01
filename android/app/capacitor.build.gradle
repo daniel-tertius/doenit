@@ -21,9 +21,10 @@ dependencies {
     implementation project(':capacitor-local-notifications')
     implementation project(':capacitor-preferences')
     implementation project(':capacitor-push-notifications')
+    implementation project(':capacitor-share')
     implementation project(':capawesome-capacitor-android-edge-to-edge-support')
     implementation project(':codetrix-studio-capacitor-google-auth')
-
+    implementation "com.android.billingclient:billing:7.1.1"
 }
 
 

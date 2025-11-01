@@ -8,6 +8,7 @@ import Categories from "./Categories.svelte";
 import Check from "./Check.svelte";
 import CheckCircle from "./CheckCircle.svelte";
 import ChevronLeft from "./ChevronLeft.svelte";
+import Crown from "./Crown.svelte";
 import ChevronRight from "./ChevronRight.svelte";
 import Clock from "./Clock.svelte";
 import DownChevron from "./DownChevron.svelte";
@@ -31,6 +32,7 @@ import Restore from "./Restore.svelte";
 import Save from "./Save.svelte";
 import Search from "./Search.svelte";
 import Settings from "./Settings.svelte";
+import Share from "./Share.svelte";
 import Shared from "./Shared.svelte";
 import Star from "./Star.svelte";
 import Sync from "./Sync.svelte";
@@ -40,6 +42,7 @@ import Times from "./Times.svelte";
 import Trash from "./Trash.svelte";
 import Upload from "./Upload.svelte";
 import UserPlus from "./UserPlus.svelte";
+import Users from "./Users.svelte";
 import X from "./X.svelte";
 import XCircle from "./XCircle.svelte";
 
@@ -55,6 +58,7 @@ export {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Crown,
   Clock,
   DownChevron,
   Download,
@@ -77,6 +81,7 @@ export {
   Save,
   Search,
   Settings,
+  Share,
   Shared,
   Star,
   Sync,
@@ -86,6 +91,7 @@ export {
   Trash,
   Upload,
   UserPlus,
+  Users,
   X,
   XCircle,
 };

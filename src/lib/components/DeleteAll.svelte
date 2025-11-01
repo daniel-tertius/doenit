@@ -46,7 +46,7 @@
    * @param {string[]} ids
    */
   async function updateChangelog(ids) {
-    if (!user.value) return;
+    if (!user.value?.is_friends_enabled) return;
 
     const tasks = await DB.Task.getAll({ selector: { id: { $in: ids } } });
     /** @type {string[]} */

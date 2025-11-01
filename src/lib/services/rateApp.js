@@ -23,7 +23,6 @@ class RateAppService {
         task_completions: 0,
         first_use_date: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
         last_dismissed_date: null,
-        has_rated: false,
       };
     }
   }
@@ -32,8 +31,6 @@ class RateAppService {
     await this.init();
 
     if (!Cached.rateUs.value) return;
-
-    if (Cached.rateUs.value.has_rated) return;
 
     Cached.rateUs.value.task_completions += 1;
 
@@ -47,7 +44,6 @@ class RateAppService {
     if (!Cached.rateUs.value) return;
 
     const tracking = Cached.rateUs.value;
-    if (tracking.has_rated) return;
 
     const first_use_date = new Date(tracking.first_use_date);
     const days_since_last_use = Math.floor((Date.now() - first_use_date.getTime()) / (1000 * 60 * 60 * 24));
@@ -62,7 +58,6 @@ class RateAppService {
       if (!Cached.rateUs.value) return;
 
       const tracking = Cached.rateUs.value;
-      if (tracking.has_rated) return;
 
       // Check if we're still in cooldown period after dismissal
       if (tracking.last_dismissed_date) {
@@ -83,28 +78,11 @@ class RateAppService {
   async showRatingPrompt() {
     if (!Cached.rateUs.value) return;
 
-    const result = await Alert.confirm({
-      title: t("rate_app_title"),
-      message: t("rate_app_message"),
-      confirmText: t("rate_now"),
-      cancelText: t("maybe_later"),
-    });
-
-    if (result) {
-      // User wants to rate
-      try {
-        Cached.rateUs.value.has_rated = true;
-        await InAppReview.requestReview();
-      } catch (error) {
-        console.error("Failed to show in-app review:", error);
-        Alert.error(t("rate_app_error"));
-      }
-    } else {
-      // User dismissed - set cooldown
-      const rate = Cached.rateUs.value;
-      rate.last_dismissed_date = new Date().toISOString();
-
-      Cached.rateUs.value = rate;
+    try {
+      Cached.rateUs.value.last_dismissed_date = DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss");
+      await InAppReview.requestReview();
+    } catch (error) {
+      console.error("Failed to show in-app review:", error);
     }
   }
 
@@ -116,19 +94,7 @@ class RateAppService {
       task_completions: 0,
       first_use_date: DateUtil.format(new Date(), "YYYY-MM-DD HH:mm:ss"),
       last_dismissed_date: null,
-      has_rated: false,
     };
-  }
-
-  async directRate() {
-    try {
-      await InAppReview.requestReview();
-      if (Cached.rateUs.value) {
-        Cached.rateUs.value.has_rated = true;
-      }
-    } catch (e) {
-      Alert.error(t("rate_app_error"));
-    }
   }
 
   async openStorePage() {

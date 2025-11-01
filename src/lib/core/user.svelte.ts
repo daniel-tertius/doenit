@@ -12,16 +12,15 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 import { Value } from "$lib/utils.svelte";
-import { Cached } from "./cache.svelte";
 
 class User {
   private _user = $state() as FirebaseUser;
   private _message_token: string | null = $state(null);
 
-  readonly is_friends_enabled: boolean = $derived(
-    !!this._user && PUBLIC_ADMIN_EMAILS.includes(this._user?.email || "")
-  );
-  readonly is_backup_enabled: boolean = $derived(!!this._user && !!Cached.automaticBackup.value);
+  readonly is_logged_in = $derived(!!this._user);
+  readonly is_plus_user = $derived(this.is_logged_in && PUBLIC_ADMIN_EMAILS.includes(this._user?.email || ""));
+  readonly is_friends_enabled: boolean = $derived(this.is_plus_user);
+  readonly is_backup_enabled: boolean = $derived(true /* Gratis vir nou */ || this.is_plus_user);
 
   constructor(user: FirebaseUser) {
     this._user = user;
@@ -78,7 +77,7 @@ function initializeUser() {
     }
   } catch (error) {
     const error_message = error instanceof Error ? error.message : String(error);
-    alert(`Fout met gebruikersinitialisering: ${error_message}`);
+    console.error(`Fout met gebruikersinitialisering: ${error_message}`);
   }
 }
 

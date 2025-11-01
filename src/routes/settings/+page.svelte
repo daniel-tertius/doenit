@@ -3,6 +3,7 @@
   import Backup from "./Backup.svelte";
   import Notifications from "./Notifications.svelte";
   import SupportMe from "./SupportMe.svelte";
+  import AppSettings from "./AppSettings.svelte";
   import Appearance from "./Appearance.svelte";
   import UserDisplay from "./UserDisplay.svelte";
   import { onMount } from "svelte";
@@ -23,6 +24,7 @@
   <UserDisplay />
   <Appearance />
   <Notifications />
+  <AppSettings />
   <Backup />
   <SupportMe />
   <About />

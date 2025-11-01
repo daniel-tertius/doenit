@@ -81,7 +81,6 @@
  * @property {number} task_completions - Number of tasks completed by the user.
  * @property {string} first_use_date - YYYY-MM-DD HH:mm:ss
  * @property {string|null} last_dismissed_date - YYYY-MM-DD HH:mm:ss or null
- * @property {boolean} has_rated - Whether the user has rated the app.
  */
 
 /**
@@ -100,6 +99,13 @@
 
 /**
  * @typedef {{ success: true } | { success: false, error_message: string }} SimpleResult
+ */
+
+/**
+ * @typedef {Object} HotbarItem
+ * @property {string} id - Primary key (UUID).
+ * @property {string} name - Name of the hotbot item.
+ * @property {'category' | 'room'} type
  */
 
 /**

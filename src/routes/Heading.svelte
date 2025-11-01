@@ -10,6 +10,7 @@
   import { backHandler } from "$lib/BackHandler.svelte";
   import { BACK_BUTTON_FUNCTION } from "$lib";
   import InputTextDebounce from "$lib/components/element/input/InputTextDebounce.svelte";
+  import ButtonMore from "$lib/components/element/button/ButtonMore.svelte";
 
   let show_searchbar = $state(false);
 
@@ -81,6 +82,7 @@
     <div class="h-full aspect-square ml-2 flex items-center justify-start">
       {#if Selected.tasks.size}
         <DeleteAll />
+        <ButtonMore />
       {:else if is_home || is_done}
         <ButtonSearchTask bind:show={show_searchbar} />
       {/if}

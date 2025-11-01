@@ -1,11 +1,10 @@
 <script>
-  import { selectedCategories } from "$lib/cached";
   import InputCheckbox from "./element/input/InputCheckbox.svelte";
   import { Selected } from "$lib/selected";
 
   const { id, name } = $props();
 
-  const is_selected = $derived(Selected.categories.has(id));
+  const is_selected = $derived(Selected.rooms.has(id));
 
   /**
    * Handles the selection of a category.
@@ -16,11 +15,10 @@
 
     Selected.tasks.clear();
     if (is_selected) {
-      Selected.categories.delete(id);
+      Selected.rooms.delete(id);
     } else {
-      Selected.categories.add(id);
+      Selected.rooms.add(id);
     }
-    selectedCategories.set([...Selected.categories]);
   }
 </script>
 

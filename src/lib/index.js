@@ -500,7 +500,7 @@ function sortTasksByPriority(data) {
 
 /**
  * Normalize a string by trimming whitespace and converting to lowercase.
- * @param {string} str - The string to normalize.
+ * @param {*} str - The string to normalize.
  * @returns {string} - The normalized string.
  */
 export function normalize(str) {

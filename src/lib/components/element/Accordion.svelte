@@ -13,10 +13,10 @@
    */
 
   /** @type {Props} */
-  let { children, label, show = $bindable(false), disabled = false, disabled_message = "" } = $props();
+  let { children, label, show = $bindable(false), disabled = false, disabled_message = "", ...rest } = $props();
 </script>
 
-<div class="bg-surface rounded-lg {disabled ? 'opacity-60' : ''}">
+<div class={["bg-surface rounded-lg", disabled ? "opacity-60" : "", rest.class || ""]}>
   <button
     type="button"
     aria-label={t("accordion_toggle")}
